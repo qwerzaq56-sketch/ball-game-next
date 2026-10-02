@@ -93,7 +93,7 @@ export function updateAI(ai, dt, game, balance) {
   }
 
   if(ai.state==='relationship' && ai.relationshipOwner && (!ai.relationshipOwner.alive||!ai.relationshipOwner.apex||dist(ai,ai.relationshipOwner)>600)){ai.target=null;ai.state='search';ai.decisionTimer=0;}
-  if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && (!ai.target.alive || dist(ai,ai.target)>(ai.state==="chase_eat" && ai.target.behavior!=="orb" ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
+  if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && ai.state!=="command_move" && (!ai.target.alive || dist(ai,ai.target)>game.biomes.sensingRange(ai,ai.state==="chase_eat" && ai.target.behavior!=="orb" ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
   ai.decisionTimer -= dt;
   if (ai.decisionTimer <= 0) {
     ai.decisionTimer = 0.2 + random('ai') * 0.15;
@@ -120,7 +120,7 @@ export function updateAI(ai, dt, game, balance) {
 // waits for the target's recovery frames.
 function duelTarget(ai, game, balance, threats, safe) {
   if(ai.role!=='predator'||ai.apex) return null;
-  const range=balance.ai.detectionRange;
+  const range=game.biomes.sensingRange(ai);
   const gate=o=>(ai.personality!=='cautious'||safe(o,o))&&(ai.personality!=='opportunist'||o.attackState==='RECOVERY');
   const held=ai.challengeTarget;
   if(held&&held.alive&&gate(held)) return held;
@@ -135,7 +135,9 @@ function duelTarget(ai, game, balance, threats, safe) {
 }
 
 export function decideAI(ai, game, balance) {
-  const cfg=balance.ai, hp=ai.hp/ai.maxHp;
+  const cfg={...balance.ai,detectionRange:game.biomes.sensingRange(ai),absorptionDetectionRange:game.biomes.sensingRange(ai,balance.ai.absorptionDetectionRange)}, hp=ai.hp/ai.maxHp;
+  const environment=game.biomes.danger(ai,!!ai.environmentThreat);ai.environmentThreat=environment;
+  if(environment){game.abilities?.endCommand(ai,'environment-escape');ai.state='flee';ai.target=environment;return;}
   const absorber=ai.escapeAbsorber;
   const escapeDistance=absorber ? balance.absorption.baseMaintainDistance+absorber.size*balance.absorption.maintainDistancePerSize+80 : 0;
   if(absorber?.alive && canAbsorb(absorber,ai) && dist(ai,absorber)<escapeDistance){
@@ -245,7 +247,7 @@ export function decideAI(ai, game, balance) {
 
 function reactToThreats(ai, game, balance) {
   if (!ai.dodgeUnlocked || !canStartDodge(ai)) return;
-  const range = Math.min(balance.ai.detectionRange, attackRangeForSize(ai.size, balance) * 1.5);
+  const range = Math.min(game.biomes.sensingRange(ai), attackRangeForSize(ai.size, balance) * 1.5);
   const nearby = game.getNearbyEntities(ai, range);
   for (const other of nearby) {
     if ((other.attackState === 'TELEGRAPH' || other.specialCast) && isHostile(ai, other)) {
@@ -298,6 +300,7 @@ function moveAI(ai, dt, balance,game) {
   }
 
   if (targetAngle !== null) {
+    if(game&&!ai.environmentThreat){const point=game.biomes.routePoint(ai,{x:ai.x+Math.cos(targetAngle)*300,y:ai.y+Math.sin(targetAngle)*300});targetAngle=Math.atan2(point.y-ai.y,point.x-ai.x);}
     ai.facing = targetAngle;
     ai.x += Math.cos(targetAngle) * speed * dt;
     ai.y += Math.sin(targetAngle) * speed * dt;

@@ -23,6 +23,7 @@ export class Minimap {
   render(game) {
     this.layout();const ctx=this.ctx,w=game.balance.world,scaleX=this.canvas.width/w.worldWidth,scaleY=this.canvas.height/w.worldHeight;
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.fillStyle='#0b1422';ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
+    for(const r of game.biomes.regions){ctx.beginPath();ctx.ellipse(r.x*scaleX,r.y*scaleY,r.radius*scaleX,r.radius*scaleY,0,0,Math.PI*2);ctx.fillStyle=r.color;ctx.fill();if(r.hotRadius){ctx.beginPath();ctx.ellipse(r.x*scaleX,r.y*scaleY,r.hotRadius*scaleX,r.hotRadius*scaleY,0,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();}}
     for(const e of game.entities){if(!e.alive)continue;const x=e.x*scaleX,y=e.y*scaleY;
       ctx.beginPath();ctx.arc(x,y,e.behavior==='orb'?.7:e.behavior==='player'?3:Math.min(3,1.2+e.size/100),0,Math.PI*2);ctx.fillStyle=e.behavior==='orb'?'rgba(148,163,184,.35)':e.colorHex;ctx.fill();
       if(e.apex){ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.strokeStyle='#facc15';ctx.lineWidth=1;ctx.stroke();}

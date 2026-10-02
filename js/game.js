@@ -1,3 +1,4 @@
+import { Biomes } from './biomes.js';
 import { AllyLinks } from './allyLinks.js';
 import { ApexHistory } from './apexHistory.js';
 import { scoreRanking, layoutNameLabels, debugRoleLabel } from './presentation.js';
@@ -54,6 +55,7 @@ export class Game {
     this.apexHistory = new ApexHistory();
     this.abilities = new Abilities(this);
     this.allyLinks = new AllyLinks(this);
+    this.biomes = new Biomes(this);
     this.telemetry = [];
     this.player = new Player(this.balance, this.options.profile);
     this.player.onSkillUnlock = (type) => {
@@ -170,6 +172,7 @@ export class Game {
     if (this.paused) {this.stopContinuousAudio();return;}
     const b = this.balance;
     this.gameTime += dt;
+    this.biomes.update(dt);
 
     this.buildGrid();
     this.allyLinks.update(dt);
@@ -224,7 +227,8 @@ export class Game {
       ai: units.filter(e => e.behavior === 'ai').length,
       sizes: [units.filter(e => e.size < 40).length, units.filter(e => e.size >= 40 && e.size < 100).length,
         units.filter(e => e.size >= 100 && e.size < 180).length, units.filter(e => e.size >= 180).length],
-      unimplemented: ['biomes', 'era', 'apocalypse'],
+      unimplemented: ['era', 'apocalypse'],
+      biomes:{encounters:this.biomes.encounters,blizzard:this.biomes.blizzard()},
       special:{casts:this.abilities.specialFires,fields:this.abilities.fields.length,commands:units.filter(e=>e.command).length},
       units: units.map(e => ({id:e.id,x:e.x,y:e.y,hp:e.hp,size:e.size,growth:e.growth,score:e.score ?? 0,role:e.role ?? null,apex:e.apex ?? false})) };
   }
@@ -647,6 +651,7 @@ export class Game {
     ctx.translate(-this.camera.x, -this.camera.y);
 
     this.drawGrid(ctx);
+    this.biomes.draw(ctx,this.camera.zoom);
     this.drawTerritories(ctx);
     this.drawWorldBorder(ctx);
     this.abilities.draw(ctx,this.camera.zoom);

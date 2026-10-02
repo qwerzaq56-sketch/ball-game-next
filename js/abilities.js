@@ -112,8 +112,9 @@ export class Abilities {
   const c=e.command;if(!c)return false;
   if(e.recovering||e.hp/e.maxHp<=.3||e.beingAbsorbedByRef){this.endCommand(e,'survival');return false;}
   if(c.selected && (!c.selected.alive||!(canAbsorb(e,c.selected)||c.selected.beingAbsorbedByRef===e)||dist(e,c.selected)>400)){this.endCommand(e,'devour-target-invalid');return false;}
-  const range=this.game.balance.ai.detectionRange;
-  const nearby=this.game.getNearbyEntities(e,c.kind==='devour'?400:range).filter(t=>t.alive&&dist(e,t)<=(c.kind==='devour'?400:range));
+  const range=this.game.biomes.sensingRange(e);
+  const commandRange=c.kind==='devour'?this.game.biomes.sensingRange(e,400):range;
+  const nearby=this.game.getNearbyEntities(e,commandRange).filter(t=>t.alive&&dist(e,t)<=commandRange);
   let target;
   if(c.kind==='devour'){
     const candidates=nearby.filter(t=>t!==c.owner&&!t.apex&&canAbsorb(e,t));
@@ -133,7 +134,7 @@ export class Abilities {
  considerAI(e){
   if(!this.canCast(e)||e.recovering||e.state==='flee'||e.beingAbsorbedByRef)return false;
   const nearby=this.game.getNearbyEntities(e,Math.max(320,e.color==='red'?450:350)).filter(t=>t.alive);
-  const enemies=nearby.filter(t=>isHostile(e,t)&&dist(e,t)<=320);
+  const enemies=nearby.filter(t=>isHostile(e,t)&&dist(e,t)<=this.game.biomes.sensingRange(e,320));
   const target=enemies.sort((a,b)=>dist(e,a)-dist(e,b))[0];if(!target)return false;
   const dir=Math.atan2(target.y-e.y,target.x-e.x);
   if(e.color==='cyan'&&!inCone(e,target,dir,260))return false;

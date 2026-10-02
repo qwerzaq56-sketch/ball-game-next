@@ -7,9 +7,9 @@
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div id="player-info" style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="player-identity"></span> · <span id="role-text"></span> · <span id="special-text"></span></div>
+  <div id="player-info" style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="player-identity"></span> · <span id="region-text"></span> · <span id="role-text"></span> · <span id="special-text"></span></div>
   <canvas id="game-canvas" tabindex="-1"></canvas>
-  <div id="build-id">NEXT · M14</div>
+  <div id="build-id">NEXT · M19</div>
 
   <dialog id="player-setup" aria-labelledby="player-setup-title">
     <form id="player-setup-form">
@@ -121,6 +121,8 @@
     <p>먹이를 먹고 성장하세요. <strong>크기</strong>는 흡수·전투·최상위 직위를 결정하고, <strong>점수</strong>는 플레이 기록입니다. TOP 10에서 두 순위를 바꿔 볼 수 있습니다.</p>
     <dl class="help-controls"><dt>WASD / 방향키</dt><dd>이동</dd><dt>마우스 / 좌클릭</dt><dd>조준 / 공격</dd><dt>Space</dt><dd>회피</dd><dt>E</dt><dd>최상위 특수능력</dd><dt>G</dt><dd>동행 이탈</dd><dt>P / H</dt><dd>일시정지 / 안내</dd></dl>
     <p>터치 화면에서는 왼쪽 조이스틱으로 이동하고 화면을 터치해 조준합니다. 오른쪽 공격 버튼을 누른 채 드래그하면 그 방향으로 조준·공격합니다. 회피·E 버튼도 함께 사용할 수 있습니다. 동행 중에는 HUD의 ‘동행 이탈’ 버튼으로 나갑니다.</p>
+    <h3>지역 탐험</h3>
+    <p>지도(F5)에서 숲·호수·설원·화산을 찾으세요. 주기적으로 가치 높은 먹이가 생깁니다. 설원의 눈보라는 AI 시야를 줄이고, 화산의 주황색 마그마 중심은 지속 피해를 주므로 가장자리를 지나세요.</p>
     <h3>같은 색 연결과 동행</h3>
     <p>가까운 같은 색 공은 연결되고 이웃당 공격 +5%, 최대 +15%를 받습니다. 확률적으로 대열을 만들며, <strong>동행 중에는 공격·흡수·특수능력을 사용하지 않습니다.</strong> G로 이탈하면 자유 행동으로 돌아갑니다. 동행해도 외부 공격을 받을 수 있습니다.</p>
     <h3>최상위 포식자 · 최대 3명</h3>

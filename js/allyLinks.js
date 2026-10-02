@@ -72,6 +72,8 @@ export class AllyLinks {
  }
  move(e,dt){
   const group=this.groups.get(e.companionGroup);if(!group)return false;
+  const environment=this.game.biomes.danger(e,!!e.environmentThreat);e.environmentThreat=environment;
+  if(environment){const angle=Math.atan2(e.y-environment.y,e.x-environment.x);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*e.moveSpeed*1.3*dt;e.y+=Math.sin(angle)*e.moveSpeed*1.3*dt;return true;}
   // Survival escape takes priority, but never starts an attack or a cast.
   if(e.beingAbsorbedByRef)e.escapeAbsorber=e.beingAbsorbedByRef;
   if(!e.beingAbsorbedByRef&&e.escapeAbsorber&&(!unit(e.escapeAbsorber)||!canAbsorb(e.escapeAbsorber,e)||dist(e,e.escapeAbsorber)>maintainDistanceFor(e.escapeAbsorber,this.game.balance)+80))e.escapeAbsorber=null;
@@ -90,13 +92,13 @@ export class AllyLinks {
   if(group.leader===e){e.wanderTimer-=dt;if(e.wanderTimer<=0){e.wanderAngle=random('ai')*Math.PI*2;e.wanderTimer=3;}const w=this.game.balance.world,pad=e.size/2+60;
    if((e.x<pad&&Math.cos(e.wanderAngle)<0)||(e.x>w.worldWidth-pad&&Math.cos(e.wanderAngle)>0))e.wanderAngle=Math.PI-e.wanderAngle;
    if((e.y<pad&&Math.sin(e.wanderAngle)<0)||(e.y>w.worldHeight-pad&&Math.sin(e.wanderAngle)>0))e.wanderAngle=-e.wanderAngle;
-   e.facing=e.wanderAngle;e.x+=Math.cos(e.facing)*Math.min(...[...group.members].map(m=>m.moveSpeed))*.55*dt;e.y+=Math.sin(e.facing)*Math.min(...[...group.members].map(m=>m.moveSpeed))*.55*dt;return true;}
+   const route=this.game.biomes.routePoint(e,{x:e.x+Math.cos(e.wanderAngle)*300,y:e.y+Math.sin(e.wanderAngle)*300});e.facing=Math.atan2(route.y-e.y,route.x-e.x);e.x+=Math.cos(e.facing)*Math.min(...[...group.members].map(m=>m.moveSpeed))*.55*dt;e.y+=Math.sin(e.facing)*Math.min(...[...group.members].map(m=>m.moveSpeed))*.55*dt;return true;}
   const members=[...group.members].filter(m=>m!==group.leader).sort((a,b)=>a.id-b.id),i=members.indexOf(e);
   const lead=group.leader,back=lead.facing+Math.PI;
   const gap=(lead.size+e.size)/2+35,side=(i%2?1:-1)*(25+Math.floor(i/2)*30);
   const w=this.game.balance.world;
   const point={x:Math.max(e.size/2,Math.min(w.worldWidth-e.size/2,lead.x+Math.cos(back)*gap-Math.sin(back)*side)),y:Math.max(e.size/2,Math.min(w.worldHeight-e.size/2,lead.y+Math.sin(back)*gap+Math.cos(back)*side))};
-  const d=dist(e,point),angle=Math.atan2(point.y-e.y,point.x-e.x),speed=Math.min(e.moveSpeed*1.25,d/Math.max(dt,1e-8));
+  const route=this.game.biomes.routePoint(e,point),d=dist(e,route),angle=Math.atan2(route.y-e.y,route.x-e.x),speed=Math.min(e.moveSpeed*1.25,d/Math.max(dt,1e-8));
   e.facing=lead.facing;e.x+=Math.cos(angle)*speed*dt;e.y+=Math.sin(angle)*speed*dt;return true;
  }
  draw(ctx,zoom){ctx.save();ctx.lineWidth=2/zoom;for(const [a,b]of this.edges.values()){

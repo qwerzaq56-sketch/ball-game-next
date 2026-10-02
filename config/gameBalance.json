@@ -1,4 +1,5 @@
 {
+  "biomes": { "enabled": true },
   "player": {
     "startingSize": 20,
     "startingGrowth": 0,

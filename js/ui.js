@@ -114,6 +114,7 @@ export class UI {
     this.game = game; // debug-panel checkbox handlers read this
     const player = game.player;
     document.getElementById('player-identity').textContent = player.displayName;
+    document.getElementById('region-text').textContent=game.biomes.status(player);
     const neighbors=game.allyLinks.neighbors(player).length;
     const group=game.allyLinks.groups.get(player.companionGroup);
     document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${group?` · ${group.members.size}명 대열 동행 · 공격 쉬는 중`:''}`;

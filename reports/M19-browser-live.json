@@ -1,0 +1,52 @@
+{
+  "commit": "527ba7fef68eb958c871b491de3fa734002952bb",
+  "workingTreeDirty": true,
+  "policy": "nearest-food / survival escape / periodic attacks; replenished lives",
+  "startedAt": "2026-10-02T21:56:51.585Z",
+  "deadline": "2026-10-02T21:59:51.585Z",
+  "status": "PASS",
+  "timeline": [
+    {
+      "wallSeconds": 0.9,
+      "frames": 2,
+      "checks": 0,
+      "maxApex": 0,
+      "maxGroups": 0,
+      "maxSize": 0,
+      "lastCheck": 0,
+      "violation": null,
+      "gameSeconds": 0.03,
+      "size": 20,
+      "score": 0,
+      "defeats": 0,
+      "liveAI": 61,
+      "groups": 0,
+      "joins": 0,
+      "leaves": 0,
+      "specialFires": 0,
+      "heapBytes": 6288034
+    }
+  ],
+  "errors": [],
+  "latest": {
+    "wallSeconds": 179.9,
+    "frames": 10730,
+    "checks": 13733,
+    "maxApex": 2,
+    "maxGroups": 23,
+    "maxSize": 101.63193968107717,
+    "lastCheck": 178.7265000000257,
+    "violation": null,
+    "gameSeconds": 178.93,
+    "size": 44.79,
+    "score": 240,
+    "defeats": 1,
+    "liveAI": 80,
+    "groups": 11,
+    "joins": 261,
+    "leaves": 238,
+    "specialFires": 0,
+    "heapBytes": 11084744
+  },
+  "completedAt": "2026-10-02T21:59:52.524Z"
+}

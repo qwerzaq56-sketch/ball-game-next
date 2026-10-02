@@ -13,17 +13,17 @@ try {
   if(scenario==='desktop-debug'){await page.keyboard.press('F2');await page.keyboard.press('F3');await page.keyboard.press('F4');}
   await page.waitForTimeout(1500);
   await page.evaluate(()=>{
-   const g=window.__game;window.__timings={update:[],render:[],ui:[],interval:[],previous:performance.now(),started:performance.now()};
+   const g=window.__game;window.__timings={update:[],render:[],ui:[],interval:[],previous:performance.now(),started:performance.now(),gameStart:g.gameTime,activeFrames:0};
    for(const [object,key,label] of [[g,'update','update'],[g,'render','render'],[g.ui,'update','ui']]){
-    const original=object[key];object[key]=function(...args){const t=performance.now();try{return original.apply(this,args);}finally{window.__timings[label].push(performance.now()-t);if(label==='update'){window.__timings.interval.push(t-window.__timings.previous);window.__timings.previous=t;}}};
+    const original=object[key];object[key]=function(...args){if(label==='update'){if(g.gameOver){g.gameOver=false;g.respawnPlayer();g.ui.hideGameOver();}g.lives=g.balance.lives.maxLives;g.paused=false;g.player.hp=g.player.maxHp;g.player.alive=true;window.__timings.activeFrames++;}const t=performance.now();try{return original.apply(this,args);}finally{window.__timings[label].push(performance.now()-t);if(label==='update'){window.__timings.interval.push(t-window.__timings.previous);window.__timings.previous=t;}}};
    }
   });
   await page.waitForTimeout(6000);
   const data=await page.evaluate(()=>{
    const timings=window.__timings,summary={};
    for(const key of ['update','render','ui','interval']){const a=timings[key].slice(1).sort((a,b)=>a-b);summary[key]={samples:a.length,p50Ms:+a[Math.floor(a.length*.5)].toFixed(3),p95Ms:+a[Math.floor(a.length*.95)].toFixed(3),maxMs:+a.at(-1).toFixed(3)};}
-   return {seconds:+((performance.now()-timings.started)/1000).toFixed(2),frames:timings.update.length,entities:window.__game.entities.length,summary};
-  });assert(data.frames>=100,'representative frame sample');assert.deepEqual(errors,[]);results.push({scenario,...data,errors});await context.close();
+   return {seconds:+((performance.now()-timings.started)/1000).toFixed(2),frames:timings.update.length,activeFrames:timings.activeFrames,gameSeconds:+(window.__game.gameTime-timings.gameStart).toFixed(3),entities:window.__game.entities.length,summary};
+  });assert(data.frames>=100,'representative frame sample');assert(data.gameSeconds>5,'active simulation for at least five seconds');assert.deepEqual(errors,[]);results.push({scenario,...data,errors});await context.close();
  }
- console.log(JSON.stringify({platform:'cloud Chromium headless; not physical mobile hardware',results},null,2));
+ console.log(JSON.stringify({platform:'cloud Chromium headless; not physical mobile hardware',policy:'stationary player with replenished health/lives; active simulation required',results},null,2));
 } finally {await browser.close();}
