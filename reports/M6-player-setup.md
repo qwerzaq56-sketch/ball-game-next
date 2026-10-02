@@ -20,3 +20,9 @@
 - `git diff --check` 통과. 화면 자료: `M6-player-setup.png`, `M6-player-setup-mobile.png`, `M6-size-ranking.png`.
 
 성장·점수 수식 및 전투 AI를 변경하지 않아 새 장기 밸런스 조정은 수행하지 않았다. 테스트 브라우저의 좁은 viewport는 화면 배치를 검증하며 실제 휴대폰 터치 조작 검증은 아니다. 작업은 codex/cloud-next-m4에 한정한다. main/통합 브랜치/공개 배포는 변경하지 않는다.
+
+## 후속: 역할·관계 디버깅 시각화
+
+F3에 역할/프레데터 관계와 상태/성격을 두 줄로 표시. 플레이어 역할 포함. 프레이(보라)/포레이저(초록)/프레데터(분홍), 프레데터 관계는 종속/도전/독립. F2 목록·상세도 한글로 통일하고 비프레데터에게 남은 관계 데이터는 표시하지 않음. 이름은 디버그 두 줄 위로 배치.
+
+`node --test --test-isolation=none` **79/79 통과**. 역할 전환 시 관계 숨김 및 실제 draw의 게임 상태/AI 난수 불변 회귀 포함. `node tools/browser-debug-roles.mjs`에서 세 역할/세 관계의 Canvas 표시, F3 토글, F2 상세 통과. 페이지 오류 0. 화면: `M6-debug-roles.png`. `git diff --check` 통과.

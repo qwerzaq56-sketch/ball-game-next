@@ -1,5 +1,5 @@
 import { ApexHistory } from './apexHistory.js';
-import { scoreRanking, layoutNameLabels } from './presentation.js';
+import { scoreRanking, layoutNameLabels, debugRoleLabel } from './presentation.js';
 import { Abilities } from './abilities.js';
 import { acceptsAbsorption } from './species.js';
 import { Ecology } from './ecology.js';
@@ -645,7 +645,7 @@ export class Game {
       .filter(e => this.isRoughlyVisible(e)).map(e => {
         const point = this.worldToScreen(e.x, e.y-e.size/2);
         const text = `${e.apex ? "★ " : ""}${e.displayName}`;
-        return {id:e.id, text, color:e.colorHex, x:point.x, y:point.y-(this.showAILabels ? 34 : 18), textWidth:ctx.measureText(text).width};
+        return {id:e.id, text, color:e.colorHex, x:point.x, y:point.y-(this.showAILabels ? 50 : 18), textWidth:ctx.measureText(text).width};
       });
     this.visibleNameLabels = layoutNameLabels(candidates, this.canvas.width, this.canvas.height, this.ui.overlayRects ?? []);
     for (const label of this.visibleNameLabels) {
@@ -830,7 +830,7 @@ export class Game {
     }
   }
 
-  // Floating "state · personality" tag above each AI. Read-only; constant on-screen font size.
+  // Two debug lines: role/relationship above state/personality. Read-only; constant on-screen font size.
   drawAILabels(ctx, visible) {
     const z = this.camera.zoom;
     ctx.save();
@@ -840,10 +840,16 @@ export class Game {
     ctx.lineJoin = 'round';
     ctx.lineWidth = 3 / z;
     for (const e of visible) {
-      if (!e.alive || e.behavior !== 'ai') continue;
-      const state = AI_STATE_LABEL[e.recovering ? 'recover' : e.state] ?? e.state;
-      const text = `${e.apex ? '★ ' : ''}${state} · ${AI_PERSONALITY_LABEL[e.personality] ?? '-'}`;
+      if (!e.alive || (e.behavior !== 'ai' && e.behavior !== 'player')) continue;
       const x = e.x, y = e.y - e.size / 2 - 16;
+      ctx.strokeStyle = 'rgba(0,0,0,0.85)';
+      const role = debugRoleLabel(e);
+      ctx.strokeText(role,x,y-15/z);
+      ctx.fillStyle = e.role==='predator' ? '#fda4af' : e.role==='prey' ? '#a5b4fc' : '#86efac';
+      ctx.fillText(role,x,y-15/z);
+      if(e.behavior==='player') continue;
+      const state = AI_STATE_LABEL[e.recovering ? 'recover' : e.state] ?? e.state;
+      const text = `${state} · ${AI_PERSONALITY_LABEL[e.personality] ?? '-'}`;
       ctx.strokeStyle = 'rgba(0,0,0,0.75)';
       ctx.strokeText(text, x, y);
       ctx.fillStyle = e.state === 'flee' ? '#fde68a' : e.state === 'chase_fight' ? '#fca5a5' : '#ffffff';

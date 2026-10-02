@@ -68,3 +68,18 @@ test('size ranking is independent of score and preserves committed size ties',()
   assert.deepEqual(sizeRanking(all,[3,2,1]).map(e=>e.id),[3,2,1]);
   assert.deepEqual(scoreRanking(all).map(e=>e.id),[1,2,3]);
 });
+
+import {debugRoleLabel} from '../js/presentation.js';
+test('debug roles show predator relationships only while the role is predator',()=>{
+  assert.equal(debugRoleLabel({role:'prey',relationship:'challenger'}),'프레이');
+  assert.equal(debugRoleLabel({role:'forager',relationship:'subordinate'}),'포레이저');
+  for(const [relationship,label] of [['subordinate','종속'],['challenger','도전'],['independent','독립']])assert.equal(debugRoleLabel({role:'predator',relationship}),`프레데터 · ${label}`);
+  assert.equal(debugRoleLabel({role:'predator',apex:true}),'★ 프레데터');
+});
+test('debug drawing includes player role and AI role/state as separate lines without changing gameplay',()=>{
+  const g=createGame(5),a=g.entities.find(e=>e.behavior==='ai');a.role='predator';a.relationship='challenger';
+  const texts=[],ctx=new Proxy({fillText:text=>texts.push(text)},{get:(o,k)=>o[k]??(()=>{}),set:(o,k,v)=>(o[k]=v,true)});
+  const before=g.snapshot();resetRandom(7);const expected=random('ai');resetRandom(7);
+  g.drawAILabels(ctx,[g.player,a]);assert(texts.includes('프레데터 · 도전'));assert(texts.some(t=>t.includes(' · ')&&!t.includes('프레데터')));
+  assert(texts.some(t=>t===debugRoleLabel(g.player)));assert.deepEqual(g.snapshot(),before);assert.equal(random('ai'),expected);
+});

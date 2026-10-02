@@ -2,6 +2,7 @@
 // RNG, so enabling it cannot alter a run. Lists live AI with role / personality / relationship /
 // current state and counts recent state changes so back-and-forth behaviour is measurable.
 import { dist } from './collision.js';
+import {ROLE_LABELS,RELATIONSHIP_LABELS} from './presentation.js';
 
 const WINDOW = 10; // seconds of state-change history shown as "chg/10s"
 const SORTS = {
@@ -143,8 +144,8 @@ export class AIInspector {
     const sr = eco.scoreOrder.indexOf(e.id) + 1, zr = eco.sizeOrder.indexOf(e.id) + 1;
     const f = (v) => (v == null ? '-' : v);
     const rows = [
-      ['이름 / id', `${e.displayName} · #${e.id}`], ['색', e.color], ['역할 / 성격', `${f(e.role)} / ${f(e.personality)}`],
-      ['관계', f(e.relationship)], ['state', e.state], ['target', this.describeTarget(e)],
+      ['이름 / id', `${e.displayName} · #${e.id}`], ['색', e.color], ['역할 / 성격', `${ROLE_LABELS[e.role] ?? f(e.role)} / ${f(e.personality)}`],
+      ['프레데터 관계', e.role==='predator' ? (RELATIONSHIP_LABELS[e.relationship] ?? '-') : '-'], ['state', e.state], ['target', this.describeTarget(e)],
       ['HP / size', `${Math.round(e.hp / e.maxHp * 100)}% / ${Math.round(e.size)}`],
       ['score (순위)', `${Math.round(e.score)} (${sr || '-'}위, size ${zr || '-'}위)`],
       ['최상위', e.apex ? 'YES' : 'no'],
@@ -170,7 +171,7 @@ export class AIInspector {
       const chg = this.recent(e);
       return `<div class="ai-row${e.id === this.selectedId ? ' sel' : ''}${chg >= 4 ? ' hot' : ''}" data-id="${e.id}">` +
         `<span>${e.id}${e.apex ? '★' : ''}</span><span><i class="dot" style="background:${e.colorHex}"></i></span>` +
-        `<span>${e.role ?? '-'}</span><span>${e.personality ?? '-'}</span><span>${e.relationship ?? '-'}</span>` +
+        `<span>${ROLE_LABELS[e.role] ?? '-'}</span><span>${e.personality ?? '-'}</span><span>${e.role==='predator' ? (RELATIONSHIP_LABELS[e.relationship] ?? '-') : '-'}</span>` +
         `<span>${e.state}</span><span>${Math.round(e.hp / e.maxHp * 100)}</span><span>${Math.round(e.size)}</span>` +
         `<span>${Math.round(e.score)}</span><span>${chg}</span></div>`;
     }).join('');
