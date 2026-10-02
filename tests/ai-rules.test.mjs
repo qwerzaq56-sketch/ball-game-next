@@ -133,3 +133,31 @@ test('retaliation: cautious AI needs the attacker spot free of other threats', (
   const c2=victim(t,'prey','cautious'), foe2=t.unit(100,'red',1200); hitBy(t,c2,foe2);
   assert.equal(t.run([c2,foe2],c2),'chase_fight');
 });
+
+test('flee hysteresis keeps a remembered threat beyond sensing and releases at 360',()=>{
+ const t=setup(), a=victim(t), foe=t.unit(130,'red',1300);
+ assert.equal(t.run([a,foe],a),'flee');
+ foe.x=1340;assert.equal(t.run([a,foe],a),'flee');
+ foe.x=1360;assert.equal(t.run([a,foe],a),'search');
+ foe.x=1300;t.run([a,foe],a);foe.alive=false;
+ assert.equal(t.run([a,foe],a),'search');
+});
+test('absorption escape does not return to food inside the same absorber margin',()=>{
+ const t=setup(), a=victim(t), ally=t.unit(200,'yellow',1050), food=t.orbs();
+ a.beingAbsorbedByRef=ally;t.g.entities=[a,ally,food];t.g.buildGrid();
+ updateAI(a,1/60,t.g,t.b);assert.equal(a.escapeAbsorber,ally);
+ a.beingAbsorbedByRef=null;assert.equal(t.run([a,ally,food],a),'flee');
+ ally.alive=false;assert.equal(t.run([a,ally,food],a),'chase_eat');
+});
+test('absorption escape releases beyond maintain distance plus margin',()=>{
+ const t=setup(), a=victim(t), ally=t.unit(200,'yellow',1050);
+ a.escapeAbsorber=ally;
+ const radius=t.b.absorption.baseMaintainDistance+ally.size*t.b.absorption.maintainDistancePerSize+80;
+ ally.x=a.x+radius; t.run([a,ally],a);assert.equal(a.escapeAbsorber,null);
+});
+test('sand escape holds to 280 and releases when the field expires',()=>{
+ const t=setup(), a=victim(t), owner=t.unit(200,'red',1000);
+ const field={owner,x:1200,y:1000};t.g.abilities.fields=[field];
+ assert.equal(t.run([a],a),'flee');field.x=1250;assert.equal(t.run([a],a),'flee');
+ t.g.abilities.fields=[];assert.equal(t.run([a],a),'search');
+});

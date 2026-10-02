@@ -81,6 +81,7 @@ export function updateAI(ai, dt, game, balance) {
   // v0.3 spec §1: being absorbed no longer freezes the target — it actively tries to escape
   // by fleeing straight away from its absorber (reuses the normal 'flee' movement branch).
   if (ai.beingAbsorbedByRef) {
+    ai.escapeAbsorber=ai.beingAbsorbedByRef;
     game.abilities?.endCommand(ai,"absorption-escape");
     ai.state = 'flee';
     ai.target = ai.beingAbsorbedByRef;
@@ -89,7 +90,7 @@ export function updateAI(ai, dt, game, balance) {
   }
 
   if(ai.state==='relationship' && ai.relationshipOwner && (!ai.relationshipOwner.alive||!ai.relationshipOwner.apex||dist(ai,ai.relationshipOwner)>600)){ai.target=null;ai.state='search';ai.decisionTimer=0;}
-  if(ai.target && ai.state!=="relationship" && (!ai.target.alive || dist(ai,ai.target)>(ai.state==="chase_eat" && ai.target.behavior!=="orb" ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
+  if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && (!ai.target.alive || dist(ai,ai.target)>(ai.state==="chase_eat" && ai.target.behavior!=="orb" ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
   ai.decisionTimer -= dt;
   if (ai.decisionTimer <= 0) {
     ai.decisionTimer = 0.2 + random('ai') * 0.15;
@@ -132,7 +133,17 @@ function duelTarget(ai, game, balance, threats, safe) {
 
 export function decideAI(ai, game, balance) {
   const cfg=balance.ai, hp=ai.hp/ai.maxHp;
-  const danger=game.abilities?.fields.find(f=>f.owner.color!==ai.color&&dist(ai,f)<=220);
+  const absorber=ai.escapeAbsorber;
+  const escapeDistance=absorber ? balance.absorption.baseMaintainDistance+absorber.size*balance.absorption.maintainDistancePerSize+80 : 0;
+  if(absorber?.alive && canAbsorb(absorber,ai) && dist(ai,absorber)<escapeDistance){
+    game.abilities?.endCommand(ai,'absorption-escape');ai.state='flee';ai.target=absorber;return;
+  }
+  ai.escapeAbsorber=null;
+  const fields=game.abilities?.fields ?? [];
+  const heldField=ai.fleeField;
+  const danger=fields.find(f=>f.owner.color!==ai.color&&dist(ai,f)<=220) ??
+    (fields.includes(heldField)&&heldField.owner.color!==ai.color&&dist(ai,heldField)<280 ? heldField : null);
+  ai.fleeField=danger;
   if(danger){game.abilities.endCommand(ai,'sand-danger');ai.state='flee';ai.target={x:danger.x,y:danger.y,alive:true};return;}
 
   ai.recovering=hp<=.3 || (ai.recovering && hp<.6);
@@ -158,7 +169,15 @@ export function decideAI(ai, game, balance) {
   // but every *other* big threat and the survival rules above still are.
   const duel=duelTarget(ai,game,balance,threats,safe);
   const threat=closest(threats.filter(t=>t!==duel));
-  if(threat && !risk){game.abilities?.endCommand(ai,'threat');ai.state='flee';ai.target=threat;return;}
+  // Keep the last threat beyond the entry sensing boundary; do not reset flee every
+  // frame at 320. Release at 360, or immediately when it dies/ceases to be hostile.
+  const heldThreat=ai.fleeThreat;
+  const heldDanger=heldThreat?.alive && isHostile(ai,heldThreat) && heldThreat.size>=ai.size*1.2 &&
+    heldThreat!==duel && dist(ai,heldThreat)<360 ? heldThreat : null;
+  const fleeFrom=threat ?? heldDanger;
+  ai.fleeThreat=!risk ? fleeFrom : null;
+  if(fleeFrom && !risk){game.abilities?.endCommand(ai,'threat');ai.state='flee';ai.target=fleeFrom;return;}
+  if(ai.state==='flee'){ai.state='search';ai.target=null;}
   if(ai.recovering){game.abilities?.endCommand(ai,'recovery');ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
   if(game.abilities?.commandDecision(ai))return;
   game.abilities?.considerAI(ai);
