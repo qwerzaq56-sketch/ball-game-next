@@ -1,5 +1,7 @@
 # CLOUD M4 report
 
+> 최신 M10: 터치 조이스틱·다중 터치 전투·가로 화면 HUD. [검증 보고서](reports/M10-development.md).
+
 > 최신 M9: 대열 안정화·P 일시정지·H 플레이 안내·동행 HUD 및 설정 저장. [검증 보고서](reports/M9-development.md).
 
 > 최신 M8: 아군 대열 동행·apex 최대 3명·모래바람 강화 구현. 현재 기획과 검증은 GAME_DESIGN.md M8 및 reports/M8-development.md를 참고.

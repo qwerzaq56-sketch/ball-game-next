@@ -78,7 +78,7 @@ export class EcologyUI {
       if (this.preferences.ranking) this.renderRanking(game);
       if (this.preferences.ecology) this.renderEcology(game);
       // In screen pixels: name labels reserve occupied panels, including existing debug UI.
-      this.ui.overlayRects = ['hud','live-ranking','ecology-panel','debug-panel','ai-inspector','controls-hint','build-id']
+      this.ui.overlayRects = ['hud','live-ranking','ecology-panel','debug-panel','ai-inspector','controls-hint','build-id','touch-stick','touch-actions']
         .map(id=>document.getElementById(id)).filter(n=>n && n.getClientRects().length)
         .map(n=>n.getBoundingClientRect()).filter(r=>r.width && r.height)
         .map(r=>({left:r.left-4,top:r.top-4,right:r.right+4,bottom:r.bottom+4}));

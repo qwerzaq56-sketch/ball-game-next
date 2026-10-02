@@ -4,6 +4,7 @@ import { loadMuted, saveMuted } from './storage.js';
 import { AIInspector } from './aiInspector.js';
 import { PlayerSetup, loadPlayerProfile } from './playerProfile.js';
 import { PlayControls } from './playControls.js';
+import { TouchControls } from './touchControls.js';
 
 class InputState {
   constructor() {
@@ -83,6 +84,7 @@ async function main() {
   playerSetup.open();
   window.__game = game; // debug inspection hook
   const playControls=new PlayControls(game,input);
+  const touchControls=new TouchControls(game,input,canvas);
   ui.inspector = new AIInspector(game, canvas, ui); // F2: read-only AI state window
 
   // v0.6 follow-up: the ally-absorption toggle used to be a right-click gesture on the canvas,
@@ -149,6 +151,7 @@ async function main() {
     game.render();
     ui.update(dt, game);
     playControls.update();
+    touchControls.update();
 
     requestAnimationFrame(loop);
   }

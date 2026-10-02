@@ -270,6 +270,7 @@ export class Game {
     if (inp.keys.has('s') || inp.keys.has('arrowdown')) dy += 1;
     if (inp.keys.has('a') || inp.keys.has('arrowleft')) dx -= 1;
     if (inp.keys.has('d') || inp.keys.has('arrowright')) dx += 1;
+    dx+=inp.touchMove?.x??0;dy+=inp.touchMove?.y??0;
 
     const group=this.allyLinks.groups.get(p.companionGroup);
     const moveSpeed=group ? Math.min(p.moveSpeed,...[...group.members].map(e=>e.moveSpeed))*.85 : p.moveSpeed;
@@ -279,8 +280,9 @@ export class Game {
     if (p.attackState === 'READY' && p.dodgeState !== 'DODGING') {
       if (moving) {
         const len = Math.hypot(dx, dy);
-        p.x += (dx / len) * moveSpeed * dt;
-        p.y += (dy / len) * moveSpeed * dt;
+        const strength=Math.min(1,len);
+        p.x += (dx / len) * moveSpeed * strength * dt;
+        p.y += (dy / len) * moveSpeed * strength * dt;
       }
       p.facing = aimAngle;
     }

@@ -15,7 +15,7 @@ export class PlayControls {
       if(e.key.toLowerCase()==='p'&&!this.help.open){e.preventDefault();this.togglePause();}
     });
   }
-  clearInput(){this.input.keys.clear();this.input.mouseDown=false;this.input._dodgeQueued=false;this.input._specialQueued=false;}
+  clearInput(){this.input.keys.clear();this.input.touchMove={x:0,y:0};this.input.mouseDown=false;this.input._dodgeQueued=false;this.input._specialQueued=false;}
   focusCanvas(){document.getElementById('game-canvas').focus({preventScroll:true});}
   blocked(){return this.game.gameOver||document.getElementById('player-setup').open||document.getElementById('reset-confirm-overlay').style.display==='flex';}
   togglePause(){if(this.blocked()||this.help.open)return;this.game.paused=!this.game.paused;this.clearInput();this.focusCanvas();}

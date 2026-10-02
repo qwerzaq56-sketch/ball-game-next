@@ -2,6 +2,7 @@ import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 const {chromium}=createRequire(import.meta.url)('playwright');
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+const prefix=process.env.BROWSER_PLAY_REPORT_PREFIX??'reports/M9';
 const page=await browser.newPage({viewport:{width:1280,height:720}}),errors=[];
 page.on('pageerror',e=>errors.push(e.message));
 try {
@@ -13,7 +14,7 @@ try {
  await page.locator('#pause-btn').click();await page.waitForFunction(()=>!window.__game.paused);await page.waitForTimeout(100);assert((await page.evaluate(()=>window.__game.gameTime))>time);
  await page.locator('#help-btn').click();time=await page.evaluate(()=>window.__game.gameTime);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>window.__game.gameTime),time);
  await page.keyboard.press('e');await page.keyboard.press('Space');assert.equal(await page.evaluate(()=>window.__game.input._specialQueued),false);assert.equal(await page.evaluate(()=>window.__game.input._dodgeQueued),false);
- await page.screenshot({path:'reports/M9-play-help.png'});
+ await page.screenshot({path:`${prefix}-play-help.png`});
  await page.locator('#help-close').click();await page.waitForFunction(()=>!window.__game.paused);
  await page.locator('#reset-btn').click();time=await page.evaluate(()=>window.__game.gameTime);await page.waitForTimeout(200);assert.equal(await page.evaluate(()=>window.__game.gameTime),time);await page.keyboard.press('p');assert.equal(await page.evaluate(()=>window.__game.paused),true);
  await page.locator('#reset-confirm-no').click();await page.waitForFunction(()=>!window.__game.paused);
@@ -23,8 +24,8 @@ try {
  await page.evaluate(()=>{const g=window.__game;g.paused=true;const p=g.player,a=g.entities.find(e=>e.behavior==='ai');g.entities=[p,a];a.color=p.color;a.x=p.x+80;a.y=p.y;g.allyLinks.refresh();g.allyLinks.join(a,p);p.apex=true;p.specialCooldown=0;});await page.waitForTimeout(150);
  assert.match(await page.locator('#ally-link-status').innerText(),/2명 대열 동행 · 공격 쉬는 중/);assert.match(await page.locator('#special-text').innerText(),/동행 중 사용 불가/);
  await page.setViewportSize({width:390,height:844});await page.waitForTimeout(350);
- const rect=await page.locator('#hud').boundingBox();assert(rect.x>=0&&rect.x+rect.width<=390&&rect.y+rect.height<800);await page.screenshot({path:'reports/M9-mobile-hud.png'});
- await page.locator('#help-btn').click();await page.waitForTimeout(100);const help=await page.locator('#play-help').boundingBox();assert(help.x>=0&&help.y>=0&&help.x+help.width<=390&&help.y+help.height<=844);await page.screenshot({path:'reports/M9-mobile-help.png'});
+ const rect=await page.locator('#hud').boundingBox();assert(rect.x>=0&&rect.x+rect.width<=390&&rect.y+rect.height<800);await page.screenshot({path:`${prefix}-mobile-hud.png`});
+ await page.locator('#help-btn').click();await page.waitForTimeout(100);const help=await page.locator('#play-help').boundingBox();assert(help.x>=0&&help.y>=0&&help.x+help.width<=390&&help.y+help.height<=844);await page.screenshot({path:`${prefix}-mobile-help.png`});
  await page.keyboard.press('Escape');assert.deepEqual(errors,[]);
  console.log(JSON.stringify({result:'PASS',pause:true,modalPauseRestore:true,resetPause:true,queuedInputCleared:true,linksPersisted:true,peacefulHUD:true,mobile:true,errors}));
 } finally {await browser.close();}

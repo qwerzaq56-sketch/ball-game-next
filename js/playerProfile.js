@@ -38,7 +38,7 @@ export class PlayerSetup {
     });
     this.dialog.addEventListener('cancel',e=>e.preventDefault()); // Choosing a player starts the run.
   }
-  clearInput() {this.input.keys.clear();this.input.mouseDown=false;this.input._dodgeQueued=false;this.input._specialQueued=false;}
+  clearInput() {this.input.keys.clear();this.input.touchMove={x:0,y:0};this.input.mouseDown=false;this.input._dodgeQueued=false;this.input._specialQueued=false;}
   open() {
     this.game.paused=true;this.clearInput();
     const profile=normalizeProfile(this.game.options.profile,this.game.balance.colors);
