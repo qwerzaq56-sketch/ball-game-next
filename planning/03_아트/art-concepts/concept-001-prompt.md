@@ -1,0 +1,10 @@
+﻿# 컨셉 001 — 성장·최상위·숲 파멸
+
+도구: 내장 image_gen / 상태: 스타일 컨펌 대기. 게임 에셋이나 구현 완료본이 아니다.
+
+## 최종 생성 프롬프트
+
+Use case: stylized-concept
+Asset type: first art approval concept sheet for a top-down 2D circle ecosystem game, not final assets.
+Primary request: one landscape concept image divided into three large equal panels with NO text. Each panel is an actual orthographic gameplay view in the SAME consistent restrained neon art direction. Left: quiet growth/exploration, small solid green and cyan circular units eating tiny luminous food dots on dark forest ground, giant root outlines partly visible. Middle: apex green circular unit larger than surrounding blue/red/yellow/cyan circles, a subtle spacious thin territory outline and distinctive flowing green aura immediately communicates power; active curved buff energy linking a few nearby smaller green circles. Right: forest destruction with directional advancing wildfire leaving dark extinguished ground behind, small circular AI units with distorted thin outlines representing confusion, combat between colored circles with clean readable attack arc telegraphs. Terrain is traversable, no physical tree trunks blocking movement.
+Style: polished feasible Canvas game concept, purely overhead flat 2D with restrained luminous gradients, crisp actual round silhouettes, subtle large-scale biome textures, dark background, modest bloom concentrated on gameplay effects. All units are abstract circles without faces, limbs, weapons or crowns. Species colors cyan, blue, green, red, yellow; keep body colors distinct. Tiny food clearly smaller than units. Territory differs from damage telegraphs. Generous negative space, moderate unit density. Fire visible but does not overpower character colors. Panels have very thin separators. No explanatory banners, labels, badges, rank icons, minimap, UI windows, letters, numbers, watermark. No cinematic perspective, no realistic landscape painting, no 3D balls. Convey hierarchy through size, aura and motion effects instead of explanation.
