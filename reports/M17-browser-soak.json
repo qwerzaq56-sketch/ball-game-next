@@ -1,0 +1,53 @@
+{
+  "commit": "4dc02f01be30b9bcd80040f61c21b582dea8c104",
+  "policy": "nearest-food / survival escape / periodic attacks; replenished lives",
+  "startedAt": "2026-10-02T21:38:06.446Z",
+  "deadline": "2026-10-02T21:43:06.446Z",
+  "status": "PASS",
+  "timeline": [
+    {
+      "wallSeconds": 0.7,
+      "frames": 2,
+      "checks": 0,
+      "maxApex": 0,
+      "maxGroups": 0,
+      "maxSize": 0,
+      "lastCheck": 0,
+      "violation": null,
+      "gameSeconds": 0.03,
+      "size": 20,
+      "score": 0,
+      "defeats": 0,
+      "liveAI": 61,
+      "groups": 0,
+      "joins": 0,
+      "leaves": 0,
+      "specialFires": 0,
+      "heapBytes": 5428364
+    }
+  ],
+  "errors": [],
+  "latest": {
+    "wallSeconds": 299.1,
+    "frames": 17893,
+    "checks": 23320,
+    "maxApex": 3,
+    "maxGroups": 13,
+    "maxSize": 112.83821919317305,
+    "lastCheck": 297.754800000047,
+    "violation": null,
+    "gameSeconds": 298.39,
+    "size": 42.34,
+    "score": 195,
+    "defeats": 2,
+    "liveAI": 80,
+    "groups": 10,
+    "joins": 374,
+    "leaves": 354,
+    "specialFires": 7,
+    "heapBytes": 27466271
+  },
+  "completedAt": "2026-10-02T21:43:06.554Z",
+  "workingTreeDirty": true,
+  "sourceNote": "M17 uncommitted runtime changes on base 4dc02f0; commit field is base HEAD, not complete tested tree"
+}

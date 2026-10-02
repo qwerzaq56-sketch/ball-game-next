@@ -50,7 +50,7 @@ export class Game {
     resetEntityIds();
     this.gameTime = 0;
     this.showAILabels = true; // head-up state + personality labels over AI (debug aid, F3)
-    this.ecology = new Ecology();
+    this.ecology = new Ecology(this.options.collect);
     this.apexHistory = new ApexHistory();
     this.abilities = new Abilities(this);
     this.allyLinks = new AllyLinks(this);
@@ -225,7 +225,7 @@ export class Game {
       sizes: [units.filter(e => e.size < 40).length, units.filter(e => e.size >= 40 && e.size < 100).length,
         units.filter(e => e.size >= 100 && e.size < 180).length, units.filter(e => e.size >= 180).length],
       unimplemented: ['biomes', 'era', 'apocalypse'],
-      special:{casts:this.abilities.events.filter(e=>e.type==='special-fire').length,fields:this.abilities.fields.length,commands:units.filter(e=>e.command).length},
+      special:{casts:this.abilities.specialFires,fields:this.abilities.fields.length,commands:units.filter(e=>e.command).length},
       units: units.map(e => ({id:e.id,x:e.x,y:e.y,hp:e.hp,size:e.size,growth:e.growth,score:e.score ?? 0,role:e.role ?? null,apex:e.apex ?? false})) };
   }
 

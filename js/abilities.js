@@ -21,9 +21,9 @@ export function inWave(origin,target,dir,length=400,width=180){
 }
 function angleDelta(a,b){return Math.abs(Math.atan2(Math.sin(a-b),Math.cos(a-b)));}
 export class Abilities {
- constructor(game){this.enabled=game.options.abilitiesEnabled!==false;this.game=game;this.waves=[];this.fields=[];this.events=[];this.castId=0;this.flashes=[];}
+ constructor(game){this.enabled=game.options.abilitiesEnabled!==false;this.game=game;this.waves=[];this.fields=[];this.events=[];this.castId=0;this.flashes=[];this.specialFires=0;}
  units(){return this.game.entities.filter(e=>e.alive&&e.behavior!=='orb');}
- log(type,e,extra={}){this.events.push({time:this.game.gameTime,type,id:e.id,...extra});}
+ log(type,e,extra={}){if(type==='special-fire')this.specialFires++;this.events.push({time:this.game.gameTime,type,id:e.id,...extra});if(!this.game.options.collect&&this.events.length>256)this.events.shift();}
  release(owner){
    owner.specialCast=null;
    this.fields=this.fields.filter(f=>f.owner!==owner);

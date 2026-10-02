@@ -8,10 +8,12 @@ const deadline=/^\d+$/.test(argument)?start+Number(argument)*1000:Date.parse(arg
 if(!Number.isFinite(deadline)||deadline<=start||deadline-start>12*3600000)throw Error('Provide 1–43200 seconds or a future UTC deadline within 12 hours');
 const output=process.argv[3]??'/tmp/ball-next-live-soak.json';
 const commit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+const workingTreeDirty=!!execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim();
+const imagePrefix=output.replace(/\.json$/,'');
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
 const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
 const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
-const report={commit,policy:'nearest-food / survival escape / periodic attacks; replenished lives',startedAt:new Date(start).toISOString(),deadline:new Date(deadline).toISOString(),status:'RUNNING',timeline:[],errors};
+const report={commit,workingTreeDirty,policy:'nearest-food / survival escape / periodic attacks; replenished lives',startedAt:new Date(start).toISOString(),deadline:new Date(deadline).toISOString(),status:'RUNNING',timeline:[],errors};
 async function save(){await writeFile(`${output}.tmp`,JSON.stringify(report,null,2));await rename(`${output}.tmp`,output);}
 let lastProgress=0,lastTimeline=0,lastViewport=-1,lastDialogue=-1;
 try {
@@ -54,15 +56,16 @@ try {
    const enemy=g.entities.filter(e=>e.alive&&e.behavior==='ai'&&e.color!==p.color&&Math.hypot(e.x-p.x,e.y-p.y)<400).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];
    const aim=enemy??target??p,screen=g.worldToScreen(aim.x,aim.y);g.input.mouseX=screen.x;g.input.mouseY=screen.y;g.input.mouseDown=!!enemy&&!escape;
    if(p.apex&&enemy)g.input._specialQueued=true;if(escape&&p.dodgeStack>0)g.input._dodgeQueued=true;
-   return {...s,gameSeconds:+g.gameTime.toFixed(2),size:+p.size.toFixed(2),score:p.score,defeats:p.defeatSerial??0,liveAI:g.entities.filter(e=>e.alive&&e.behavior==='ai').length,groups:g.allyLinks.groups.size,joins:g.allyLinks.stats.joins,leaves:g.allyLinks.stats.leaves,specialFires:g.abilities.events.filter(e=>e.type==='special-fire').length,heapBytes:performance.memory?.usedJSHeapSize??null};
+   return {...s,gameSeconds:+g.gameTime.toFixed(2),size:+p.size.toFixed(2),score:p.score,defeats:p.defeatSerial??0,liveAI:g.entities.filter(e=>e.alive&&e.behavior==='ai').length,groups:g.allyLinks.groups.size,joins:g.allyLinks.stats.joins,leaves:g.allyLinks.stats.leaves,specialFires:g.abilities.specialFires??g.abilities.events.filter(e=>e.type==='special-fire').length,heapBytes:performance.memory?.usedJSHeapSize??null};
   });
   if(sample.violation)throw Error(sample.violation);
   report.latest={wallSeconds:+elapsed.toFixed(1),...sample};
-  if(elapsed-lastTimeline>=600||!report.timeline.length){lastTimeline=elapsed;report.timeline.push(report.latest);await page.screenshot({path:'/tmp/ball-next-live-last.png'});}
+  if(elapsed-lastTimeline>=600||!report.timeline.length){lastTimeline=elapsed;report.timeline.push(report.latest);await page.screenshot({path:`${imagePrefix}-last.png`});}
   if(elapsed-lastProgress>=30||!lastProgress){lastProgress=elapsed;await save();console.log(JSON.stringify({status:'RUNNING',...report.latest}));}
   await new Promise(resolve=>setTimeout(resolve,1000));
  }
  if(!report.latest||report.latest.frames<Math.min(100,(deadline-start)/100))throw Error('Insufficient active frame sample');
+ await page.screenshot({path:`${imagePrefix}-last.png`});
  report.status='PASS';report.completedAt=new Date().toISOString();await save();console.log(JSON.stringify({status:'PASS',output,...report.latest}));
-}catch(error){report.status='FAIL';report.failure=String(error);report.completedAt=new Date().toISOString();await save();await page.screenshot({path:'/tmp/ball-next-live-failure.png'}).catch(()=>{});throw error;}
+}catch(error){report.status='FAIL';report.failure=String(error);report.completedAt=new Date().toISOString();await save();await page.screenshot({path:`${imagePrefix}-failure.png`}).catch(()=>{});throw error;}
 finally{await browser.close();}

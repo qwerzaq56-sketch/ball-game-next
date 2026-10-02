@@ -17,9 +17,10 @@ export function assignPersonality(e) {
   const r=random('ai');e.personality=r<.34?'growth':r<.67?'cautious':'opportunist';
 }
 export class Ecology {
-  constructor(){this.timer=0;this.sizeOrder=[];this.scoreOrder=[];this.initial=true;this.events=[];}
+  constructor(collect=false){this.collect=collect;this.timer=0;this.sizeOrder=[];this.scoreOrder=[];this.initial=true;this.events=[];}
+  log(event){this.events.push(event);if(!this.collect&&this.events.length>256)this.events.shift();}
   release(e,time,reason){
-    if(e.apex)this.events.push({time,type:'apex-loss',id:e.id,reason});
+    if(e.apex)this.log({time,type:'apex-loss',id:e.id,reason});
     e.apex=false;e._apexCandidate=null;e._apexCount=0;e._titleNeedsConfirmation=true;
   }
   initializeUnit(game,e){
@@ -49,7 +50,7 @@ export class Ecology {
     const excess=sizes.filter(e=>e.apex).slice(3);
     for(const e of excess){e.apex=false;e._apexCandidate=false;e._apexCount=0;}
     for(const e of sizes){
-      if(e.apex!==e._apexBefore){this.events.push({time:game.gameTime,type:e.apex?'apex-gain':'apex-loss',id:e.id});if(e.apex)e._titleNeedsConfirmation=false;}
+      if(Boolean(e.apex)!==Boolean(e._apexBefore)){this.log({time:game.gameTime,type:e.apex?'apex-gain':'apex-loss',id:e.id});if(e.apex)e._titleNeedsConfirmation=false;}
       delete e._apexBefore;
     }
     this.initial=false;
