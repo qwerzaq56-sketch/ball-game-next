@@ -1,0 +1,83 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createGame} from '../tools/headless.mjs';
+import {AIEntity,decideAI} from '../js/ai.js';
+import {Entity} from '../js/entity.js';
+
+// Regression for the two approved-rule gaps found in Codex's review (proposals 005 and 004).
+function setup(){
+  const g=createGame(4), b=g.balance;
+  const unit=(size,color,x,y=1000)=>new AIEntity({x,y,color,colorHex:'#fff',balance:b,startSize:size});
+  const orbs=(value=80)=>new Entity({x:1000,y:1100,size:10,color:'yellow',growthValue:value});
+  const run=(ents,ai)=>{g.entities=ents;g.buildGrid();decideAI(ai,g,b);return ai.state;};
+  return {g,b,unit,orbs,run};
+}
+function growthPrey(t,hp){
+  const a=t.unit(100,'yellow',1000); a.role='prey'; a.personality='growth'; a.hp=a.maxHp*hp; return a;
+}
+
+test('growth prey: risk starts at HP 60% but not 59%', ()=>{
+  const t=setup(), big=t.unit(130,'red',1250);
+  const a1=growthPrey(t,.6);
+  assert.equal(t.run([a1,big,t.orbs()],a1),'chase_eat');
+  const a2=growthPrey(t,.59);
+  assert.equal(t.run([a2,big,t.orbs()],a2),'flee');
+});
+
+test('growth prey: once started, risk continues until HP 50%', ()=>{
+  const t=setup(), big=t.unit(130,'red',1250), a=growthPrey(t,.7), food=t.orbs();
+  assert.equal(t.run([a,big,food],a),'chase_eat');
+  a.hp=a.maxHp*.55;
+  assert.equal(t.run([a,big,food],a),'chase_eat');
+  a.hp=a.maxHp*.5;
+  assert.equal(t.run([a,big,food],a),'flee');
+});
+
+test('growth prey: risk stops when cluster value drops below 80', ()=>{
+  const t=setup(), big=t.unit(130,'red',1250), a=growthPrey(t,.7);
+  assert.equal(t.run([a,big,t.orbs(80)],a),'chase_eat');
+  assert.equal(t.run([a,big,t.orbs(79)],a),'flee');
+});
+
+test('growth prey: the two threat limits override continuing risk', ()=>{
+  const t=setup(), a=growthPrey(t,.7), food=t.orbs();
+  assert.equal(t.run([a,t.unit(130,'red',1250),food],a),'chase_eat');
+  assert.equal(t.run([a,t.unit(130,'red',1100),food],a),'flee');   // within 160
+  const b=growthPrey(t,.7);
+  assert.equal(t.run([b,t.unit(151,'red',1250),t.orbs()],b),'flee'); // > 1.5x
+});
+
+function challenger(t,personality='growth',hp=.7){
+  const a=t.unit(100,'yellow',1000); a.role='predator'; a.relationship='challenger';
+  a.personality=personality; a.hp=a.maxHp*hp; a.attackStack=2; return a;
+}
+function apex(t,{size=130,hp=.25,x=1250,color='red'}={}){
+  const o=t.unit(size,color,x); o.apex=true; o.hp=o.maxHp*hp; return o;
+}
+
+test('challenger: eligible weak apex is dueled instead of fled from', ()=>{
+  const t=setup(), a=challenger(t);
+  assert.equal(t.run([a,apex(t)],a),'chase_fight');
+});
+
+test('challenger: ineligible apex still triggers normal flee', ()=>{
+  const t=setup();
+  let a=challenger(t); assert.equal(t.run([a,apex(t,{hp:.31})],a),'flee');       // target HP > 30%
+  a=challenger(t); assert.equal(t.run([a,apex(t,{size:151})],a),'flee');          // > 1.5x
+  a=challenger(t,'growth',.59); assert.equal(t.run([a,apex(t)],a),'flee');        // own HP < 60%
+});
+
+test('challenger: any other big threat still wins over the duel', ()=>{
+  const t=setup(), a=challenger(t), other=t.unit(140,'blue',1000,1250);
+  assert.equal(t.run([a,apex(t),other],a),'flee');
+});
+
+test('challenger: personality gates are kept', ()=>{
+  const t=setup();
+  let a=challenger(t,'opportunist'); const o=apex(t); o.attackState='IDLE';
+  assert.equal(t.run([a,o],a),'flee');              // waits for recovery frames
+  a=challenger(t,'opportunist'); const o2=apex(t); o2.attackState='RECOVERY';
+  assert.equal(t.run([a,o2],a),'chase_fight');
+  a=challenger(t,'cautious'); const o3=apex(t); const near=t.unit(150,'blue',1250,1100);
+  assert.equal(t.run([a,o3,near],a),'flee');        // target spot is not safe
+});

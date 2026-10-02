@@ -1,0 +1,14 @@
+import {createGame} from './headless.mjs';
+import {AIEntity,decideAI} from '../js/ai.js';
+import {Entity} from '../js/entity.js';
+const g=createGame(4), b=g.balance;
+const unit=(size,color,x)=>new AIEntity({x,y:1000,color,colorHex:'#fff',balance:b,startSize:size});
+const a=unit(100,'yellow',1000), t=unit(130,'red',1250);
+a.role='prey';a.personality='growth';a.hp=a.maxHp*.7;
+const food=new Entity({x:1000,y:1100,size:10,color:'yellow',growthValue:80});
+g.entities=[a,t,food];g.buildGrid();decideAI(a,g,b);
+const before=a.state;a.hp=a.maxHp*.55;decideAI(a,g,b);
+console.log(JSON.stringify({case:'growth-prey-hysteresis',at70:before,at55:a.state,expectedAt55:'chase_eat'}));
+a.role='predator';a.relationship='challenger';a.hp=a.maxHp*.7;a.attackStack=2;
+t.apex=true;t.hp=t.maxHp*.25;g.entities=[a,t];g.buildGrid();decideAI(a,g,b);
+console.log(JSON.stringify({case:'challenger-eligible-apex',actual:a.state,expected:'chase_fight',relativeSize:1.3,distance:250}));

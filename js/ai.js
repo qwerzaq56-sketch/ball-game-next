@@ -105,6 +105,27 @@ export function updateAI(ai, dt, game, balance) {
 // re-rolled every decision cycle (~0.2-0.35s), so some AI just ignore a winnable absorption
 // this cycle and fall through to orb-grazing/combat/wander instead. Keeps the population from
 // reading as one predictable hive mind.
+// The apex this predator may currently duel under the approved challenger rule, or null. Start:
+// own HP>=60%, target HP<=30%, target size<=1.5x own, within combat sensing (cfg.detectionRange).
+// An already-chosen challengeTarget stays valid while decideAI's release rules keep it set.
+// Personality gates: cautious needs the target's spot safe from *other* threats, opportunist
+// waits for the target's recovery frames.
+function duelTarget(ai, game, balance, threats, safe) {
+  if(ai.role!=='predator'||ai.apex) return null;
+  const range=balance.ai.detectionRange;
+  const gate=o=>(ai.personality!=='cautious'||safe(o,o))&&(ai.personality!=='opportunist'||o.attackState==='RECOVERY');
+  const held=ai.challengeTarget;
+  if(held&&held.alive&&gate(held)) return held;
+  if(ai.relationship!=='challenger'||!ai.attackUnlocked||ai.hp/ai.maxHp<.6) return null;
+  let best=null;
+  for(const o of game.getNearbyEntities(ai,range)){
+    if(!o.alive||!o.apex||o.color===ai.color||dist(ai,o)>range) continue;
+    if(o.hp/o.maxHp>.3||o.size>ai.size*1.5||!gate(o)) continue;
+    if(!best||dist(ai,o)<dist(ai,best)||(dist(ai,o)===dist(ai,best)&&o.id<best.id)) best=o;
+  }
+  return best;
+}
+
 export function decideAI(ai, game, balance) {
   const cfg=balance.ai, hp=ai.hp/ai.maxHp;
   const danger=game.abilities?.fields.find(f=>f.owner.color!==ai.color&&dist(ai,f)<=220);
@@ -116,15 +137,23 @@ export function decideAI(ai, game, balance) {
   const nearby=game.getNearbyEntities(ai,Math.max(cfg.detectionRange,cfg.absorptionDetectionRange));
   const within=nearby.filter(e=>e.alive&&dist(ai,e)<=cfg.detectionRange);
   const threats=within.filter(e=>isHostile(ai,e)&&e.size>=ai.size*1.2&&!(ai.command?.kind==='rally'&&e===ai.command.target&&e.size<=ai.size*1.5));
-  const safe=e=>threats.every(t=>dist(e,t)>=160);
+  const safe=(e,except)=>threats.every(t=>t===except||dist(e,t)>=160);
   const food=within.filter(e=>canEatOrb(ai,e,balance));
   const closest=list=>[...list].sort((a,b)=>dist(ai,a)-dist(ai,b)||a.id-b.id)[0];
   // Reuse spatial candidates; only detected food contributes to a local opportunity.
   const clusters=food.map(e=>({food:e,value:food.reduce((v,o)=>v+(dist(e,o)<=120?o.growthValue:0),0)}));
   const rich=closest(clusters.filter(c=>c.value>=80).map(c=>c.food));
-  const threat=closest(threats);
-  const risk=ai.role==='prey' && ai.personality==='growth' && hp>=.6 && rich &&
-    !threats.some(t=>dist(ai,t)<=160||t.size>ai.size*1.5);
+  // Approved growth-seeker risk-taking (proposal 005): start needs HP>=60% and a cluster worth
+  // >=80; once started it only stops at HP<=50% or cluster<80. The two threat limits (within 160,
+  // or bigger than 1.5x own size) override it in both phases.
+  const riskReady=ai.role==='prey' && ai.personality==='growth' && rich &&
+    (ai.riskTaking ? hp>.5 : hp>=.6);
+  const risk=!!(riskReady && !threats.some(t=>dist(ai,t)<=160||t.size>ai.size*1.5));
+  ai.riskTaking=risk;
+  // Approved challenger exception (proposal 004): an eligible duel target is not a flee reason,
+  // but every *other* big threat and the survival rules above still are.
+  const duel=duelTarget(ai,game,balance,threats,safe);
+  const threat=closest(threats.filter(t=>t!==duel));
   if(threat && !risk){game.abilities?.endCommand(ai,'threat');ai.state='flee';ai.target=threat;return;}
   if(ai.recovering){game.abilities?.endCommand(ai,'recovery');ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
   if(game.abilities?.commandDecision(ai))return;
@@ -134,7 +163,7 @@ export function decideAI(ai, game, balance) {
     e.size<=ai.size*1.2&&e.attackState==='RECOVERY'&&!e.invincible&&dist(ai,e)<=attackRangeForSize(ai.size,balance)&&
     e.hp<=applyDefense(attackDamageForSize(ai.size,balance),e.size,balance))) : null;
   if(lastHit){ai.state='chase_fight';ai.target=lastHit;return;}
-  if(ai.challengeTarget && canStartAttack(ai) && (ai.personality!=='cautious'||safe(ai.challengeTarget))){ai.state='chase_fight';ai.target=ai.challengeTarget;return;}
+  if(ai.challengeTarget && canStartAttack(ai) && (ai.personality!=='cautious'||safe(ai.challengeTarget,ai.challengeTarget))){ai.state='chase_fight';ai.target=ai.challengeTarget;return;}
   const absorb=closest(nearby.filter(e=>dist(ai,e)<=cfg.absorptionDetectionRange&&canAbsorb(ai,e)&&
     acceptsAbsorption(ai,e,balance)&&
     (ai.personality!=='cautious'||(e.size<=ai.size*(ai.role==='prey'?.7:.8)&&safe(e)))));
@@ -151,16 +180,13 @@ export function decideAI(ai, game, balance) {
   if(choices.length){const c=chooseGeneral(ai,choices);ai.state=c.state;ai.target=c.target;return;}
   // Relationship sensing is the approved 600 exception; combat sensing remains 320.
   if(ai.role==='predator'&&!ai.apex&&ai.relationship!=='independent'){
+    if(duel){ai.challengeTarget=duel;ai.state='chase_fight';ai.target=duel;return;}
     const owners=game.getNearbyEntities(ai,600).filter(e=>e.alive&&e.apex&&dist(ai,e)<=600&&
       (ai.relationship==='subordinate'?e.color===ai.color:e.color!==ai.color));
     const owner=closest(owners);
     if(owner){
       const gap=balance.absorption.baseMaintainDistance+owner.size*balance.absorption.maintainDistancePerSize+80;
       if(ai.relationship==='subordinate'&&gap>600){ai.state='search';ai.target=null;return;}
-      const challenge=ai.relationship==='challenger'&&hp>=.6&&owner.hp/owner.maxHp<=.3&&owner.size<=ai.size*1.5&&dist(ai,owner)<=cfg.detectionRange&&ai.attackUnlocked;
-      const challengeAllowed=challenge&&(ai.personality!=='cautious'||safe(owner))&&
-        (ai.personality!=='opportunist'||owner.attackState==='RECOVERY');
-      if(challengeAllowed){ai.challengeTarget=owner;ai.state='chase_fight';ai.target=owner;return;}
       const d=dist(ai,owner), desired=ai.relationship==='subordinate'?Math.max(450,gap):450;
       const angle=d>0?Math.atan2(ai.y-owner.y,ai.x-owner.x):ai.facing;
       const radius=Math.min(600,Math.max(desired,525));
