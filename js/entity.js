@@ -1,3 +1,4 @@
+import { random } from './random.js';
 // Base entity used by orbs (incl. death-spawned orbs), AI balls and the player.
 // v0.2: Size is the single unified stat driving edibility, skill stage, and combat range —
 // see computeMaxStack() below and combatScaling in combat.js.
@@ -7,6 +8,7 @@
 // by Player and AI. Also added Defense (see combat.js#defenseForSize).
 
 let nextId = 1;
+export function resetEntityIds() { nextId = 1; }
 
 export function sizeFromGrowth(growth, baseSize, growthToSizeRatio) {
   return baseSize + Math.sqrt(Math.max(growth, 0)) * growthToSizeRatio;
@@ -38,9 +40,10 @@ export class Entity {
     this.maxHp = maxHp ?? size * 5;
     this.hp = hp ?? this.maxHp;
     this.alive = true;
+    this.score = 0;
     this.facing = 0;
 
-    this.wanderAngle = Math.random() * Math.PI * 2;
+    this.wanderAngle = random('ai') * Math.PI * 2;
     this.wanderTimer = 0;
 
     // shared attack state machine (see combat.js) — one attack "in flight" at a time, gated by

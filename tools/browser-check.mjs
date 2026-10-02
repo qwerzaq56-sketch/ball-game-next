@@ -1,0 +1,12 @@
+import { createRequire } from 'node:module';
+const require=createRequire(import.meta.url);
+const {chromium}=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES ? process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright' : 'playwright');
+const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+const page=await browser.newPage({viewport:{width:1280,height:720}});
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto('http://127.0.0.1:8765/');await page.waitForFunction(()=>window.__game);
+await page.evaluate(()=>{window.__game.paused=true;window.__game.player.apex=true;});
+await page.screenshot({path:'reports/M1-browser.png'});
+console.log(JSON.stringify({errors,state:await page.evaluate(()=>({time:window.__game.gameTime,role:window.__game.player.role,score:window.__game.score,keys:Object.keys(localStorage)}))}));
+if(errors.length)process.exitCode=1;
+await browser.close();

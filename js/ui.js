@@ -110,6 +110,9 @@ export class UI {
     this.killsText.textContent = player.kills;
     this.scoreText.textContent = Math.round(game.score);
     this.lifeText.textContent = Math.max(0, game.lives);
+    const special=document.getElementById("special-text");if(special)special.textContent=player.apex?`E · ${player.specialCooldown>0?Math.ceil(player.specialCooldown)+"s":"준비"}`:"";
+    const roleText=document.getElementById("role-text");
+    if(roleText)roleText.textContent=({prey:"프레이",forager:"포레이저",predator:"프레데터"})[player.role] ?? "";
 
     this.allyAbsorbText.textContent = player.allyAbsorptionEnabled ? 'ON' : 'OFF';
     this.allyAbsorbText.className = player.allyAbsorptionEnabled ? 'ally-on' : 'ally-off';

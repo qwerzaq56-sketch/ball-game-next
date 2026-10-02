@@ -1,14 +1,15 @@
+import { random } from './random.js';
 import { Entity } from './entity.js';
 import { AIEntity } from './ai.js';
 
 function randomColor(balance) {
-  return balance.colors[Math.floor(Math.random() * balance.colors.length)];
+  return balance.colors[Math.floor(random('world') * balance.colors.length)];
 }
 
 function randomWorldPos(balance) {
   return {
-    x: Math.random() * balance.world.worldWidth,
-    y: Math.random() * balance.world.worldHeight,
+    x: random('world') * balance.world.worldWidth,
+    y: random('world') * balance.world.worldHeight,
   };
 }
 
@@ -17,7 +18,7 @@ function randomWorldPos(balance) {
 // whether it can be eaten (see collision.js#canEatOrb).
 export function spawnOrb(balance, pos = null) {
   const c = randomColor(balance);
-  const size = balance.world.minOrbSize + Math.random() * (balance.world.maxOrbSize - balance.world.minOrbSize);
+  const size = balance.world.minOrbSize + random('world') * (balance.world.maxOrbSize - balance.world.minOrbSize);
   const { x, y } = pos || randomWorldPos(balance);
   const growthValue = Math.round(5 + (size - balance.world.minOrbSize) * 2);
   return new Entity({
@@ -45,17 +46,17 @@ function rollEnemySize(balance, playerSize) {
   const es = balance.enemyScaling;
   const enemyMaxSize = es.baseEnemyMaxSize + playerSize * es.enemyMaxSizePerPlayerSize;
 
-  const roll = Math.random();
+  const roll = random('world');
   if (roll < cfg.smallSizeRatio) {
-    return cfg.smallSizeMin + Math.random() * (cfg.smallSizeMax - cfg.smallSizeMin);
+    return cfg.smallSizeMin + random('world') * (cfg.smallSizeMax - cfg.smallSizeMin);
   }
   if (roll < cfg.smallSizeRatio + cfg.mediumSizeRatio) {
     const medMax = Math.max(cfg.mediumSizeMin + 1, Math.min(cfg.mediumSizeMax, enemyMaxSize * 0.7));
-    return cfg.mediumSizeMin + Math.random() * (medMax - cfg.mediumSizeMin);
+    return cfg.mediumSizeMin + random('world') * (medMax - cfg.mediumSizeMin);
   }
   const largeMin = Math.max(cfg.largeSizeMin, enemyMaxSize * 0.7);
   const largeMax = Math.max(largeMin + 1, Math.max(cfg.largeSizeMax, enemyMaxSize));
-  return largeMin + Math.random() * (largeMax - largeMin);
+  return largeMin + random('world') * (largeMax - largeMin);
 }
 
 export function spawnAI(balance, colorDef, pos = null, playerSize = 20) {
@@ -93,9 +94,9 @@ export function spawnDeathOrbs(deadEntity, balance) {
   const sizeSpread = Math.max(naturalSpread, deadEntity.size * kr.orbSizeGrowthPerEnemySize);
   const spreadRadius = deadEntity.size * kr.orbSpreadMultiplier + kr.orbSpreadBase;
   for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const dist = Math.random() * spreadRadius;
-    const size = w.minOrbSize + Math.random() * sizeSpread;
+    const angle = random('world') * Math.PI * 2;
+    const dist = random('world') * spreadRadius;
+    const size = w.minOrbSize + random('world') * sizeSpread;
     const growthValue = Math.round(5 + (size - w.minOrbSize) * 2); // same value-density formula as a natural orb
     const orb = new Entity({
       x: deadEntity.x + Math.cos(angle) * dist,

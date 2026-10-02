@@ -1,3 +1,8 @@
+import { Abilities } from './abilities.js';
+import { acceptsAbsorption } from './species.js';
+import { Ecology } from './ecology.js';
+import { random, resetRandom } from './random.js';
+import { resetEntityIds } from './entity.js';
 import { Player } from './player.js';
 import { AIEntity, updateAI } from './ai.js';
 import { canEatOrb, canAbsorb, isHostile, circlesOverlap, dist } from './collision.js';
@@ -13,7 +18,9 @@ import { AudioManager } from './audio.js';
 const CELL_SIZE = 220;
 
 export class Game {
-  constructor(balance, canvas, input, ui) {
+  constructor(balance, canvas, input, ui, options = {}) {
+    this.options = options;
+    this.seed = options.seed ?? Date.now();
     this.balance = balance;
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
@@ -33,6 +40,12 @@ export class Game {
   // separate action — see spec §14/§17). Also doubles as the constructor's own init path so
   // there's only one place that defines "what a fresh run looks like".
   reset() {
+    resetRandom(this.seed);
+    resetEntityIds();
+    this.gameTime = 0;
+    this.ecology = new Ecology();
+    this.abilities = new Abilities(this);
+    this.telemetry = [];
     this.player = new Player(this.balance);
     this.player.onSkillUnlock = (type) => {
       this.ui.showUnlock(type);
@@ -47,7 +60,7 @@ export class Game {
     this.paused = false;
     this.gameOver = false;
     this.lives = this.balance.lives.maxLives;
-    this.score = 0;
+    this.player.score = 0;
     if (this._absorbDroneActive) {
       this.audio.stopAbsorbDrone();
       this._absorbDroneActive = false;
@@ -60,6 +73,7 @@ export class Game {
     };
 
     this.initWorld();
+    this.ecology.update(this, 0);
   }
 
   initWorld() {
@@ -84,8 +98,8 @@ export class Game {
     const py = this.player.y;
     for (let attempt = 0; attempt < 10; attempt++) {
       const candidate = {
-        x: Math.random() * b.world.worldWidth,
-        y: Math.random() * b.world.worldHeight,
+        x: random('world') * b.world.worldWidth,
+        y: random('world') * b.world.worldHeight,
       };
       if (Math.hypot(candidate.x - px, candidate.y - py) >= safeRadius) return candidate;
     }
@@ -139,8 +153,10 @@ export class Game {
   update(dt) {
     if (this.paused) return;
     const b = this.balance;
+    this.gameTime += dt;
 
     this.buildGrid();
+    this.abilities.update(dt);
     this.updatePlayer(dt);
 
     for (const e of this.entities) {
@@ -151,7 +167,7 @@ export class Game {
       if (!e.alive || (e.behavior !== 'player' && e.behavior !== 'ai')) continue;
       updateKnockback(e, dt);
       const regenerating = updateHealthRegen(e, dt, b);
-      if (regenerating && Math.random() < 0.15) this.spawnRegenParticle(e.x, e.y, e.size);
+      if (regenerating && random('visual') < 0.15) this.spawnRegenParticle(e.x, e.y, e.size);
       if (e.scalePulseTimer > 0) e.scalePulseTimer = Math.max(0, e.scalePulseTimer - dt);
       // v0.6 spec §3: AI regenerates attack stacks on its own (slower) cooldown, separate from
       // the player's — see combat.js#updateAttackStack and gameBalance.json's `ai.attackCooldown`.
@@ -171,6 +187,25 @@ export class Game {
     this.orbSpawnLoop(dt);
     this.enemySpawnLoop(dt);
     this.cleanupDead();
+    this.ecology.update(this, dt);
+    for(const e of this.entities)if(!e.apex&&e._specialApex){this.abilities.release(e);e._specialApex=false;}
+    if (this.options.collect && Math.floor(this.gameTime + 1e-8) > this.telemetry.length) this.telemetry.push(this.snapshot());
+  }
+
+  get score() { return this.player.score; }
+  set score(value) { this.player.score = value; }
+  awardScore(entity, amount) { entity.score += Math.round(amount); }
+
+  snapshot() {
+    const units = this.entities.filter(e => e.alive && e.behavior !== 'orb');
+    return { time: this.gameTime, lives: this.lives, playerSize: this.player.size,
+      food: this.entities.filter(e => e.alive && e.behavior === 'orb').length,
+      ai: units.filter(e => e.behavior === 'ai').length,
+      sizes: [units.filter(e => e.size < 40).length, units.filter(e => e.size >= 40 && e.size < 100).length,
+        units.filter(e => e.size >= 100 && e.size < 180).length, units.filter(e => e.size >= 180).length],
+      unimplemented: ['biomes', 'era', 'apocalypse'],
+      special:{casts:this.abilities.events.filter(e=>e.type==='special-fire').length,fields:this.abilities.fields.length,commands:units.filter(e=>e.command).length},
+      units: units.map(e => ({id:e.id,x:e.x,y:e.y,hp:e.hp,size:e.size,growth:e.growth,score:e.score ?? 0,role:e.role ?? null,apex:e.apex ?? false})) };
   }
 
   // v0.6 spec §9: a continuous, progress-driven absorption drone plays whenever the player is
@@ -204,6 +239,7 @@ export class Game {
     const p = this.player;
     const inp = this.input;
 
+    if(p.frozen>0)return;
     updateAttack(p, dt, b, this.hostileTargetsFor(p), this);
     updateDodge(p, dt, b);
 
@@ -232,6 +268,7 @@ export class Game {
       p.facing = aimAngle;
     }
 
+    if(inp.consumeSpecial?.())this.abilities.start(p,aimAngle,mouseWorld);
     if (inp.mouseDown && p.attackUnlocked && canStartAttack(p)) {
       startAttack(p, aimAngle, b);
       this.audio.telegraph();
@@ -264,17 +301,18 @@ export class Game {
           if (!circlesOverlap(eater, target)) continue;
           target.alive = false;
           eater.addGrowth(target.growthValue, b);
+          this.awardScore(eater, target.growthValue);
           this.spawnGrowthParticles(target.x, target.y, target.colorHex);
           if (eater === this.player) {
             this.audio.growth();
-            this.score += Math.round(target.growthValue);
+
           }
           continue;
         }
 
         if (eater === this.player && !this.player.allyAbsorptionEnabled) continue; // v0.6 §7
 
-        if (canAbsorb(eater, target) && dist(eater, target) <= maintainDistance) {
+        if (canAbsorb(eater, target) && dist(eater, target) <= maintainDistance && acceptsAbsorption(eater,target,b) && this.abilities.absorptionAllowed(eater,target)) {
           startAbsorption(eater, target, b, this);
         }
       }
@@ -302,7 +340,7 @@ export class Game {
         const minDist = a.size / 2 + b.size / 2;
         if (d >= minDist) continue;
 
-        const angle = d > 0.001 ? Math.atan2(a.y - b.y, a.x - b.x) : Math.random() * Math.PI * 2;
+        const angle = d > 0.001 ? Math.atan2(a.y - b.y, a.x - b.x) : random('physics') * Math.PI * 2;
         const overlap = minDist - d;
         const totalSize = a.size + b.size;
         a.x += Math.cos(angle) * overlap * (b.size / totalSize);
@@ -318,6 +356,7 @@ export class Game {
     for (const e of this.entities) {
       if (!e.alive) continue;
       const r = e.size / 2;
+      if(e.behavior==='ai'&&e.state==='search'&&(e.x<r||e.y<r||e.x>w.worldWidth-r||e.y>w.worldHeight-r))e.wanderTimer=0;
       e.x = Math.min(Math.max(e.x, r), w.worldWidth - r);
       e.y = Math.min(Math.max(e.y, r), w.worldHeight - r);
     }
@@ -342,8 +381,8 @@ export class Game {
 
     const halfViewW = this.canvas.width / 2 / this.camera.zoom;
     const halfViewH = this.canvas.height / 2 / this.camera.zoom;
-    this.camera.x = Math.min(Math.max(this.camera.x, halfViewW), Math.max(halfViewW, w.worldWidth - halfViewW));
-    this.camera.y = Math.min(Math.max(this.camera.y, halfViewH), Math.max(halfViewH, w.worldHeight - halfViewH));
+    this.camera.x = halfViewW * 2 >= w.worldWidth ? w.worldWidth / 2 : Math.min(Math.max(this.camera.x, halfViewW), w.worldWidth - halfViewW);
+    this.camera.y = halfViewH * 2 >= w.worldHeight ? w.worldHeight / 2 : Math.min(Math.max(this.camera.y, halfViewH), w.worldHeight - halfViewH);
   }
 
   orbSpawnLoop(dt) {
@@ -367,8 +406,10 @@ export class Game {
 
     const enemyCount = this.entities.reduce((n, e) => n + (e.alive && e.behavior === 'ai' ? 1 : 0), 0);
     if (enemyCount < s.maxEnemyCount) {
-      const colorDef = this.balance.colors[Math.floor(Math.random() * this.balance.colors.length)];
-      this.entities.push(spawnAI(this.balance, colorDef, this.pickSafeSpawnPos(350), this.player.size));
+      const colorDef = this.balance.colors[Math.floor(random('world') * this.balance.colors.length)];
+      const newborn=spawnAI(this.balance, colorDef, this.pickSafeSpawnPos(350), this.player.size);
+      this.entities.push(newborn);
+      this.ecology.initializeUnit(this,newborn);
     }
   }
 
@@ -377,7 +418,7 @@ export class Game {
       this.entities = this.entities.filter((e) => e.alive || e.behavior === 'player');
       return;
     }
-    if (Math.random() < 0.02) {
+    if (random('visual') < 0.02) {
       this.entities = this.entities.filter((e) => e.alive || e.behavior === 'player');
     }
   }
@@ -388,6 +429,8 @@ export class Game {
   // Growth carry over unchanged into the respawn, and only running out of Lives triggers Game
   // Over (spec: "부활할 때 Size는 감소하지 않는다").
   onEntityDeath(entity, attacker) {
+    this.abilities.release(entity);
+    this.ecology.release(entity, this.gameTime, "death");
     if (entity.behavior === 'player') {
       this.spawnDeathParticles(entity.x, entity.y, entity.colorHex);
       this.audio.death();
@@ -403,9 +446,10 @@ export class Game {
       const kr = this.balance.killReward;
       const reward = kr.baseReward * Math.pow(entity.size / kr.referenceSize, kr.growthExponent) * kr.growthRewardMultiplier;
       attacker.addGrowth(reward, this.balance);
+      this.awardScore(attacker, Math.round(reward) + 100);
       if (attacker === this.player) {
         this.player.kills += 1;
-        this.score += Math.round(reward) + 100; // flat per-kill score bonus, on top of the growth
+        // Score already credited once above; // flat per-kill score bonus, on top of the growth
         this.audio.death();
         this.audio.killReward();
         this.spawnFloatingText(attacker.x, attacker.y - attacker.size / 2 - 10, `+${Math.round(reward)} GROWTH`, '#4ade80');
@@ -444,6 +488,11 @@ export class Game {
   // (onEntityDeath) and being fully absorbed (absorption.js#completeAbsorption) — so a Life is
   // spent and Game Over triggers consistently regardless of which one happened.
   handlePlayerDefeat(reason) {
+    this.player.defeatSerial=(this.player.defeatSerial??0)+1;
+    this.abilities.release(this.player);
+    this.player._specialApex=false;
+    this.player.frozen=0;this.player.wavePush=null;this.player.morale?.clear();
+    this.ecology.release(this.player, this.gameTime, reason);
     this.lives -= 1;
     if (this.lives > 0) {
       this.ui.showDefeatMessage(reason);
@@ -466,22 +515,22 @@ export class Game {
   spawnHitParticles(x, y, color) {
     const life = this.balance.combat.hitParticleLifetime;
     for (let i = 0; i < 12; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const speed = 80 + Math.random() * 160;
+      const a = random('visual') * Math.PI * 2;
+      const speed = 80 + random('visual') * 160;
       this.particles.push({
         x, y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
-        life, maxLife: life, color, size: 3 + Math.random() * 3, type: 'spark',
+        life, maxLife: life, color, size: 3 + random('visual') * 3, type: 'spark',
       });
     }
   }
 
   spawnDeathParticles(x, y, color) {
     for (let i = 0; i < 18; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const speed = 40 + Math.random() * 180;
+      const a = random('visual') * Math.PI * 2;
+      const speed = 40 + random('visual') * 180;
       this.particles.push({
         x, y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
-        life: 0.6, maxLife: 0.6, color, size: 3 + Math.random() * 4, type: 'burst',
+        life: 0.6, maxLife: 0.6, color, size: 3 + random('visual') * 4, type: 'burst',
       });
     }
   }
@@ -494,8 +543,8 @@ export class Game {
 
   // v0.4 spec §11: a subtle rising particle while HP is regenerating — deliberately understated.
   spawnRegenParticle(x, y, size) {
-    const a = Math.random() * Math.PI * 2;
-    const r = Math.random() * size * 0.4;
+    const a = random('visual') * Math.PI * 2;
+    const r = random('visual') * size * 0.4;
     this.particles.push({
       x: x + Math.cos(a) * r, y: y + Math.sin(a) * r,
       vx: 0, vy: -18, life: 0.5, maxLife: 0.5, color: '#4ade80', size: 2.5, type: 'spark',
@@ -517,11 +566,11 @@ export class Game {
 
   spawnAbsorptionParticles(x, y, color) {
     for (let i = 0; i < 24; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const speed = 30 + Math.random() * 90;
+      const a = random('visual') * Math.PI * 2;
+      const speed = 30 + random('visual') * 90;
       this.particles.push({
         x, y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
-        life: 0.5, maxLife: 0.5, color, size: 2 + Math.random() * 3, type: 'spark',
+        life: 0.5, maxLife: 0.5, color, size: 2 + random('visual') * 3, type: 'spark',
       });
     }
   }
@@ -567,13 +616,24 @@ export class Game {
     ctx.translate(-this.camera.x, -this.camera.y);
 
     this.drawGrid(ctx);
+    this.drawTerritories(ctx);
     this.drawWorldBorder(ctx);
+    this.abilities.draw(ctx,this.camera.zoom);
     this.drawAbsorptionLinks(ctx);
     this.drawEntities(ctx);
     this.drawParticles(ctx);
     this.drawFloatingTexts(ctx);
 
     ctx.restore();
+  }
+
+  drawTerritories(ctx) {
+    ctx.save();ctx.beginPath();ctx.rect(0,0,this.balance.world.worldWidth,this.balance.world.worldHeight);ctx.clip();
+    for(const e of this.entities){if(!e.alive||!e.apex)continue;
+      ctx.beginPath();ctx.arc(e.x,e.y,600,0,Math.PI*2);
+      ctx.fillStyle=this.withAlpha(e.colorHex,.025);ctx.fill();
+      ctx.strokeStyle=this.withAlpha(e.colorHex,.3);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();
+    }ctx.restore();
   }
 
   drawGrid(ctx) {
@@ -640,8 +700,9 @@ export class Game {
     const beingAbsorbed = !!e.beingAbsorbedByRef;
     const absorbT = beingAbsorbed && e.absorptionRequired > 0 ? Math.min(1, e.absorptionProgress / e.absorptionRequired) : (beingAbsorbed ? 1 : 0);
     // v0.4 spec §23: a short outward "grew bigger" pulse plays on a successful absorption.
-    const pulseScale = e.scalePulseTimer > 0 ? 1 + (e.scalePulseTimer / 0.3) * 0.18 : 1;
-    const r = (e.size / 2) * (beingAbsorbed ? 1 - absorbT * 0.3 : 1) * pulseScale;
+
+    const r = e.size / 2;
+    if(e.apex){ctx.beginPath();ctx.arc(e.x,e.y,r+8,0,Math.PI*2);ctx.strokeStyle=this.withAlpha(e.colorHex,(e.specialCooldown??0)>0?.3:.65);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();}
 
     // dodge afterimages — each fades independently over dodge.effectLifetime, then is pruned
     // (see combat.js#updateDodge), so they never linger on screen after the dodge ends.
@@ -671,13 +732,13 @@ export class Game {
     // telegraph indicator
     if (e.attackState === 'TELEGRAPH') {
       const progress = e.attackTimer / e.currentTelegraphTime;
-      const reach = e.currentAttackRange > 0 ? e.currentAttackRange * 0.5 : 40;
+      const reach = e.currentChargeDistance;
       ctx.save();
       ctx.strokeStyle = 'rgba(255,255,255,0.85)';
       ctx.lineWidth = 3 / this.camera.zoom;
       ctx.beginPath();
       ctx.moveTo(e.x, e.y);
-      ctx.lineTo(e.x + Math.cos(e.attackDir) * (r + reach), e.y + Math.sin(e.attackDir) * (r + reach));
+      ctx.lineTo(e.x + Math.cos(e.attackDir) * reach, e.y + Math.sin(e.attackDir) * reach);
       ctx.stroke();
 
       ctx.beginPath();
@@ -724,6 +785,9 @@ export class Game {
     // v0.6 follow-up: kill-reward orbs no longer get a cross-mark overlay — they're meant to
     // read as indistinguishable from a naturally-spawned field orb (see spawning.js#spawnDeathOrbs).
 
+    if(e.frozen>0){ctx.save();ctx.strokeStyle='#dffaff';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([4/this.camera.zoom,3/this.camera.zoom]);ctx.beginPath();ctx.arc(e.x,e.y,r+4,0,Math.PI*2);ctx.stroke();ctx.restore();}
+    if(e.morale?.size){ctx.beginPath();ctx.strokeStyle='#86efac';ctx.lineWidth=2/this.camera.zoom;ctx.arc(e.x,e.y,r+12,-Math.PI*.8,-Math.PI*.2);ctx.stroke();}
+    if(e.command){ctx.save();ctx.strokeStyle='#ffffff';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([3/this.camera.zoom,6/this.camera.zoom]);ctx.beginPath();ctx.arc(e.x,e.y,r+16,0,Math.PI*2);ctx.stroke();ctx.restore();}
     // hp bar for AI / player
     if ((e.behavior === 'ai' || e.behavior === 'player') && e.hp < e.maxHp) {
       const barW = Math.max(24, r * 1.6);
