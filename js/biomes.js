@@ -1,3 +1,4 @@
+import { boundCenter } from './worldBounds.js';
 import {random} from './random.js';
 import {spawnOrb} from './spawning.js';
 import {applyDamage} from './combat.js';
@@ -45,8 +46,8 @@ export class Biomes {
    if(Math.hypot(e.x+dx*t-r.x,e.y+dy*t-r.y)>=safety||Math.hypot(e.x-r.x,e.y-r.y)>safety+220)continue;
    const angle=Math.atan2(e.y-r.y,e.x-r.x),side=e.environmentRoute?.region===r.id?e.environmentRoute.side:Math.sign(Math.sin(Math.atan2(dy,dx)-angle))||((e.id%2)?1:-1);
    e.environmentRoute={region:r.id,side};const turn=angle+side*Math.PI/3,distance=safety+140;
-   const w=this.game.balance.world,margin=Math.min(e.size/2,Math.min(w.worldWidth,w.worldHeight)/2);
-   return {x:Math.max(margin,Math.min(w.worldWidth-margin,r.x+Math.cos(turn)*distance)),y:Math.max(margin,Math.min(w.worldHeight-margin,r.y+Math.sin(turn)*distance)),alive:true};
+   const w=this.game.balance.world;
+   return {x:boundCenter(r.x+Math.cos(turn)*distance,e.size,w.worldWidth),y:boundCenter(r.y+Math.sin(turn)*distance,e.size,w.worldHeight),alive:true};
   }
   e.environmentRoute=null;return target;
  }

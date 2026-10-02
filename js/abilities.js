@@ -1,3 +1,4 @@
+import { boundCenter } from './worldBounds.js';
 import { attackDamageForSize, applyDamage, canStartAttack } from './combat.js';
 import { cancelAbsorption } from './absorption.js';
 import { dist, isHostile, canAbsorb, canEatOrb } from './collision.js';
@@ -84,7 +85,7 @@ export class Abilities {
     e.freezeImmune=Math.max(0,(e.freezeImmune??0)-dt);e.waveImmune=Math.max(0,(e.waveImmune??0)-dt);
     if(e.frozen>0){e.frozen=Math.max(0,e.frozen-dt);if(!e.frozen)e.freezeImmune=2;}
     if(e.wavePush){const p=e.wavePush,used=Math.min(dt,p.remaining);e.x+=p.vx*used;e.y+=p.vy*used;p.remaining-=used;
-      e.x=Math.max(e.size/2,Math.min(w.worldWidth-e.size/2,e.x));e.y=Math.max(e.size/2,Math.min(w.worldHeight-e.size/2,e.y));
+      e.x=boundCenter(e.x,e.size,w.worldWidth);e.y=boundCenter(e.y,e.size,w.worldHeight);
       if(p.remaining<=1e-8){e.wavePush=null;e.waveImmune=1;}}
     if(e.morale)for(const [id,time]of e.morale){if(time<=dt)e.morale.delete(id);else e.morale.set(id,time-dt);}
     if(e.command){e.command.remaining-=dt;if(e.command.remaining<=0||!e.command.owner.alive||!e.command.owner.apex)this.endCommand(e,'expiry-or-owner');}

@@ -1,3 +1,5 @@
+> 최신 M24: 성장 후 월드 경계·몸체 간격을 반영한 적 생성 보완. 테스트142개 및 브라우저 생성100회 검증. reports/M24-development.md.
+
 > 최신 M23: 기본OFF 자동 플레이·읽기 전용 성장/생태계 관찰·JSON 저장. 테스트139개, 실제 브라우저/터치, OFF 결정론 동등성, 3시드 자연 Life10분 검증. reports/M23-development.md.
 
 > 최신 M22: 색상 벡터 문양·플레이어 방향·몸체 밖 성장 링. 테스트134개, Chromium/전후 생태계 결과 동일. reports/M22-development.md.

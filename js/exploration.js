@@ -1,3 +1,4 @@
+import { boundCenter } from './worldBounds.js';
 import {random} from './random.js';
 
 // A remembered destination changes travel, never perception. No unseen food is inspected.
@@ -6,9 +7,8 @@ export function explorationDestination(ai,game){
  if(cfg.explorationEnabled===false)return null;
  const now=game.gameTime,held=ai.explorationPoint;
  if(held&&now<held.expires&&Math.hypot(held.x-ai.x,held.y-ai.y)>40)return held;
- const margin=Math.min(ai.size/2,Math.min(w.worldWidth,w.worldHeight)/2);
  const angle=random('ai')*Math.PI*2,distance=Math.max(80,cfg.explorationDistance??600);
- const clamp=(v,max)=>Math.max(margin,Math.min(max-margin,v));
+ const clamp=(v,max)=>boundCenter(v,ai.size,max);
  const candidates=Array.from({length:4},(_,i)=>{
   const direction=angle+i*Math.PI/2;
   return {x:clamp(ai.x+Math.cos(direction)*distance,w.worldWidth),y:clamp(ai.y+Math.sin(direction)*distance,w.worldHeight)};

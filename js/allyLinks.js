@@ -1,3 +1,4 @@
+import { boundCenter } from './worldBounds.js';
 import {dist,isHostile,canAbsorb} from './collision.js';
 import {random} from './random.js';
 import {cancelAbsorption,maintainDistanceFor} from './absorption.js';
@@ -97,7 +98,7 @@ export class AllyLinks {
   const lead=group.leader,back=lead.facing+Math.PI;
   const gap=(lead.size+e.size)/2+35,side=(i%2?1:-1)*(25+Math.floor(i/2)*30);
   const w=this.game.balance.world;
-  const point={x:Math.max(e.size/2,Math.min(w.worldWidth-e.size/2,lead.x+Math.cos(back)*gap-Math.sin(back)*side)),y:Math.max(e.size/2,Math.min(w.worldHeight-e.size/2,lead.y+Math.sin(back)*gap+Math.cos(back)*side))};
+  const point={x:boundCenter(lead.x+Math.cos(back)*gap-Math.sin(back)*side,e.size,w.worldWidth),y:boundCenter(lead.y+Math.sin(back)*gap+Math.cos(back)*side,e.size,w.worldHeight)};
   const route=this.game.biomes.routePoint(e,point),d=dist(e,route),angle=Math.atan2(route.y-e.y,route.x-e.x),speed=Math.min(e.moveSpeed*1.25,d/Math.max(dt,1e-8));
   e.facing=lead.facing;e.x+=Math.cos(angle)*speed*dt;e.y+=Math.sin(angle)*speed*dt;return true;
  }

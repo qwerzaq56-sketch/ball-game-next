@@ -1,3 +1,7 @@
+## NEXT M24 변경
+
+맵보다 커진 공의 중심을 유지하고, 새 적이 큰 플레이어와 겹쳐 생성되는 문제를 보완했습니다. [검증](reports/M24-development.md).
+
 ## NEXT M23 변경
 
 F1에서 기본OFF인 자동 플레이 실험과 크기 추이·관찰 JSON 저장을 사용할 수 있습니다. Life/피해는 일반 플레이대로 적용하고 직접 조작하면 수동으로 돌아옵니다. [기획](AUTO_PLAY_DESIGN.md) · [검증](reports/M23-development.md).

@@ -11,3 +11,8 @@ test('enemy births account for growing bodies and terminate on maps without safe
  const e=g.createSafeEnemy(g.balance.colors[0]);assert(Math.hypot(e.x-g.player.x,e.y-g.player.y)>=Math.max(350,(e.size+g.player.size)/2+80));assert(e.x>=e.size/2&&e.x<=5000-e.size/2);
  g.balance.world.worldWidth=30;g.balance.world.worldHeight=30;g.player.x=g.player.y=15;const trapped=g.createSafeEnemy(g.balance.colors[0]);assert(trapped.x>=0&&trapped.x<=30&&trapped.y>=0&&trapped.y<=30);assert(trapped.size>0);
 });
+test('wave displacement and remembered exploration obey oversized rectangular bounds',async()=>{
+ const {explorationDestination}=await import('../js/exploration.js');const g=createGame(7);g.balance.world.worldWidth=500;g.balance.world.worldHeight=1000;
+ const a=g.entities.find(e=>e.behavior==='ai');g.entities=[a];a.size=600;a.x=250;a.y=500;a.wavePush={remaining:.2,vx:10000,vy:10000};g.abilities.update(.1);assert.equal(a.x,250);assert.equal(a.y,700);
+ a.explorationPoint=null;const point=explorationDestination(a,g);assert.equal(point.x,250);assert(point.y>=300&&point.y<=700);
+});

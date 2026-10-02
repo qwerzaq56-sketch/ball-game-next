@@ -1,3 +1,4 @@
+import { boundCenter } from './worldBounds.js';
 import {canEatOrb,canAbsorb,isHostile,dist} from './collision.js';
 import {canStartAttack,canStartDodge} from './combat.js';
 export class Autoplay {
@@ -21,8 +22,8 @@ export class Autoplay {
    if(!target){const w=g.balance.world,angle=Math.floor(g.gameTime/6)*Math.PI/2;target={x:p.x+Math.cos(angle)*300,y:p.y+Math.sin(angle)*300};if(p.x<p.size/2+80||p.x>w.worldWidth-p.size/2-80)target.x=w.worldWidth/2;if(p.y<p.size/2+80||p.y>w.worldHeight-p.size/2-80)target.y=w.worldHeight/2;}
    target=g.biomes.routePoint(p,target);
   }
-  const w=g.balance.world,margin=Math.min(p.size/2,Math.min(w.worldWidth,w.worldHeight)/2);
-  target={x:Math.max(margin,Math.min(w.worldWidth-margin,target.x)),y:Math.max(margin,Math.min(w.worldHeight-margin,target.y))};
+  const w=g.balance.world;
+  target={x:boundCenter(target.x,p.size,w.worldWidth),y:boundCenter(target.y,p.size,w.worldHeight)};
   const dx=target.x-p.x,dy=target.y-p.y,length=Math.hypot(dx,dy),enemy=candidates.filter(e=>isHostile(p,e)&&dist(p,e)<=350).sort((a,b)=>dist(p,a)-dist(p,b)||a.id-b.id)[0];
   const dodge=escape&&this.dodgeWait<=0&&canStartDodge(p);if(dodge)this.dodgeWait=.8;
   this.action={move:length>8?{x:dx/length,y:dy/length}:{x:0,y:0},aim:enemy??target,attack:!escape&&p.hp/p.maxHp>.3&&!!enemy&&canStartAttack(p),dodge,special:!escape&&!!enemy&&g.abilities.canCast(p)};
