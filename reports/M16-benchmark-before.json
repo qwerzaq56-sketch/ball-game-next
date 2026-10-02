@@ -1,0 +1,30 @@
+[
+  {
+    "giant": 120,
+    "allyMeanMs": 0.1382,
+    "queryMeanMs": 0.0008,
+    "returnedPerQuery": 0,
+    "edges": 0
+  },
+  {
+    "giant": 1000,
+    "allyMeanMs": 0.3141,
+    "queryMeanMs": 0.0055,
+    "returnedPerQuery": 8,
+    "edges": 1
+  },
+  {
+    "giant": 2000,
+    "allyMeanMs": 0.5986,
+    "queryMeanMs": 0.0158,
+    "returnedPerQuery": 24,
+    "edges": 2
+  },
+  {
+    "giant": 4000,
+    "allyMeanMs": 1.6848,
+    "queryMeanMs": 0.059,
+    "returnedPerQuery": 79,
+    "edges": 4
+  }
+]

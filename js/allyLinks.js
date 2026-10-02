@@ -11,12 +11,13 @@ export class AllyLinks {
  neighbors(e){return this.game.entities.filter(t=>this.connected(e,t));}
  bonus(e){return Math.min(ALLY_RULES.bonusCap,this.neighbors(e).length)*ALLY_RULES.bonus;}
  refresh(){
-  const units=this.game.entities.filter(unit),grid=new Map(),cell=220;
-  const maxRadius=Math.max(0,...units.map(e=>e.size/2));
-  for(const e of units){const k=`${Math.floor(e.x/cell)}:${Math.floor(e.y/cell)}`;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(e);}
+  const units=this.game.entities.filter(unit),grid=new Map(),byColor=new Map(),radii=new Map(),cell=220;
+  for(const e of units){const k=`${Math.floor(e.x/cell)}:${Math.floor(e.y/cell)}`;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(e);if(!byColor.has(e.color))byColor.set(e.color,[]);byColor.get(e.color).push(e);radii.set(e.color,Math.max(radii.get(e.color)??0,e.size/2));}
   const next=new Map();
-  for(const a of units){const r=a.size/2+maxRadius+ALLY_RULES.release;
-   for(let x=Math.floor((a.x-r)/cell);x<=Math.floor((a.x+r)/cell);x++)for(let y=Math.floor((a.y-r)/cell);y<=Math.floor((a.y+r)/cell);y++){
+  for(const a of units){const r=a.size/2+radii.get(a.color)+ALLY_RULES.release;
+   const minX=Math.floor((a.x-r)/cell),maxX=Math.floor((a.x+r)/cell),minY=Math.floor((a.y-r)/cell),maxY=Math.floor((a.y+r)/cell);
+   if((maxX-minX+1)*(maxY-minY+1)>64){for(const b of byColor.get(a.color))if(a.id<b.id&&this.connected(a,b))next.set(key(a,b),[a,b]);continue;}
+   for(let x=minX;x<=maxX;x++)for(let y=minY;y<=maxY;y++){
     for(const b of grid.get(`${x}:${y}`)??[])if(a.id<b.id&&this.connected(a,b))next.set(key(a,b),[a,b]);
    }
   }

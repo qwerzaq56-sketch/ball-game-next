@@ -64,6 +64,7 @@ export class Game {
     this.particles = [];
     this.floatingTexts = [];
     this.grid = new Map();
+    this.gridOrder = null;
     this.orbSpawnTimer = 0;
     this.enemySpawnTimer = 0;
     this.paused = false;
@@ -117,6 +118,7 @@ export class Game {
 
   buildGrid() {
     this.grid.clear();
+    this.gridOrder=null;
     for (const e of this.entities) {
       if (!e.alive) continue;
       const cx = Math.floor(e.x / CELL_SIZE);
@@ -137,6 +139,13 @@ export class Game {
     const maxCx = Math.floor((entity.x + range) / CELL_SIZE);
     const minCy = Math.floor((entity.y - range) / CELL_SIZE);
     const maxCy = Math.floor((entity.y + range) / CELL_SIZE);
+    // Large actors can cover thousands of empty cells. Keep the legacy x/y cell order
+    // while visiting occupied cells only, so target selection and RNG paths stay identical.
+    if((maxCx-minCx+1)*(maxCy-minCy+1)>64){
+      if(!this.gridOrder)this.gridOrder=[...this.grid].map(([key,arr])=>{const [x,y]=key.split(',').map(Number);return {x,y,arr};}).sort((a,b)=>a.x-b.x||a.y-b.y);
+      for(const cell of this.gridOrder)if(cell.x>=minCx&&cell.x<=maxCx&&cell.y>=minCy&&cell.y<=maxCy)for(const e of cell.arr)if(e!==entity)result.push(e);
+      return result;
+    }
     for (let cx = minCx; cx <= maxCx; cx++) {
       for (let cy = minCy; cy <= maxCy; cy++) {
         const arr = this.grid.get(cx + ',' + cy);

@@ -1,3 +1,5 @@
+> 최신 M16: 큰 공 공간 검색 최적화, 테스트 106개 및 전후 결정론 검증. [보고서](reports/M16-development.md). M15 장시간 브라우저 검증은 진행 중.
+
 # CLOUD M4 report
 
 > 최신 M14: 성장 목표·초기 성장 일관성·동적 스택 보정. [보고서](reports/M14-development.md).
