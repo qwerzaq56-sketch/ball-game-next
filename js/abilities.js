@@ -40,7 +40,7 @@ export class Abilities {
  }
  damage(owner,target,multiplier,kind='direct'){
   const life=target.defeatSerial??0;
-  const hit=applyDamage(target,attackDamageForSize(owner.size,this.game.balance)*multiplier,this.game,owner,this.game.balance,{knockback:false,kind});
+  const hit=applyDamage(target,attackDamageForSize(owner.size,this.game.balance)*this.damageMultiplier(owner)*multiplier,this.game,owner,this.game.balance,{knockback:false,kind});
   return hit&&(target.defeatSerial??0)===life;
  }
  command(owner,kind,seconds,range,cast){
@@ -88,8 +88,8 @@ export class Abilities {
   this.waves=this.waves.filter(f=>f.time<.5-1e-8);
   const hits=new Map();
   for(const f of this.fields){f.time+=dt;f.tick+=dt;if(!f.owner.alive||!f.owner.apex)continue;
-    if(f.tick+1e-8>=.5&&f.time<=5+1e-8){f.tick-=.5;for(const t of units)if(isHostile(f.owner,t)&&dist(f,t)<=220){const raw=attackDamageForSize(f.owner.size,this.game.balance)*.15;if(!hits.has(t.id)||hits.get(t.id).raw<raw)hits.set(t.id,{t,owner:f.owner,raw});}}}
-  for(const {t,owner,raw}of hits.values())applyDamage(t,raw,this.game,owner,this.game.balance,{knockback:false,kind:'field'});
+    if(f.tick+1e-8>=.5&&f.time<=5+1e-8){f.tick-=.5;for(const t of units)if(isHostile(f.owner,t)&&dist(f,t)<=220){const raw=attackDamageForSize(f.owner.size,this.game.balance)*this.damageMultiplier(f.owner)*.15;if(!hits.has(t.id)||hits.get(t.id).raw<raw)hits.set(t.id,{t,owner:f.owner,raw});}}}
+  for(const {t,owner,raw}of hits.values())if(owner.alive&&owner.apex)applyDamage(t,raw,this.game,owner,this.game.balance,{knockback:false,kind:'field'});
   this.fields=this.fields.filter(f=>f.time<5-1e-8&&f.owner.alive&&f.owner.apex);
  }
  miss(target){return this.fields.some(f=>f.owner===target&&dist(f,target)<=220)&&random('ai')<.25;}
