@@ -41,6 +41,7 @@ export class AIInspector {
       if (row) { this.selectedId = Number(row.dataset.id); this.lastRender = 0; }
     });
     window.addEventListener('keydown', (e) => {
+      if (document.getElementById('player-setup').open) return;
       if (e.key === 'F2' && !e.repeat) { e.preventDefault(); this.toggle(); }
     });
     // Capture phase so a Shift+click selects without also starting a player attack.

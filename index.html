@@ -7,9 +7,23 @@
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <div style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="role-text"></span> · <span id="special-text"></span></div>
-  <canvas id="game-canvas"></canvas>
-  <div id="build-id">NEXT · M5</div>
+  <div style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="player-identity"></span> · <span id="role-text"></span> · <span id="special-text"></span></div>
+  <canvas id="game-canvas" tabindex="-1"></canvas>
+  <div id="build-id">NEXT · M6</div>
+
+  <dialog id="player-setup" aria-labelledby="player-setup-title">
+    <form id="player-setup-form">
+      <p class="setup-eyebrow">BALL GAME NEXT</p>
+      <h1 id="player-setup-title">어떤 포식자가 될까요?</h1>
+      <div class="player-identity-preview"><span id="player-preview"></span><strong id="player-name-preview">나</strong></div>
+      <label class="setup-name-label" for="player-name">내 이름</label>
+      <input id="player-name" name="player-name" type="text" maxlength="32" autocomplete="nickname" placeholder="이름을 입력하세요" aria-describedby="player-name-hint" />
+      <p id="player-name-hint">최대 16자 · 비워 두면 ‘나’로 시작합니다.</p>
+      <fieldset><legend>색상</legend><div id="player-colors"></div></fieldset>
+      <button id="player-start" type="submit">게임 시작</button>
+      <p class="setup-footnote">WASD 이동 · 마우스 조준 · E 특수능력</p>
+    </form>
+  </dialog>
 
   <div id="load-error"></div>
 
@@ -47,8 +61,8 @@
     </div>
   </div>
 
-  <aside id="live-ranking" class="observer-panel" aria-label="실시간 점수 순위">
-    <div class="observer-heading"><strong>TOP 10</strong><span>점수 순위</span></div>
+  <aside id="live-ranking" class="observer-panel" aria-label="실시간 순위">
+    <div class="observer-heading"><strong>TOP 10</strong><div class="ranking-modes" role="group" aria-label="순위 기준"><button id="ranking-mode-score" type="button" aria-pressed="true">점수</button><button id="ranking-mode-size" type="button" aria-pressed="false">크기</button></div></div>
     <ol id="live-ranking-list"></ol>
     <div id="my-rank"></div>
   </aside>

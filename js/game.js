@@ -53,7 +53,7 @@ export class Game {
     this.apexHistory = new ApexHistory();
     this.abilities = new Abilities(this);
     this.telemetry = [];
-    this.player = new Player(this.balance);
+    this.player = new Player(this.balance, this.options.profile);
     this.player.onSkillUnlock = (type) => {
       this.ui.showUnlock(type);
       this.audio.unlock();

@@ -2,6 +2,7 @@ import { Game } from './game.js';
 import { UI } from './ui.js';
 import { loadMuted, saveMuted } from './storage.js';
 import { AIInspector } from './aiInspector.js';
+import { PlayerSetup, loadPlayerProfile } from './playerProfile.js';
 
 class InputState {
   constructor() {
@@ -49,6 +50,7 @@ async function main() {
   const input = new InputState();
 
   window.addEventListener('keydown', (e) => {
+    if (document.getElementById('player-setup').open || e.target.closest?.('input,textarea,select')) return;
     const k = e.key.toLowerCase();
     input.keys.add(k);
     if(k==='e'&&!e.repeat)input._specialQueued=true;
@@ -69,11 +71,14 @@ async function main() {
   canvas.addEventListener('mousedown', (e) => {
     if (e.button === 0) input.mouseDown = true;
   });
+  window.addEventListener('blur', () => {input.keys.clear();input.mouseDown=false;});
   window.addEventListener('mouseup', (e) => {
     if (e.button === 0) input.mouseDown = false;
   });
   const ui = new UI(balance, () => {});
-  const game = new Game(balance, canvas, input, ui);
+  const game = new Game(balance, canvas, input, ui, {profile:loadPlayerProfile(balance.colors)});
+  const playerSetup = new PlayerSetup(game, input);
+  playerSetup.open();
   window.__game = game; // debug inspection hook
   ui.inspector = new AIInspector(game, canvas, ui); // F2: read-only AI state window
 
@@ -112,6 +117,7 @@ async function main() {
   document.getElementById('reset-confirm-yes').addEventListener('click', () => {
     resetConfirmOverlay.style.display = 'none';
     game.reset();
+    playerSetup.open();
   });
   document.getElementById('reset-confirm-no').addEventListener('click', () => {
     resetConfirmOverlay.style.display = 'none';
@@ -124,6 +130,7 @@ async function main() {
   restartBtn.addEventListener('click', () => {
     ui.hideGameOver();
     game.reset();
+    playerSetup.open();
   });
 
   let lastTime = performance.now();

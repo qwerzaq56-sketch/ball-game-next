@@ -11,11 +11,13 @@ export function assignDisplayName(entity) {
 }
 
 // Preserve committed score-order ties; do not make UI rankings oscillate at equal scores.
-export function scoreRanking(units, previous = []) {
+function ranking(units, field, previous) {
   const order = new Map(previous.map((id, index) => [id, index]));
   return units.filter(e => e.alive && e.behavior !== 'orb').sort((a,b) =>
-    b.score - a.score || (order.get(a.id) ?? Infinity) - (order.get(b.id) ?? Infinity) || a.id - b.id);
+    b[field] - a[field] || (order.get(a.id) ?? Infinity) - (order.get(b.id) ?? Infinity) || a.id - b.id);
 }
+export function scoreRanking(units, previous = []) { return ranking(units,'score',previous); }
+export function sizeRanking(units, previous = []) { return ranking(units,'size',previous); }
 
 export function durationLabel(seconds) {
   const s = Math.max(0, Math.floor(seconds));

@@ -1,4 +1,4 @@
-import {scoreRanking, durationLabel} from './presentation.js';
+import {scoreRanking, sizeRanking, durationLabel} from './presentation.js';
 import {loadPresentationPreferences, savePresentationPreferences} from './storage.js';
 
 function element(tag, className, text) {
@@ -24,15 +24,23 @@ export class EcologyUI {
       const dot = element('span','rank-dot');
       const name = element('span','rank-name');
       const score = element('span','rank-score');
-      button.append(rank,dot,name,score); li.append(button); list.append(li);
+      const secondary = element('span','rank-secondary');
+      const values = element('span','rank-values'); values.append(score,secondary);
+      button.append(rank,dot,name,values); li.append(button); list.append(li);
       button.addEventListener('click', () => this.ui.inspector?.select(Number(button.dataset.id)));
-      this.rows.push({li,button,rank,dot,name,score});
+      this.rows.push({li,button,rank,dot,name,score,secondary});
+    }
+    for (const mode of ['score','size']) {
+      document.getElementById(`ranking-mode-${mode}`).addEventListener('click', () => {
+        this.preferences.rankingMode=mode; savePresentationPreferences(this.preferences); this.apply(); this.lastUpdate=-Infinity;
+      });
     }
     for (const key of ['names','ranking','ecology']) {
       document.getElementById(`${key}-toggle`).addEventListener('click', () => this.toggle(key));
     }
     document.getElementById('ecology-close').addEventListener('click', () => this.toggle('ecology',false));
     window.addEventListener('keydown', e => {
+      if (document.getElementById('player-setup').open) return;
       if (e.key === 'F4') {e.preventDefault(); if (!e.repeat) this.toggle('ecology');}
     });
     this.apply();
@@ -45,6 +53,7 @@ export class EcologyUI {
   apply() {
     this.ranking.hidden = !this.preferences.ranking;
     this.ecology.hidden = !this.preferences.ecology;
+    for (const mode of ['score','size']) document.getElementById(`ranking-mode-${mode}`).setAttribute('aria-pressed',String(this.preferences.rankingMode===mode));
     const labels = {names:'이름',ranking:'순위',ecology:'생태계'};
     for (const key of Object.keys(labels)) {
       const button = document.getElementById(`${key}-toggle`);
@@ -70,16 +79,19 @@ export class EcologyUI {
     }
   }
   renderRanking(game) {
-    const all = scoreRanking(game.entities,game.ecology.scoreOrder);
+    const bySize=this.preferences.rankingMode==='size';
+    const all = bySize ? sizeRanking(game.entities,game.ecology.sizeOrder) : scoreRanking(game.entities,game.ecology.scoreOrder);
     const playerRank = all.findIndex(e=>e===game.player)+1;
-    document.getElementById('my-rank').textContent = playerRank ? `내 순위 ${playerRank} / ${all.length} · ${Math.round(game.score)}점` : '이번 런 종료';
+    document.getElementById('my-rank').textContent = playerRank ? `내 ${bySize?'크기':'점수'} 순위 ${playerRank} / ${all.length} · ${Math.floor(bySize ? game.player.size : game.score)}${bySize?'':'점'}` : '이번 런 종료';
     all.slice(0,10).forEach((e,i)=>{
       const row=this.rows[i]; row.li.hidden=false; row.button.dataset.id=e.id;
       row.button.classList.toggle('is-player',e===game.player);
       row.button.disabled=e.behavior!=='ai';
       row.button.title=e.behavior==='ai' ? `${e.displayName} · 크기 ${Math.round(e.size)} · 클릭하여 살펴보기` : '플레이어';
       row.name.textContent=`${e.apex ? '★ ' : ''}${e.displayName}`;
-      row.score.textContent=Math.round(e.score).toLocaleString('ko-KR'); row.dot.style.backgroundColor=e.colorHex;
+      row.score.textContent=(bySize ? Math.floor(e.size) : Math.round(e.score)).toLocaleString('ko-KR');
+      row.secondary.textContent=bySize ? `점수 ${Math.round(e.score)}` : `크기 ${Math.floor(e.size)}`;
+      row.dot.style.backgroundColor=e.colorHex;
     });
     for(let i=Math.min(10,all.length);i<10;i++)this.rows[i].li.hidden=true;
   }

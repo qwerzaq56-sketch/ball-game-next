@@ -36,6 +36,7 @@ export class UI {
     this.ecologyUI = new EcologyUI(this);
 
     window.addEventListener('keydown', (e) => {
+      if (document.getElementById('player-setup').open) return;
       if (e.key === 'F1' && !e.repeat) {
         e.preventDefault();
         this.debugVisible = !this.debugVisible;
@@ -110,6 +111,7 @@ export class UI {
     this.ecologyUI.update(game);
     this.game = game; // debug-panel checkbox handlers read this
     const player = game.player;
+    document.getElementById('player-identity').textContent = player.displayName;
     const hpRatio = Math.max(0, player.hp / player.maxHp);
     this.hpFill.style.width = `${hpRatio * 100}%`;
     this.hpText.textContent = `${Math.ceil(player.hp)} / ${Math.ceil(player.maxHp)}`;

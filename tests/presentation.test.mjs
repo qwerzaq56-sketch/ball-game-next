@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {assignDisplayName,scoreRanking,layoutNameLabels,overlaps,durationLabel} from '../js/presentation.js';
+import {assignDisplayName,scoreRanking,layoutNameLabels,overlaps,durationLabel,sizeRanking} from '../js/presentation.js';
 import {ApexHistory} from '../js/apexHistory.js';
 import {resetRandom,random} from '../js/random.js';
 import {createGame} from '../tools/headless.mjs';
@@ -51,14 +51,20 @@ test('presentation preferences tolerate unavailable and malformed storage, prese
   const old=globalThis.localStorage;
   try {
     globalThis.localStorage={getItem(){throw Error()},setItem(){throw Error()}};
-    assert.deepEqual(loadPresentationPreferences(),{names:true,ranking:true,ecology:false});assert.doesNotThrow(()=>savePresentationPreferences({names:false}));
+    assert.deepEqual(loadPresentationPreferences(),{names:true,ranking:true,ecology:false,rankingMode:'score'});assert.doesNotThrow(()=>savePresentationPreferences({names:false}));
     const data=new Map([['ballgame_scoreboard_v1','keep'],['ballgamenext_presentation_v1','{"names":false,"ranking":"no","ecology":true}']]);
     globalThis.localStorage={getItem:k=>data.get(k),setItem:(k,v)=>data.set(k,v)};
-    assert.deepEqual(loadPresentationPreferences(),{names:false,ranking:true,ecology:true});
+    assert.deepEqual(loadPresentationPreferences(),{names:false,ranking:true,ecology:true,rankingMode:'score'});
     savePresentationPreferences({names:true,ranking:false,ecology:false});assert.equal(data.get('ballgame_scoreboard_v1'),'keep');
     data.set('ballgamenext_presentation_v1','[');assert.equal(loadPresentationPreferences().ranking,true);
   } finally {globalThis.localStorage=old;}
 });
 test('human durations have consistent minute boundaries',()=>{
   assert.equal(durationLabel(-1),'0초');assert.equal(durationLabel(59.9),'59초');assert.equal(durationLabel(60),'1분 0초');assert.equal(durationLabel(142),'2분 22초');
+});
+
+test('size ranking is independent of score and preserves committed size ties',()=>{
+  const all=[unit(1,{size:80,score:900}),unit(2,{size:140,score:10}),unit(3,{size:140,score:0}),unit(4,{size:200,alive:false})];
+  assert.deepEqual(sizeRanking(all,[3,2,1]).map(e=>e.id),[3,2,1]);
+  assert.deepEqual(scoreRanking(all).map(e=>e.id),[1,2,3]);
 });

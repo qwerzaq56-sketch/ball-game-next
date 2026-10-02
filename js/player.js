@@ -1,9 +1,11 @@
 import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
+import { normalizeProfile } from './playerProfile.js';
 
 export class Player extends Entity {
-  constructor(balance) {
+  constructor(balance, profile) {
     const b = balance.player;
-    const colorDef = balance.colors.find((c) => c.id === 'blue') || balance.colors[0];
+    const selected = normalizeProfile(profile, balance.colors);
+    const colorDef = balance.colors.find(c => c.id === selected.color);
     super({
       x: balance.world.worldWidth / 2,
       y: balance.world.worldHeight / 2,
@@ -15,6 +17,7 @@ export class Player extends Entity {
       hp: b.startingHp,
       maxHp: b.startingHp,
     });
+    this.displayName = selected.name;
     this.baseSize = b.startingSize;
     this.growth = b.startingGrowth;
     this.kills = 0; // v0.3: only counts kills the player's own attack landed the final hit on
