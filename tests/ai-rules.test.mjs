@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame} from '../tools/headless.mjs';
-import {AIEntity,decideAI} from '../js/ai.js';
+import {AIEntity,decideAI,updateAI} from '../js/ai.js';
 import {Entity} from '../js/entity.js';
+import {applyDamage,RETALIATION_MEMORY} from '../js/combat.js';
 
 // Regression for the two approved-rule gaps found in Codex's review (proposals 005 and 004).
 function setup(){
@@ -80,4 +81,55 @@ test('challenger: personality gates are kept', ()=>{
   assert.equal(t.run([a,o2],a),'chase_fight');
   a=challenger(t,'cautious'); const o3=apex(t); const near=t.unit(150,'blue',1250,1100);
   assert.equal(t.run([a,o3,near],a),'flee');        // target spot is not safe
+});
+
+// General retaliation (v0.25): restored from v0.6 and extended to every role/color.
+function hitBy(t,victim,attacker,opts){
+  attacker.attackState='READY';
+  t.g.entities=[victim,attacker];t.g.buildGrid();
+  applyDamage(victim,1,t.g,attacker,t.b,opts);
+  victim.hp=victim.maxHp*(victim._hpAfter??.8);
+}
+function victim(t,role='prey',personality='growth',hp=.8){
+  const a=t.unit(100,'yellow',1000); a.role=role; a.personality=personality; a.hp=a.maxHp*hp; a.attackStack=2; a._hpAfter=hp; return a;
+}
+
+test('retaliation: a hit prey fights back against an equal-size attacker', ()=>{
+  const t=setup(), a=victim(t), foe=t.unit(100,'red',1200);
+  hitBy(t,a,foe);
+  assert.equal(a.retaliateTarget,foe);
+  assert.equal(t.run([a,foe],a),'chase_fight');
+  assert.equal(a.target,foe);
+});
+
+test('retaliation: survival still wins over it (big attacker, low HP, no stack)', ()=>{
+  const t=setup();
+  let a=victim(t), foe=t.unit(130,'red',1200); hitBy(t,a,foe);
+  assert.equal(t.run([a,foe],a),'flee');                       // attacker is a threat (>=1.2x)
+  a=victim(t,'prey','growth',.3); foe=t.unit(100,'red',1200); hitBy(t,a,foe);
+  assert.notEqual(t.run([a,foe],a),'chase_fight');             // HP <= 30%
+  a=victim(t); a.attackStack=0; foe=t.unit(100,'red',1200); hitBy(t,a,foe); a.attackStack=0;
+  assert.notEqual(t.run([a,foe],a),'chase_fight');             // cannot attack
+});
+
+test('retaliation: field ticks and same-colour hits never create a target', ()=>{
+  const t=setup(), a=victim(t), foe=t.unit(100,'red',1200), ally=t.unit(100,'yellow',1200);
+  hitBy(t,a,foe,{kind:'field'}); assert.equal(a.retaliateTarget??null,null);
+  hitBy(t,a,ally); assert.equal(a.retaliateTarget??null,null);
+});
+
+test('retaliation: memory expires after RETALIATION_MEMORY seconds', ()=>{
+  const t=setup(), a=victim(t), foe=t.unit(100,'red',1200);
+  hitBy(t,a,foe); t.g.entities=[a,foe]; t.g.buildGrid();
+  for(let i=0;i<Math.ceil(RETALIATION_MEMORY*60)+2;i++) updateAI(a,1/60,t.g,t.b);
+  assert.equal(a.retaliateTarget,null);
+});
+
+test('retaliation: cautious AI needs the attacker spot free of other threats', ()=>{
+  const t=setup(), c=victim(t,'prey','cautious'), foe=t.unit(100,'red',1200), big=t.unit(150,'blue',1200,1100);
+  hitBy(t,c,foe); t.g.entities=[c,foe,big]; t.g.buildGrid();
+  decideAI(c,t.g,t.b);
+  assert.notEqual(c.state,'chase_fight');
+  const c2=victim(t,'prey','cautious'), foe2=t.unit(100,'red',1200); hitBy(t,c2,foe2);
+  assert.equal(t.run([c2,foe2],c2),'chase_fight');
 });

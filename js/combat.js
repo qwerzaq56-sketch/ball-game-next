@@ -173,6 +173,8 @@ export function updateDodgeStack(entity, dt, balance) {
   }
 }
 
+export const RETALIATION_MEMORY = 3; // seconds an AI remembers its last attacker
+
 // v0.5: applyDamage now runs raw damage through Defense (spec §3) before it touches HP.
 export function applyDamage(target, rawDamage, game, attacker, balance, options = {}) {
   if (target.invincible || !target.alive) return false;
@@ -184,6 +186,13 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   target.hp -= dmg;
   target.hitFlash = cfg ? cfg.hitFlashDuration : 0.08;
   target.regenTimer = 0; // taking a hit resets the HP regen delay
+  // General retaliation memory (v0.25): an AI remembers who hit it for a few seconds. Field ticks
+  // (kind 'field') are environment-like and never create a retaliation target.
+  if (attacker && attacker !== target && target.behavior === 'ai' && options.kind !== 'field' &&
+      attacker.behavior !== 'orb' && attacker.color !== target.color) {
+    target.retaliateTarget = attacker;
+    target.retaliateTimer = RETALIATION_MEMORY;
+  }
 
   if (attacker && options.knockback!==false) applyKnockback(target, attacker, game);
   if (target.beingAbsorbedByRef) cancelAbsorption(target); // a hit breaks an absorption connection

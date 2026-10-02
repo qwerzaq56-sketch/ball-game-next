@@ -29,6 +29,8 @@ export class AIEntity extends Entity {
     this.state = 'search'; // search | chase_eat | chase_fight | flee
     this.target = null;
     this.decisionTimer = random('ai') * 0.3;
+    this.retaliateTarget = null; // last hostile that hit this AI (see combat.applyDamage)
+    this.retaliateTimer = 0;
     assignPersonality(this);
     this._recomputeStacks(balance);
   }
@@ -62,6 +64,8 @@ export function updateAI(ai, dt, game, balance) {
 
   pruneEncounters(ai,game,balance);
   if(ai.counterattacker && ai.dodgeState!=="DODGING"){ai.counterTimer=(ai.counterTimer ?? 1)-dt;if(ai.counterTimer<=0||!ai.counterattacker.alive||dist(ai,ai.counterattacker)>balance.ai.detectionRange)ai.counterattacker=null;}
+
+  if(ai.retaliateTarget){ai.retaliateTimer-=dt;if(ai.retaliateTimer<=0||!ai.retaliateTarget.alive||dist(ai,ai.retaliateTarget)>balance.ai.detectionRange)ai.retaliateTarget=null;}
 
   updateAttack(ai, dt, balance, game.hostileTargetsFor(ai), game);
   updateDodge(ai, dt, balance);
@@ -158,6 +162,14 @@ export function decideAI(ai, game, balance) {
   if(ai.recovering){game.abilities?.endCommand(ai,'recovery');ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
   if(game.abilities?.commandDecision(ai))return;
   game.abilities?.considerAI(ai);
+  // General retaliation (v0.25): after survival rules, answer whoever just hit us if we can fight.
+  // Attackers big enough to be threats were already fled from above; cautious AI also needs the
+  // attacker's spot to be free of *other* threats. Applies to every role/color (prey included).
+  const hitBy=ai.retaliateTarget;
+  if(hitBy && hitBy.alive && ai.attackUnlocked && canStartAttack(ai) && hp>.3 && !threats.includes(hitBy) &&
+    dist(ai,hitBy)<=cfg.detectionRange && (ai.personality!=='cautious'||safe(hitBy,hitBy))){
+    ai.state='chase_fight';ai.target=hitBy;return;
+  }
   const opportunist=ai.personality==='opportunist';
   const lastHit=opportunist && hp>=.6 && canStartAttack(ai) ? closest(within.filter(e=>isHostile(ai,e)&&
     e.size<=ai.size*1.2&&e.attackState==='RECOVERY'&&!e.invincible&&dist(ai,e)<=attackRangeForSize(ai.size,balance)&&
