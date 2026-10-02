@@ -142,6 +142,6 @@
     { "id": "red", "color": "#EF4444" },
     { "id": "green", "color": "#22C55E" },
     { "id": "yellow", "color": "#EAB308" },
-    { "id": "purple", "color": "#A855F7" }
+    { "id": "cyan", "color": "#22D3EE" }
   ]
 }

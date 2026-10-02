@@ -1,3 +1,4 @@
+import { acceptsAbsorption } from './species.js';
 import { Ecology } from './ecology.js';
 import { random, resetRandom } from './random.js';
 import { resetEntityIds } from './entity.js';
@@ -304,7 +305,7 @@ export class Game {
 
         if (eater === this.player && !this.player.allyAbsorptionEnabled) continue; // v0.6 §7
 
-        if (canAbsorb(eater, target) && dist(eater, target) <= maintainDistance) {
+        if (canAbsorb(eater, target) && dist(eater, target) <= maintainDistance && acceptsAbsorption(eater,target,b)) {
           startAbsorption(eater, target, b, this);
         }
       }

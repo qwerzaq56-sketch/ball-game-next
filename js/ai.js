@@ -1,3 +1,4 @@
+import { acceptsAbsorption, pruneEncounters, chooseGeneral } from './species.js';
 import { random } from './random.js';
 import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
 import { canAbsorb, canEatOrb, isHostile, dist } from './collision.js';
@@ -56,6 +57,9 @@ export class AIEntity extends Entity {
 export function updateAI(ai, dt, game, balance) {
   if (!ai.alive) return;
 
+  pruneEncounters(ai,game,balance);
+  if(ai.counterattacker && ai.dodgeState!=="DODGING"){ai.counterTimer=(ai.counterTimer ?? 1)-dt;if(ai.counterTimer<=0||!ai.counterattacker.alive||dist(ai,ai.counterattacker)>balance.ai.detectionRange)ai.counterattacker=null;}
+
   updateAttack(ai, dt, balance, game.hostileTargetsFor(ai), game);
   updateDodge(ai, dt, balance);
   // NOTE: attack/dodge stack regen is handled once for every player+ai entity in
@@ -76,6 +80,7 @@ export function updateAI(ai, dt, game, balance) {
     return;
   }
 
+  if(ai.state==='relationship' && ai.relationshipOwner && (!ai.relationshipOwner.alive||!ai.relationshipOwner.apex||dist(ai,ai.relationshipOwner)>600)){ai.target=null;ai.state='search';ai.decisionTimer=0;}
   if(ai.target && ai.state!=="relationship" && (!ai.target.alive || dist(ai,ai.target)>(ai.state==="chase_eat" && ai.target.behavior!=="orb" ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
   ai.decisionTimer -= dt;
   if (ai.decisionTimer <= 0) {
@@ -99,6 +104,8 @@ export function updateAI(ai, dt, game, balance) {
 export function decideAI(ai, game, balance) {
   const cfg=balance.ai, hp=ai.hp/ai.maxHp;
   ai.recovering=hp<=.3 || (ai.recovering && hp<.6);
+  if(ai.challengeTarget && (hp<=.4 || !ai.challengeTarget.alive || !ai.challengeTarget.apex ||
+    ai.challengeTarget.hp/ai.challengeTarget.maxHp>.4 || dist(ai,ai.challengeTarget)>cfg.detectionRange))ai.challengeTarget=null;
   const nearby=game.getNearbyEntities(ai,Math.max(cfg.detectionRange,cfg.absorptionDetectionRange));
   const within=nearby.filter(e=>e.alive&&dist(ai,e)<=cfg.detectionRange);
   const threats=within.filter(e=>isHostile(ai,e)&&e.size>=ai.size*1.2);
@@ -118,15 +125,21 @@ export function decideAI(ai, game, balance) {
     e.size<=ai.size*1.2&&e.attackState==='RECOVERY'&&!e.invincible&&dist(ai,e)<=attackRangeForSize(ai.size,balance)&&
     e.hp<=applyDefense(attackDamageForSize(ai.size,balance),e.size,balance))) : null;
   if(lastHit){ai.state='chase_fight';ai.target=lastHit;return;}
+  if(ai.challengeTarget && canStartAttack(ai) && (ai.personality!=='cautious'||safe(ai.challengeTarget))){ai.state='chase_fight';ai.target=ai.challengeTarget;return;}
   const absorb=closest(nearby.filter(e=>dist(ai,e)<=cfg.absorptionDetectionRange&&canAbsorb(ai,e)&&
+    (ai.color!=="green"||dist(ai,e)<=balance.absorption.baseMaintainDistance+ai.size*balance.absorption.maintainDistancePerSize)&&acceptsAbsorption(ai,e,balance)&&
     (ai.personality!=='cautious'||(e.size<=ai.size*(ai.role==='prey'?.7:.8)&&safe(e)))));
   const huntAllowed=ai.role==='predator'||(ai.role==='forager'&&ai.personality==='growth'&&hp>=.6);
   const hunt=huntAllowed && ai.attackUnlocked ? closest(within.filter(e=>isHostile(ai,e)&&e.size<=ai.size*.8&&
     (ai.personality!=='cautious'||safe(e)))) : null;
   const orb=closest(food.filter(e=>safe(e)||risk));
   if(rich && (safe(rich)||risk) && (ai.personality==='growth'||(ai.role==='predator'&&ai.size>=70&&hp>.5))){ai.state='chase_eat';ai.target=rich;return;}
+  const counter=ai.counterattacker;
+  const counterAllowed=counter&&hp>=.6&&canStartAttack(ai)&&dist(ai,counter)<=attackRangeForSize(ai.size,balance)&&
+    (huntAllowed&&counter.size<=ai.size*.8&&(ai.personality!=='cautious'||safe(counter)));
+  if(counterAllowed){ai.state='chase_fight';ai.target=counter;ai.counterattacker=null;return;}
   const choices=[orb&&{target:orb,state:'chase_eat'},absorb&&{target:absorb,state:'chase_eat'},hunt&&{target:hunt,state:'chase_fight'}].filter(Boolean);
-  if(choices.length){const c=choices[0];ai.state=c.state;ai.target=c.target;return;}
+  if(choices.length){const c=chooseGeneral(ai,choices);ai.state=c.state;ai.target=c.target;return;}
   // Relationship sensing is the approved 600 exception; combat sensing remains 320.
   if(ai.role==='predator'&&!ai.apex&&ai.relationship!=='independent'){
     const owners=game.getNearbyEntities(ai,600).filter(e=>e.alive&&e.apex&&dist(ai,e)<=600&&
@@ -138,13 +151,18 @@ export function decideAI(ai, game, balance) {
       const challenge=ai.relationship==='challenger'&&hp>=.6&&owner.hp/owner.maxHp<=.3&&owner.size<=ai.size*1.5&&dist(ai,owner)<=cfg.detectionRange&&ai.attackUnlocked;
       const challengeAllowed=challenge&&(ai.personality!=='cautious'||safe(owner))&&
         (ai.personality!=='opportunist'||owner.attackState==='RECOVERY');
-      if(challengeAllowed){ai.state='chase_fight';ai.target=owner;return;}
+      if(challengeAllowed){ai.challengeTarget=owner;ai.state='chase_fight';ai.target=owner;return;}
       const d=dist(ai,owner), desired=ai.relationship==='subordinate'?Math.max(450,gap):450;
-      if(d<desired){ai.state='relationship';ai.target={x:ai.x+(ai.x-owner.x)/Math.max(d,1)*100,y:ai.y+(ai.y-owner.y)/Math.max(d,1)*100,alive:true};return;}
-      if(d>550){ai.state='relationship';ai.target=owner;return;}
+      const angle=d>0?Math.atan2(ai.y-owner.y,ai.x-owner.x):ai.facing;
+      const radius=Math.min(600,Math.max(desired,525));
+      const point={x:owner.x+Math.cos(angle)*radius,y:owner.y+Math.sin(angle)*radius,alive:true};
+      const w=balance.world;
+      if(point.x>=0&&point.y>=0&&point.x<=w.worldWidth&&point.y<=w.worldHeight){
+        ai.state='relationship';ai.target=point;ai.relationshipOwner=owner;return;
+      }
     }
   }
-  ai.state='search';ai.target=null;
+  ai.relationshipOwner=null;ai.state='search';ai.target=null;
 }
 
 function reactToThreats(ai, game, balance) {
@@ -156,6 +174,7 @@ function reactToThreats(ai, game, balance) {
       const d = dist(ai, other);
       if (d < range && random('ai') < 0.5) {
         const away = Math.atan2(ai.y - other.y, ai.x - other.x);
+        if(ai.color==='blue'){ai.counterattacker=other;ai.counterTimer=1;}
         startDodge(ai, away, balance);
         return;
       }
@@ -174,6 +193,7 @@ function moveAI(ai, dt, balance) {
     speed *= ai.beingAbsorbedByRef ? 1.0 : 1.3;
   } else if(ai.state==='relationship'&&ai.target){
     targetAngle=Math.atan2(ai.target.y-ai.y,ai.target.x-ai.x);speed*=.55;
+    speed=Math.min(speed,dist(ai,ai.target)/Math.max(dt,1e-8));
   } else if (ai.state === 'chase_eat' && ai.target && ai.target.alive) {
     // actual eating/absorption is resolved centrally in Game.resolveConsumption()
     targetAngle = Math.atan2(ai.target.y - ai.y, ai.target.x - ai.x);
@@ -188,10 +208,10 @@ function moveAI(ai, dt, balance) {
     ai.wanderTimer -= dt;
     if (ai.wanderTimer <= 0) {
       ai.wanderAngle = random('ai') * Math.PI * 2;
-      ai.wanderTimer = 1 + random('ai') * 2;
+      ai.wanderTimer = ai.color==='yellow'?4+random('ai')*2:1+random('ai')*2;
     }
     targetAngle = ai.wanderAngle;
-    speed *= 0.55;
+    speed *= 0.55 * (ai.color==='cyan'?.7:1);
   }
 
   if (targetAngle !== null) {
