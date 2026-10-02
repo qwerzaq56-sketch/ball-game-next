@@ -1,6 +1,7 @@
 import { Game } from './game.js';
 import { UI } from './ui.js';
 import { loadMuted, saveMuted } from './storage.js';
+import { AIInspector } from './aiInspector.js';
 
 class InputState {
   constructor() {
@@ -74,6 +75,7 @@ async function main() {
   const ui = new UI(balance, () => {});
   const game = new Game(balance, canvas, input, ui);
   window.__game = game; // debug inspection hook
+  new AIInspector(game, canvas, ui); // F2: read-only AI state window
 
   // v0.6 follow-up: the ally-absorption toggle used to be a right-click gesture on the canvas,
   // but that was too easy to trigger by accident mid-fight (a stray right-click during combat
