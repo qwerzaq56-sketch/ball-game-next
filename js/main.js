@@ -119,7 +119,7 @@ async function main() {
   let resetWasPaused=false;
   resetBtn.addEventListener('click', () => {
     if(resetConfirmOverlay.style.display==='flex')return;
-    resetWasPaused=game.paused;game.paused=true;playControls.clearInput();
+    resetWasPaused=game.paused;game.paused=true;playControls.clearInput();game.stopContinuousAudio();
     resetConfirmOverlay.style.display = 'flex';
   });
   document.getElementById('reset-confirm-yes').addEventListener('click', () => {

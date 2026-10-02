@@ -70,10 +70,7 @@ export class Game {
     this.gameOver = false;
     this.lives = this.balance.lives.maxLives;
     this.player.score = 0;
-    if (this._absorbDroneActive) {
-      this.audio.stopAbsorbDrone();
-      this._absorbDroneActive = false;
-    }
+    this.stopContinuousAudio();
 
     this.camera = {
       x: this.player.x,
@@ -161,7 +158,7 @@ export class Game {
   // ---------- update ----------
 
   update(dt) {
-    if (this.paused) return;
+    if (this.paused) {this.stopContinuousAudio();return;}
     const b = this.balance;
     this.gameTime += dt;
 
@@ -247,6 +244,11 @@ export class Game {
       this.audio.stopAbsorbDrone();
       this._absorbDroneActive = false;
     }
+  }
+
+  stopContinuousAudio() {
+    if(this._absorbDroneActive||this.audio.absorbDrone)this.audio.stopAbsorbDrone();
+    this._absorbDroneActive=false;
   }
 
   updatePlayer(dt) {
