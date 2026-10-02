@@ -59,6 +59,7 @@ function completeAbsorption(absorber, target, game, balance) {
     // Kill Count only tracks the player's own attack finishing an enemy off, not absorption —
     // so no kills++ here even when the player is the absorber.
     target.alive = false;
+    game.relics.release(target);
     game.ecology.release(target, game.gameTime, "absorbed");
   }
 }

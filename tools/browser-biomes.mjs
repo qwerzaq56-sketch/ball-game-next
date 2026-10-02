@@ -12,7 +12,7 @@ try{
   await page.waitForTimeout(250);assert((await page.locator('#region-text').innerText()).includes(name));await page.screenshot({path:`${prefix}-${id}.png`});
  }
  const lava=await page.evaluate(()=>{const g=window.__game;g.entities=[g.player];g.biomes.damageTimer=0;g.paused=false;const before=g.player.hp;for(let i=0;i<30;i++)g.update(1/60);g.paused=true;return {before,after:g.player.hp,lives:g.lives};});assert(lava.after<lava.before);assert.equal(lava.lives,3);
- const encounter=await page.evaluate(()=>{const g=window.__game;g.entities=[g.player];g.biomes.spawnEncounter();return g.entities.filter(e=>e.regionReward).length;});assert.equal(encounter,32);
+ const encounter=await page.evaluate(()=>{const g=window.__game;g.entities=[g.player];g.biomes.spawnEncounter();return {actual:g.entities.filter(e=>e.regionReward).length,expected:g.biomes.regions.length*8};});assert.equal(encounter.actual,encounter.expected);
  await page.setViewportSize({width:390,height:844});await page.waitForTimeout(300);assert(await page.locator('#minimap-panel').isVisible());await page.screenshot({path:`${prefix}-mobile.png`});
  await page.keyboard.press('H');assert(await page.locator('#play-help').isVisible());assert((await page.locator('#play-help').innerText()).includes('지역 탐험'));await page.keyboard.press('Escape');assert.deepEqual(errors,[]);
  console.log(JSON.stringify({result:'PASS',regions:4,lava,encounter,minimap:true,mobile:true,errors}));

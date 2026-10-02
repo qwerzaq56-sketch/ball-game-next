@@ -24,6 +24,7 @@ export class Minimap {
     this.layout();const ctx=this.ctx,w=game.balance.world,scaleX=this.canvas.width/w.worldWidth,scaleY=this.canvas.height/w.worldHeight;
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.fillStyle='#0b1422';ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
     for(const r of game.biomes.regions){ctx.beginPath();ctx.ellipse(r.x*scaleX,r.y*scaleY,r.radius*scaleX,r.radius*scaleY,0,0,Math.PI*2);ctx.fillStyle=r.color;ctx.fill();if(r.hotRadius){ctx.beginPath();ctx.ellipse(r.x*scaleX,r.y*scaleY,r.hotRadius*scaleX,r.hotRadius*scaleY,0,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();}}
+    for(const item of game.relics.items){ctx.fillStyle='#fde68a';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('★',item.x*scaleX,item.y*scaleY+3);}
     const field=game.era.apocalypse;if(field){ctx.beginPath();ctx.ellipse(field.x*scaleX,field.y*scaleY,field.radius*scaleX,field.radius*scaleY,0,0,Math.PI*2);ctx.strokeStyle=field.active?'#ef4444':'#fbbf24';ctx.lineWidth=2;ctx.stroke();}
     document.getElementById('minimap-era').textContent=game.era.phase.name;
     for(const e of game.entities){if(!e.alive)continue;const x=e.x*scaleX,y=e.y*scaleY;

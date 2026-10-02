@@ -1,4 +1,5 @@
 {
+  "relics": { "enabled": true },
   "era": { "enabled": true },
   "biomes": { "enabled": true },
   "player": {

@@ -94,7 +94,7 @@ export function updateAI(ai, dt, game, balance) {
   }
 
   if(ai.state==='relationship' && ai.relationshipOwner && (ai.role!=='predator'||ai.apex||!ai.relationshipOwner.alive||!ai.relationshipOwner.apex||dist(ai,ai.relationshipOwner)>600)){ai.target=null;ai.state='search';ai.decisionTimer=0;}
-  if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && ai.state!=="command_move" && ai.state!=="war_move" && (!ai.target.alive || dist(ai,ai.target)>game.biomes.sensingRange(ai,ai.state==="chase_eat" && ai.target.behavior!=="orb" ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
+  if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && ai.state!=="command_move" && ai.state!=="war_move" && (!ai.target.alive || dist(ai,ai.target)>game.biomes.sensingRange(ai,ai.state==="chase_eat" && (ai.target.behavior!=="orb"&&ai.target.behavior!=="relic") ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
   ai.decisionTimer -= dt;
   if (ai.decisionTimer <= 0) {
     ai.decisionTimer = 0.2 + random('ai') * 0.15;
@@ -243,7 +243,9 @@ export function decideAI(ai, game, balance) {
       }
     }
   }
-  ai.relationshipOwner=null;const front=game.era.warDestination(ai);
+  ai.relationshipOwner=null;const relic=game.relics.desired(ai,safe);
+  if(relic){ai.state='chase_eat';ai.target=relic;return;}
+  const front=game.era.warDestination(ai);
   if(front){ai.state='war_move';ai.target=front;return;}
   ai.state='search';ai.target=null;
 }

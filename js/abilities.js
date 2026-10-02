@@ -107,7 +107,7 @@ export class Abilities {
   this.fields=this.fields.filter(f=>f.time<5-1e-8&&f.owner.alive&&f.owner.apex);
  }
  miss(target){return this.fields.some(f=>f.owner===target&&dist(f,target)<=360)&&random('ai')<.25;}
- damageMultiplier(e){return 1+(e.morale?.size ? .15 : 0)+(this.game.allyLinks?.bonus(e)??0);}
+ damageMultiplier(e){return 1+(this.game.relics?.damageBonus(e)??0)+(e.morale?.size ? .15 : 0)+(this.game.allyLinks?.bonus(e)??0);}
  commandDecision(e){
   const c=e.command;if(!c)return false;
   if(e.recovering||e.hp/e.maxHp<=.3||e.beingAbsorbedByRef){this.endCommand(e,'survival');return false;}

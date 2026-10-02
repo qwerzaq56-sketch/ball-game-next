@@ -147,6 +147,7 @@ export class UI {
     const goal=nextSkillGoal(player,game.balance);
     document.getElementById('growth-goal-text').textContent=goal.label;
     document.getElementById('growth-goal-fill').style.width=`${goal.fraction*100}%`;
+    const relicText=document.getElementById('relic-text');relicText.textContent=game.relics.label(player);relicText.hidden=!relicText.textContent;
 
     if (this.unlockTimer > 0) {
       this.unlockTimer -= dt;

@@ -57,7 +57,7 @@ export class Biomes {
    if(r.hotRadius){ctx.beginPath();ctx.arc(r.x,r.y,r.hotRadius,0,Math.PI*2);ctx.fillStyle='rgba(239,68,36,.45)';ctx.fill();ctx.strokeStyle='#fb923c';ctx.lineWidth=3/zoom;ctx.stroke();}
    ctx.fillStyle=r.id==='snow'&&this.blizzard()?'#fff':'#b9d5cd';ctx.font=`bold ${20/zoom}px system-ui`;ctx.textAlign='center';ctx.fillText(r.name+(r.id==='snow'&&this.blizzard()?' · 눈보라':''),r.x,r.y-r.radius*.65);
    ctx.strokeStyle=r.id==='snow'&&this.blizzard()?'rgba(255,255,255,.45)':r.color;ctx.lineWidth=2/zoom;
-   for(let i=0;i<5;i++){const x=r.x+(i-2)*r.radius*.22,y=r.y-r.radius*.18;ctx.beginPath();if(r.id==='forest'){ctx.moveTo(x-30,y+30);ctx.lineTo(x,y-35);ctx.lineTo(x+30,y+30);}else if(r.id==='lake'){ctx.arc(x,y,30,0,Math.PI);}else if(r.id==='snow'){ctx.moveTo(x-25,y+30);ctx.lineTo(x+25,y-30);}else{ctx.moveTo(x-30,y+35);ctx.lineTo(x,y-30);ctx.lineTo(x+30,y+35);}ctx.stroke();}
+   for(let i=0;i<5;i++){const x=r.x+(i-2)*r.radius*.22,y=r.y-r.radius*.18;ctx.beginPath();if(r.id==='forest'){ctx.moveTo(x-30,y+30);ctx.lineTo(x,y-35);ctx.lineTo(x+30,y+30);}else if(r.id==='lake'){ctx.arc(x,y,30,0,Math.PI);}else if(r.id==='snow'){ctx.moveTo(x-25,y+30);ctx.lineTo(x+25,y-30);}else if(r.id==='grassland'){ctx.moveTo(x,y+25);ctx.lineTo(x,y-25);ctx.moveTo(x-20,y+15);ctx.lineTo(x,y-10);ctx.lineTo(x+20,y+15);}else if(r.id==='desert'){ctx.arc(x,y,35,Math.PI,Math.PI*2);}else{ctx.moveTo(x-30,y+35);ctx.lineTo(x,y-30);ctx.lineTo(x+30,y+35);}ctx.stroke();}
   }ctx.restore();
  }
 }

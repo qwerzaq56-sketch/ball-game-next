@@ -226,12 +226,12 @@ function applyKnockback(target, attacker, game) {
 
 // v0.4 spec §6-11: HP regenerates automatically, but only after `delay` seconds have passed
 // since the last hit. v0.5: both the delay and the rate now come from Size (spec §15).
-export function updateHealthRegen(entity, dt, balance) {
+export function updateHealthRegen(entity, dt, balance,multiplier=1) {
   entity.regenTimer += dt;
   const cfg = balance.healthRegen;
   if (entity.hp >= entity.maxHp || entity.regenTimer < cfg.delay) return false;
   const rate = cfg.baseRate + entity.size * cfg.regenPerSize;
-  entity.hp = Math.min(entity.maxHp, entity.hp + rate * dt);
+  entity.hp = Math.min(entity.maxHp, entity.hp + rate * multiplier * dt);
   return true;
 }
 

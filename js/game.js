@@ -1,3 +1,4 @@
+import { Relics } from './relics.js';
 import { Era } from './era.js';
 import { Biomes } from './biomes.js';
 import { AllyLinks } from './allyLinks.js';
@@ -58,6 +59,7 @@ export class Game {
     this.allyLinks = new AllyLinks(this);
     this.biomes = new Biomes(this);
     this.era = new Era(this);
+    this.relics = new Relics(this);
     this.telemetry = [];
     this.player = new Player(this.balance, this.options.profile);
     this.player.onSkillUnlock = (type) => {
@@ -84,6 +86,7 @@ export class Game {
     };
 
     this.initWorld();
+    this.relics.spawn();
     this.ecology.update(this, 0);
     this.apexHistory.observe(this.entities, 0, this.gameTime);
   }
@@ -176,6 +179,7 @@ export class Game {
     this.gameTime += dt;
     this.era.update(dt);
     this.biomes.update(dt);
+    this.relics.update(dt);
 
     this.buildGrid();
     this.allyLinks.update(dt);
@@ -189,7 +193,7 @@ export class Game {
     for (const e of this.entities) {
       if (!e.alive || (e.behavior !== 'player' && e.behavior !== 'ai')) continue;
       updateKnockback(e, dt);
-      const regenerating = updateHealthRegen(e, dt, b);
+      const regenerating = updateHealthRegen(e, dt, b,this.relics.regenMultiplier(e));
       if (regenerating && random('visual') < 0.15) this.spawnRegenParticle(e.x, e.y, e.size);
       if (e.scalePulseTimer > 0) e.scalePulseTimer = Math.max(0, e.scalePulseTimer - dt);
       // v0.6 spec §3: AI regenerates attack stacks on its own (slower) cooldown, separate from
@@ -231,7 +235,8 @@ export class Game {
       ai: units.filter(e => e.behavior === 'ai').length,
       sizes: [units.filter(e => e.size < 40).length, units.filter(e => e.size >= 40 && e.size < 100).length,
         units.filter(e => e.size >= 100 && e.size < 180).length, units.filter(e => e.size >= 180).length],
-      unimplemented: ['relics', 'grassland-desert-encounters'],
+      unimplemented: ['full-vector-pack', 'autoplay-and-balance-dashboard'],
+      relics:{items:this.relics.items.length,pickups:this.relics.pickups},
       era:{phase:this.era.phase.id,cycle:this.era.cycle,duels:this.era.duels.size,duelStarts:this.era.duelStarts,apocalypses:this.era.completedApocalypses},
       biomes:{encounters:this.biomes.encounters,blizzard:this.biomes.blizzard()},
       special:{casts:this.abilities.specialFires,fields:this.abilities.fields.length,commands:units.filter(e=>e.command).length},
@@ -339,7 +344,7 @@ export class Game {
           if (!canEatOrb(eater, target, b)) continue;
           if (!circlesOverlap(eater, target)) continue;
           target.alive = false;
-          eater.addGrowth(target.growthValue, b);
+          eater.addGrowth(target.growthValue*this.relics.growthMultiplier(eater), b);
           this.awardScore(eater, target.growthValue);
           this.spawnGrowthParticles(target.x, target.y, target.colorHex);
           if (eater === this.player) {
@@ -468,6 +473,7 @@ export class Game {
   // Growth carry over unchanged into the respawn, and only running out of Lives triggers Game
   // Over (spec: "부활할 때 Size는 감소하지 않는다").
   onEntityDeath(entity, attacker) {
+    this.relics.release(entity);
     this.abilities.release(entity);
     this.ecology.release(entity, this.gameTime, "death");
     if (entity.behavior === 'player') {
@@ -527,6 +533,7 @@ export class Game {
   // (onEntityDeath) and being fully absorbed (absorption.js#completeAbsorption) — so a Life is
   // spent and Game Over triggers consistently regardless of which one happened.
   handlePlayerDefeat(reason) {
+    this.relics.release(this.player);
     this.player.defeatSerial=(this.player.defeatSerial??0)+1;
     if(this.player.companionGroup)this.allyLinks.leave(this.player,'defeat');
     this.abilities.release(this.player);
@@ -658,6 +665,7 @@ export class Game {
     this.drawGrid(ctx);
     this.biomes.draw(ctx,this.camera.zoom);
     this.era.draw(ctx,this.camera.zoom);
+    this.relics.draw(ctx,this.camera.zoom);
     this.drawTerritories(ctx);
     this.drawWorldBorder(ctx);
     this.abilities.draw(ctx,this.camera.zoom);

@@ -9,7 +9,7 @@
 <body>
   <div id="player-info" style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="player-identity"></span> · <span id="era-text"></span> · <span id="region-text"></span> · <span id="role-text"></span> · <span id="special-text"></span></div>
   <canvas id="game-canvas" tabindex="-1"></canvas>
-  <div id="build-id">NEXT · M20</div>
+  <div id="build-id">NEXT · M21</div>
 
   <dialog id="player-setup" aria-labelledby="player-setup-title">
     <form id="player-setup-form">
@@ -52,7 +52,7 @@
         <span class="ability-label">DODGE</span>
         <span id="dodge-pips" class="pips locked">LOCKED</span>
       </div>
-      <div id="growth-goal-text"></div><div class="growth-goal-track"><div id="growth-goal-fill"></div></div>
+      <div id="relic-text" hidden></div><div id="growth-goal-text"></div><div class="growth-goal-track"><div id="growth-goal-fill"></div></div>
     </div>
     <div class="hud-block hud-controls">
       <button id="mute-btn" class="hud-btn" type="button">SOUND: ON</button>
@@ -125,6 +125,7 @@
     <h3>시기와 지역 탐험</h3>
     <p>영양기·경쟁기·전쟁기·쇠퇴기가 순환합니다. 전쟁기에는 전투 가능한 AI가 전선으로 이동하고, 쇠퇴기의 파멸 조우는 노란 전조 후 붉은 위험 범위가 됩니다. 미리 벗어나고 종료 후 보상을 찾아보세요.</p>
     <p>지도(F5)에서 숲·호수·설원·화산을 찾으세요. 주기적으로 가치 높은 먹이가 생깁니다. 설원의 눈보라는 AI 시야를 줄이고, 화산의 주황색 마그마 중심은 지속 피해를 주므로 가장자리를 지나세요.</p>
+    <p>사막의 별 모양 유물을 주우면 60초 동안 공격·먹이 성장·체력 재생 중 하나의 보너스를 받습니다. 다른 유물은 교체되며 패배하면 사라집니다. 초원과 사막도 지역 먹이 조우가 있습니다.</p>
     <h3>같은 색 연결과 동행</h3>
     <p>가까운 같은 색 공은 연결되고 이웃당 공격 +5%, 최대 +15%를 받습니다. 확률적으로 대열을 만들며, <strong>동행 중에는 공격·흡수·특수능력을 사용하지 않습니다.</strong> G로 이탈하면 자유 행동으로 돌아갑니다. 동행해도 외부 공격을 받을 수 있습니다.</p>
     <h3>최상위 포식자 · 최대 3명</h3>

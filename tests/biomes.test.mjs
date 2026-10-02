@@ -4,8 +4,8 @@ import {createGame} from '../tools/headless.mjs';
 import {AIEntity,decideAI,updateAI} from '../js/ai.js';
 import {Entity} from '../js/entity.js';
 function fixture(){const g=createGame(7),b=g.balance;const a=new AIEntity({x:1000,y:1000,color:'blue',colorHex:'#00f',startSize:40,balance:b});a.role='forager';a.personality='growth';g.entities=[g.player,a];g.buildGrid();return {g,a};}
-test('four distributed regions leave central spawn safe and reset their timers',()=>{
- const {g}=fixture();assert.equal(g.biomes.regions.length,4);assert.equal(g.biomes.regionAt(g.player),null);assert.equal(g.biomes.status(g.player),'평원');
+test('distributed regions leave central spawn safe and reset their timers',()=>{
+ const {g}=fixture();assert.equal(g.biomes.regions.length,6);assert.equal(g.biomes.regionAt(g.player),null);assert.equal(g.biomes.status(g.player),'평원');
  g.biomes.spawnEncounter();assert.equal(g.biomes.encounters,1);g.reset();assert.equal(g.biomes.encounters,0);assert.equal(g.biomes.encounterTimer,30);
 });
 test('blizzard reduces local perception but never reveals distant food; ends on schedule',()=>{
@@ -29,10 +29,10 @@ test('ordinary and commanded movement route around magma with finite world-bound
  a.state='command_move';a.target=target;a.decisionTimer=10;const oldY=a.y;updateAI(a,.1,g,g.balance);assert.notEqual(a.y,oldY);assert.equal(a.state,'command_move');assert.equal(a.target,target);
 });
 test('regional encounters obey orb cap, rotate priority and avoid dangerous cores',()=>{
- const {g}=fixture();g.entities=[g.player];g.biomes.spawnEncounter();const orbs=g.entities.filter(e=>e.behavior==='orb');assert.equal(orbs.length,32);
+ const {g}=fixture();g.entities=[g.player];g.biomes.spawnEncounter();const orbs=g.entities.filter(e=>e.behavior==='orb');assert.equal(orbs.length,48);
  for(const orb of orbs){const r=g.biomes.regions.find(r=>r.id===orb.regionReward);assert(Math.hypot(orb.x-r.x,orb.y-r.y)>=r.radius*.55-1e-8);assert(orb.growthValue>0);}
- g.balance.spawning.maxOrbCount=33;g.biomes.spawnEncounter();assert.equal(g.entities.filter(e=>e.behavior==='orb').length,33);assert.equal(g.entities.at(-1).regionReward,'lake');
- g.biomes.spawnEncounter();assert.equal(g.entities.filter(e=>e.behavior==='orb').length,33);
+ g.balance.spawning.maxOrbCount=49;g.biomes.spawnEncounter();assert.equal(g.entities.filter(e=>e.behavior==='orb').length,49);assert.equal(g.entities.at(-1).regionReward,'lake');
+ g.biomes.spawnEncounter();assert.equal(g.entities.filter(e=>e.behavior==='orb').length,49);
 });
 test('disabled biomes keep world and sensing neutral',()=>{
  const g=createGame(7);g.balance.biomes.enabled=false;g.reset();assert.equal(g.biomes.regions.length,0);assert.equal(g.biomes.danger(g.player),null);g.gameTime=16;assert.equal(g.biomes.sensingRange(g.player),320);g.biomes.update(100);assert.equal(g.biomes.encounters,0);
