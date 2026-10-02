@@ -1,0 +1,23 @@
+export class DiagnosticsUI {
+ constructor(game,ui){
+  this.game=game;this.ui=ui;this.last=0;this.root=document.createElement('section');this.root.className='debug-section';this.root.id='observation-tools';
+  this.root.innerHTML='<h3>자동 플레이 · 관찰</h3><label class="debug-row"><span>자동 플레이 (실험)</span><input id="autoplay-toggle" type="checkbox"></label><p id="autoplay-status" class="hint"></p><p class="hint">직접 이동/공격/터치하면 수동으로 돌아옵니다. Life와 피해는 일반 플레이 규칙을 따릅니다.</p><p id="run-metrics-summary"></p><canvas id="run-metrics-chart" width="280" height="90" aria-label="최근 플레이어와 가장 큰 AI의 크기 변화"></canvas><p class="hint">파랑: 내 크기 · 초록: 가장 큰 AI</p><button id="metrics-export" class="hud-btn" type="button">관찰 JSON 저장</button><p id="run-seed" class="hint"></p>';
+  ui.debugPanel.firstElementChild.insertBefore(this.root,ui.debugPanel.firstElementChild.children[1]);this.toggle=this.root.querySelector('#autoplay-toggle');this.toggle.addEventListener('change',()=>{game.autoplay.setEnabled(this.toggle.checked);game.canvas.focus?.();});
+  this.root.querySelector('#metrics-export').addEventListener('click',()=>{
+   const json=JSON.stringify(game.runMetrics.export(game),null,2),url=URL.createObjectURL(new Blob([json],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`ball-next-${game.seed}-${Math.floor(game.gameTime)}s.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
+ }
+ update(){
+  if(!this.ui.debugVisible)return;const now=performance.now();if(now-this.last<250)return;this.last=now;const g=this.game,m=g.runMetrics;
+  this.toggle.checked=g.autoplay.enabled;this.root.querySelector('#autoplay-status').textContent=g.autoplay.enabled?`ON · ${g.gameOver?'게임 종료':g.paused?'일시정지':g.autoplay.reason}`:'OFF · 수동 플레이';
+  const s=m.samples.at(-1);this.root.querySelector('#run-metrics-summary').textContent=`관찰 ${Math.floor(m.seconds)}s · 공격 시작 ${m.attackStarts} · ${s?.liveAI??g.entities.filter(e=>e.alive&&e.behavior==='ai').length} AI · 내 크기 ${Math.floor(g.player.size)} / 점수 ${g.player.score}`;
+  this.root.querySelector('#run-seed').textContent=`시드 ${g.seed} · 최근 ${m.samples.length}개 샘플 · 자동 ${Math.floor(m.autoSeconds)}s`;
+  this.drawChart(m.samples.slice(-60));
+ }
+ drawChart(samples){
+  const canvas=this.root.querySelector('canvas'),ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#101827';ctx.fillRect(0,0,w,h);if(!samples.length)return;
+  const maximum=Math.max(50,...samples.map(s=>Math.max(s.size,s.maxAISize))),first=samples[0].time,last=samples.at(-1).time;
+  ctx.strokeStyle='#334155';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(30,8);ctx.lineTo(30,h-16);ctx.lineTo(w-6,h-16);ctx.stroke();ctx.font='10px system-ui';ctx.fillStyle='#94a3b8';ctx.fillText(String(Math.ceil(maximum)),2,12);ctx.fillText(`${Math.floor(last-first)}s`,w-30,h-3);
+  for(const [key,color]of [['size','#60a5fa'],['maxAISize','#4ade80']]){ctx.beginPath();samples.forEach((s,i)=>{const x=30+(s.time-first)/Math.max(1,last-first)*(w-36),y=h-16-s[key]/maximum*(h-24);if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);});ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();}
+ }
+}

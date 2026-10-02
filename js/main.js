@@ -1,3 +1,4 @@
+import { DiagnosticsUI } from './diagnosticsUI.js';
 import { Game } from './game.js';
 import { UI } from './ui.js';
 import { loadMuted, saveMuted } from './storage.js';
@@ -54,6 +55,7 @@ async function main() {
   window.addEventListener('keydown', (e) => {
     if (document.getElementById('player-setup').open || e.target.closest?.('input,textarea,select')) return;
     const k = e.key.toLowerCase();
+    if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright',' ','e','g'].includes(k))window.__game?.autoplay.setEnabled(false);
     input.keys.add(k);
     if(k==='g'&&!e.repeat && !document.getElementById('play-help').open && document.getElementById('reset-confirm-overlay').style.display!=='flex' && window.__game?.player.companionGroup)window.__game.allyLinks.leave(window.__game.player,'player-choice');
     if(k==='e'&&!e.repeat&&!window.__game?.paused)input._specialQueued=true;
@@ -71,6 +73,7 @@ async function main() {
     input.mouseX = e.clientX - rect.left;
     input.mouseY = e.clientY - rect.top;
   });
+  window.addEventListener('pointerdown',e=>{if(e.target===canvas||e.target.closest?.('#touch-controls'))window.__game?.autoplay.setEnabled(false);},true);
   canvas.addEventListener('mousedown', (e) => {
     if (e.button === 0&&!window.__game?.paused) input.mouseDown = true;
   });
@@ -84,6 +87,7 @@ async function main() {
     for(const e of activeGame.entities)if(e.alive&&e.behavior==='ai')e._recomputeStacks(balance);
   });
   const game = new Game(balance, canvas, input, ui, {profile:loadPlayerProfile(balance.colors)});
+  const diagnosticsUI=new DiagnosticsUI(game,ui);
   const playerSetup = new PlayerSetup(game, input);
   playerSetup.open();
   window.__game = game; // debug inspection hook
@@ -154,6 +158,7 @@ async function main() {
     game.update(dt);
     game.render();
     ui.update(dt, game);
+    diagnosticsUI.update();
     playControls.update();
     touchControls.update();
 

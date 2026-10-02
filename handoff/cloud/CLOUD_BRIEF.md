@@ -1,3 +1,5 @@
+> 현재 M23: 우선순위 문서에 따른 탐색/M18, 지역/M19, Era/M20, 유물/M21, 표현/M22, 자동 플레이·관찰/M23 구현. IMPLEMENTATION_PRIORITY_PLAN.md 및 각 보고서를 읽는다. 정오까지 추가 검증/경계 수정 진행 중.
+
 > 현재 M19: 분산 바이옴·환경 회피·지역 먹이 조우 구현. BIOME_DESIGN.md 및 reports/M19-development.md. 다음 순서는 ERA_DESIGN.md를 따른다.
 
 > 현재 M16: 큰 공 공간 검색 최적화. 테스트 106개, 전후 시뮬레이션 결과 동일. reports/M16-development.md. M15 실시간 검증은 정오까지 진행 중이며 완료 결과는 별도 기록한다.

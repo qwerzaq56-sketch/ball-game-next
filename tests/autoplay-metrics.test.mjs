@@ -1,0 +1,29 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createGame} from '../tools/headless.mjs';
+import {AIEntity} from '../js/ai.js';
+import {Entity} from '../js/entity.js';
+import {random,resetRandom} from '../js/random.js';
+test('autoplay defaults off, chooses local food and escapes threats without extra RNG',()=>{
+ const g=createGame(23),p=g.player;g.entities=[p,new Entity({x:p.x+100,y:p.y,size:10,color:'red',growthValue:10})];g.buildGrid();assert.equal(g.autoplay.enabled,false);g.autoplay.setEnabled(true);
+ resetRandom(99);const expected=random('ai');resetRandom(99);g.autoplay.update(.1);assert(g.autoplay.action.move.x>0);assert.equal(g.autoplay.action.attack,false);assert.equal(random('ai'),expected);
+ const enemy=new AIEntity({x:p.x+200,y:p.y,color:'red',colorHex:'#f00',startSize:100,balance:g.balance});g.entities.push(enemy);g.buildGrid();g.autoplay.update(.1);assert(g.autoplay.action.move.x<0);assert.match(g.autoplay.reason,/도주/);
+});
+test('peaceful companion autoplay cannot attack or cast and reset returns it off',()=>{
+ const g=createGame(11),p=g.player;p.size=100;p._recomputeStacks(g.balance,true);p.apex=true;p.specialCooldown=0;
+ const ally=new AIEntity({x:p.x+80,y:p.y,color:p.color,colorHex:p.colorHex,startSize:40,balance:g.balance}),enemy=new AIEntity({x:p.x+100,y:p.y,color:'red',colorHex:'#f00',startSize:50,balance:g.balance});g.entities=[p,ally,enemy];g.buildGrid();g.allyLinks.refresh();g.allyLinks.join(ally,p);g.autoplay.setEnabled(true);g.autoplay.update(.1);
+ assert.equal(g.autoplay.action.attack,false);assert.equal(g.autoplay.action.special,false);g.reset();assert.equal(g.autoplay.enabled,false);assert.equal(g.runMetrics.samples.length,0);
+});
+test('autoplay uses ordinary lives and produces no action at game over',()=>{
+ const g=createGame(11);g.autoplay.setEnabled(true);for(let i=0;i<3;i++)g.handlePlayerDefeat('test');assert.equal(g.lives,0);assert.equal(g.gameOver,true);g.autoplay.update(.1);assert.equal(g.autoplay.action,null);assert.equal(g.autoplay.reason,'게임 종료');
+});
+test('observer samples once per second, keeps 600 rows and lifetime totals survive truncation',()=>{
+ const g=createGame(11);g.entities=[g.player];g.autoplay.setEnabled(true);g.player.attackState='TELEGRAPH';
+ for(let i=0;i<660*60;i++){g.gameTime=(i+1)/60;g.runMetrics.observe(g,1/60);}
+ assert.equal(g.runMetrics.samples.length,600);assert.equal(g.runMetrics.samples[0].time,61);assert.equal(g.runMetrics.samples.at(-1).time,660);assert.equal(g.runMetrics.attackStarts,1);assert(Math.abs(g.runMetrics.autoSeconds-660)<1e-6);
+ g.player.attackState='READY';g.runMetrics.observe(g,1/60);g.player.attackState='TELEGRAPH';g.runMetrics.observe(g,1/60);assert.equal(g.runMetrics.attackStarts,2);
+});
+test('read-only export cannot mutate simulation/RNG and makes independent nested samples',()=>{
+ const g=createGame(7);g.gameTime=1;g.runMetrics.observe(g,1);const before=JSON.stringify(g.snapshot());resetRandom(42);const expected=random('ai');resetRandom(42);const exported=g.runMetrics.export(g);
+ assert.equal(random('ai'),expected);assert.equal(JSON.stringify(g.snapshot()),before);assert.equal(exported.policy.lifePolicy,'normal gameplay; no replenishment');exported.samples[0].roles.prey=-1;assert(g.runMetrics.samples[0].roles.prey>=0);exported.config.player.startingSize=999;assert.equal(g.balance.player.startingSize,20);
+});

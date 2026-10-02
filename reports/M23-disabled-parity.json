@@ -1,0 +1,20 @@
+{
+  "baselineCommit": "b878a59",
+  "seed": 23,
+  "seconds": 600,
+  "excludedMetadata": [
+    "snapshot.observation",
+    "snapshot.unimplemented"
+  ],
+  "equal": true,
+  "compared": [
+    "core snapshot",
+    "ecology events",
+    "ability events",
+    "Era events",
+    "ally statistics",
+    "next world/ai/physics random draws"
+  ],
+  "rawBeforeSha256": "905e58e78332d81ae08be1ceeebfac337bdd491342009267df7ab8c31e2810d0",
+  "rawAfterSha256": "5133cf486ba36e92f9273deeb5c0af2352b75b1111c80de543ca688a8522d529"
+}

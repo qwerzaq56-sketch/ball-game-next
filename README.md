@@ -1,3 +1,7 @@
+## NEXT M23 변경
+
+F1에서 기본OFF인 자동 플레이 실험과 크기 추이·관찰 JSON 저장을 사용할 수 있습니다. Life/피해는 일반 플레이대로 적용하고 직접 조작하면 수동으로 돌아옵니다. [기획](AUTO_PLAY_DESIGN.md) · [검증](reports/M23-development.md).
+
 ## NEXT M22 변경
 
 색상별 벡터 문양과 플레이어 방향 표시, 몸체 밖 성장 파동을 추가했습니다. 실제 몸체 크기는 유지합니다. [검증](reports/M22-development.md).

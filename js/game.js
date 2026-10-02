@@ -1,3 +1,5 @@
+import { Autoplay } from './autoplay.js';
+import { RunMetrics } from './runMetrics.js';
 import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection } from './vectorArt.js';
 import { Relics } from './relics.js';
 import { Era } from './era.js';
@@ -61,6 +63,8 @@ export class Game {
     this.biomes = new Biomes(this);
     this.era = new Era(this);
     this.relics = new Relics(this);
+    this.autoplay = new Autoplay(this);
+    this.runMetrics = new RunMetrics();
     this.telemetry = [];
     this.player = new Player(this.balance, this.options.profile);
     this.player.onSkillUnlock = (type) => {
@@ -185,6 +189,7 @@ export class Game {
     this.buildGrid();
     this.allyLinks.update(dt);
     this.abilities.update(dt);
+    this.autoplay.update(dt);
     this.updatePlayer(dt);
 
     for (const e of this.entities) {
@@ -220,6 +225,7 @@ export class Game {
     this.ecology.update(this, dt);
     this.allyLinks.refresh();
     this.era.observeDuels();
+    this.runMetrics.observe(this,dt);
     this.apexHistory.observe(this.entities, dt, this.gameTime);
     for(const e of this.entities)if(!e.apex&&e._specialApex){this.abilities.release(e);e._specialApex=false;}
     if (this.options.collect && Math.floor(this.gameTime + 1e-8) > this.telemetry.length) this.telemetry.push(this.snapshot());
@@ -236,7 +242,8 @@ export class Game {
       ai: units.filter(e => e.behavior === 'ai').length,
       sizes: [units.filter(e => e.size < 40).length, units.filter(e => e.size >= 40 && e.size < 100).length,
         units.filter(e => e.size >= 100 && e.size < 180).length, units.filter(e => e.size >= 180).length],
-      unimplemented: ['full-vector-pack', 'autoplay-and-balance-dashboard'],
+      unimplemented: ['full-vector-pack'],
+      observation:{seconds:this.runMetrics.seconds,attackStarts:this.runMetrics.attackStarts,autoplay:this.autoplay.enabled},
       relics:{items:this.relics.items.length,pickups:this.relics.pickups},
       era:{phase:this.era.phase.id,cycle:this.era.cycle,duels:this.era.duels.size,duelStarts:this.era.duelStarts,apocalypses:this.era.completedApocalypses},
       biomes:{encounters:this.biomes.encounters,blizzard:this.biomes.blizzard()},
@@ -287,16 +294,19 @@ export class Game {
     // v0.3 spec §1: being absorbed no longer freezes player control — movement (and dodge)
     // still work, so the player can walk or dodge out of the grab.
 
-    const mouseWorld = this.screenToWorld(inp.mouseX, inp.mouseY);
+    const auto=this.autoplay.enabled?this.autoplay.action:null;
+    const mouseWorld = auto?.aim??this.screenToWorld(inp.mouseX, inp.mouseY);
     const aimAngle = Math.atan2(mouseWorld.y - p.y, mouseWorld.x - p.x);
 
     let dx = 0;
     let dy = 0;
+    if(auto){dx=auto.move.x;dy=auto.move.y;}else {
     if (inp.keys.has('w') || inp.keys.has('arrowup')) dy -= 1;
     if (inp.keys.has('s') || inp.keys.has('arrowdown')) dy += 1;
     if (inp.keys.has('a') || inp.keys.has('arrowleft')) dx -= 1;
     if (inp.keys.has('d') || inp.keys.has('arrowright')) dx += 1;
     dx+=inp.touchMove?.x??0;dy+=inp.touchMove?.y??0;
+    }
 
     const group=this.allyLinks.groups.get(p.companionGroup);
     const moveSpeed=group ? Math.min(p.moveSpeed,...[...group.members].map(e=>e.moveSpeed))*.85 : p.moveSpeed;
@@ -313,12 +323,14 @@ export class Game {
       p.facing = aimAngle;
     }
 
-    if(inp.consumeSpecial?.())this.abilities.start(p,aimAngle,mouseWorld);
-    if (inp.mouseDown && p.attackUnlocked && canStartAttack(p)) {
+    const special=auto?auto.special:inp.consumeSpecial?.();if(auto)auto.special=false;
+    if(special)this.abilities.start(p,aimAngle,mouseWorld);
+    if ((auto?auto.attack:inp.mouseDown) && p.attackUnlocked && canStartAttack(p)) {
       startAttack(p, aimAngle, b);
       this.audio.telegraph();
     }
-    if (inp.consumeDodge() && p.dodgeUnlocked && canStartDodge(p)) {
+    const dodge=auto?auto.dodge:inp.consumeDodge();if(auto)auto.dodge=false;
+    if (dodge && p.dodgeUnlocked && canStartDodge(p)) {
       startDodge(p, moveAngle, b);
       this.audio.dodge();
     }
@@ -556,6 +568,7 @@ export class Game {
   triggerGameOver() {
     this.gameOver = true;
     this.paused = true;
+    this.autoplay.action=null;this.autoplay.reason='게임 종료';
     if (this.onGameOver) this.onGameOver(this.score);
   }
 
