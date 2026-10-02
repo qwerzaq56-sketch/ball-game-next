@@ -1,0 +1,71 @@
+{
+  "player": {
+    "startingSize": 20,
+    "startingGrowth": 0,
+    "startingHp": 100,
+    "moveSpeed": 250,
+    "hpPerGrowth": 0.4
+  },
+  "growth": {
+    "growthPerOrb": 10,
+    "growthPerFragment": 5,
+    "growthToSizeRatio": 1.6,
+    "minEatSizeDifference": 0
+  },
+  "unlock": {
+    "attackUnlockGrowth": 100,
+    "dodgeUnlockGrowth": 250
+  },
+  "attack": {
+    "attackDamage": 20,
+    "attackRange": 60,
+    "attackTelegraphTime": 0.5,
+    "attackChargeSpeed": 650,
+    "attackChargeDuration": 0.25,
+    "attackCooldown": 1.5,
+    "attackRecoveryTime": 0.4
+  },
+  "dodge": {
+    "dodgeDistance": 130,
+    "dodgeDuration": 0.2,
+    "dodgeInvincibleTime": 0.22,
+    "dodgeCooldown": 3.0
+  },
+  "ai": {
+    "spawnCount": 40,
+    "movementSpeed": 130,
+    "detectionRange": 320,
+    "attackRange": 60,
+    "attackCooldown": 1.5,
+    "aggression": 0.55,
+    "fleeThreshold": 0.3,
+    "dodgeUnlockSize": 45
+  },
+  "world": {
+    "worldWidth": 5000,
+    "worldHeight": 5000,
+    "initialOrbCount": 260,
+    "spawnInterval": 0.8,
+    "maxOrbCount": 320,
+    "minOrbSize": 8,
+    "maxOrbSize": 16,
+    "colorCount": 5
+  },
+  "fragment": {
+    "fragmentCount": 5,
+    "fragmentGrowthValue": 5,
+    "fragmentSize": 9
+  },
+  "camera": {
+    "baseZoom": 1.0,
+    "minZoom": 0.55,
+    "zoomSizeFactor": 0.004
+  },
+  "colors": [
+    { "id": "blue", "color": "#3B82F6" },
+    { "id": "red", "color": "#EF4444" },
+    { "id": "green", "color": "#22C55E" },
+    { "id": "yellow", "color": "#EAB308" },
+    { "id": "purple", "color": "#A855F7" }
+  ]
+}
