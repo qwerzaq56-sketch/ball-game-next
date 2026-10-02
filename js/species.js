@@ -4,6 +4,8 @@ import { maintainDistanceFor } from './absorption.js';
 // Encounter acceptance is shared by target selection and central consumption.
 export function acceptsAbsorption(ai, other, balance) {
   if(ai.behavior!=='ai'||ai.color!=='green')return true;
+  // Outside start distance, pursuit can approach without rolling acceptance yet.
+  if(dist(ai,other)>maintainDistanceFor(ai,balance))return true;
   ai.absorbEncounters ??= new Map();
   if(!canAbsorb(ai,other)){ai.absorbEncounters.delete(other.id);return false;}
   if(!ai.absorbEncounters.has(other.id))ai.absorbEncounters.set(other.id,random('ai')<.5);

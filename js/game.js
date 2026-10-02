@@ -349,6 +349,7 @@ export class Game {
     for (const e of this.entities) {
       if (!e.alive) continue;
       const r = e.size / 2;
+      if(e.behavior==='ai'&&e.state==='search'&&(e.x<r||e.y<r||e.x>w.worldWidth-r||e.y>w.worldHeight-r))e.wanderTimer=0;
       e.x = Math.min(Math.max(e.x, r), w.worldWidth - r);
       e.y = Math.min(Math.max(e.y, r), w.worldHeight - r);
     }
@@ -399,7 +400,9 @@ export class Game {
     const enemyCount = this.entities.reduce((n, e) => n + (e.alive && e.behavior === 'ai' ? 1 : 0), 0);
     if (enemyCount < s.maxEnemyCount) {
       const colorDef = this.balance.colors[Math.floor(random('world') * this.balance.colors.length)];
-      this.entities.push(spawnAI(this.balance, colorDef, this.pickSafeSpawnPos(350), this.player.size));
+      const newborn=spawnAI(this.balance, colorDef, this.pickSafeSpawnPos(350), this.player.size);
+      this.entities.push(newborn);
+      this.ecology.initializeUnit(this,newborn);
     }
   }
 
@@ -684,7 +687,7 @@ export class Game {
     const beingAbsorbed = !!e.beingAbsorbedByRef;
     const absorbT = beingAbsorbed && e.absorptionRequired > 0 ? Math.min(1, e.absorptionProgress / e.absorptionRequired) : (beingAbsorbed ? 1 : 0);
     // v0.4 spec §23: a short outward "grew bigger" pulse plays on a successful absorption.
-    const pulseScale = e.scalePulseTimer > 0 ? 1 + (e.scalePulseTimer / 0.3) * 0.18 : 1;
+
     const r = e.size / 2;
     if(e.apex){ctx.beginPath();ctx.arc(e.x,e.y,r+8,0,Math.PI*2);ctx.strokeStyle=this.withAlpha(e.colorHex,.65);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();}
 

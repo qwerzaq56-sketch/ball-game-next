@@ -22,6 +22,14 @@ export class Ecology {
     if(e.apex)this.events.push({time,type:'apex-loss',id:e.id,reason});
     e.apex=false;e._apexCandidate=null;e._apexCount=0;e._titleNeedsConfirmation=true;
   }
+  initializeUnit(game,e){
+    const units=game.entities.filter(x=>x.alive&&x.behavior!=='orb');
+    const sizes=ordered(units,'size',this.sizeOrder), i=sizes.indexOf(e), n=sizes.length;
+    e.role=n<5?'forager':i<Math.floor(n*.2)?'predator':i>=n-Math.floor(n*.4)?'prey':'forager';
+    assignPersonality(e);
+    if(e.role==='predator'&&!e.relationship){const r=random('ai');e.relationship=r<.4?'subordinate':r<.7?'challenger':'independent';}
+    e.apex=false;
+  }
   update(game,dt){
     for(const e of game.entities)if(!e.alive&&e.apex)this.release(e,game.gameTime,'death');
     this.timer-=dt;if(this.timer>0)return;this.timer+=2;

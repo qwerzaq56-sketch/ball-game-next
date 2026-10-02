@@ -1,3 +1,4 @@
+import { assignPersonality } from './ecology.js';
 import { acceptsAbsorption, pruneEncounters, chooseGeneral } from './species.js';
 import { random } from './random.js';
 import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
@@ -27,6 +28,7 @@ export class AIEntity extends Entity {
     this.state = 'search'; // search | chase_eat | chase_fight | flee
     this.target = null;
     this.decisionTimer = random('ai') * 0.3;
+    assignPersonality(this);
     this._recomputeStacks(balance);
   }
 
@@ -127,7 +129,7 @@ export function decideAI(ai, game, balance) {
   if(lastHit){ai.state='chase_fight';ai.target=lastHit;return;}
   if(ai.challengeTarget && canStartAttack(ai) && (ai.personality!=='cautious'||safe(ai.challengeTarget))){ai.state='chase_fight';ai.target=ai.challengeTarget;return;}
   const absorb=closest(nearby.filter(e=>dist(ai,e)<=cfg.absorptionDetectionRange&&canAbsorb(ai,e)&&
-    (ai.color!=="green"||dist(ai,e)<=balance.absorption.baseMaintainDistance+ai.size*balance.absorption.maintainDistancePerSize)&&acceptsAbsorption(ai,e,balance)&&
+    acceptsAbsorption(ai,e,balance)&&
     (ai.personality!=='cautious'||(e.size<=ai.size*(ai.role==='prey'?.7:.8)&&safe(e)))));
   const huntAllowed=ai.role==='predator'||(ai.role==='forager'&&ai.personality==='growth'&&hp>=.6);
   const hunt=huntAllowed && ai.attackUnlocked ? closest(within.filter(e=>isHostile(ai,e)&&e.size<=ai.size*.8&&

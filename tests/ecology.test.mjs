@@ -29,3 +29,7 @@ test('prey cannot select ordinary hunting and critical health enters recovery',(
  g.entities=[a,enemy];g.buildGrid();decideAI(a,g,g.balance);assert.notEqual(a.state,'chase_fight');
  a.hp=a.maxHp*.2;decideAI(a,g,g.balance);assert.equal(a.recovering,true);
 });
+test('new AI receives an immediate role without bypassing existing hysteresis',()=>{
+ const g=createGame(7);g.entities=g.entities.filter(e=>e.behavior!=='ai');g.enemySpawnTimer=0;g.enemySpawnLoop(.1);
+ const newborn=g.entities.find(e=>e.behavior==='ai');assert.equal(newborn.role,'forager');assert.ok(newborn.personality);assert.equal(newborn.score,0);
+});
