@@ -86,3 +86,14 @@ test('rally explicit size exception overrides ordinary .8 hunt limit',()=>{
  const {g,p,t}=fixture('red');t.color='blue';t.size=78;const a=new AIEntity({x:p.x+20,y:p.y,color:'red',colorHex:'#f00',balance:g.balance,startSize:60});
  a.role='prey';a.personality='cautious';a.command={owner:p,kind:'rally',target:t,point:{x:t.x,y:t.y},remaining:4};g.entities.push(a);g.buildGrid();decideAI(a,g,g.balance);assert.equal(a.state,'chase_fight');assert.equal(a.target,t);
 });
+
+test('cast flash captures origin and expires independently of damage/cooldown',()=>{
+ const {g,p,t}=fixture('cyan');const x=p.x,y=p.y;
+ g.abilities.start(p,0);ticks(g,36);
+ assert.equal(g.abilities.flashes.length,1);
+ const f=g.abilities.flashes[0];assert.equal(f.x,x);assert.equal(f.y,y);
+ assert.equal(f.color,'cyan');assert.equal(t.hp,965);
+ p.x+=200;assert.equal(f.x,x);
+ ticks(g,46);assert.equal(g.abilities.flashes.length,0);assert.equal(t.hp,965);
+ assert(p.specialCooldown>8);
+});

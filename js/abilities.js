@@ -16,7 +16,7 @@ export function inWave(origin,target,dir,length=400,width=180){
 }
 function angleDelta(a,b){return Math.abs(Math.atan2(Math.sin(a-b),Math.cos(a-b)));}
 export class Abilities {
- constructor(game){this.enabled=game.options.abilitiesEnabled!==false;this.game=game;this.waves=[];this.fields=[];this.events=[];this.castId=0;}
+ constructor(game){this.enabled=game.options.abilitiesEnabled!==false;this.game=game;this.waves=[];this.fields=[];this.events=[];this.castId=0;this.flashes=[];}
  units(){return this.game.entities.filter(e=>e.alive&&e.behavior!=='orb');}
  log(type,e,extra={}){this.events.push({time:this.game.gameTime,type,id:e.id,...extra});}
  release(owner){
@@ -49,6 +49,7 @@ export class Abilities {
   for(const e of recipients){e.command={owner,kind,remaining:seconds,choices:new Map(),cast:cast.id,target:cast.target,point:cast.targetPoint};this.log('command-start',e,{kind,owner:owner.id});}
  }
  fire(e,cast){
+  this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,point:{...cast.point},remaining:.75});
   this.log('special-fire',e,{color:e.color,cast:cast.id});const units=this.units();
   if(e.color==='cyan')for(const t of units){if(!isHostile(e,t)||!inCone(e,t,cast.dir,260))continue;
     if(this.damage(e,t,.5)&&t.alive&&!(t.freezeImmune>0)){t.frozen=1;t.attackState='READY';t.dodgeState='READY';t.invincible=false;t.trail=[];cancelAbsorption(t);for(const o of units)if(o.beingAbsorbedByRef===t)cancelAbsorption(o);if(t.specialCast)t.specialCast=null;}
@@ -62,6 +63,8 @@ export class Abilities {
   if(e.color==='yellow'){this.fields=this.fields.filter(f=>f.owner!==e);this.fields.push({owner:e,...cast.point,time:0,tick:0});}
  }
  update(dt){
+  for(const flash of this.flashes)flash.remaining-=dt;
+  this.flashes=this.flashes.filter(f=>f.remaining>0);
   const units=this.units(),w=this.game.balance.world;
   for(const e of this.game.entities){
     if(!e.alive||!e.apex){if(e.specialCast||e._specialApex)this.release(e);e._specialApex=false;}
@@ -136,6 +139,18 @@ export class Abilities {
     else ctx.arc(e.x,e.y,ABILITIES[e.color].radius,0,Math.PI*2);
   };
   for(const e of this.units())if(e.specialCast){ctx.save();ctx.beginPath();shape(e,e.specialCast.dir,e.specialCast.point);ctx.fillStyle=this.game.withAlpha(e.colorHex,.09);ctx.fill();ctx.strokeStyle=e.colorHex;ctx.lineWidth=2/zoom;ctx.setLineDash([8/zoom,5/zoom]);ctx.stroke();ctx.setLineDash([]);if(e.color==='red'&&e.specialCast.target){const t=e.specialCast.target;ctx.beginPath();ctx.arc(t.x,t.y,t.size/2+10,0,Math.PI*2);ctx.stroke();}ctx.restore();}
+  const labels={cyan:'냉기 휘두르기',blue:'파도',green:'사기 진작',red:'전투 집결',yellow:'모래바람'};
+  for(const flash of this.flashes){
+    ctx.save();ctx.globalAlpha=Math.min(1,flash.remaining/.25);
+    ctx.beginPath();shape(flash,flash.dir,flash.point);
+    ctx.fillStyle=this.game.withAlpha(flash.colorHex,.22);ctx.fill();
+    ctx.strokeStyle=flash.colorHex;ctx.lineWidth=4/zoom;ctx.stroke();
+    // The stationary origin marker identifies the caster even for a remote sand field.
+    ctx.beginPath();ctx.arc(flash.x,flash.y,(30+(1-flash.remaining/.75)*25)/zoom,0,Math.PI*2);ctx.stroke();
+    ctx.font=`bold ${16/zoom}px sans-serif`;ctx.textAlign='center';
+    ctx.lineWidth=4/zoom;ctx.strokeStyle='#111827';ctx.strokeText(labels[flash.color],flash.x,flash.y-45/zoom);
+    ctx.fillStyle='#fff';ctx.fillText(labels[flash.color],flash.x,flash.y-45/zoom);ctx.restore();
+  }
   for(const f of this.fields){ctx.beginPath();ctx.arc(f.x,f.y,220,0,Math.PI*2);ctx.fillStyle='rgba(234,179,8,.12)';ctx.fill();ctx.strokeStyle='#eab308';ctx.lineWidth=2/zoom;ctx.stroke();}
   for(const wave of this.waves){ctx.save();ctx.translate(wave.x,wave.y);ctx.rotate(wave.dir);ctx.fillStyle='rgba(59,130,246,.4)';ctx.fillRect(Math.max(0,wave.time/.5*400-20),-90,20,180);ctx.restore();}
  }
