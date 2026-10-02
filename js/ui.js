@@ -110,6 +110,8 @@ export class UI {
     this.killsText.textContent = player.kills;
     this.scoreText.textContent = Math.round(game.score);
     this.lifeText.textContent = Math.max(0, game.lives);
+    const roleText=document.getElementById("role-text");
+    if(roleText)roleText.textContent=({prey:"프레이",forager:"포레이저",predator:"프레데터"})[player.role] ?? "";
 
     this.allyAbsorbText.textContent = player.allyAbsorptionEnabled ? 'ON' : 'OFF';
     this.allyAbsorbText.className = player.allyAbsorptionEnabled ? 'ally-on' : 'ally-off';

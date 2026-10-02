@@ -40,6 +40,7 @@ export class Entity {
     this.maxHp = maxHp ?? size * 5;
     this.hp = hp ?? this.maxHp;
     this.alive = true;
+    this.score = 0;
     this.facing = 0;
 
     this.wanderAngle = random('ai') * Math.PI * 2;

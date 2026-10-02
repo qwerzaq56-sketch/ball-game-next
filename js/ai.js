@@ -1,7 +1,7 @@
 import { random } from './random.js';
 import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
 import { canAbsorb, canEatOrb, isHostile, dist } from './collision.js';
-import { canStartAttack, startAttack, updateAttack, canStartDodge, startDodge, updateDodge, attackRangeForSize } from './combat.js';
+import { canStartAttack, startAttack, updateAttack, canStartDodge, startDodge, updateDodge, attackRangeForSize, attackDamageForSize, applyDefense } from './combat.js';
 
 // AI states, implemented in priority order per spec section 25:
 // Search -> Chase -> Eat(resolved centrally by Game) -> Attack -> Dodge -> Dead.
@@ -76,6 +76,7 @@ export function updateAI(ai, dt, game, balance) {
     return;
   }
 
+  if(ai.target && ai.state!=="relationship" && (!ai.target.alive || dist(ai,ai.target)>(ai.state==="chase_eat" && ai.target.behavior!=="orb" ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
   ai.decisionTimer -= dt;
   if (ai.decisionTimer <= 0) {
     ai.decisionTimer = 0.2 + random('ai') * 0.15;
@@ -95,103 +96,60 @@ export function updateAI(ai, dt, game, balance) {
 // re-rolled every decision cycle (~0.2-0.35s), so some AI just ignore a winnable absorption
 // this cycle and fall through to orb-grazing/combat/wander instead. Keeps the population from
 // reading as one predictable hive mind.
-function decideAI(ai, game, balance) {
-  const cfg = balance.ai;
-  const scanRange = Math.max(cfg.detectionRange, cfg.absorptionDetectionRange);
-  const nearby = game.getNearbyEntities(ai, scanRange);
-
-  let nearestEdible = null;
-  let edibleDist = Infinity;
-  let bestAbsorbable = null;
-  let bestAbsorbRatio = 0;
-  let absorbableDist = Infinity;
-  let nearestHostile = null;
-  let hostileDist = Infinity;
-
-  for (const other of nearby) {
-    if (!other.alive) continue;
-    const d = dist(ai, other);
-    if (canEatOrb(ai, other, balance) && d < edibleDist) {
-      nearestEdible = other;
-      edibleDist = d;
+export function decideAI(ai, game, balance) {
+  const cfg=balance.ai, hp=ai.hp/ai.maxHp;
+  ai.recovering=hp<=.3 || (ai.recovering && hp<.6);
+  const nearby=game.getNearbyEntities(ai,Math.max(cfg.detectionRange,cfg.absorptionDetectionRange));
+  const within=nearby.filter(e=>e.alive&&dist(ai,e)<=cfg.detectionRange);
+  const threats=within.filter(e=>isHostile(ai,e)&&e.size>=ai.size*1.2);
+  const safe=e=>threats.every(t=>dist(e,t)>=160);
+  const food=within.filter(e=>canEatOrb(ai,e,balance));
+  const closest=list=>[...list].sort((a,b)=>dist(ai,a)-dist(ai,b)||a.id-b.id)[0];
+  // Reuse spatial candidates; only detected food contributes to a local opportunity.
+  const clusters=food.map(e=>({food:e,value:food.reduce((v,o)=>v+(dist(e,o)<=120?o.growthValue:0),0)}));
+  const rich=closest(clusters.filter(c=>c.value>=80).map(c=>c.food));
+  const threat=closest(threats);
+  const risk=ai.role==='prey' && ai.personality==='growth' && hp>=.6 && rich &&
+    !threats.some(t=>dist(ai,t)<=160||t.size>ai.size*1.5);
+  if(threat && !risk){ai.state='flee';ai.target=threat;return;}
+  if(ai.recovering){ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
+  const opportunist=ai.personality==='opportunist';
+  const lastHit=opportunist && hp>=.6 && canStartAttack(ai) ? closest(within.filter(e=>isHostile(ai,e)&&
+    e.size<=ai.size*1.2&&e.attackState==='RECOVERY'&&!e.invincible&&dist(ai,e)<=attackRangeForSize(ai.size,balance)&&
+    e.hp<=applyDefense(attackDamageForSize(ai.size,balance),e.size,balance))) : null;
+  if(lastHit){ai.state='chase_fight';ai.target=lastHit;return;}
+  const absorb=closest(nearby.filter(e=>dist(ai,e)<=cfg.absorptionDetectionRange&&canAbsorb(ai,e)&&
+    (ai.personality!=='cautious'||(e.size<=ai.size*(ai.role==='prey'?.7:.8)&&safe(e)))));
+  const huntAllowed=ai.role==='predator'||(ai.role==='forager'&&ai.personality==='growth'&&hp>=.6);
+  const hunt=huntAllowed && ai.attackUnlocked ? closest(within.filter(e=>isHostile(ai,e)&&e.size<=ai.size*.8&&
+    (ai.personality!=='cautious'||safe(e)))) : null;
+  const orb=closest(food.filter(e=>safe(e)||risk));
+  if(rich && (safe(rich)||risk) && (ai.personality==='growth'||(ai.role==='predator'&&ai.size>=70&&hp>.5))){ai.state='chase_eat';ai.target=rich;return;}
+  const choices=[orb&&{target:orb,state:'chase_eat'},absorb&&{target:absorb,state:'chase_eat'},hunt&&{target:hunt,state:'chase_fight'}].filter(Boolean);
+  if(choices.length){const c=choices[0];ai.state=c.state;ai.target=c.target;return;}
+  // Relationship sensing is the approved 600 exception; combat sensing remains 320.
+  if(ai.role==='predator'&&!ai.apex&&ai.relationship!=='independent'){
+    const owners=game.getNearbyEntities(ai,600).filter(e=>e.alive&&e.apex&&dist(ai,e)<=600&&
+      (ai.relationship==='subordinate'?e.color===ai.color:e.color!==ai.color));
+    const owner=closest(owners);
+    if(owner){
+      const gap=balance.absorption.baseMaintainDistance+owner.size*balance.absorption.maintainDistancePerSize+80;
+      if(ai.relationship==='subordinate'&&gap>600){ai.state='search';ai.target=null;return;}
+      const challenge=ai.relationship==='challenger'&&hp>=.6&&owner.hp/owner.maxHp<=.3&&owner.size<=ai.size*1.5&&dist(ai,owner)<=cfg.detectionRange&&ai.attackUnlocked;
+      const challengeAllowed=challenge&&(ai.personality!=='cautious'||safe(owner))&&
+        (ai.personality!=='opportunist'||owner.attackState==='RECOVERY');
+      if(challengeAllowed){ai.state='chase_fight';ai.target=owner;return;}
+      const d=dist(ai,owner), desired=ai.relationship==='subordinate'?Math.max(450,gap):450;
+      if(d<desired){ai.state='relationship';ai.target={x:ai.x+(ai.x-owner.x)/Math.max(d,1)*100,y:ai.y+(ai.y-owner.y)/Math.max(d,1)*100,alive:true};return;}
+      if(d>550){ai.state='relationship';ai.target=owner;return;}
     }
-    if (d <= cfg.absorptionDetectionRange && canAbsorb(ai, other)) {
-      const ratio = ai.size / other.size;
-      if (ratio > bestAbsorbRatio) {
-        bestAbsorbable = other;
-        bestAbsorbRatio = ratio;
-        absorbableDist = d;
-      }
-    }
-    if (isHostile(ai, other) && d < hostileDist) {
-      nearestHostile = other;
-      hostileDist = d;
-    }
   }
-
-  // 1. survival — v0.6 spec §13: even at critical HP, don't go to 0% attack probability.
-  // Most of the time a low-HP AI still flees, but `lowHealthAttackChance` keeps a small chance
-  // open every decision cycle to instead fall through and take a swing if one's available —
-  // "생존 행동 우선, 단 공격 시도가 완전히 0이 되지는 않음".
-  const hpRatio = ai.hp / ai.maxHp;
-  if (nearestHostile && hpRatio <= cfg.fleeThreshold && nearestHostile.size > ai.size) {
-    if (random('ai') >= (cfg.lowHealthAttackChance ?? 0)) {
-      ai.state = 'flee';
-      ai.target = nearestHostile;
-      return;
-    }
-    // else: skip fleeing this cycle and fall through to the normal priority chain below,
-    // which may result in a retaliation/attack attempt if conditions allow.
-  }
-
-  // v0.6 spec §8: whether this AI even considers an absorption opportunity this cycle at all.
-  const willAttemptAbsorption = !!bestAbsorbable && random('ai') < (cfg.absorptionAttemptChance ?? 1);
-
-  // 2a. an overwhelmingly favorable absorption target overrides everything but survival
-  if (willAttemptAbsorption && bestAbsorbRatio >= cfg.highPriorityAbsorptionRatio) {
-    ai.state = 'chase_eat';
-    ai.target = bestAbsorbable;
-    return;
-  }
-
-  // 2b. retaliate against whoever just hit us, if we can actually fight back
-  if (ai.hitFlash > 0 && nearestHostile && ai.attackUnlocked && hostileDist <= attackRangeForSize(ai.size, balance) * 1.5) {
-    ai.state = 'chase_fight';
-    ai.target = nearestHostile;
-    return;
-  }
-
-  // 3. a clearly winnable absorption still beats casual orb-grazing or picking a fight
-  if (willAttemptAbsorption && bestAbsorbRatio >= cfg.absorptionPriorityRatio) {
-    ai.state = 'chase_eat';
-    ai.target = bestAbsorbable;
-    return;
-  }
-
-  // pick whichever consumable target (orb or a marginally-smaller rival) is closest
-  const consumeTarget = (bestAbsorbable && absorbableDist < edibleDist) ? bestAbsorbable : nearestEdible;
-  const consumeDist = Math.min(absorbableDist, edibleDist);
-  if (consumeTarget) {
-    ai.state = 'chase_eat';
-    ai.target = consumeTarget;
-    if (!nearestHostile || consumeDist <= hostileDist) return;
-  }
-
-  if (nearestHostile && ai.attackUnlocked && random('ai') < cfg.aggression) {
-    ai.state = 'chase_fight';
-    ai.target = nearestHostile;
-    return;
-  }
-
-  if (!consumeTarget) {
-    ai.state = 'search';
-    ai.target = null;
-  }
+  ai.state='search';ai.target=null;
 }
 
 function reactToThreats(ai, game, balance) {
   if (!ai.dodgeUnlocked || !canStartDodge(ai)) return;
-  const range = attackRangeForSize(ai.size, balance) * 1.5;
+  const range = Math.min(balance.ai.detectionRange, attackRangeForSize(ai.size, balance) * 1.5);
   const nearby = game.getNearbyEntities(ai, range);
   for (const other of nearby) {
     if (other.attackState === 'TELEGRAPH' && isHostile(ai, other)) {
@@ -214,6 +172,8 @@ function moveAI(ai, dt, balance) {
     // v0.3: fleeing a low-HP threat gets a burst of speed, but fleeing an absorption grab
     // (spec §1) does not — you're still partly held, so the absorber gets a fair chance.
     speed *= ai.beingAbsorbedByRef ? 1.0 : 1.3;
+  } else if(ai.state==='relationship'&&ai.target){
+    targetAngle=Math.atan2(ai.target.y-ai.y,ai.target.x-ai.x);speed*=.55;
   } else if (ai.state === 'chase_eat' && ai.target && ai.target.alive) {
     // actual eating/absorption is resolved centrally in Game.resolveConsumption()
     targetAngle = Math.atan2(ai.target.y - ai.y, ai.target.x - ai.x);

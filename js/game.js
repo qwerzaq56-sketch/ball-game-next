@@ -1,3 +1,4 @@
+import { Ecology } from './ecology.js';
 import { random, resetRandom } from './random.js';
 import { resetEntityIds } from './entity.js';
 import { Player } from './player.js';
@@ -40,6 +41,7 @@ export class Game {
     resetRandom(this.seed);
     resetEntityIds();
     this.gameTime = 0;
+    this.ecology = new Ecology();
     this.telemetry = [];
     this.player = new Player(this.balance);
     this.player.onSkillUnlock = (type) => {
@@ -55,7 +57,7 @@ export class Game {
     this.paused = false;
     this.gameOver = false;
     this.lives = this.balance.lives.maxLives;
-    this.score = 0;
+    this.player.score = 0;
     if (this._absorbDroneActive) {
       this.audio.stopAbsorbDrone();
       this._absorbDroneActive = false;
@@ -68,6 +70,7 @@ export class Game {
     };
 
     this.initWorld();
+    this.ecology.update(this, 0);
   }
 
   initWorld() {
@@ -180,8 +183,13 @@ export class Game {
     this.orbSpawnLoop(dt);
     this.enemySpawnLoop(dt);
     this.cleanupDead();
+    this.ecology.update(this, dt);
     if (this.options.collect && Math.floor(this.gameTime + 1e-8) > this.telemetry.length) this.telemetry.push(this.snapshot());
   }
+
+  get score() { return this.player.score; }
+  set score(value) { this.player.score = value; }
+  awardScore(entity, amount) { entity.score += Math.round(amount); }
 
   snapshot() {
     const units = this.entities.filter(e => e.alive && e.behavior !== 'orb');
@@ -285,10 +293,11 @@ export class Game {
           if (!circlesOverlap(eater, target)) continue;
           target.alive = false;
           eater.addGrowth(target.growthValue, b);
+          this.awardScore(eater, target.growthValue);
           this.spawnGrowthParticles(target.x, target.y, target.colorHex);
           if (eater === this.player) {
             this.audio.growth();
-            this.score += Math.round(target.growthValue);
+
           }
           continue;
         }
@@ -409,6 +418,7 @@ export class Game {
   // Growth carry over unchanged into the respawn, and only running out of Lives triggers Game
   // Over (spec: "부활할 때 Size는 감소하지 않는다").
   onEntityDeath(entity, attacker) {
+    this.ecology.release(entity, this.gameTime, "death");
     if (entity.behavior === 'player') {
       this.spawnDeathParticles(entity.x, entity.y, entity.colorHex);
       this.audio.death();
@@ -424,9 +434,10 @@ export class Game {
       const kr = this.balance.killReward;
       const reward = kr.baseReward * Math.pow(entity.size / kr.referenceSize, kr.growthExponent) * kr.growthRewardMultiplier;
       attacker.addGrowth(reward, this.balance);
+      this.awardScore(attacker, Math.round(reward) + 100);
       if (attacker === this.player) {
         this.player.kills += 1;
-        this.score += Math.round(reward) + 100; // flat per-kill score bonus, on top of the growth
+        // Score already credited once above; // flat per-kill score bonus, on top of the growth
         this.audio.death();
         this.audio.killReward();
         this.spawnFloatingText(attacker.x, attacker.y - attacker.size / 2 - 10, `+${Math.round(reward)} GROWTH`, '#4ade80');
@@ -465,6 +476,7 @@ export class Game {
   // (onEntityDeath) and being fully absorbed (absorption.js#completeAbsorption) — so a Life is
   // spent and Game Over triggers consistently regardless of which one happened.
   handlePlayerDefeat(reason) {
+    this.ecology.release(this.player, this.gameTime, reason);
     this.lives -= 1;
     if (this.lives > 0) {
       this.ui.showDefeatMessage(reason);
@@ -588,6 +600,7 @@ export class Game {
     ctx.translate(-this.camera.x, -this.camera.y);
 
     this.drawGrid(ctx);
+    this.drawTerritories(ctx);
     this.drawWorldBorder(ctx);
     this.drawAbsorptionLinks(ctx);
     this.drawEntities(ctx);
@@ -595,6 +608,15 @@ export class Game {
     this.drawFloatingTexts(ctx);
 
     ctx.restore();
+  }
+
+  drawTerritories(ctx) {
+    ctx.save();ctx.beginPath();ctx.rect(0,0,this.balance.world.worldWidth,this.balance.world.worldHeight);ctx.clip();
+    for(const e of this.entities){if(!e.alive||!e.apex)continue;
+      ctx.beginPath();ctx.arc(e.x,e.y,600,0,Math.PI*2);
+      ctx.fillStyle=this.withAlpha(e.colorHex,.025);ctx.fill();
+      ctx.strokeStyle=this.withAlpha(e.colorHex,.3);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();
+    }ctx.restore();
   }
 
   drawGrid(ctx) {
@@ -662,7 +684,8 @@ export class Game {
     const absorbT = beingAbsorbed && e.absorptionRequired > 0 ? Math.min(1, e.absorptionProgress / e.absorptionRequired) : (beingAbsorbed ? 1 : 0);
     // v0.4 spec §23: a short outward "grew bigger" pulse plays on a successful absorption.
     const pulseScale = e.scalePulseTimer > 0 ? 1 + (e.scalePulseTimer / 0.3) * 0.18 : 1;
-    const r = (e.size / 2) * (beingAbsorbed ? 1 - absorbT * 0.3 : 1) * pulseScale;
+    const r = e.size / 2;
+    if(e.apex){ctx.beginPath();ctx.arc(e.x,e.y,r+8,0,Math.PI*2);ctx.strokeStyle=this.withAlpha(e.colorHex,.65);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();}
 
     // dodge afterimages — each fades independently over dodge.effectLifetime, then is pruned
     // (see combat.js#updateDodge), so they never linger on screen after the dodge ends.

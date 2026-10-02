@@ -41,12 +41,13 @@ export function cancelAbsorption(target) {
 function completeAbsorption(absorber, target, game, balance) {
   const gained = target.behavior === 'orb' ? target.growthValue : target.growth;
   absorber.addGrowth(gained, balance);
+  game.awardScore(absorber, gained);
   game.spawnAbsorptionParticles(target.x, target.y, target.colorHex);
   absorber.scalePulseTimer = 0.3; // short "grew bigger" scale pulse on the absorber
   if (absorber === game.player || target === game.player) game.audio.absorbSuccess();
   if (absorber === game.player) {
     game.spawnFloatingText(absorber.x, absorber.y - absorber.size / 2 - 10, `+${Math.round(gained)} GROWTH`, '#93c5fd');
-    game.score += Math.round(gained);
+
   }
   cancelAbsorption(target);
 
@@ -58,6 +59,7 @@ function completeAbsorption(absorber, target, game, balance) {
     // Kill Count only tracks the player's own attack finishing an enemy off, not absorption —
     // so no kills++ here even when the player is the absorber.
     target.alive = false;
+    game.ecology.release(target, game.gameTime, "absorbed");
   }
 }
 
