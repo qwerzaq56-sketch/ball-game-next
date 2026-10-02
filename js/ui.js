@@ -2,6 +2,7 @@
 
 import { submitScore } from './storage.js';
 import { EcologyUI } from './ecologyUI.js';
+import {nextSkillGoal} from './progression.js';
 
 export class UI {
   constructor(balance, onBalanceChange) {
@@ -141,6 +142,9 @@ export class UI {
 
     this.renderPips(this.attackPips, player.attackStack, player.attackMaxStack);
     this.renderPips(this.dodgePips, player.dodgeStack, player.dodgeMaxStack);
+    const goal=nextSkillGoal(player,game.balance);
+    document.getElementById('growth-goal-text').textContent=goal.label;
+    document.getElementById('growth-goal-fill').style.width=`${goal.fraction*100}%`;
 
     if (this.unlockTimer > 0) {
       this.unlockTimer -= dt;
@@ -264,7 +268,7 @@ export class UI {
         input.value = this.balance[section.key][field];
         input.addEventListener('input', () => {
           const v = parseFloat(input.value);
-          if (!Number.isNaN(v)) {
+          if (Number.isFinite(v)) {
             this.balance[section.key][field] = v;
             this.onBalanceChange(section.key, field, v);
           }
@@ -342,7 +346,7 @@ export class UI {
       input.value = list[index].size;
       input.addEventListener('input', () => {
         const v = parseFloat(input.value);
-        if (!Number.isNaN(v)) {
+        if (Number.isFinite(v)) {
           list[index].size = v;
           this.onBalanceChange('skills', label, v);
         }

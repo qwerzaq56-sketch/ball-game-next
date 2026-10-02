@@ -78,7 +78,11 @@ async function main() {
   window.addEventListener('mouseup', (e) => {
     if (e.button === 0) input.mouseDown = false;
   });
-  const ui = new UI(balance, () => {});
+  const ui = new UI(balance, section => {
+    const activeGame=window.__game;if(section!=='skills'||!activeGame)return;
+    activeGame.player._recomputeStacks(balance,true);
+    for(const e of activeGame.entities)if(e.alive&&e.behavior==='ai')e._recomputeStacks(balance);
+  });
   const game = new Game(balance, canvas, input, ui, {profile:loadPlayerProfile(balance.colors)});
   const playerSetup = new PlayerSetup(game, input);
   playerSetup.open();

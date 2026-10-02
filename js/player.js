@@ -20,6 +20,7 @@ export class Player extends Entity {
     this.displayName = selected.name;
     this.baseSize = b.startingSize;
     this.growth = b.startingGrowth;
+    this.refreshFromGrowth(balance);
     this.kills = 0; // v0.3: only counts kills the player's own attack landed the final hit on
     this.onSkillUnlock = null; // set by Game to trigger the HUD banner
     // v0.6 spec §7: right-click toggles whether the player can absorb same-color (ally) balls.
@@ -52,13 +53,13 @@ export class Player extends Entity {
 
     if (newAttackMax !== this.attackMaxStack) {
       if (fireEvents && this.onSkillUnlock && this.attackMaxStack === 0 && newAttackMax > 0) this.onSkillUnlock('attack');
-      this.attackStack += newAttackMax - this.attackMaxStack;
+      this.attackStack = Math.min(newAttackMax,Math.max(0,this.attackStack + newAttackMax - this.attackMaxStack));
       this.attackMaxStack = newAttackMax;
       this.attackUnlocked = newAttackMax > 0;
     }
     if (newDodgeMax !== this.dodgeMaxStack) {
       if (fireEvents && this.onSkillUnlock && this.dodgeMaxStack === 0 && newDodgeMax > 0) this.onSkillUnlock('dodge');
-      this.dodgeStack += newDodgeMax - this.dodgeMaxStack;
+      this.dodgeStack = Math.min(newDodgeMax,Math.max(0,this.dodgeStack + newDodgeMax - this.dodgeMaxStack));
       this.dodgeMaxStack = newDodgeMax;
       this.dodgeUnlocked = newDodgeMax > 0;
     }

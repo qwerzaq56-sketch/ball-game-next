@@ -1,5 +1,7 @@
 # CLOUD M4 report
 
+> 최신 M14: 성장 목표·초기 성장 일관성·동적 스택 보정. [보고서](reports/M14-development.md).
+
 > 최신 M13: 창 이탈 자동 정지·흡수 지속음 정리. [보고서](reports/M13-development.md).
 
 > 최신 M12: 선택형 미니맵·F5·터치 능력 피드백. [보고서](reports/M12-development.md).

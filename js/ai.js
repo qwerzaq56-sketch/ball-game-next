@@ -50,10 +50,10 @@ export class AIEntity extends Entity {
   _recomputeStacks(balance) {
     const newAttackMax = computeMaxStack(this.size, balance.skills.attackStackThresholds);
     const newDodgeMax = computeMaxStack(this.size, balance.skills.dodgeStackThresholds);
-    this.attackStack += newAttackMax - this.attackMaxStack;
+    this.attackStack = Math.min(newAttackMax,Math.max(0,this.attackStack + newAttackMax - this.attackMaxStack));
     this.attackMaxStack = newAttackMax;
     this.attackUnlocked = newAttackMax > 0;
-    this.dodgeStack += newDodgeMax - this.dodgeMaxStack;
+    this.dodgeStack = Math.min(newDodgeMax,Math.max(0,this.dodgeStack + newDodgeMax - this.dodgeMaxStack));
     this.dodgeMaxStack = newDodgeMax;
     this.dodgeUnlocked = newDodgeMax > 0;
   }
