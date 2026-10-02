@@ -12,6 +12,7 @@ let apexSamples = 0, apexNotBiggest = 0;
 
 for (let f = 0; f < seconds * 60; f++) {
   g.player.hp = g.player.maxHp; g.player.alive = true; g.gameOver = false;
+  g.paused = false; g.lives = g.balance.lives.maxLives;
   g.update(dt);
   const w = Math.min(buckets - 1, Math.floor(f / 60 / win));
   const ais = g.entities.filter(e => e.alive && e.behavior === 'ai');
@@ -39,7 +40,7 @@ const rates = [...perAI.values()].map(s => ({secs: (s.last - s.first) / 60, c: s
 const q = p => rates.length ? rates[Math.min(rates.length - 1, Math.floor(rates.length * p))].toFixed(2) : '-';
 const top = Object.entries(pairs).sort((a, b) => b[1] - a[1]).slice(0, 8);
 console.log(JSON.stringify({
-  seed, seconds,
+  seed, seconds, simulatedSeconds: Number(g.gameTime.toFixed(3)),
   aiAttackStartsPer30s: attacks,
   avgAliveAIPer30s: aliveSum.map((a, i) => Math.round(a / Math.max(1, aliveN[i]))),
   stateChangesPerSec: {sampledAI: rates.length, p50: q(0.5), p90: q(0.9), max: q(1)},
