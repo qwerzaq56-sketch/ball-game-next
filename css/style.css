@@ -455,6 +455,12 @@ html, body {
   border-radius: 10px; padding: 12px; font-size: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
 }
+#minimap-panel { width:180px; padding:8px; }
+#minimap-canvas { display:block; width:100%; aspect-ratio:1; cursor:crosshair; border:1px solid #334155; border-radius:4px; }
+.minimap-heading { display:flex; justify-content:space-between; color:#cbd5e1; font-size:11px; margin-bottom:6px; }
+.minimap-heading span { color:#64748b; }
+.minimap-key { color:#94a3b8; font-size:9px; margin-top:6px; }
+@media(max-width:700px) { #minimap-panel { width:136px; } }
 #live-ranking { top: 14px; }
 #ecology-panel { bottom: 30px; max-height: min(400px, 48vh); overflow-y: auto; }
 .observer-heading { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
@@ -563,7 +569,7 @@ html, body {
   #touch-knob { position:absolute; left:32px; top:32px; width:40px; height:40px; border-radius:50%; background:rgba(125,211,252,.5); border:1px solid #7dd3fc; pointer-events:none; }
   .touch-label { position:absolute; bottom:8px; width:100%; text-align:center; font-size:10px; color:#cbd5e1; pointer-events:none; }
   #touch-actions { position:absolute; right:14px; bottom:max(20px,env(safe-area-inset-bottom)); display:grid; grid-template-columns:52px 66px; gap:8px; pointer-events:auto; }
-  #touch-actions button { border:1px solid #64748b; color:#e2e8f0; background:rgba(15,23,42,.85); border-radius:50%; font:600 12px system-ui; touch-action:none; min-height:48px; padding:5px; }
+  #touch-actions button { border:1px solid #64748b; color:#e2e8f0; background:rgba(15,23,42,.85); border-radius:50%; font:600 11px system-ui; white-space:pre-line; touch-action:none; min-height:48px; padding:5px; }
   #touch-actions button:disabled { opacity:.4; }
   #touch-attack { grid-column:2; grid-row:1 / span 2; min-height:80px !important; }
   #controls-hint { display:none; }

@@ -35,5 +35,11 @@ try {
  const hud=await page.locator('#hud').boundingBox(),joy=await page.locator('#touch-stick').boundingBox();assert(hud.y+hud.height<joy.y,'landscape HUD must not cover joystick');
  assert(await page.locator('#pause-btn').isVisible());await page.locator('#pause-btn').click();assert.equal(await page.evaluate(()=>window.__game.paused),true);await page.locator('#pause-btn').click();
  await page.screenshot({path:`${prefix}-touch-landscape.png`});
+ await page.evaluate(()=>{const g=window.__game,p=g.player;g.paused=true;p.attackUnlocked=false;p.dodgeUnlocked=false;p.apex=false;});await page.waitForTimeout(50);
+ assert.match(await page.locator('#touch-attack').innerText(),/크기 40/);assert.match(await page.locator('#touch-dodge').innerText(),/크기 50/);assert.match(await page.locator('#touch-special').innerText(),/최상위/);
+ await page.evaluate(()=>{const g=window.__game,p=g.player,a=g.entities.find(e=>e.behavior==='ai');p.attackUnlocked=p.dodgeUnlocked=true;p.apex=true;a.color=p.color;a.colorHex=p.colorHex;a.x=p.x+80;a.y=p.y;g.allyLinks.refresh();g.allyLinks.join(a,p);});await page.waitForTimeout(50);
+ assert.match(await page.locator('#touch-attack').innerText(),/동행 중/);assert.match(await page.locator('#touch-special').innerText(),/E 불가/);assert.equal(await page.locator('#touch-attack').isDisabled(),true);
+ await page.evaluate(()=>{const g=window.__game;g.allyLinks.leave(g.player);g.player.attackStack=g.player.dodgeStack=0;});await page.waitForTimeout(50);
+ assert.match(await page.locator('#touch-attack').innerText(),/충전 중/);assert.match(await page.locator('#touch-dodge').innerText(),/회피 충전/);assert.equal(await page.locator('#touch-dodge').isDisabled(),true);
  assert.deepEqual(errors,[]);console.log(JSON.stringify({result:'PASS',genuineTouch:true,analogMove:true,simultaneousAttack:true,dragAim:true,pointerCancel:true,dodge:true,aimWithoutAttack:true,specialWindupFire:true,pauseClear:true,errors}));
 } finally {await browser.close();}

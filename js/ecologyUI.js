@@ -1,5 +1,6 @@
 import {scoreRanking, sizeRanking, durationLabel} from './presentation.js';
 import {loadPresentationPreferences, savePresentationPreferences} from './storage.js';
+import {Minimap} from './minimap.js';
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -15,6 +16,7 @@ export class EcologyUI {
     ui.preferences = this.preferences;
     this.ranking = document.getElementById('live-ranking');
     this.ecology = document.getElementById('ecology-panel');
+    this.minimap=new Minimap(ui);
     this.rows = [];
     const list = document.getElementById('live-ranking-list');
     for (let i=0;i<10;i++) {
@@ -35,7 +37,7 @@ export class EcologyUI {
         this.preferences.rankingMode=mode; savePresentationPreferences(this.preferences); this.apply(); this.lastUpdate=-Infinity;
       });
     }
-    for (const key of ['names','ranking','ecology']) {
+    for (const key of ['names','ranking','ecology','minimap']) {
       document.getElementById(`${key}-toggle`).addEventListener('click', () => this.toggle(key));
     }
     document.getElementById('ally-links-toggle').addEventListener('click',()=>this.toggle('allyLinks'));
@@ -43,6 +45,7 @@ export class EcologyUI {
     window.addEventListener('keydown', e => {
       if (document.getElementById('player-setup').open) return;
       if (e.key === 'F4') {e.preventDefault(); if (!e.repeat) this.toggle('ecology');}
+      if (e.key === 'F5') {e.preventDefault(); if (!e.repeat) this.toggle('minimap');}
     });
     this.apply();
     this.lastUpdate = -Infinity;
@@ -54,8 +57,9 @@ export class EcologyUI {
   apply() {
     this.ranking.hidden = !this.preferences.ranking;
     this.ecology.hidden = !this.preferences.ecology;
+    this.minimap.root.hidden=!this.preferences.minimap;
     for (const mode of ['score','size']) document.getElementById(`ranking-mode-${mode}`).setAttribute('aria-pressed',String(this.preferences.rankingMode===mode));
-    const labels = {names:'이름',ranking:'순위',ecology:'생태계'};
+    const labels = {names:'이름',ranking:'순위',ecology:'생태계',minimap:'지도'};
     for (const key of Object.keys(labels)) {
       const button = document.getElementById(`${key}-toggle`);
       button.textContent = `${labels[key]}: ${this.preferences[key] ? 'ON' : 'OFF'}`;
@@ -77,8 +81,9 @@ export class EcologyUI {
       this.lastUpdate=now;
       if (this.preferences.ranking) this.renderRanking(game);
       if (this.preferences.ecology) this.renderEcology(game);
+      if (this.preferences.minimap) this.minimap.render(game);
       // In screen pixels: name labels reserve occupied panels, including existing debug UI.
-      this.ui.overlayRects = ['hud','live-ranking','ecology-panel','debug-panel','ai-inspector','controls-hint','build-id','touch-stick','touch-actions']
+      this.ui.overlayRects = ['hud','live-ranking','ecology-panel','debug-panel','ai-inspector','controls-hint','build-id','touch-stick','touch-actions','minimap-panel']
         .map(id=>document.getElementById(id)).filter(n=>n && n.getClientRects().length)
         .map(n=>n.getBoundingClientRect()).filter(r=>r.width && r.height)
         .map(r=>({left:r.left-4,top:r.top-4,right:r.right+4,bottom:r.bottom+4}));
