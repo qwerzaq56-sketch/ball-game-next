@@ -60,3 +60,18 @@ export function saveMuted(muted) {
     // ignore
   }
 }
+
+const PRESENTATION_KEY = 'ballgamenext_presentation_v1';
+export function loadPresentationPreferences() {
+  const defaults = {names:true, ranking:true, ecology:false};
+  try {
+    const saved = JSON.parse(localStorage.getItem(PRESENTATION_KEY));
+    if (saved && typeof saved === 'object') for (const key of Object.keys(defaults)) {
+      if (typeof saved[key] === 'boolean') defaults[key] = saved[key];
+    }
+  } catch { /* unavailable or malformed storage uses defaults */ }
+  return defaults;
+}
+export function savePresentationPreferences(preferences) {
+  try { localStorage.setItem(PRESENTATION_KEY, JSON.stringify(preferences)); } catch { /* optional persistence */ }
+}

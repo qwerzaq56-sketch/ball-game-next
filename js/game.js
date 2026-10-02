@@ -1,3 +1,5 @@
+import { ApexHistory } from './apexHistory.js';
+import { scoreRanking, layoutNameLabels } from './presentation.js';
 import { Abilities } from './abilities.js';
 import { acceptsAbsorption } from './species.js';
 import { Ecology } from './ecology.js';
@@ -48,6 +50,7 @@ export class Game {
     this.gameTime = 0;
     this.showAILabels = true; // head-up state + personality labels over AI (debug aid, F3)
     this.ecology = new Ecology();
+    this.apexHistory = new ApexHistory();
     this.abilities = new Abilities(this);
     this.telemetry = [];
     this.player = new Player(this.balance);
@@ -78,6 +81,7 @@ export class Game {
 
     this.initWorld();
     this.ecology.update(this, 0);
+    this.apexHistory.observe(this.entities, 0, this.gameTime);
   }
 
   initWorld() {
@@ -192,6 +196,7 @@ export class Game {
     this.enemySpawnLoop(dt);
     this.cleanupDead();
     this.ecology.update(this, dt);
+    this.apexHistory.observe(this.entities, dt, this.gameTime);
     for(const e of this.entities)if(!e.apex&&e._specialApex){this.abilities.release(e);e._specialApex=false;}
     if (this.options.collect && Math.floor(this.gameTime + 1e-8) > this.telemetry.length) this.telemetry.push(this.snapshot());
   }
@@ -628,6 +633,25 @@ export class Game {
     this.drawParticles(ctx);
     this.drawFloatingTexts(ctx);
 
+    ctx.restore();
+    this.drawNames(ctx);
+  }
+
+  drawNames(ctx) {
+    if (this.ui.preferences?.names === false) {this.visibleNameLabels=[]; return;}
+    const ctxFont = "bold 12px system-ui, sans-serif";
+    ctx.save(); ctx.font = ctxFont; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
+    const candidates = scoreRanking(this.entities, this.ecology.scoreOrder).slice(0,20)
+      .filter(e => this.isRoughlyVisible(e)).map(e => {
+        const point = this.worldToScreen(e.x, e.y-e.size/2);
+        const text = `${e.apex ? "★ " : ""}${e.displayName}`;
+        return {id:e.id, text, color:e.colorHex, x:point.x, y:point.y-(this.showAILabels ? 34 : 18), textWidth:ctx.measureText(text).width};
+      });
+    this.visibleNameLabels = layoutNameLabels(candidates, this.canvas.width, this.canvas.height, this.ui.overlayRects ?? []);
+    for (const label of this.visibleNameLabels) {
+      const r=label.box; ctx.fillStyle="rgba(10,15,24,.85)"; ctx.fillRect(r.left,r.top,r.right-r.left,r.bottom-r.top);
+      ctx.fillStyle=label.color; ctx.fillText(label.text,label.x,label.y);
+    }
     ctx.restore();
   }
 

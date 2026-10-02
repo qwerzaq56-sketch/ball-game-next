@@ -75,7 +75,7 @@ async function main() {
   const ui = new UI(balance, () => {});
   const game = new Game(balance, canvas, input, ui);
   window.__game = game; // debug inspection hook
-  new AIInspector(game, canvas, ui); // F2: read-only AI state window
+  ui.inspector = new AIInspector(game, canvas, ui); // F2: read-only AI state window
 
   // v0.6 follow-up: the ally-absorption toggle used to be a right-click gesture on the canvas,
   // but that was too easy to trigger by accident mid-fight (a stray right-click during combat

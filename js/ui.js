@@ -1,6 +1,7 @@
 // HUD rendering (DOM overlay) + live-editable Debug/Balance panel.
 
 import { submitScore } from './storage.js';
+import { EcologyUI } from './ecologyUI.js';
 
 export class UI {
   constructor(balance, onBalanceChange) {
@@ -32,14 +33,15 @@ export class UI {
     this.debugPanel = document.getElementById('debug-panel');
     this.debugVisible = false;
     this.buildDebugPanel();
+    this.ecologyUI = new EcologyUI(this);
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'F1') {
+      if (e.key === 'F1' && !e.repeat) {
         e.preventDefault();
         this.debugVisible = !this.debugVisible;
         this.debugPanel.style.display = this.debugVisible ? 'block' : 'none';
       }
-      if (e.key === 'F3' && this.game) {
+      if (e.key === 'F3' && !e.repeat && this.game) {
         e.preventDefault();
         this.game.showAILabels = !this.game.showAILabels;
         if (this.aiLabelCheckbox) this.aiLabelCheckbox.checked = this.game.showAILabels;
@@ -105,6 +107,7 @@ export class UI {
   // v0.6: takes the whole Game instance now (was just `player`) so it can also read
   // lives/score/ally-absorption state, all of which live on Game, not Player/HUD-local state.
   update(dt, game) {
+    this.ecologyUI.update(game);
     this.game = game; // debug-panel checkbox handlers read this
     const player = game.player;
     const hpRatio = Math.max(0, player.hp / player.maxHp);

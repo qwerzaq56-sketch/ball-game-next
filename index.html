@@ -9,7 +9,7 @@
 <body>
   <div style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="role-text"></span> · <span id="special-text"></span></div>
   <canvas id="game-canvas"></canvas>
-  <div id="build-id">NEXT · next-0.6.0 build 1 (기존 /ball-game/ 과 별도 버전)</div>
+  <div id="build-id">NEXT · M5</div>
 
   <div id="load-error"></div>
 
@@ -40,9 +40,27 @@
     </div>
     <div class="hud-block hud-controls">
       <button id="mute-btn" class="hud-btn" type="button">SOUND: ON</button>
+      <button id="names-toggle" class="hud-btn" type="button" aria-pressed="true">이름: ON</button>
+      <button id="ranking-toggle" class="hud-btn" type="button" aria-pressed="true" aria-controls="live-ranking">순위: ON</button>
+      <button id="ecology-toggle" class="hud-btn" type="button" aria-pressed="false" aria-controls="ecology-panel">생태계: OFF</button>
       <button id="reset-btn" class="hud-btn" type="button">전체 초기화</button>
     </div>
   </div>
+
+  <aside id="live-ranking" class="observer-panel" aria-label="실시간 점수 순위">
+    <div class="observer-heading"><strong>TOP 10</strong><span>점수 순위</span></div>
+    <ol id="live-ranking-list"></ol>
+    <div id="my-rank"></div>
+  </aside>
+  <aside id="ecology-panel" class="observer-panel" aria-label="이번 런의 apex 기록" hidden>
+    <div class="observer-heading"><strong>생태계</strong><span id="ecology-time"></span><button id="ecology-close" type="button" aria-label="생태계 패널 닫기">×</button></div>
+    <p id="ecology-summary"></p>
+    <div id="ecology-periods"></div>
+    <p id="ecology-longest"></p>
+    <ul id="apex-current"></ul>
+    <h3>최근 기록</h3>
+    <ol id="apex-events"></ol>
+  </aside>
 
   <div id="unlock-banner"></div>
   <div id="defeat-banner">DEFEATED — RESPAWNING...</div>
@@ -70,7 +88,7 @@
   <div id="debug-panel"></div>
 
   <div id="controls-hint">
-    WASD 이동 · 마우스 조준 · 좌클릭 공격 · Space 회피 · F1 디버그 패널(아군 흡수 ON/OFF 포함)
+    WASD 이동 · 마우스 조준 · 좌클릭 공격 · Space 회피 · E 특수능력 · F1 설정 · F2 AI 보기 · F3 상태 · F4 생태계
   </div>
 
   <script type="module" src="js/main.js"></script>

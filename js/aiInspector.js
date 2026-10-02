@@ -21,6 +21,7 @@ export class AIInspector {
     this.selectedId = null;
     this.track = new Map(); // id -> { last, times: [], hist: [] }
     this.lastRender = 0;
+    this.lastHistory = game.apexHistory;
 
     this.root = document.createElement('div');
     this.root.id = 'ai-inspector';
@@ -40,7 +41,7 @@ export class AIInspector {
       if (row) { this.selectedId = Number(row.dataset.id); this.lastRender = 0; }
     });
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'F2') { e.preventDefault(); this.toggle(); }
+      if (e.key === 'F2' && !e.repeat) { e.preventDefault(); this.toggle(); }
     });
     // Capture phase so a Shift+click selects without also starting a player attack.
     canvas.addEventListener('mousedown', (e) => {
@@ -50,6 +51,13 @@ export class AIInspector {
     }, true);
     const loop = () => { this.frame(); requestAnimationFrame(loop); };
     requestAnimationFrame(loop);
+  }
+
+  select(id) {
+    if (!this.ais().some(e => e.id === id)) return;
+    this.selectedId = id;
+    if (!this.visible) this.toggle();
+    this.lastRender = 0;
   }
 
   toggle() {
@@ -98,6 +106,9 @@ export class AIInspector {
   }
 
   frame() {
+    if (this.lastHistory !== this.game.apexHistory) {
+      this.lastHistory = this.game.apexHistory; this.track.clear(); this.selectedId = null;
+    }
     if (!this.visible) return;
     this.sample();
     this.placeRing();
@@ -131,7 +142,7 @@ export class AIInspector {
     const sr = eco.scoreOrder.indexOf(e.id) + 1, zr = eco.sizeOrder.indexOf(e.id) + 1;
     const f = (v) => (v == null ? '-' : v);
     const rows = [
-      ['id / 색', `#${e.id} ${e.color}`], ['역할 / 성격', `${f(e.role)} / ${f(e.personality)}`],
+      ['이름 / id', `${e.displayName} · #${e.id}`], ['색', e.color], ['역할 / 성격', `${f(e.role)} / ${f(e.personality)}`],
       ['관계', f(e.relationship)], ['state', e.state], ['target', this.describeTarget(e)],
       ['HP / size', `${Math.round(e.hp / e.maxHp * 100)}% / ${Math.round(e.size)}`],
       ['score (순위)', `${Math.round(e.score)} (${sr || '-'}위, size ${zr || '-'}위)`],

@@ -1,4 +1,5 @@
 import { random } from './random.js';
+import { assignDisplayName } from './presentation.js';
 // Base entity used by orbs (incl. death-spawned orbs), AI balls and the player.
 // v0.2: Size is the single unified stat driving edibility, skill stage, and combat range —
 // see computeMaxStack() below and combatScaling in combat.js.
@@ -36,7 +37,8 @@ export class Entity {
     this.colorHex = colorHex;
     this.growthValue = growthValue;
     this.moveSpeed = moveSpeed;
-    this.behavior = behavior; // 'orb' | 'ai' | 'player'
+    this.behavior = behavior;
+    assignDisplayName(this);
     this.maxHp = maxHp ?? size * 5;
     this.hp = hp ?? this.maxHp;
     this.alive = true;
