@@ -38,17 +38,17 @@ Playwright는 있으나 Chromium 실행파일이 없어 브라우저 렌더/스�
 
 ## 재개 방법 (기존 작업 폴더에 덮어쓰지 않음)
 압축 내 source/는 검토용 전체소스. npm test 또는 node --test. 웹실행은 python -m http.server 8000.
-커밋이력은 ball-game-cloud.bundle의 개발브랜치에 있음. 새 클라우드/별도폴더에서:
+커밋이력은 ball-game-abilities.bundle의 개발브랜치에 있음. 새 클라우드/별도폴더에서:
 
 ```bash
-git clone ball-game-cloud.bundle ball-game-next-review
+git clone ball-game-abilities.bundle ball-game-next-review
 cd ball-game-next-review
 git switch codex/cloud-next-m0
 node --test
 python -m http.server 8000
 ```
 
-bundle 검증: git bundle verify ball-game-cloud.bundle.
+bundle 검증: git bundle verify ball-game-abilities.bundle.
 patches/*.patch는 원본4e552a6 별도체크아웃에서 git am으로 순서대로 적용할 대안. 이미 bundle을 clone했다면 patch를 중복적용하지 않는다.
 원본ball-game master에는 적용/병합/push하지 않는다. ball-game-next remote 연결/생성/공개는 이후 대상과검증결과를 제시하고 최종승인받는다.
 
