@@ -2,6 +2,7 @@
 // Usage: node tools/behavior-metrics.mjs [seed=11] [seconds=300]
 // The player is kept alive and idle so the run measures AI-vs-AI behaviour for the whole span.
 import {createGame} from './headless.mjs';
+import {ApexMetrics} from './apex-metrics.mjs';
 
 const seed = Number(process.argv[2] ?? 11), seconds = Number(process.argv[3] ?? 300);
 const detection=Number(process.argv[4] ?? 320), wanderScale=Number(process.argv[5] ?? 1);
@@ -13,11 +14,13 @@ const buckets = Math.ceil(seconds / win);
 const attacks = new Array(buckets).fill(0), aliveSum = new Array(buckets).fill(0), aliveN = new Array(buckets).fill(0);
 const prev = new Map(), pairs = {}, perAI = new Map();
 let apexSamples = 0, apexNotBiggest = 0;
+const apexDynamics = new ApexMetrics();
 
 for (let f = 0; f < seconds * 60; f++) {
   g.player.hp = g.player.maxHp; g.player.alive = true; g.gameOver = false;
   g.paused = false; g.lives = g.balance.lives.maxLives;
   g.update(dt);
+  apexDynamics.observe(g.entities, dt);
   // Measurement-only experiment: extend newly chosen wander segments, without
   // extra RNG calls or altering the production configuration.
   if(wanderScale!==1)for(const e of g.entities.filter(e=>e.behavior==='ai')){
@@ -57,5 +60,5 @@ console.log(JSON.stringify({
   stateChangesPerSec: {sampledAI: rates.length, p50: q(0.5), p90: q(0.9), max: q(1)},
   topTransitions: Object.fromEntries(top),
   searchFleeTotal: (pairs['search>flee'] ?? 0) + (pairs['flee>search'] ?? 0),
-  apex: {samples: apexSamples, notBiggest: apexNotBiggest},
+  apex: {samples: apexSamples, notBiggest: apexNotBiggest, dynamics: apexDynamics.summary()},
 }, null, 1));

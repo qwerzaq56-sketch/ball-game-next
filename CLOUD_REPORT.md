@@ -1,5 +1,7 @@
 # CLOUD M4 report
 
+> 2026-10-03 사용자 기획 갱신: 아래 M4 기록의 “apex 점유량 감소 = guardrail 실패” 판단은 더 이상 적용하지 않는다. 목표는 희소·빈번한 교체·장기 독점이 시기별로 다양하게 나타나는 생태계다. 기존 수치는 역사적 측정으로 보존한다. 새 평가 기준은 GAME_DESIGN.md의 NEXT 절과 reports/apex-diversity.md를 참고한다.
+
 Base: `feat/integrate-cloud-m3` at `8c88808`; working branch: `codex/cloud-next-m4`.
 
 ## Unit 1 — make the 300-second comparison trustworthy
