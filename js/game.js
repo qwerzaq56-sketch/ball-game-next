@@ -868,12 +868,14 @@ export class Game {
     ctx.arc(e.x, e.y, r, 0, Math.PI * 2);
     ctx.fill();
 
-    drawSpeciesMark(ctx,e,this.camera.zoom);
-    drawGrowthPulse(ctx,e,this.camera.zoom);
-    drawPlayerDirection(ctx,e,this.camera.zoom);
     ctx.lineWidth = Math.max(1.5, r * 0.08);
     ctx.strokeStyle = e.behavior === 'player' ? '#ffffff' : (beingAbsorbed ? '#ffffff' : 'rgba(0,0,0,0.45)');
     ctx.stroke();
+    // Canvas save/restore does not restore the current path. Stroke the body before
+    // decorative helpers replace it with their marks, pulse circles or arrow triangles.
+    drawSpeciesMark(ctx,e,this.camera.zoom);
+    drawGrowthPulse(ctx,e,this.camera.zoom);
+    drawPlayerDirection(ctx,e,this.camera.zoom);
 
     if (beingAbsorbed) {
       // absorption progress ring, pulsing as it nears completion

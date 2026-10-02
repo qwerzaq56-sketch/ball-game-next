@@ -8,9 +8,10 @@ try{
  const radius=await page.evaluate(()=>{
   const g=window.__game;g.paused=true;const p=g.player;p.size=80;p.color='blue';p.colorHex='#3b82f6';p.scalePulseTimer=.15;p.facing=-.3;
   const units=g.entities.filter(e=>e.behavior==='ai').slice(0,5);g.entities=[p,...units];units.forEach((e,i)=>{e.x=p.x+(i-2)*160;e.y=p.y+170;e.size=70;e.color=g.balance.colors[i].id;e.colorHex=g.balance.colors[i].color;e.role='forager';e.scalePulseTimer=.15;e.attackState='READY';e.apex=false;e.hp=e.maxHp;});
-  const ctx=g.ctx,arc=ctx.arc,fill=ctx.fill;let lastArc=null;const fills=[];
+  const ctx=g.ctx,arc=ctx.arc,fill=ctx.fill,stroke=ctx.stroke;let lastArc=null;const fills=[],strokes=[];
   ctx.arc=function(...args){lastArc=args;return arc.apply(this,args);};ctx.fill=function(...args){fills.push({arc:lastArc,style:ctx.fillStyle});return fill.apply(this,args);};
-  try{g.drawEntity(ctx,p);}finally{ctx.arc=arc;ctx.fill=fill;}
-  return {body:fills.find(f=>f.style===p.colorHex)?.arc[2],actual:p.size/2};
- });assert.equal(radius.body,radius.actual);await page.waitForTimeout(250);await page.screenshot({path:'/tmp/M22-vector-art.png'});assert.deepEqual(errors,[]);console.log(JSON.stringify({result:'PASS',species:5,bodyRadius:radius.body,growthOutside:true,playerDirection:true,errors}));
+  ctx.stroke=function(...args){strokes.push({arc:lastArc,style:ctx.strokeStyle});return stroke.apply(this,args);};
+  try{g.drawEntity(ctx,p);}finally{ctx.arc=arc;ctx.fill=fill;ctx.stroke=stroke;}
+  return {body:fills.find(f=>f.style===p.colorHex)?.arc[2],outline:strokes.find(s=>s.style==='#ffffff')?.arc[2],actual:p.size/2};
+ });assert.equal(radius.body,radius.actual);assert.equal(radius.outline,radius.actual);await page.waitForTimeout(250);await page.screenshot({path:'/tmp/M22-vector-art.png'});assert.deepEqual(errors,[]);console.log(JSON.stringify({result:'PASS',species:5,bodyRadius:radius.body,growthOutside:true,playerDirection:true,errors}));
 }finally{await browser.close();}

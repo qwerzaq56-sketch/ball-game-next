@@ -26,10 +26,14 @@ export class Era {
   const g=this.game,w=g.balance.world,room=Math.max(0,g.balance.spawning.maxOrbCount-g.entities.filter(e=>e.alive&&e.behavior==='orb').length);
   for(let i=0;i<Math.min(12,room);i++){const angle=random('world')*Math.PI*2,d=field.radius*(1.1+random('world')*.2);const orb=spawnOrb(g.balance,{x:Math.max(0,Math.min(w.worldWidth,field.x+Math.cos(angle)*d)),y:Math.max(0,Math.min(w.worldHeight,field.y+Math.sin(angle)*d))});orb.growthValue*=2;orb.regionReward='apocalypse';g.entities.push(orb);}
  }
+ fronts(){
+  if(!this.enabled||this.phase.id!=='war')return [];
+  const w=this.game.balance.world,radius=Math.min(w.worldWidth,w.worldHeight)*.04;
+  return this.game.balance.colors.map((color,index)=>{const angle=index*Math.PI*2/5;return {x:w.worldWidth/2+Math.cos(angle)*radius,y:w.worldHeight/2+Math.sin(angle)*radius,color:color.color,id:color.id,alive:true};});
+ }
  warDestination(e){
   if(!this.enabled||this.phase.id!=='war'||!(e.role==='predator'||e.role==='forager'&&e.personality==='growth')||!e.attackUnlocked||e.recovering)return null;
-  const w=this.game.balance.world,index=Math.max(0,this.game.balance.colors.findIndex(c=>c.id===e.color)),angle=index*Math.PI*2/5;
-  const radius=Math.min(w.worldWidth,w.worldHeight)*.04;return {x:w.worldWidth/2+Math.cos(angle)*radius,y:w.worldHeight/2+Math.sin(angle)*radius,alive:true};
+  const point=this.fronts().find(p=>p.id===e.color)??this.fronts()[0];return {x:point.x,y:point.y,alive:true};
  }
  observeDuels(){
   const now=this.game.gameTime,live=new Map();
@@ -40,6 +44,13 @@ export class Era {
  recordDuel(event){this.recentDuels.unshift(event);if(this.recentDuels.length>16)this.recentDuels.pop();}
  status(){return this.enabled?`${this.phase.name} · ${Math.ceil(this.remaining)}s`:'시기 OFF';}
  draw(ctx,zoom){
+  ctx.save();
+  for(const p of this.fronts()){
+   const s=14/zoom;ctx.strokeStyle=p.color;ctx.fillStyle=p.color;ctx.lineWidth=2/zoom;
+   ctx.beginPath();ctx.arc(p.x,p.y,25/zoom,0,Math.PI*2);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(p.x-s/2,p.y+s);ctx.lineTo(p.x-s/2,p.y-s);ctx.lineTo(p.x+s,p.y-s/2);ctx.lineTo(p.x-s/2,p.y);ctx.stroke();
+   ctx.font=`bold ${12/zoom}px system-ui`;ctx.textAlign='center';ctx.fillText('전선',p.x,p.y+40/zoom);
+  }ctx.restore();
   const field=this.apocalypse;if(field){ctx.save();ctx.beginPath();ctx.arc(field.x,field.y,field.radius,0,Math.PI*2);ctx.fillStyle=field.active?'rgba(220,38,38,.3)':'rgba(245,158,11,.13)';ctx.fill();ctx.strokeStyle=field.active?'#ef4444':'#fbbf24';ctx.lineWidth=3/zoom;ctx.setLineDash(field.active?[]:[10/zoom,6/zoom]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#fde68a';ctx.font=`bold ${16/zoom}px system-ui`;ctx.textAlign='center';ctx.fillText(field.active?'파멸 · 위험':`파멸 전조 · ${Math.max(0,Math.ceil(field.activeAt-this.game.gameTime))}s`,field.x,field.y-field.radius-15/zoom);ctx.restore();}
   if(!this.game.showAILabels)return;ctx.save();ctx.strokeStyle='rgba(251,191,36,.75)';ctx.lineWidth=1.5/zoom;ctx.setLineDash([6/zoom,5/zoom]);
   for(const d of this.duels.values()){const a=this.game.entities.find(e=>e.id===d.challengerId),b=this.game.entities.find(e=>e.id===d.targetId);if(!a||!b)continue;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}ctx.restore();

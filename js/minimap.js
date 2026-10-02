@@ -26,7 +26,8 @@ export class Minimap {
     for(const r of game.biomes.regions){ctx.beginPath();ctx.ellipse(r.x*scaleX,r.y*scaleY,r.radius*scaleX,r.radius*scaleY,0,0,Math.PI*2);ctx.fillStyle=r.color;ctx.fill();if(r.hotRadius){ctx.beginPath();ctx.ellipse(r.x*scaleX,r.y*scaleY,r.hotRadius*scaleX,r.hotRadius*scaleY,0,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();}}
     for(const item of game.relics.items){ctx.fillStyle='#fde68a';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('★',item.x*scaleX,item.y*scaleY+3);}
     const field=game.era.apocalypse;if(field){ctx.beginPath();ctx.ellipse(field.x*scaleX,field.y*scaleY,field.radius*scaleX,field.radius*scaleY,0,0,Math.PI*2);ctx.strokeStyle=field.active?'#ef4444':'#fbbf24';ctx.lineWidth=2;ctx.stroke();}
-    document.getElementById('minimap-era').textContent=game.era.phase.name;
+    for(const p of game.era.fronts()){ctx.strokeStyle=p.color;ctx.lineWidth=1.5;ctx.strokeRect(p.x*scaleX-3,p.y*scaleY-3,6,6);}
+    document.getElementById('minimap-era').textContent=game.era.phase.name+(game.era.fronts().length?' · □ 전선':'');
     for(const e of game.entities){if(!e.alive)continue;const x=e.x*scaleX,y=e.y*scaleY;
       ctx.beginPath();ctx.arc(x,y,e.behavior==='orb'?.7:e.behavior==='player'?3:Math.min(3,1.2+e.size/100),0,Math.PI*2);ctx.fillStyle=e.behavior==='orb'?'rgba(148,163,184,.35)':e.colorHex;ctx.fill();
       if(e.apex){ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.strokeStyle='#facc15';ctx.lineWidth=1;ctx.stroke();}
