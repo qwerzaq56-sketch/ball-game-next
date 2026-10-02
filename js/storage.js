@@ -6,8 +6,8 @@
 // Every read/write is wrapped in try/catch: localStorage can throw (private browsing, blocked
 // site data, storage quota) and none of that should ever crash the game.
 
-const SCOREBOARD_KEY = 'ballgame_scoreboard_v1';
-const MUTED_KEY = 'ballgame_muted_v1';
+const SCOREBOARD_KEY = 'ballgamenext_scoreboard_v1';
+const MUTED_KEY = 'ballgamenext_muted_v1';
 const MAX_ENTRIES = 10;
 
 export function loadScoreboard() {

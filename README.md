@@ -1,3 +1,7 @@
+> **NEXT 저장소** — 기존 공개 게임(`/ball-game/`, 커밋 4e552a6, 태그 `public-twitter-2026-09-23`)과 분리된 새 버전 작업본입니다.
+> 이 저장소는 https://qwerzaq56-sketch.github.io/ball-game-next/ 로 배포됩니다. 같은 도메인이라 localStorage를 공유하므로
+> 저장 키는 `ballgamenext_*` 접두어를 씁니다(기존 `ballgame_*` 키는 읽지도 지우지도 않음). 첫 릴리스 `next-0.6.0 build 1` = v0.6 동작 + 키 분리 + 빌드 ID 표시.
+
 # 탑뷰 2D 성장형 액션 게임 — 웹 프로토타입 (Version 0.6)
 
 Version 0.5의 수정 기획을 반영한 버전. 새 핵심 시스템보다 **다듬기와 지속가능한 플레이

@@ -369,3 +369,14 @@ html, body {
   accent-color: #4ade80;
   cursor: pointer;
 }
+
+/* NEXT build marker: distinguishes this site from the original /ball-game/ release */
+#build-id {
+  position: fixed;
+  right: 8px;
+  bottom: 6px;
+  z-index: 5;
+  font: 11px/1.2 monospace;
+  color: rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+}
