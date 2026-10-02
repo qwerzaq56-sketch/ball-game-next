@@ -7,19 +7,20 @@ const start=Date.now(),argument=process.argv[2]??'60';
 const deadline=/^\d+$/.test(argument)?start+Number(argument)*1000:Date.parse(argument);
 if(!Number.isFinite(deadline)||deadline<=start||deadline-start>12*3600000)throw Error('Provide 1–43200 seconds or a future UTC deadline within 12 hours');
 const output=process.argv[3]??'/tmp/ball-next-live-soak.json';
+const seed=Number(process.argv[4]??23);if(!Number.isInteger(seed))throw Error('Seed must be an integer');
 const commit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
 const workingTreeDirty=!!execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim();
 const imagePrefix=output.replace(/\.json$/,'');
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
 const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
 const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
-const report={commit,workingTreeDirty,policy:'built-in local-survival-v1; normal lives, no replenishment',startedAt:new Date(start).toISOString(),deadline:new Date(deadline).toISOString(),status:'RUNNING',timeline:[],errors};
+const report={commit,workingTreeDirty,seed,policy:'built-in local-survival-v1; normal lives, no replenishment',startedAt:new Date(start).toISOString(),deadline:new Date(deadline).toISOString(),status:'RUNNING',timeline:[],errors};
 async function save(){await writeFile(`${output}.tmp`,JSON.stringify(report,null,2));await rename(`${output}.tmp`,output);}
 let lastProgress=0,lastTimeline=0,lastViewport=-1,lastDialogue=-1;
 try {
  await page.goto('http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-name').fill('검증봇');await page.locator('#player-start').click();
- await page.evaluate(()=>{
-  const g=window.__game;g.seed=23;g.reset();g.autoplay.setEnabled(true);g.ui.ecologyUI.toggle('minimap',true);g.ui.ecologyUI.toggle('ecology',true);
+ await page.evaluate(seed=>{
+  const g=window.__game;g.seed=seed;g.reset();g.autoplay.setEnabled(true);g.ui.ecologyUI.toggle('minimap',true);g.ui.ecologyUI.toggle('ecology',true);
   window.__soak={frames:0,checks:0,maxApex:0,maxGroups:0,maxSize:0,lastCheck:0,violation:null};
   const original=g.update;
   g.update=function(dt){
@@ -31,9 +32,11 @@ try {
     if(group.members.size<2||group.members.size>6||!group.members.has(group.leader))s.violation='group membership';
     for(const e of group.members)if(!e.alive||e.color!==group.color||e.companionGroup!==group.id||e.attackState!=='READY'||e.specialCast)s.violation=`peaceful member #${e.id}`;
    }
-   if(this.gameTime-s.lastCheck>=1){s.lastCheck=this.gameTime;for(const e of units){s.checks++;s.maxSize=Math.max(s.maxSize,e.size);for(const k of ['x','y','size','hp','maxHp','moveSpeed','facing'])if(!Number.isFinite(e[k]))s.violation=`nonfinite ${k} #${e.id}`;if(!(e.hp>0&&e.hp<=e.maxHp+1e-6))s.violation=`health #${e.id}`;if(e.companionGroup&&!this.allyLinks.groups.has(e.companionGroup))s.violation=`orphan #${e.id}`;}}
+   if(this.abilities.events.length>256||this.ecology.events.length>256||this.era.events.length>100||this.allyLinks.events.length>100||this.era.recentDuels.length>16||this.apexHistory.recent.length>24||this.apexHistory.completed.length>12||this.runMetrics.samples.length>600)s.violation='unbounded history';
+   if(this.relics.items.length>3)s.violation='relic population';
+   if(this.gameTime-s.lastCheck>=1){s.lastCheck=this.gameTime;for(const e of units){s.checks++;s.maxSize=Math.max(s.maxSize,e.size);for(const k of ['x','y','size','hp','maxHp','moveSpeed','facing'])if(!Number.isFinite(e[k]))s.violation=`nonfinite ${k} #${e.id}`;if(!(e.hp>0&&e.hp<=e.maxHp+1e-6))s.violation=`health #${e.id}`;if(e.companionGroup&&!this.allyLinks.groups.has(e.companionGroup))s.violation=`orphan #${e.id}`;if(e.x<0||e.x>this.balance.world.worldWidth||e.y<0||e.y>this.balance.world.worldHeight)s.violation=`world center #${e.id}`;}}
   };
- });
+ },seed);
  while(Date.now()<deadline){
   if(errors.length)throw Error(errors.at(-1));
   const elapsed=(Date.now()-start)/1000;
