@@ -1,5 +1,5 @@
 import { random } from './random.js';
-// Stable order is kept separately for size roles and score titles.
+// Stable size order drives roles and apex titles; score order remains for the leaderboard.
 function ordered(units, field, previous) {
   const rank = new Map(previous.map((id,i)=>[id,i]));
   return [...units].sort((a,b)=>b[field]-a[field] || (rank.get(a.id) ?? Infinity)-(rank.get(b.id) ?? Infinity) || a.id-b.id);
@@ -36,7 +36,7 @@ export class Ecology {
     const units=game.entities.filter(e=>e.alive&&e.behavior!=='orb');
     const sizes=ordered(units,'size',this.sizeOrder), scores=ordered(units,'score',this.scoreOrder);
     this.sizeOrder=sizes.map(e=>e.id);this.scoreOrder=scores.map(e=>e.id);
-    const titles=new Set(scores.slice(0,5).filter(e=>e.size>=100).map(e=>e.id));
+    const titles=new Set(sizes.slice(0,5).filter(e=>e.size>=100).map(e=>e.id));
     sizes.forEach((e,i)=>{
       assignPersonality(e);
       const role=units.length<5?'forager':i<Math.floor(units.length*.2)?'predator':i>=units.length-Math.floor(units.length*.4)?'prey':'forager';

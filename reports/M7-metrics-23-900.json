@@ -1,0 +1,206 @@
+{
+ "seed": 23,
+ "seconds": 900,
+ "detection": 320,
+ "wanderScale": 1,
+ "simulatedSeconds": 900,
+ "aiAttackStartsPer30s": [
+  52,
+  56,
+  63,
+  74,
+  71,
+  71,
+  71,
+  34,
+  88,
+  51,
+  55,
+  79,
+  81,
+  67,
+  49,
+  48,
+  58,
+  64,
+  76,
+  77,
+  72,
+  61,
+  57,
+  68,
+  60,
+  32,
+  31,
+  56,
+  43,
+  31
+ ],
+ "avgAliveAIPer30s": [
+  65,
+  71,
+  79,
+  78,
+  79,
+  78,
+  76,
+  80,
+  78,
+  78,
+  79,
+  78,
+  78,
+  77,
+  77,
+  77,
+  80,
+  79,
+  76,
+  75,
+  73,
+  71,
+  72,
+  69,
+  64,
+  64,
+  66,
+  69,
+  67,
+  59
+ ],
+ "stateChangesPerSec": {
+  "sampledAI": 384,
+  "p50": "0.40",
+  "p90": "0.60",
+  "max": "0.97"
+ },
+ "topTransitions": {
+  "search>chase_eat": 4855,
+  "search>flee": 4831,
+  "chase_eat>search": 4804,
+  "flee>search": 4739,
+  "flee>chase_eat": 2117,
+  "chase_eat>flee": 1980,
+  "chase_fight>flee": 989,
+  "search>chase_fight": 806
+ },
+ "searchFleeTotal": 9570,
+ "apex": {
+  "samples": 3296,
+  "notBiggest": 2514,
+  "dynamics": {
+   "observedSeconds": 900,
+   "apexEntitySeconds": 3296,
+   "secondsByApexCount": {
+    "0": 118,
+    "1": 142,
+    "2": 2,
+    "3": 18,
+    "4": 4,
+    "5": 616
+   },
+   "distinctHolders": 7,
+   "titleGains": 18,
+   "titleLosses": 13,
+   "tenures": [
+    {
+     "id": 469,
+     "seconds": 158,
+     "ongoing": false
+    },
+    {
+     "id": 484,
+     "seconds": 8,
+     "ongoing": false
+    },
+    {
+     "id": 469,
+     "seconds": 6,
+     "ongoing": false
+    },
+    {
+     "id": 484,
+     "seconds": 50,
+     "ongoing": false
+    },
+    {
+     "id": 639,
+     "seconds": 240,
+     "ongoing": false
+    },
+    {
+     "id": 484,
+     "seconds": 8,
+     "ongoing": false
+    },
+    {
+     "id": 639,
+     "seconds": 18,
+     "ongoing": false
+    },
+    {
+     "id": 1196,
+     "seconds": 34,
+     "ongoing": false
+    },
+    {
+     "id": 454,
+     "seconds": 326,
+     "ongoing": false
+    },
+    {
+     "id": 497,
+     "seconds": 376,
+     "ongoing": false
+    },
+    {
+     "id": 484,
+     "seconds": 18,
+     "ongoing": false
+    },
+    {
+     "id": 454,
+     "seconds": 86,
+     "ongoing": false
+    },
+    {
+     "id": 497,
+     "seconds": 28,
+     "ongoing": false
+    },
+    {
+     "id": 480,
+     "seconds": 782,
+     "ongoing": true
+    },
+    {
+     "id": 469,
+     "seconds": 398,
+     "ongoing": true
+    },
+    {
+     "id": 639,
+     "seconds": 316,
+     "ongoing": true
+    },
+    {
+     "id": 1196,
+     "seconds": 312,
+     "ongoing": true
+    },
+    {
+     "id": 454,
+     "seconds": 132,
+     "ongoing": true
+    }
+   ],
+   "soleHolderRuns": [
+    {
+     "id": 480,
+     "seconds": 142,
+     "ongoing": false
+    }
+   ]
+  }
+ }
+}
