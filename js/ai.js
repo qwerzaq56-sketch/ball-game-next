@@ -1,3 +1,4 @@
+import { random } from './random.js';
 import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
 import { canAbsorb, canEatOrb, isHostile, dist } from './collision.js';
 import { canStartAttack, startAttack, updateAttack, canStartDodge, startDodge, updateDodge, attackRangeForSize } from './combat.js';
@@ -8,14 +9,14 @@ import { canStartAttack, startAttack, updateAttack, canStartDodge, startDodge, u
 
 export class AIEntity extends Entity {
   constructor({ x, y, color, colorHex, balance, startSize }) {
-    if (startSize === undefined) startSize = balance.world.minOrbSize * 2.2 + Math.random() * 10;
+    if (startSize === undefined) startSize = balance.world.minOrbSize * 2.2 + random('ai') * 10;
     super({
       x,
       y,
       size: startSize,
       color,
       colorHex,
-      moveSpeed: balance.ai.movementSpeed * (0.8 + Math.random() * 0.4),
+      moveSpeed: balance.ai.movementSpeed * (0.8 + random('ai') * 0.4),
       behavior: 'ai',
       hp: startSize * 5,
       maxHp: startSize * 5,
@@ -24,7 +25,7 @@ export class AIEntity extends Entity {
     this.growth = 0;
     this.state = 'search'; // search | chase_eat | chase_fight | flee
     this.target = null;
-    this.decisionTimer = Math.random() * 0.3;
+    this.decisionTimer = random('ai') * 0.3;
     this._recomputeStacks(balance);
   }
 
@@ -77,7 +78,7 @@ export function updateAI(ai, dt, game, balance) {
 
   ai.decisionTimer -= dt;
   if (ai.decisionTimer <= 0) {
-    ai.decisionTimer = 0.2 + Math.random() * 0.15;
+    ai.decisionTimer = 0.2 + random('ai') * 0.15;
     decideAI(ai, game, balance);
   }
 
@@ -134,7 +135,7 @@ function decideAI(ai, game, balance) {
   // "생존 행동 우선, 단 공격 시도가 완전히 0이 되지는 않음".
   const hpRatio = ai.hp / ai.maxHp;
   if (nearestHostile && hpRatio <= cfg.fleeThreshold && nearestHostile.size > ai.size) {
-    if (Math.random() >= (cfg.lowHealthAttackChance ?? 0)) {
+    if (random('ai') >= (cfg.lowHealthAttackChance ?? 0)) {
       ai.state = 'flee';
       ai.target = nearestHostile;
       return;
@@ -144,7 +145,7 @@ function decideAI(ai, game, balance) {
   }
 
   // v0.6 spec §8: whether this AI even considers an absorption opportunity this cycle at all.
-  const willAttemptAbsorption = !!bestAbsorbable && Math.random() < (cfg.absorptionAttemptChance ?? 1);
+  const willAttemptAbsorption = !!bestAbsorbable && random('ai') < (cfg.absorptionAttemptChance ?? 1);
 
   // 2a. an overwhelmingly favorable absorption target overrides everything but survival
   if (willAttemptAbsorption && bestAbsorbRatio >= cfg.highPriorityAbsorptionRatio) {
@@ -176,7 +177,7 @@ function decideAI(ai, game, balance) {
     if (!nearestHostile || consumeDist <= hostileDist) return;
   }
 
-  if (nearestHostile && ai.attackUnlocked && Math.random() < cfg.aggression) {
+  if (nearestHostile && ai.attackUnlocked && random('ai') < cfg.aggression) {
     ai.state = 'chase_fight';
     ai.target = nearestHostile;
     return;
@@ -195,7 +196,7 @@ function reactToThreats(ai, game, balance) {
   for (const other of nearby) {
     if (other.attackState === 'TELEGRAPH' && isHostile(ai, other)) {
       const d = dist(ai, other);
-      if (d < range && Math.random() < 0.5) {
+      if (d < range && random('ai') < 0.5) {
         const away = Math.atan2(ai.y - other.y, ai.x - other.x);
         startDodge(ai, away, balance);
         return;
@@ -226,8 +227,8 @@ function moveAI(ai, dt, balance) {
   } else {
     ai.wanderTimer -= dt;
     if (ai.wanderTimer <= 0) {
-      ai.wanderAngle = Math.random() * Math.PI * 2;
-      ai.wanderTimer = 1 + Math.random() * 2;
+      ai.wanderAngle = random('ai') * Math.PI * 2;
+      ai.wanderTimer = 1 + random('ai') * 2;
     }
     targetAngle = ai.wanderAngle;
     speed *= 0.55;

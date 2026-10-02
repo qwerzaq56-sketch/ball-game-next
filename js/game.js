@@ -1,3 +1,5 @@
+import { random, resetRandom } from './random.js';
+import { resetEntityIds } from './entity.js';
 import { Player } from './player.js';
 import { AIEntity, updateAI } from './ai.js';
 import { canEatOrb, canAbsorb, isHostile, circlesOverlap, dist } from './collision.js';
@@ -13,7 +15,9 @@ import { AudioManager } from './audio.js';
 const CELL_SIZE = 220;
 
 export class Game {
-  constructor(balance, canvas, input, ui) {
+  constructor(balance, canvas, input, ui, options = {}) {
+    this.options = options;
+    this.seed = options.seed ?? Date.now();
     this.balance = balance;
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
@@ -33,6 +37,10 @@ export class Game {
   // separate action — see spec §14/§17). Also doubles as the constructor's own init path so
   // there's only one place that defines "what a fresh run looks like".
   reset() {
+    resetRandom(this.seed);
+    resetEntityIds();
+    this.gameTime = 0;
+    this.telemetry = [];
     this.player = new Player(this.balance);
     this.player.onSkillUnlock = (type) => {
       this.ui.showUnlock(type);
@@ -84,8 +92,8 @@ export class Game {
     const py = this.player.y;
     for (let attempt = 0; attempt < 10; attempt++) {
       const candidate = {
-        x: Math.random() * b.world.worldWidth,
-        y: Math.random() * b.world.worldHeight,
+        x: random('world') * b.world.worldWidth,
+        y: random('world') * b.world.worldHeight,
       };
       if (Math.hypot(candidate.x - px, candidate.y - py) >= safeRadius) return candidate;
     }
@@ -139,6 +147,7 @@ export class Game {
   update(dt) {
     if (this.paused) return;
     const b = this.balance;
+    this.gameTime += dt;
 
     this.buildGrid();
     this.updatePlayer(dt);
@@ -151,7 +160,7 @@ export class Game {
       if (!e.alive || (e.behavior !== 'player' && e.behavior !== 'ai')) continue;
       updateKnockback(e, dt);
       const regenerating = updateHealthRegen(e, dt, b);
-      if (regenerating && Math.random() < 0.15) this.spawnRegenParticle(e.x, e.y, e.size);
+      if (regenerating && random('visual') < 0.15) this.spawnRegenParticle(e.x, e.y, e.size);
       if (e.scalePulseTimer > 0) e.scalePulseTimer = Math.max(0, e.scalePulseTimer - dt);
       // v0.6 spec §3: AI regenerates attack stacks on its own (slower) cooldown, separate from
       // the player's — see combat.js#updateAttackStack and gameBalance.json's `ai.attackCooldown`.
@@ -171,6 +180,18 @@ export class Game {
     this.orbSpawnLoop(dt);
     this.enemySpawnLoop(dt);
     this.cleanupDead();
+    if (this.options.collect && Math.floor(this.gameTime + 1e-8) > this.telemetry.length) this.telemetry.push(this.snapshot());
+  }
+
+  snapshot() {
+    const units = this.entities.filter(e => e.alive && e.behavior !== 'orb');
+    return { time: this.gameTime, lives: this.lives, playerSize: this.player.size,
+      food: this.entities.filter(e => e.alive && e.behavior === 'orb').length,
+      ai: units.filter(e => e.behavior === 'ai').length,
+      sizes: [units.filter(e => e.size < 40).length, units.filter(e => e.size >= 40 && e.size < 100).length,
+        units.filter(e => e.size >= 100 && e.size < 180).length, units.filter(e => e.size >= 180).length],
+      unimplemented: ['biomes', 'era', 'apocalypse', 'abilities'],
+      units: units.map(e => ({id:e.id,x:e.x,y:e.y,hp:e.hp,size:e.size,growth:e.growth,score:e.score ?? 0,role:e.role ?? null,apex:e.apex ?? false})) };
   }
 
   // v0.6 spec §9: a continuous, progress-driven absorption drone plays whenever the player is
@@ -302,7 +323,7 @@ export class Game {
         const minDist = a.size / 2 + b.size / 2;
         if (d >= minDist) continue;
 
-        const angle = d > 0.001 ? Math.atan2(a.y - b.y, a.x - b.x) : Math.random() * Math.PI * 2;
+        const angle = d > 0.001 ? Math.atan2(a.y - b.y, a.x - b.x) : random('physics') * Math.PI * 2;
         const overlap = minDist - d;
         const totalSize = a.size + b.size;
         a.x += Math.cos(angle) * overlap * (b.size / totalSize);
@@ -342,8 +363,8 @@ export class Game {
 
     const halfViewW = this.canvas.width / 2 / this.camera.zoom;
     const halfViewH = this.canvas.height / 2 / this.camera.zoom;
-    this.camera.x = Math.min(Math.max(this.camera.x, halfViewW), Math.max(halfViewW, w.worldWidth - halfViewW));
-    this.camera.y = Math.min(Math.max(this.camera.y, halfViewH), Math.max(halfViewH, w.worldHeight - halfViewH));
+    this.camera.x = halfViewW * 2 >= w.worldWidth ? w.worldWidth / 2 : Math.min(Math.max(this.camera.x, halfViewW), w.worldWidth - halfViewW);
+    this.camera.y = halfViewH * 2 >= w.worldHeight ? w.worldHeight / 2 : Math.min(Math.max(this.camera.y, halfViewH), w.worldHeight - halfViewH);
   }
 
   orbSpawnLoop(dt) {
@@ -367,7 +388,7 @@ export class Game {
 
     const enemyCount = this.entities.reduce((n, e) => n + (e.alive && e.behavior === 'ai' ? 1 : 0), 0);
     if (enemyCount < s.maxEnemyCount) {
-      const colorDef = this.balance.colors[Math.floor(Math.random() * this.balance.colors.length)];
+      const colorDef = this.balance.colors[Math.floor(random('world') * this.balance.colors.length)];
       this.entities.push(spawnAI(this.balance, colorDef, this.pickSafeSpawnPos(350), this.player.size));
     }
   }
@@ -377,7 +398,7 @@ export class Game {
       this.entities = this.entities.filter((e) => e.alive || e.behavior === 'player');
       return;
     }
-    if (Math.random() < 0.02) {
+    if (random('visual') < 0.02) {
       this.entities = this.entities.filter((e) => e.alive || e.behavior === 'player');
     }
   }
@@ -466,22 +487,22 @@ export class Game {
   spawnHitParticles(x, y, color) {
     const life = this.balance.combat.hitParticleLifetime;
     for (let i = 0; i < 12; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const speed = 80 + Math.random() * 160;
+      const a = random('visual') * Math.PI * 2;
+      const speed = 80 + random('visual') * 160;
       this.particles.push({
         x, y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
-        life, maxLife: life, color, size: 3 + Math.random() * 3, type: 'spark',
+        life, maxLife: life, color, size: 3 + random('visual') * 3, type: 'spark',
       });
     }
   }
 
   spawnDeathParticles(x, y, color) {
     for (let i = 0; i < 18; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const speed = 40 + Math.random() * 180;
+      const a = random('visual') * Math.PI * 2;
+      const speed = 40 + random('visual') * 180;
       this.particles.push({
         x, y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
-        life: 0.6, maxLife: 0.6, color, size: 3 + Math.random() * 4, type: 'burst',
+        life: 0.6, maxLife: 0.6, color, size: 3 + random('visual') * 4, type: 'burst',
       });
     }
   }
@@ -494,8 +515,8 @@ export class Game {
 
   // v0.4 spec §11: a subtle rising particle while HP is regenerating — deliberately understated.
   spawnRegenParticle(x, y, size) {
-    const a = Math.random() * Math.PI * 2;
-    const r = Math.random() * size * 0.4;
+    const a = random('visual') * Math.PI * 2;
+    const r = random('visual') * size * 0.4;
     this.particles.push({
       x: x + Math.cos(a) * r, y: y + Math.sin(a) * r,
       vx: 0, vy: -18, life: 0.5, maxLife: 0.5, color: '#4ade80', size: 2.5, type: 'spark',
@@ -517,11 +538,11 @@ export class Game {
 
   spawnAbsorptionParticles(x, y, color) {
     for (let i = 0; i < 24; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const speed = 30 + Math.random() * 90;
+      const a = random('visual') * Math.PI * 2;
+      const speed = 30 + random('visual') * 90;
       this.particles.push({
         x, y, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed,
-        life: 0.5, maxLife: 0.5, color, size: 2 + Math.random() * 3, type: 'spark',
+        life: 0.5, maxLife: 0.5, color, size: 2 + random('visual') * 3, type: 'spark',
       });
     }
   }
