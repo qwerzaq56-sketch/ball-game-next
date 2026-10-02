@@ -3,7 +3,7 @@
 이 문서만으로 작업을 시작할 수 있게 핵심만 담았다. 기획서 전문은 클라우드에서 볼 수 없으므로 아래가 기준이다.
 
 ## 0. 저장소·브랜치 규칙 (필수)
-- 저장소: https://github.com/qwerzaq56-sketch/ball-game-next (public). **작업 시작 브랜치: `feat/integrate-cloud-m3` (HEAD fafdbc0)** → 여기서 새 브랜치 `codex/cloud-next-m4` 를 따서 작업. `feat/integrate-cloud-m3`와 `main`에는 push하지 않는다.
+- 저장소: https://github.com/qwerzaq56-sketch/ball-game-next (public). **작업 시작 브랜치: `feat/integrate-cloud-m3` (이 브리프가 포함된 최신 커밋)** → 여기서 새 브랜치 `codex/cloud-next-m4` 를 따서 작업. `feat/integrate-cloud-m3`와 `main`에는 push하지 않는다.
 - **main에 병합/푸시 금지**: main이 곧 공개 사이트(https://qwerzaq56-sketch.github.io/ball-game-next/ , Pages 소스 main `/`)다.
 - 기존 저장소 `qwerzaq56-sketch/ball-game` (트위터 공개본 `/ball-game/`)은 읽기도 수정도 하지 않는다.
 - 사용자 PC의 파일·미커밋 변경은 읽을 수 없다고 가정한다. 이 문서와 저장소가 전부다.
