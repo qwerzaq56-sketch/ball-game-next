@@ -9,7 +9,9 @@ class InputState {
     this.mouseY = 0;
     this.mouseDown = false;
     this._dodgeQueued = false;
+    this._specialQueued = false;
   }
+  consumeSpecial() {const value=this._specialQueued;this._specialQueued=false;return value;}
   consumeDodge() {
     const v = this._dodgeQueued;
     this._dodgeQueued = false;
@@ -48,6 +50,7 @@ async function main() {
   window.addEventListener('keydown', (e) => {
     const k = e.key.toLowerCase();
     input.keys.add(k);
+    if(k==='e'&&!e.repeat)input._specialQueued=true;
     if (k === ' ') {
       e.preventDefault();
       if (!e.repeat) input._dodgeQueued = true;

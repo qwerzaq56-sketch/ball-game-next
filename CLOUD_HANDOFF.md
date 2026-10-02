@@ -1,6 +1,6 @@
 # Ball Game Next: 클라우드 첫 검토 단위
 
-2026-10-02 / 검토 모드 / 전체 v0.24 구현 완료 아님.
+2026-10-03 / 검토 모드 / 색별 특수능력 첫 구현 추가 / 전체 v0.24 구현 완료 아님.
 
 ## 접근과 공개본 보존
 새 clone에서만 개발했다. 사용자 PC/Claude 작업/로컬 미커밋파일을 읽거나 수정하지 않았다.
@@ -27,7 +27,7 @@ Playwright는 있으나 Chromium 실행파일이 없어 브라우저 렌더/스�
 
 ## 다음 검토 후 작업
 1. 현재단위: 역할×성격×관계 전체통제시나리오, 관계600/맵경계/도전해제, 영역안밖분포, 점수 실제처치/흡수 통합검증, 브라우저시각검증 보완. 현재 통제테스트는 대표사례이며 모든 조합 완료 아님.
-2. 종족 경계 및 색별 E능력/명령/전조/쿨다운. 현재 특수능력 미구현, 최상위 일반돌진 .7도 능력과 함께 적용할 예정(지금 기존거리 유지).
+2. 특수능력은 reports/M3-abilities.md 기준 첫 구현과 강제시험 완료. 자연발생·실제플레이·브라우저 검증 보완.
 3. 분산4바이옴, 성장카메라 대표배경, 지역보상조우.
 4. Era/전쟁이동/결투/파멸.
 5. 초원/사막과유물.
@@ -51,3 +51,6 @@ python -m http.server 8000
 bundle 검증: git bundle verify ball-game-cloud.bundle.
 patches/*.patch는 원본4e552a6 별도체크아웃에서 git am으로 순서대로 적용할 대안. 이미 bundle을 clone했다면 patch를 중복적용하지 않는다.
 원본ball-game master에는 적용/병합/push하지 않는다. ball-game-next remote 연결/생성/공개는 이후 대상과검증결과를 제시하고 최종승인받는다.
+
+## GitHub 연결 보완 (2026-10-03)
+사용자가 GitHub plugin 설치. Plugin Management 검색에서 installed=true 확인. 그러나 현 세션 ALL_TOOLS에 GitHub 저장소/PR 도구와 tool_search가 노출되지 않았고 executor/cloud skill 카탈로그에도 GitHub skill이 없어 직접 connector 호출 불가. CLI push --dry-run도 여전히 인증정보부재 실패. 설치실패라고 하지 않으며 재설치/토큰제공을 요구하지 않는다. 원격쓰기/PR생성은 미실행.

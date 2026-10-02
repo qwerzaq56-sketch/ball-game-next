@@ -1,3 +1,4 @@
+import { attackReach } from './abilities.js';
 import { assignPersonality } from './ecology.js';
 import { acceptsAbsorption, pruneEncounters, chooseGeneral } from './species.js';
 import { random } from './random.js';
@@ -57,7 +58,7 @@ export class AIEntity extends Entity {
 }
 
 export function updateAI(ai, dt, game, balance) {
-  if (!ai.alive) return;
+  if (!ai.alive || ai.frozen>0) return;
 
   pruneEncounters(ai,game,balance);
   if(ai.counterattacker && ai.dodgeState!=="DODGING"){ai.counterTimer=(ai.counterTimer ?? 1)-dt;if(ai.counterTimer<=0||!ai.counterattacker.alive||dist(ai,ai.counterattacker)>balance.ai.detectionRange)ai.counterattacker=null;}
@@ -76,6 +77,7 @@ export function updateAI(ai, dt, game, balance) {
   // v0.3 spec §1: being absorbed no longer freezes the target — it actively tries to escape
   // by fleeing straight away from its absorber (reuses the normal 'flee' movement branch).
   if (ai.beingAbsorbedByRef) {
+    game.abilities?.endCommand(ai,"absorption-escape");
     ai.state = 'flee';
     ai.target = ai.beingAbsorbedByRef;
     moveAI(ai, dt, balance);
@@ -105,12 +107,15 @@ export function updateAI(ai, dt, game, balance) {
 // reading as one predictable hive mind.
 export function decideAI(ai, game, balance) {
   const cfg=balance.ai, hp=ai.hp/ai.maxHp;
+  const danger=game.abilities?.fields.find(f=>f.owner.color!==ai.color&&dist(ai,f)<=220);
+  if(danger){game.abilities.endCommand(ai,'sand-danger');ai.state='flee';ai.target={x:danger.x,y:danger.y,alive:true};return;}
+
   ai.recovering=hp<=.3 || (ai.recovering && hp<.6);
   if(ai.challengeTarget && (hp<=.4 || !ai.challengeTarget.alive || !ai.challengeTarget.apex ||
     ai.challengeTarget.hp/ai.challengeTarget.maxHp>.4 || dist(ai,ai.challengeTarget)>cfg.detectionRange))ai.challengeTarget=null;
   const nearby=game.getNearbyEntities(ai,Math.max(cfg.detectionRange,cfg.absorptionDetectionRange));
   const within=nearby.filter(e=>e.alive&&dist(ai,e)<=cfg.detectionRange);
-  const threats=within.filter(e=>isHostile(ai,e)&&e.size>=ai.size*1.2);
+  const threats=within.filter(e=>isHostile(ai,e)&&e.size>=ai.size*1.2&&!(ai.command?.kind==='rally'&&e===ai.command.target&&e.size<=ai.size*1.5));
   const safe=e=>threats.every(t=>dist(e,t)>=160);
   const food=within.filter(e=>canEatOrb(ai,e,balance));
   const closest=list=>[...list].sort((a,b)=>dist(ai,a)-dist(ai,b)||a.id-b.id)[0];
@@ -120,8 +125,10 @@ export function decideAI(ai, game, balance) {
   const threat=closest(threats);
   const risk=ai.role==='prey' && ai.personality==='growth' && hp>=.6 && rich &&
     !threats.some(t=>dist(ai,t)<=160||t.size>ai.size*1.5);
-  if(threat && !risk){ai.state='flee';ai.target=threat;return;}
-  if(ai.recovering){ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
+  if(threat && !risk){game.abilities?.endCommand(ai,'threat');ai.state='flee';ai.target=threat;return;}
+  if(ai.recovering){game.abilities?.endCommand(ai,'recovery');ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
+  if(game.abilities?.commandDecision(ai))return;
+  game.abilities?.considerAI(ai);
   const opportunist=ai.personality==='opportunist';
   const lastHit=opportunist && hp>=.6 && canStartAttack(ai) ? closest(within.filter(e=>isHostile(ai,e)&&
     e.size<=ai.size*1.2&&e.attackState==='RECOVERY'&&!e.invincible&&dist(ai,e)<=attackRangeForSize(ai.size,balance)&&
@@ -172,7 +179,7 @@ function reactToThreats(ai, game, balance) {
   const range = Math.min(balance.ai.detectionRange, attackRangeForSize(ai.size, balance) * 1.5);
   const nearby = game.getNearbyEntities(ai, range);
   for (const other of nearby) {
-    if (other.attackState === 'TELEGRAPH' && isHostile(ai, other)) {
+    if ((other.attackState === 'TELEGRAPH' || other.specialCast) && isHostile(ai, other)) {
       const d = dist(ai, other);
       if (d < range && random('ai') < 0.5) {
         const away = Math.atan2(ai.y - other.y, ai.x - other.x);
@@ -193,6 +200,7 @@ function moveAI(ai, dt, balance) {
     // v0.3: fleeing a low-HP threat gets a burst of speed, but fleeing an absorption grab
     // (spec §1) does not — you're still partly held, so the absorber gets a fair chance.
     speed *= ai.beingAbsorbedByRef ? 1.0 : 1.3;
+  } else if(ai.state==='command_move'&&ai.target){targetAngle=Math.atan2(ai.target.y-ai.y,ai.target.x-ai.x);
   } else if(ai.state==='relationship'&&ai.target){
     targetAngle=Math.atan2(ai.target.y-ai.y,ai.target.x-ai.x);speed*=.55;
     speed=Math.min(speed,dist(ai,ai.target)/Math.max(dt,1e-8));
@@ -202,7 +210,7 @@ function moveAI(ai, dt, balance) {
   } else if (ai.state === 'chase_fight' && ai.target && ai.target.alive) {
     const d = dist(ai, ai.target);
     targetAngle = Math.atan2(ai.target.y - ai.y, ai.target.x - ai.x);
-    if (d <= attackRangeForSize(ai.size, balance) && canStartAttack(ai)) {
+    if (d <= attackReach(ai, balance) && canStartAttack(ai)) {
       startAttack(ai, targetAngle, balance);
       return;
     }

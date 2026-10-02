@@ -66,7 +66,7 @@ export function dodgeDistanceForSize(size, balance) {
 }
 
 export function canStartAttack(entity) {
-  if (entity.attackStack <= 0 || entity.attackState !== 'READY' || entity.dodgeState === 'DODGING') return false;
+  if (entity.frozen>0 || entity.specialCast || entity.attackStack <= 0 || entity.attackState !== 'READY' || entity.dodgeState === 'DODGING') return false;
   if (entity.behavior === 'ai' && entity.aiAttackGateTimer > 0) return false;
   return true;
 }
@@ -80,7 +80,7 @@ export function startAttack(entity, dirAngle, balance) {
   entity.trail = [];
   const c = balance.combatScaling;
   entity.currentAttackRange = attackRangeForSize(entity.size, balance);
-  entity.currentChargeDistance = entity.currentAttackRange * c.chargeDistanceMultiplier;
+  entity.currentChargeDistance = entity.currentAttackRange * c.chargeDistanceMultiplier * (entity.apex ? .7 : 1);
   entity.currentChargeDuration = attackChargeDurationForSize(entity.size, balance);
   entity.currentTelegraphTime = attackTelegraphTimeForSize(entity.size, balance);
   if (entity.behavior === 'ai') entity.aiAttackGateTimer = balance.ai.attackCooldown;
@@ -114,7 +114,7 @@ export function updateAttack(entity, dt, balance, hostiles, game) {
       if (entity.trail.length > 8) entity.trail.shift();
 
       const hitPadding = entity.currentAttackRange * 0.2;
-      const rawDamage = attackDamageForSize(entity.size, balance);
+      const rawDamage = attackDamageForSize(entity.size, balance) * (game?.abilities?.damageMultiplier(entity) ?? 1);
       for (const target of hostiles) {
         if (!target.alive || entity.attackHitSet.has(target.id)) continue;
         const d = Math.hypot(target.x - entity.x, target.y - entity.y);
@@ -174,8 +174,9 @@ export function updateDodgeStack(entity, dt, balance) {
 }
 
 // v0.5: applyDamage now runs raw damage through Defense (spec §3) before it touches HP.
-export function applyDamage(target, rawDamage, game, attacker, balance) {
-  if (target.invincible || !target.alive) return;
+export function applyDamage(target, rawDamage, game, attacker, balance, options = {}) {
+  if (target.invincible || !target.alive) return false;
+  if(options.kind!=='field' && game?.abilities?.miss(target)){game.spawnFloatingText(target.x,target.y-target.size/2,"MISS","#eab308");return false;}
   const bal = balance || (game && game.balance);
   const dmg = bal ? applyDefense(rawDamage, target.size, bal) : rawDamage;
   const cfg = game ? game.balance.combat : null;
@@ -184,7 +185,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance) {
   target.hitFlash = cfg ? cfg.hitFlashDuration : 0.08;
   target.regenTimer = 0; // taking a hit resets the HP regen delay
 
-  if (attacker) applyKnockback(target, attacker, game);
+  if (attacker && options.knockback!==false) applyKnockback(target, attacker, game);
   if (target.beingAbsorbedByRef) cancelAbsorption(target); // a hit breaks an absorption connection
 
   if (game) {
@@ -198,6 +199,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance) {
     target.alive = false;
     if (game) game.onEntityDeath(target, attacker);
   }
+  return true;
 }
 
 // Bigger targets resist knockback more (received = base / (size / referenceSize)).
@@ -241,10 +243,12 @@ export function updateKnockback(entity, dt) {
 
 // v0.3 spec §8: dodge has priority — it can cancel an in-progress attack outright.
 export function canStartDodge(entity) {
+  if(entity.frozen>0)return false;
   return entity.dodgeStack > 0 && entity.dodgeState === 'READY';
 }
 
 export function startDodge(entity, dirAngle, balance) {
+  entity.specialCast=null;
   entity.dodgeStack -= 1;
 
   entity.attackState = 'READY';

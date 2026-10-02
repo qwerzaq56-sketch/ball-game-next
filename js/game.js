@@ -1,3 +1,4 @@
+import { Abilities } from './abilities.js';
 import { acceptsAbsorption } from './species.js';
 import { Ecology } from './ecology.js';
 import { random, resetRandom } from './random.js';
@@ -43,6 +44,7 @@ export class Game {
     resetEntityIds();
     this.gameTime = 0;
     this.ecology = new Ecology();
+    this.abilities = new Abilities(this);
     this.telemetry = [];
     this.player = new Player(this.balance);
     this.player.onSkillUnlock = (type) => {
@@ -154,6 +156,7 @@ export class Game {
     this.gameTime += dt;
 
     this.buildGrid();
+    this.abilities.update(dt);
     this.updatePlayer(dt);
 
     for (const e of this.entities) {
@@ -185,6 +188,7 @@ export class Game {
     this.enemySpawnLoop(dt);
     this.cleanupDead();
     this.ecology.update(this, dt);
+    for(const e of this.entities)if(!e.apex&&e._specialApex){this.abilities.release(e);e._specialApex=false;}
     if (this.options.collect && Math.floor(this.gameTime + 1e-8) > this.telemetry.length) this.telemetry.push(this.snapshot());
   }
 
@@ -199,7 +203,8 @@ export class Game {
       ai: units.filter(e => e.behavior === 'ai').length,
       sizes: [units.filter(e => e.size < 40).length, units.filter(e => e.size >= 40 && e.size < 100).length,
         units.filter(e => e.size >= 100 && e.size < 180).length, units.filter(e => e.size >= 180).length],
-      unimplemented: ['biomes', 'era', 'apocalypse', 'abilities'],
+      unimplemented: ['biomes', 'era', 'apocalypse'],
+      special:{casts:this.abilities.events.filter(e=>e.type==='special-fire').length,fields:this.abilities.fields.length,commands:units.filter(e=>e.command).length},
       units: units.map(e => ({id:e.id,x:e.x,y:e.y,hp:e.hp,size:e.size,growth:e.growth,score:e.score ?? 0,role:e.role ?? null,apex:e.apex ?? false})) };
   }
 
@@ -234,6 +239,7 @@ export class Game {
     const p = this.player;
     const inp = this.input;
 
+    if(p.frozen>0)return;
     updateAttack(p, dt, b, this.hostileTargetsFor(p), this);
     updateDodge(p, dt, b);
 
@@ -262,6 +268,7 @@ export class Game {
       p.facing = aimAngle;
     }
 
+    if(inp.consumeSpecial?.())this.abilities.start(p,aimAngle,mouseWorld);
     if (inp.mouseDown && p.attackUnlocked && canStartAttack(p)) {
       startAttack(p, aimAngle, b);
       this.audio.telegraph();
@@ -305,7 +312,7 @@ export class Game {
 
         if (eater === this.player && !this.player.allyAbsorptionEnabled) continue; // v0.6 §7
 
-        if (canAbsorb(eater, target) && dist(eater, target) <= maintainDistance && acceptsAbsorption(eater,target,b)) {
+        if (canAbsorb(eater, target) && dist(eater, target) <= maintainDistance && acceptsAbsorption(eater,target,b) && this.abilities.absorptionAllowed(eater,target)) {
           startAbsorption(eater, target, b, this);
         }
       }
@@ -422,6 +429,7 @@ export class Game {
   // Growth carry over unchanged into the respawn, and only running out of Lives triggers Game
   // Over (spec: "부활할 때 Size는 감소하지 않는다").
   onEntityDeath(entity, attacker) {
+    this.abilities.release(entity);
     this.ecology.release(entity, this.gameTime, "death");
     if (entity.behavior === 'player') {
       this.spawnDeathParticles(entity.x, entity.y, entity.colorHex);
@@ -480,6 +488,10 @@ export class Game {
   // (onEntityDeath) and being fully absorbed (absorption.js#completeAbsorption) — so a Life is
   // spent and Game Over triggers consistently regardless of which one happened.
   handlePlayerDefeat(reason) {
+    this.player.defeatSerial=(this.player.defeatSerial??0)+1;
+    this.abilities.release(this.player);
+    this.player._specialApex=false;
+    this.player.frozen=0;this.player.wavePush=null;this.player.morale?.clear();
     this.ecology.release(this.player, this.gameTime, reason);
     this.lives -= 1;
     if (this.lives > 0) {
@@ -606,6 +618,7 @@ export class Game {
     this.drawGrid(ctx);
     this.drawTerritories(ctx);
     this.drawWorldBorder(ctx);
+    this.abilities.draw(ctx,this.camera.zoom);
     this.drawAbsorptionLinks(ctx);
     this.drawEntities(ctx);
     this.drawParticles(ctx);
@@ -689,7 +702,7 @@ export class Game {
     // v0.4 spec §23: a short outward "grew bigger" pulse plays on a successful absorption.
 
     const r = e.size / 2;
-    if(e.apex){ctx.beginPath();ctx.arc(e.x,e.y,r+8,0,Math.PI*2);ctx.strokeStyle=this.withAlpha(e.colorHex,.65);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();}
+    if(e.apex){ctx.beginPath();ctx.arc(e.x,e.y,r+8,0,Math.PI*2);ctx.strokeStyle=this.withAlpha(e.colorHex,(e.specialCooldown??0)>0?.3:.65);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();}
 
     // dodge afterimages — each fades independently over dodge.effectLifetime, then is pruned
     // (see combat.js#updateDodge), so they never linger on screen after the dodge ends.
@@ -719,13 +732,13 @@ export class Game {
     // telegraph indicator
     if (e.attackState === 'TELEGRAPH') {
       const progress = e.attackTimer / e.currentTelegraphTime;
-      const reach = e.currentAttackRange > 0 ? e.currentAttackRange * 0.5 : 40;
+      const reach = e.currentChargeDistance;
       ctx.save();
       ctx.strokeStyle = 'rgba(255,255,255,0.85)';
       ctx.lineWidth = 3 / this.camera.zoom;
       ctx.beginPath();
       ctx.moveTo(e.x, e.y);
-      ctx.lineTo(e.x + Math.cos(e.attackDir) * (r + reach), e.y + Math.sin(e.attackDir) * (r + reach));
+      ctx.lineTo(e.x + Math.cos(e.attackDir) * reach, e.y + Math.sin(e.attackDir) * reach);
       ctx.stroke();
 
       ctx.beginPath();
@@ -772,6 +785,9 @@ export class Game {
     // v0.6 follow-up: kill-reward orbs no longer get a cross-mark overlay — they're meant to
     // read as indistinguishable from a naturally-spawned field orb (see spawning.js#spawnDeathOrbs).
 
+    if(e.frozen>0){ctx.save();ctx.strokeStyle='#dffaff';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([4/this.camera.zoom,3/this.camera.zoom]);ctx.beginPath();ctx.arc(e.x,e.y,r+4,0,Math.PI*2);ctx.stroke();ctx.restore();}
+    if(e.morale?.size){ctx.beginPath();ctx.strokeStyle='#86efac';ctx.lineWidth=2/this.camera.zoom;ctx.arc(e.x,e.y,r+12,-Math.PI*.8,-Math.PI*.2);ctx.stroke();}
+    if(e.command){ctx.save();ctx.strokeStyle='#ffffff';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([3/this.camera.zoom,6/this.camera.zoom]);ctx.beginPath();ctx.arc(e.x,e.y,r+16,0,Math.PI*2);ctx.stroke();ctx.restore();}
     // hp bar for AI / player
     if ((e.behavior === 'ai' || e.behavior === 'player') && e.hp < e.maxHp) {
       const barW = Math.max(24, r * 1.6);
