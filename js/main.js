@@ -57,7 +57,7 @@ async function main() {
     const k = e.key.toLowerCase();
     if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright',' ','e','g'].includes(k))window.__game?.autoplay.setEnabled(false);
     input.keys.add(k);
-    if(k==='g'&&!e.repeat && !document.getElementById('play-help').open && document.getElementById('reset-confirm-overlay').style.display!=='flex' && window.__game?.player.companionGroup)window.__game.allyLinks.leave(window.__game.player,'player-choice');
+    if(k==='g'&&!e.repeat && !window.__game?.paused && !document.getElementById('play-help').open && document.getElementById('reset-confirm-overlay').style.display!=='flex' && window.__game?.player.companionGroup)window.__game.allyLinks.leave(window.__game.player,'player-choice');
     if(k==='e'&&!e.repeat&&!window.__game?.paused)input._specialQueued=true;
     if (k === ' ') {
       e.preventDefault();
@@ -73,7 +73,10 @@ async function main() {
     input.mouseX = e.clientX - rect.left;
     input.mouseY = e.clientY - rect.top;
   });
-  window.addEventListener('pointerdown',e=>{if(e.target===canvas||e.target.closest?.('#touch-controls'))window.__game?.autoplay.setEnabled(false);},true);
+  window.addEventListener('pointerdown',e=>{
+    const inspecting=e.target===canvas&&e.shiftKey&&e.button===0&&window.__game?.ui.inspector?.visible;
+    if((e.target===canvas&&!inspecting)||e.target.closest?.('#touch-controls'))window.__game?.autoplay.setEnabled(false);
+  },true);
   canvas.addEventListener('mousedown', (e) => {
     if (e.button === 0&&!window.__game?.paused) input.mouseDown = true;
   });

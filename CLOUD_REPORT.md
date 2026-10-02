@@ -1,3 +1,5 @@
+> 최신 M26: Shift 인스펙터 선택의 자동 모드 유지·정지 중 동행 이탈 차단. M25 전선 표시/몸체 테두리 수정. Chromium 통합 검증 완료. reports/M25-development.md, reports/M26-development.md.
+
 > 최신 M24: 성장 후 월드 경계·몸체 간격을 반영한 적 생성 보완. 테스트142개 및 브라우저 생성100회 검증. reports/M24-development.md.
 
 > 최신 M23: 기본OFF 자동 플레이·읽기 전용 성장/생태계 관찰·JSON 저장. 테스트139개, 실제 브라우저/터치, OFF 결정론 동등성, 3시드 자연 Life10분 검증. reports/M23-development.md.

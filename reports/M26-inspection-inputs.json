@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "shiftInspectionReadOnly": true,
+  "normalClickManual": true,
+  "pausedLeaveKeyBlocked": true,
+  "pausedButtonBlocked": true,
+  "resumedLeave": true,
+  "errors": []
+}

@@ -13,14 +13,15 @@ try {
   g.allyLinks.refresh();g.allyLinks.join(ais[0],g.player);g.allyLinks.join(ais[1],ais[0]);g.allyLinks.join(ais[2],ais[1]);
   return ais[0].id;
  });await page.waitForTimeout(350);
- assert.match(await page.locator('#ally-link-status').innerText(),/대열 동행/);assert.equal(await page.locator('#companion-leave').isDisabled(),false);
+ assert.match(await page.locator('#ally-link-status').innerText(),/대열 동행/);assert.equal(await page.locator('#companion-leave').isDisabled(),true);
  assert.equal(await page.evaluate(()=>window.__game.abilities.canCast(window.__game.player)),false);
  const before=await page.evaluate(()=>JSON.stringify(window.__game.snapshot()));await page.locator('#ally-links-toggle').click();assert.equal(await page.evaluate(()=>window.__game.showAllyLinks),false);assert.equal(await page.evaluate(()=>JSON.stringify(window.__game.snapshot())),before);await page.locator('#ally-links-toggle').click();
  await page.keyboard.press('F2');await page.evaluate(id=>window.__game.ui.inspector.select(id),actorId);await page.waitForTimeout(350);
  assert((await page.locator('#ai-detail').innerText()).includes('<img src=x>'));assert.equal(await page.locator('#ai-detail img').count(),0);await page.keyboard.press('F2');
  await page.evaluate(()=>{window.__game.player.displayName='달빛 늑대';});await page.waitForTimeout(150);
  await page.screenshot({path:`${prefix}-ally-chain.png`});
- await page.keyboard.press('G');assert.equal(await page.evaluate(()=>window.__game.player.companionGroup),null);
+ const pausedBefore=await page.evaluate(()=>JSON.stringify(window.__game.snapshot()));await page.keyboard.press('G');assert.equal(await page.evaluate(()=>JSON.stringify(window.__game.snapshot())),pausedBefore);assert(await page.evaluate(()=>!!window.__game.player.companionGroup));
+ await page.evaluate(()=>{window.__game.paused=false;});await page.keyboard.press('G');assert.equal(await page.evaluate(()=>window.__game.player.companionGroup),null);
  await page.evaluate(()=>{const g=window.__game;g.paused=false;});await page.waitForTimeout(300);
  await page.evaluate(()=>{const g=window.__game;g.reset();g.paused=true;g.allyLinks.timer=1000;const p=g.player;p.color='yellow';p.colorHex='#eab308';p.size=120;p.apex=true;p._specialApex=true;p.specialCooldown=0;g.entities=[p];g.abilities.start(p,0);});
  await page.screenshot({path:`${prefix}-sand-windup.png`});

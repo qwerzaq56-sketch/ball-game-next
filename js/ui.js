@@ -35,7 +35,7 @@ export class UI {
     this.debugVisible = false;
     this.buildDebugPanel();
     this.ecologyUI = new EcologyUI(this);
-    document.getElementById('companion-leave').addEventListener('click',()=>{if(this.game?.player.companionGroup)this.game.allyLinks.leave(this.game.player,'player-choice');});
+    document.getElementById('companion-leave').addEventListener('click',()=>{if(this.game&&!this.game.paused&&this.game.player.companionGroup)this.game.allyLinks.leave(this.game.player,'player-choice');});
 
     window.addEventListener('keydown', (e) => {
       if (document.getElementById('player-setup').open) return;
@@ -119,7 +119,7 @@ export class UI {
     const neighbors=game.allyLinks.neighbors(player).length;
     const group=game.allyLinks.groups.get(player.companionGroup);
     document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${group?` · ${group.members.size}명 대열 동행 · 공격 쉬는 중`:''}`;
-    document.getElementById('companion-leave').disabled=!player.companionGroup;
+    document.getElementById('companion-leave').disabled=game.paused||!player.companionGroup;
     document.getElementById('ally-links-toggle').textContent=`연결선: ${game.showAllyLinks===false?'OFF':'ON'}`;
     document.getElementById('ally-links-toggle').setAttribute('aria-pressed',String(game.showAllyLinks!==false));
     const hpRatio = Math.max(0, player.hp / player.maxHp);
