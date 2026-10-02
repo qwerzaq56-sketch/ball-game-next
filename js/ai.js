@@ -63,6 +63,7 @@ export class AIEntity extends Entity {
 export function updateAI(ai, dt, game, balance) {
   if (!ai.alive || ai.frozen>0) return;
 
+  if(ai.state==='war_move'&&game.era.phase.id!=='war'){ai.state='search';ai.target=null;ai.decisionTimer=0;}
   pruneEncounters(ai,game,balance);
   if(ai.counterattacker && ai.dodgeState!=="DODGING"){ai.counterTimer=(ai.counterTimer ?? 1)-dt;if(ai.counterTimer<=0||!ai.counterattacker.alive||dist(ai,ai.counterattacker)>balance.ai.detectionRange)ai.counterattacker=null;}
 
@@ -92,8 +93,8 @@ export function updateAI(ai, dt, game, balance) {
     return;
   }
 
-  if(ai.state==='relationship' && ai.relationshipOwner && (!ai.relationshipOwner.alive||!ai.relationshipOwner.apex||dist(ai,ai.relationshipOwner)>600)){ai.target=null;ai.state='search';ai.decisionTimer=0;}
-  if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && ai.state!=="command_move" && (!ai.target.alive || dist(ai,ai.target)>game.biomes.sensingRange(ai,ai.state==="chase_eat" && ai.target.behavior!=="orb" ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
+  if(ai.state==='relationship' && ai.relationshipOwner && (ai.role!=='predator'||ai.apex||!ai.relationshipOwner.alive||!ai.relationshipOwner.apex||dist(ai,ai.relationshipOwner)>600)){ai.target=null;ai.state='search';ai.decisionTimer=0;}
+  if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && ai.state!=="command_move" && ai.state!=="war_move" && (!ai.target.alive || dist(ai,ai.target)>game.biomes.sensingRange(ai,ai.state==="chase_eat" && ai.target.behavior!=="orb" ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
   ai.decisionTimer -= dt;
   if (ai.decisionTimer <= 0) {
     ai.decisionTimer = 0.2 + random('ai') * 0.15;
@@ -152,7 +153,7 @@ export function decideAI(ai, game, balance) {
   if(danger){game.abilities.endCommand(ai,'sand-danger');ai.state='flee';ai.target={x:danger.x,y:danger.y,alive:true};return;}
 
   ai.recovering=hp<=.3 || (ai.recovering && hp<.6);
-  if(ai.challengeTarget && (hp<=.4 || !ai.challengeTarget.alive || !ai.challengeTarget.apex ||
+  if(ai.challengeTarget && (ai.role!=='predator'||ai.apex||hp<=.4 || !ai.challengeTarget.alive || !ai.challengeTarget.apex ||
     ai.challengeTarget.hp/ai.challengeTarget.maxHp>.4 || dist(ai,ai.challengeTarget)>cfg.detectionRange))ai.challengeTarget=null;
   const nearby=game.getNearbyEntities(ai,Math.max(cfg.detectionRange,cfg.absorptionDetectionRange));
   const within=nearby.filter(e=>e.alive&&dist(ai,e)<=cfg.detectionRange);
@@ -222,7 +223,7 @@ export function decideAI(ai, game, balance) {
     (huntAllowed&&counter.size<=ai.size*.8&&(ai.personality!=='cautious'||safe(counter)));
   if(counterAllowed){ai.state='chase_fight';ai.target=counter;ai.counterattacker=null;return;}
   const choices=[orb&&{target:orb,state:'chase_eat'},absorb&&{target:absorb,state:'chase_eat'},hunt&&{target:hunt,state:'chase_fight'}].filter(Boolean);
-  if(choices.length){const c=chooseGeneral(ai,choices);ai.state=c.state;ai.target=c.target;return;}
+  if(choices.length){const c=chooseGeneral(ai,choices,game.era.enabled&&game.era.phase.id==='war'?1.5:1);ai.state=c.state;ai.target=c.target;return;}
   // Relationship sensing is the approved 600 exception; combat sensing remains 320.
   if(ai.role==='predator'&&!ai.apex&&ai.relationship!=='independent'){
     if(duel){ai.challengeTarget=duel;ai.state='chase_fight';ai.target=duel;return;}
@@ -242,7 +243,9 @@ export function decideAI(ai, game, balance) {
       }
     }
   }
-  ai.relationshipOwner=null;ai.state='search';ai.target=null;
+  ai.relationshipOwner=null;const front=game.era.warDestination(ai);
+  if(front){ai.state='war_move';ai.target=front;return;}
+  ai.state='search';ai.target=null;
 }
 
 function reactToThreats(ai, game, balance) {
@@ -271,7 +274,7 @@ function moveAI(ai, dt, balance,game) {
     // v0.3: fleeing a low-HP threat gets a burst of speed, but fleeing an absorption grab
     // (spec §1) does not — you're still partly held, so the absorber gets a fair chance.
     speed *= ai.beingAbsorbedByRef ? 1.0 : 1.3;
-  } else if(ai.state==='command_move'&&ai.target){targetAngle=Math.atan2(ai.target.y-ai.y,ai.target.x-ai.x);
+  } else if((ai.state==='command_move'||ai.state==='war_move')&&ai.target){targetAngle=Math.atan2(ai.target.y-ai.y,ai.target.x-ai.x);if(ai.state==='war_move')speed=Math.min(speed*.75,dist(ai,ai.target)/Math.max(dt,1e-8));
   } else if(ai.state==='relationship'&&ai.target){
     targetAngle=Math.atan2(ai.target.y-ai.y,ai.target.x-ai.x);speed*=.55;
     speed=Math.min(speed,dist(ai,ai.target)/Math.max(dt,1e-8));

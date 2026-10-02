@@ -1,3 +1,4 @@
+import { Era } from './era.js';
 import { Biomes } from './biomes.js';
 import { AllyLinks } from './allyLinks.js';
 import { ApexHistory } from './apexHistory.js';
@@ -19,7 +20,7 @@ import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
 import { startAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
 import { AudioManager } from './audio.js';
 
-const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '관계추종', companion:'대열 동행', recover: '회복' };
+const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '관계추종', companion:'대열 동행',war_move:'전선 이동', recover: '회복' };
 const AI_PERSONALITY_LABEL = { growth: '성장형', cautious: '회피형', opportunist: '기회형' };
 
 const CELL_SIZE = 220;
@@ -56,6 +57,7 @@ export class Game {
     this.abilities = new Abilities(this);
     this.allyLinks = new AllyLinks(this);
     this.biomes = new Biomes(this);
+    this.era = new Era(this);
     this.telemetry = [];
     this.player = new Player(this.balance, this.options.profile);
     this.player.onSkillUnlock = (type) => {
@@ -172,6 +174,7 @@ export class Game {
     if (this.paused) {this.stopContinuousAudio();return;}
     const b = this.balance;
     this.gameTime += dt;
+    this.era.update(dt);
     this.biomes.update(dt);
 
     this.buildGrid();
@@ -211,6 +214,7 @@ export class Game {
     this.cleanupDead();
     this.ecology.update(this, dt);
     this.allyLinks.refresh();
+    this.era.observeDuels();
     this.apexHistory.observe(this.entities, dt, this.gameTime);
     for(const e of this.entities)if(!e.apex&&e._specialApex){this.abilities.release(e);e._specialApex=false;}
     if (this.options.collect && Math.floor(this.gameTime + 1e-8) > this.telemetry.length) this.telemetry.push(this.snapshot());
@@ -227,7 +231,8 @@ export class Game {
       ai: units.filter(e => e.behavior === 'ai').length,
       sizes: [units.filter(e => e.size < 40).length, units.filter(e => e.size >= 40 && e.size < 100).length,
         units.filter(e => e.size >= 100 && e.size < 180).length, units.filter(e => e.size >= 180).length],
-      unimplemented: ['era', 'apocalypse'],
+      unimplemented: ['relics', 'grassland-desert-encounters'],
+      era:{phase:this.era.phase.id,cycle:this.era.cycle,duels:this.era.duels.size,duelStarts:this.era.duelStarts,apocalypses:this.era.completedApocalypses},
       biomes:{encounters:this.biomes.encounters,blizzard:this.biomes.blizzard()},
       special:{casts:this.abilities.specialFires,fields:this.abilities.fields.length,commands:units.filter(e=>e.command).length},
       units: units.map(e => ({id:e.id,x:e.x,y:e.y,hp:e.hp,size:e.size,growth:e.growth,score:e.score ?? 0,role:e.role ?? null,apex:e.apex ?? false})) };
@@ -652,6 +657,7 @@ export class Game {
 
     this.drawGrid(ctx);
     this.biomes.draw(ctx,this.camera.zoom);
+    this.era.draw(ctx,this.camera.zoom);
     this.drawTerritories(ctx);
     this.drawWorldBorder(ctx);
     this.abilities.draw(ctx,this.camera.zoom);

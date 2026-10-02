@@ -1,0 +1,94 @@
+{
+  "result": "PASS",
+  "seed": 7,
+  "seconds": 1200,
+  "fps": 60,
+  "actualSeconds": 1200,
+  "unitChecks": 90536,
+  "maxApex": 3,
+  "maxGroups": 19,
+  "playerGroupSeconds": 12.37,
+  "playerCasts": 0,
+  "playerDefeats": 34,
+  "ally": {
+    "joins": 1515,
+    "leaves": 1497
+  },
+  "era": {
+    "phase": "abundance",
+    "cycle": 2,
+    "duelStarts": 0,
+    "duelEnds": 0,
+    "apocalypses": 2,
+    "events": [
+      {
+        "time": 180.00000000003539,
+        "type": "era",
+        "phase": "competition",
+        "cycle": 0
+      },
+      {
+        "time": 360.00000000000125,
+        "type": "era",
+        "phase": "war",
+        "cycle": 0
+      },
+      {
+        "time": 480.01666666655876,
+        "type": "era",
+        "phase": "decline",
+        "cycle": 0
+      },
+      {
+        "time": 480.01666666655876,
+        "type": "apocalypse-warning",
+        "cycle": 0
+      },
+      {
+        "time": 494.0333333332127,
+        "type": "apocalypse-end",
+        "cycle": 0
+      },
+      {
+        "time": 540.0166666665042,
+        "type": "era",
+        "phase": "abundance",
+        "cycle": 1
+      },
+      {
+        "time": 720.0166666663405,
+        "type": "era",
+        "phase": "competition",
+        "cycle": 1
+      },
+      {
+        "time": 900.0166666661768,
+        "type": "era",
+        "phase": "war",
+        "cycle": 1
+      },
+      {
+        "time": 1020.0166666660676,
+        "type": "era",
+        "phase": "decline",
+        "cycle": 1
+      },
+      {
+        "time": 1020.0166666660676,
+        "type": "apocalypse-warning",
+        "cycle": 1
+      },
+      {
+        "time": 1034.0333333327217,
+        "type": "apocalypse-end",
+        "cycle": 1
+      },
+      {
+        "time": 1080.0166666660132,
+        "type": "era",
+        "phase": "abundance",
+        "cycle": 2
+      }
+    ]
+  }
+}

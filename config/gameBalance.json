@@ -1,4 +1,5 @@
 {
+  "era": { "enabled": true },
   "biomes": { "enabled": true },
   "player": {
     "startingSize": 20,

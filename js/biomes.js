@@ -15,7 +15,8 @@ export class Biomes {
  regionAt(e){return this.regions.find(r=>Math.hypot(e.x-r.x,e.y-r.y)<=r.radius)??null;}
  blizzard(){return this.enabled&&this.game.gameTime%24>=16;}
  sensingRange(e,base=this.game.balance.ai.detectionRange){return this.regionAt(e)?.id==='snow'&&this.blizzard()?base*.65:base;}
- danger(e,held=false){return this.regions.find(r=>r.hotRadius&&Math.hypot(e.x-r.x,e.y-r.y)<=r.hotRadius+e.size/2+(held?120:80))??null;}
+ hazards(){return [...this.regions.filter(r=>r.hotRadius),...(this.game.era?.apocalypse?[this.game.era.apocalypse]:[])];}
+ danger(e,held=false){return this.hazards().find(r=>r.hotRadius&&Math.hypot(e.x-r.x,e.y-r.y)<=r.hotRadius+e.size/2+(held?120:80))??null;}
  update(dt){
   if(!this.enabled)return;this.damageTimer+=dt;this.encounterTimer-=dt;
   while(this.damageTimer>=.5-1e-8){this.damageTimer-=.5;
@@ -24,7 +25,7 @@ export class Biomes {
     if(hot)applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false});
    }
   }
-  if(this.encounterTimer<=0){this.encounterTimer+=45;this.spawnEncounter();}
+  if(this.encounterTimer<=0){this.encounterTimer+=this.game.era?.encounterInterval??45;this.spawnEncounter();}
  }
  spawnEncounter(){
   const g=this.game,w=g.balance.world;let remaining=Math.max(0,g.balance.spawning.maxOrbCount-g.entities.filter(e=>e.alive&&e.behavior==='orb').length);
@@ -37,9 +38,9 @@ export class Biomes {
   this.encounters++;
  }
  routePoint(e,target){
-  if(!target||!this.enabled)return target;
+  if(!target)return target;
   const dx=target.x-e.x,dy=target.y-e.y,length=dx*dx+dy*dy;if(!length)return target;
-  for(const r of this.regions){if(!r.hotRadius)continue;const safety=r.hotRadius+e.size/2+80;
+  for(const r of this.hazards()){const safety=r.hotRadius+e.size/2+80;
    const t=Math.max(0,Math.min(1,((r.x-e.x)*dx+(r.y-e.y)*dy)/length));
    if(Math.hypot(e.x+dx*t-r.x,e.y+dy*t-r.y)>=safety||Math.hypot(e.x-r.x,e.y-r.y)>safety+220)continue;
    const angle=Math.atan2(e.y-r.y,e.x-r.x),side=e.environmentRoute?.region===r.id?e.environmentRoute.side:Math.sign(Math.sin(Math.atan2(dy,dx)-angle))||((e.id%2)?1:-1);

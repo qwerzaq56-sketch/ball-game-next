@@ -13,6 +13,6 @@ export function run(seed, seconds = 600, overrides = {}) {
   const game = createGame(seed, overrides);
   for (let i = 0; i < seconds * 60 && !game.gameOver; i++) game.update(1/60);
   return {seed,policy:'stationary-v1',dt:1/60,requestedSeconds:seconds,actualSeconds:game.gameTime,
-    events:{ecology:game.ecology.events,abilities:game.abilities.events},
+    events:{ecology:game.ecology.events,abilities:game.abilities.events,era:game.era.events},
     stopped:game.gameOver ? 'game-over' : 'duration',config:game.balance,snapshots:game.telemetry,checkpoint:game.snapshot()};
 }

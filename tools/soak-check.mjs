@@ -32,4 +32,4 @@ for(let frame=0;frame<seconds*fps;frame++){
 }
 casts=g.abilities.events.filter(e=>e.type==='special-fire'&&e.id===g.player.id).length;defeats=g.player.defeatSerial??0;
 assert(Math.abs(g.gameTime-seconds)<dt,'completed requested duration');
-console.log(JSON.stringify({result:'PASS',seed,seconds,fps,actualSeconds:Number(g.gameTime.toFixed(3)),unitChecks:checks,maxApex,maxGroups,playerGroupSeconds:Number(groupSeconds.toFixed(2)),playerCasts:casts,playerDefeats:defeats,ally:g.allyLinks.stats},null,2));
+console.log(JSON.stringify({result:'PASS',seed,seconds,fps,actualSeconds:Number(g.gameTime.toFixed(3)),unitChecks:checks,maxApex,maxGroups,playerGroupSeconds:Number(groupSeconds.toFixed(2)),playerCasts:casts,playerDefeats:defeats,ally:g.allyLinks.stats,era:{phase:g.era.phase.id,cycle:g.era.cycle,duelStarts:g.era.duelStarts,duelEnds:g.era.duelEnds,apocalypses:g.era.completedApocalypses,events:g.era.events}},null,2));

@@ -147,6 +147,7 @@ export class AIInspector {
       ['이름 / id', `${e.displayName} · #${e.id}`], ['색', e.color], ['역할 / 성격', `${ROLE_LABELS[e.role] ?? f(e.role)} / ${f(e.personality)}`],
       ['프레데터 관계', e.role==='predator' ? (RELATIONSHIP_LABELS[e.relationship] ?? '-') : '-'], ['state', e.state], ['target', this.describeTarget(e)],
       ['지역 / 감지 거리', `${g.biomes.status(e)} / ${Math.round(g.biomes.sensingRange(e))}`],
+      ['시기 / 결투', `${g.era.phase.name} / ${e.challengeTarget?'#'+e.challengeTarget.id:'-'}`],
       ['환경 탈출', e.environmentThreat?.name ?? '-'],
       ['탐색 목적지', e.state==='search'&&e.explorationPoint ? `${Math.round(e.explorationPoint.x)}, ${Math.round(e.explorationPoint.y)} · ${Math.max(0,e.explorationPoint.expires-g.gameTime).toFixed(1)}s` : '-'],
       ['HP / size', `${Math.round(e.hp / e.maxHp * 100)}% / ${Math.round(e.size)}`],

@@ -6,7 +6,7 @@ import {Entity} from '../js/entity.js';
 function fixture(){const g=createGame(7),b=g.balance;const a=new AIEntity({x:1000,y:1000,color:'blue',colorHex:'#00f',startSize:40,balance:b});a.role='forager';a.personality='growth';g.entities=[g.player,a];g.buildGrid();return {g,a};}
 test('four distributed regions leave central spawn safe and reset their timers',()=>{
  const {g}=fixture();assert.equal(g.biomes.regions.length,4);assert.equal(g.biomes.regionAt(g.player),null);assert.equal(g.biomes.status(g.player),'평원');
- g.biomes.spawnEncounter();assert.equal(g.biomes.encounters,1);g.reset();assert.equal(g.biomes.encounters,0);assert.equal(g.biomes.encounterTimer,45);
+ g.biomes.spawnEncounter();assert.equal(g.biomes.encounters,1);g.reset();assert.equal(g.biomes.encounters,0);assert.equal(g.biomes.encounterTimer,30);
 });
 test('blizzard reduces local perception but never reveals distant food; ends on schedule',()=>{
  const {g,a}=fixture();const r=g.biomes.regions.find(r=>r.id==='snow');a.x=r.x;a.y=r.y;g.gameTime=16;

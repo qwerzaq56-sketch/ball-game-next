@@ -470,7 +470,7 @@ html, body {
 .observer-heading strong { letter-spacing: .06em; font-size: 13px; }
 .observer-heading > span { color: #94a3b8; margin-left: auto; font-size: 11px; }
 .observer-heading button { color: #cbd5e1; background: transparent; border: 0; cursor: pointer; font-size: 20px; }
-#live-ranking-list, #apex-current, #apex-events { list-style: none; padding: 0; margin: 0; }
+#live-ranking-list, #apex-current, #apex-events, #duel-events { list-style: none; padding: 0; margin: 0; }
 .rank-row {
   display: grid; grid-template-columns: 18px 8px 1fr auto; gap: 7px; align-items: center;
   width: 100%; padding: 6px 3px; border: 0; border-radius: 4px;
@@ -595,3 +595,5 @@ html, body {
   #live-ranking-list { max-height:27vh; overflow-y:auto; }
   #ecology-panel { bottom:136px; right:14px; max-height:40vh; }
 }
+
+#ecology-era, #ecology-duels { color:#cbd5e1; font-size:11px; line-height:1.5; margin:0 0 8px; }

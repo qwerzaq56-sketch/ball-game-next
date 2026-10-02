@@ -18,13 +18,14 @@ export function pruneEncounters(ai,game,balance){
     if(!other||!other.alive||other.size>=ai.size||dist(ai,other)>maintainDistanceFor(ai,balance))ai.absorbEncounters.delete(id);
   }
 }
-export function chooseGeneral(ai,choices){
+export function chooseGeneral(ai,choices,huntMultiplier=1){
   if(!choices.length)return null;
   // Keep a valid choice until it ends instead of consuming RNG each judgment tick.
   const retained=choices.find(c=>c.target===ai.target&&c.state===ai.state);
   if(retained)return retained;
-  const total=choices.reduce((n,c)=>n+(c.state==='chase_fight'&&ai.color==='red'?1.5:1),0);
+  const weight=c=>c.state==='chase_fight'?(ai.color==='red'?1.5:1)*huntMultiplier:1;
+  const total=choices.reduce((n,c)=>n+weight(c),0);
   let roll=random('ai')*total;
-  for(const c of choices){roll-=c.state==='chase_fight'&&ai.color==='red'?1.5:1;if(roll<0)return c;}
+  for(const c of choices){roll-=weight(c);if(roll<0)return c;}
   return choices.at(-1);
 }
