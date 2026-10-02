@@ -1,3 +1,4 @@
+import { explorationDestination } from './exploration.js';
 import { attackReach } from './abilities.js';
 import { assignPersonality } from './ecology.js';
 import { acceptsAbsorption, pruneEncounters, chooseGeneral } from './species.js';
@@ -87,7 +88,7 @@ export function updateAI(ai, dt, game, balance) {
     game.abilities?.endCommand(ai,"absorption-escape");
     ai.state = 'flee';
     ai.target = ai.beingAbsorbedByRef;
-    moveAI(ai, dt, balance);
+    moveAI(ai, dt, balance,game);
     return;
   }
 
@@ -100,7 +101,7 @@ export function updateAI(ai, dt, game, balance) {
   }
 
   reactToThreats(ai, game, balance);
-  moveAI(ai, dt, balance);
+  moveAI(ai, dt, balance,game);
 }
 
 // v0.4 spec §15-19: AI actively hunts for absorbable prey instead of only noticing whichever
@@ -259,7 +260,7 @@ function reactToThreats(ai, game, balance) {
   }
 }
 
-function moveAI(ai, dt, balance) {
+function moveAI(ai, dt, balance,game) {
   let targetAngle = null;
   let speed = ai.moveSpeed;
 
@@ -283,6 +284,9 @@ function moveAI(ai, dt, balance) {
       return;
     }
   } else {
+    const destination=game&&explorationDestination(ai,game);
+    if(destination){targetAngle=Math.atan2(destination.y-ai.y,destination.x-ai.x);speed*=0.55*(ai.color==='cyan'?.7:1);}
+    else {
     ai.wanderTimer -= dt;
     if (ai.wanderTimer <= 0) {
       ai.wanderAngle = random('ai') * Math.PI * 2;
@@ -290,6 +294,7 @@ function moveAI(ai, dt, balance) {
     }
     targetAngle = ai.wanderAngle;
     speed *= 0.55 * (ai.color==='cyan'?.7:1);
+    }
   }
 
   if (targetAngle !== null) {

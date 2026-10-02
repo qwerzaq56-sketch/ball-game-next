@@ -8,6 +8,8 @@ const seed = Number(process.argv[2] ?? 11), seconds = Number(process.argv[3] ?? 
 const detection=Number(process.argv[4] ?? 320), wanderScale=Number(process.argv[5] ?? 1);
 const g = createGame(seed);
 g.balance.ai.detectionRange=detection;
+if(process.argv[6])g.balance.ai.explorationDistance=Number(process.argv[6]);
+if(wanderScale!==1)g.balance.ai.explorationEnabled=false; // legacy duration-only experiment
 const wanderTimers=new Map();
 const dt = 1 / 60, win = 30;
 const buckets = Math.ceil(seconds / win);

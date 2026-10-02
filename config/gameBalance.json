@@ -70,6 +70,8 @@
   "ai": {
     "movementSpeed": 130,
     "detectionRange": 320,
+    "explorationEnabled": true,
+    "explorationDistance": 600,
     "aggression": 0.55,
     "fleeThreshold": 0.3,
     "absorptionDetectionRange": 400,

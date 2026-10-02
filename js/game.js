@@ -386,7 +386,7 @@ export class Game {
     for (const e of this.entities) {
       if (!e.alive) continue;
       const r = e.size / 2;
-      if(e.behavior==='ai'&&e.state==='search'&&(e.x<r||e.y<r||e.x>w.worldWidth-r||e.y>w.worldHeight-r))e.wanderTimer=0;
+      if(e.behavior==='ai'&&e.state==='search'&&(e.x<r||e.y<r||e.x>w.worldWidth-r||e.y>w.worldHeight-r)){e.wanderTimer=0;e.explorationPoint=null;}
       e.x = Math.min(Math.max(e.x, r), w.worldWidth - r);
       e.y = Math.min(Math.max(e.y, r), w.worldHeight - r);
     }
