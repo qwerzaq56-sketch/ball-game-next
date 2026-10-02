@@ -1,3 +1,4 @@
+import { clampEntity } from './worldBounds.js';
 import { Autoplay } from './autoplay.js';
 import { RunMetrics } from './runMetrics.js';
 import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection } from './vectorArt.js';
@@ -104,7 +105,7 @@ export class Game {
     const perColor = Math.max(1, Math.floor(b.spawning.initialEnemyCount / b.colors.length));
     for (const c of b.colors) {
       for (let i = 0; i < perColor; i++) {
-        this.entities.push(spawnAI(b, c, this.pickSafeSpawnPos(350), this.player.size));
+        this.entities.push(this.createSafeEnemy(c));
       }
     }
   }
@@ -124,6 +125,27 @@ export class Game {
       if (Math.hypot(candidate.x - px, candidate.y - py) >= safeRadius) return candidate;
     }
     return null;
+  }
+
+  createSafeEnemy(colorDef) {
+    const world=this.balance.world,p=this.player;
+    const newborn=spawnAI(this.balance,colorDef,this.pickSafeSpawnPos(350),p.size);
+    clampEntity(newborn,world);
+    const required=Math.max(350,(p.size+newborn.size)/2+80);
+    if(dist(newborn,p)>=required)return newborn;
+    // The legacy center-only gap is insufficient once either body grows. Retry only
+    // unsafe births, then use the furthest legal corner if this map cannot fit the gap.
+    let best={x:newborn.x,y:newborn.y,size:newborn.size};
+    for(let i=0;i<10;i++){
+      const point=clampEntity({x:random('world')*world.worldWidth,y:random('world')*world.worldHeight,size:newborn.size},world);
+      if(dist(point,p)>dist(best,p))best=point;
+      if(dist(point,p)>=required){newborn.x=point.x;newborn.y=point.y;return newborn;}
+    }
+    for(const x of [0,world.worldWidth])for(const y of [0,world.worldHeight]){
+      const point=clampEntity({x,y,size:newborn.size},world);
+      if(dist(point,p)>dist(best,p))best=point;
+    }
+    newborn.x=best.x;newborn.y=best.y;return newborn;
   }
 
   // ---------- spatial grid ----------
@@ -415,8 +437,7 @@ export class Game {
       if (!e.alive) continue;
       const r = e.size / 2;
       if(e.behavior==='ai'&&e.state==='search'&&(e.x<r||e.y<r||e.x>w.worldWidth-r||e.y>w.worldHeight-r)){e.wanderTimer=0;e.explorationPoint=null;}
-      e.x = Math.min(Math.max(e.x, r), w.worldWidth - r);
-      e.y = Math.min(Math.max(e.y, r), w.worldHeight - r);
+      clampEntity(e,w);
     }
   }
 
@@ -465,7 +486,7 @@ export class Game {
     const enemyCount = this.entities.reduce((n, e) => n + (e.alive && e.behavior === 'ai' ? 1 : 0), 0);
     if (enemyCount < s.maxEnemyCount) {
       const colorDef = this.balance.colors[Math.floor(random('world') * this.balance.colors.length)];
-      const newborn=spawnAI(this.balance, colorDef, this.pickSafeSpawnPos(350), this.player.size);
+      const newborn=this.createSafeEnemy(colorDef);
       this.entities.push(newborn);
       this.ecology.initializeUnit(this,newborn);
     }
