@@ -1,0 +1,183 @@
+{
+ "seed": 23,
+ "seconds": 900,
+ "detection": 320,
+ "wanderScale": 1,
+ "simulatedSeconds": 900,
+ "aiAttackStartsPer30s": [
+  26,
+  20,
+  50,
+  45,
+  28,
+  28,
+  55,
+  36,
+  37,
+  22,
+  41,
+  74,
+  70,
+  82,
+  63,
+  74,
+  49,
+  62,
+  68,
+  45,
+  52,
+  29,
+  71,
+  33,
+  61,
+  59,
+  55,
+  26,
+  48,
+  45
+ ],
+ "avgAliveAIPer30s": [
+  66,
+  74,
+  79,
+  80,
+  80,
+  80,
+  80,
+  79,
+  80,
+  80,
+  80,
+  80,
+  79,
+  79,
+  79,
+  78,
+  80,
+  78,
+  80,
+  79,
+  77,
+  79,
+  80,
+  79,
+  79,
+  79,
+  80,
+  80,
+  80,
+  79
+ ],
+ "stateChangesPerSec": {
+  "sampledAI": 275,
+  "p50": "0.41",
+  "p90": "0.75",
+  "max": "2.58"
+ },
+ "topTransitions": {
+  "search>chase_eat": 4386,
+  "chase_eat>search": 4243,
+  "flee>companion": 3887,
+  "companion>flee": 3813,
+  "search>flee": 3761,
+  "flee>search": 3755,
+  "flee>chase_eat": 1821,
+  "chase_eat>flee": 1750
+ },
+ "searchFleeTotal": 7516,
+ "ally": {
+  "connectedPairSeconds": 20606.050000000676,
+  "companionUnitSeconds": 18987.900000001286,
+  "maxGroups": 19,
+  "maxGroupMembers": 5,
+  "joins": 1137,
+  "leaves": 1123
+ },
+ "apex": {
+  "maxCount": 3,
+  "samples": 1952,
+  "notBiggest": 1256,
+  "dynamics": {
+   "observedSeconds": 900,
+   "apexEntitySeconds": 1952,
+   "secondsByApexCount": {
+    "0": 212,
+    "1": 2,
+    "2": 108,
+    "3": 578
+   },
+   "distinctHolders": 5,
+   "titleGains": 12,
+   "titleLosses": 9,
+   "tenures": [
+    {
+     "id": 1378,
+     "seconds": 130,
+     "ongoing": false
+    },
+    {
+     "id": 469,
+     "seconds": 18,
+     "ongoing": false
+    },
+    {
+     "id": 763,
+     "seconds": 298,
+     "ongoing": false
+    },
+    {
+     "id": 480,
+     "seconds": 338,
+     "ongoing": false
+    },
+    {
+     "id": 763,
+     "seconds": 16,
+     "ongoing": false
+    },
+    {
+     "id": 480,
+     "seconds": 26,
+     "ongoing": false
+    },
+    {
+     "id": 763,
+     "seconds": 160,
+     "ongoing": false
+    },
+    {
+     "id": 480,
+     "seconds": 24,
+     "ongoing": false
+    },
+    {
+     "id": 1395,
+     "seconds": 76,
+     "ongoing": false
+    },
+    {
+     "id": 1378,
+     "seconds": 430,
+     "ongoing": true
+    },
+    {
+     "id": 469,
+     "seconds": 390,
+     "ongoing": true
+    },
+    {
+     "id": 480,
+     "seconds": 46,
+     "ongoing": true
+    }
+   ],
+   "soleHolderRuns": [
+    {
+     "id": 763,
+     "seconds": 2,
+     "ongoing": false
+    }
+   ]
+  }
+ }
+}

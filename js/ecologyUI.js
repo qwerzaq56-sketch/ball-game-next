@@ -38,6 +38,7 @@ export class EcologyUI {
     for (const key of ['names','ranking','ecology']) {
       document.getElementById(`${key}-toggle`).addEventListener('click', () => this.toggle(key));
     }
+    document.getElementById('ally-links-toggle').addEventListener('click',()=>this.toggle('allyLinks'));
     document.getElementById('ecology-close').addEventListener('click', () => this.toggle('ecology',false));
     window.addEventListener('keydown', e => {
       if (document.getElementById('player-setup').open) return;
@@ -60,8 +61,13 @@ export class EcologyUI {
       button.textContent = `${labels[key]}: ${this.preferences[key] ? 'ON' : 'OFF'}`;
       button.setAttribute('aria-pressed', String(this.preferences[key]));
     }
+    const links=document.getElementById('ally-links-toggle');
+    links.textContent=`연결선: ${this.preferences.allyLinks?'ON':'OFF'}`;
+    links.setAttribute('aria-pressed',String(this.preferences.allyLinks));
+    if(this.ui.game)this.ui.game.showAllyLinks=this.preferences.allyLinks;
   }
   update(game) {
+    game.showAllyLinks=this.preferences.allyLinks;
     const now = performance.now(), fresh = this.lastHistory !== game.apexHistory;
     const viewport = `${window.innerWidth}/${window.innerHeight}`;
     const resized = this.viewport !== viewport;

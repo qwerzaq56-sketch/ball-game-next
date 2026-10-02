@@ -2,7 +2,7 @@ import {dist,isHostile} from './collision.js';
 import {random} from './random.js';
 import {cancelAbsorption} from './absorption.js';
 
-export const ALLY_RULES={enter:100,release:140,bonus:.05,bonusCap:3,decisionSeconds:3,joinChance:.18,leaveChance:.08,maxGroup:6};
+export const ALLY_RULES={enter:100,release:140,bonus:.05,bonusCap:3,decisionSeconds:3,joinChance:.18,leaveChance:.08,maxGroup:6,threatEnter:320,threatRelease:400};
 const key=(a,b)=>a.id<b.id?`${a.id}:${b.id}`:`${b.id}:${a.id}`;
 const unit=e=>e.alive&&(e.behavior==='ai'||e.behavior==='player');
 export class AllyLinks {
@@ -37,19 +37,22 @@ export class AllyLinks {
   let group=this.groups.get(b.companionGroup);
   if(group&&group.members.size>=ALLY_RULES.maxGroup)return false;
   if(!group){group={id:this.nextGroup++,color:a.color,leader:this.leader([a,b]),members:new Set([b])};this.groups.set(group.id,group);this.enter(b,group);}
-  group.members.add(a);this.enter(a,group);return true;
+  group.members.add(a);this.enter(a,group);
+  if(a.behavior==='player')group.leader=a;return true;
  }
  enter(e,group){
-  e.companionGroup=group.id;e.companionCooldown=ALLY_RULES.decisionSeconds;e.attackState='READY';e.trail=[];e.specialCast=null;e.retaliateTarget=null;e.challengeTarget=null;e.escapeAbsorber=null;
-  cancelAbsorption(e);this.game.abilities.endCommand(e,'companionship');
+  e.companionGroup=group.id;e.companionCooldown=ALLY_RULES.decisionSeconds;e.attackState='READY';e.trail=[];e.specialCast=null;e.retaliateTarget=null;e.challengeTarget=null;e.escapeAbsorber=null;e.companionThreat=null;
+  cancelAbsorption(e);
+  for(const target of this.game.entities)if(target.beingAbsorbedByRef===e)cancelAbsorption(target);
+  this.game.abilities.endCommand(e,'companionship');
   this.game.abilities.release(e); // Maintained fields cannot continue aggression while accompanying.
   if(e.behavior==='ai'){e.state='companion';e.target=null;}this.log('join',e);
  }
  leave(e,reason='choice'){
   if(!e.companionGroup)return;
-  const group=this.groups.get(e.companionGroup);e.companionGroup=null;e.companionCooldown=ALLY_RULES.decisionSeconds;
+  const group=this.groups.get(e.companionGroup);e.companionGroup=null;e.companionThreat=null;e.companionCooldown=ALLY_RULES.decisionSeconds;
   if(e.behavior==='ai'){e.state='search';e.target=null;e.decisionTimer=0;}group?.members.delete(e);this.log('leave',e,reason);
-  if(group&&group.members.size<2){this.groups.delete(group.id);for(const last of group.members){last.companionGroup=null;last.companionCooldown=ALLY_RULES.decisionSeconds;if(last.behavior==='ai'){last.state='search';last.target=null;last.decisionTimer=0;}this.log('leave',last,'group-dissolved');}}
+  if(group&&group.members.size<2){this.groups.delete(group.id);for(const last of group.members){last.companionGroup=null;last.companionThreat=null;last.companionCooldown=ALLY_RULES.decisionSeconds;if(last.behavior==='ai'){last.state='search';last.target=null;last.decisionTimer=0;}this.log('leave',last,'group-dissolved');}}
   else if(group&&!group.members.has(group.leader))group.leader=this.leader([...group.members]);
  }
  update(dt){
@@ -61,7 +64,7 @@ export class AllyLinks {
    if(e.companionCooldown>0)continue;
    if(e.companionGroup){if(random('ai')<ALLY_RULES.leaveChance)this.leave(e);continue;}
    if(e.behavior!=='ai'||e.frozen>0||e.beingAbsorbedByRef||e.recovering||e.attackState!=='READY'||e.dodgeState==='DODGING')continue;
-   const neighbor=this.neighbors(e).filter(n=>!n.beingAbsorbedByRef&&!(n.companionCooldown>0)&&n.attackState==='READY'&&!n.specialCast)
+   const neighbor=this.neighbors(e).filter(n=>!n.beingAbsorbedByRef&&!(n.companionCooldown>0)&&!(n.frozen>0)&&!n.recovering&&n.dodgeState!=='DODGING'&&n.attackState==='READY'&&!n.specialCast&&(!n.companionGroup||this.groups.get(n.companionGroup)?.members.size<ALLY_RULES.maxGroup))
     .sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id)[0];
    if(neighbor&&random('ai')<ALLY_RULES.joinChance)this.join(e,neighbor);
   }
@@ -69,11 +72,22 @@ export class AllyLinks {
  move(e,dt){
   const group=this.groups.get(e.companionGroup);if(!group)return false;
   // Survival escape takes priority, but never starts an attack or a cast.
-  const danger=this.game.abilities.fields.find(f=>f.owner.color!==e.color&&dist(e,f)<=420);
-  const threat=e.beingAbsorbedByRef??danger??this.game.getNearbyEntities(e,320).find(t=>t.alive&&isHostile(e,t)&&t.size>=e.size*1.2&&dist(e,t)<=320);
+  const fields=this.game.abilities.fields;
+  const remembered=e.companionThreat;
+  const held=remembered && (fields.includes(remembered)
+   ? remembered.owner.alive&&remembered.owner.apex&&remembered.owner.color!==e.color&&dist(e,remembered)<=420
+   : unit(remembered)&&isHostile(e,remembered)&&remembered.size>=e.size*1.2&&dist(e,remembered)<=ALLY_RULES.threatRelease);
+  const danger=fields.find(f=>f.owner.alive&&f.owner.apex&&f.owner.color!==e.color&&dist(e,f)<=360);
+  const threat=e.beingAbsorbedByRef??(held?remembered:null)??danger??this.game.getNearbyEntities(e,ALLY_RULES.threatEnter)
+   .filter(t=>unit(t)&&isHostile(e,t)&&t.size>=e.size*1.2&&dist(e,t)<=ALLY_RULES.threatEnter)
+   .sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id)[0];
+  e.companionThreat=threat??null;
   if(threat){const angle=Math.atan2(e.y-threat.y,e.x-threat.x);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*e.moveSpeed*1.3*dt;e.y+=Math.sin(angle)*e.moveSpeed*1.3*dt;return true;}
   e.state='companion';
-  if(group.leader===e){e.wanderTimer-=dt;if(e.wanderTimer<=0){e.wanderAngle=random('ai')*Math.PI*2;e.wanderTimer=3;}e.facing=e.wanderAngle;e.x+=Math.cos(e.facing)*e.moveSpeed*.55*dt;e.y+=Math.sin(e.facing)*e.moveSpeed*.55*dt;return true;}
+  if(group.leader===e){e.wanderTimer-=dt;if(e.wanderTimer<=0){e.wanderAngle=random('ai')*Math.PI*2;e.wanderTimer=3;}const w=this.game.balance.world,pad=e.size/2+60;
+   if((e.x<pad&&Math.cos(e.wanderAngle)<0)||(e.x>w.worldWidth-pad&&Math.cos(e.wanderAngle)>0))e.wanderAngle=Math.PI-e.wanderAngle;
+   if((e.y<pad&&Math.sin(e.wanderAngle)<0)||(e.y>w.worldHeight-pad&&Math.sin(e.wanderAngle)>0))e.wanderAngle=-e.wanderAngle;
+   e.facing=e.wanderAngle;e.x+=Math.cos(e.facing)*Math.min(...[...group.members].map(m=>m.moveSpeed))*.55*dt;e.y+=Math.sin(e.facing)*Math.min(...[...group.members].map(m=>m.moveSpeed))*.55*dt;return true;}
   const members=[...group.members].filter(m=>m!==group.leader).sort((a,b)=>a.id-b.id),i=members.indexOf(e);
   const lead=group.leader,back=lead.facing+Math.PI;
   const gap=(lead.size+e.size)/2+35,side=(i%2?1:-1)*(25+Math.floor(i/2)*30);

@@ -2,6 +2,7 @@ import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 const {chromium}=createRequire(import.meta.url)('playwright');
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+const prefix=process.env.BROWSER_ALLY_REPORT_PREFIX??'reports/M8';
 const page=await browser.newPage({viewport:{width:1280,height:720}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
 try {
  await page.goto(process.argv[2]??'http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();
@@ -18,12 +19,12 @@ try {
  await page.keyboard.press('F2');await page.evaluate(id=>window.__game.ui.inspector.select(id),actorId);await page.waitForTimeout(350);
  assert((await page.locator('#ai-detail').innerText()).includes('<img src=x>'));assert.equal(await page.locator('#ai-detail img').count(),0);await page.keyboard.press('F2');
  await page.evaluate(()=>{window.__game.player.displayName='달빛 늑대';});await page.waitForTimeout(150);
- await page.screenshot({path:'reports/M8-ally-chain.png'});
+ await page.screenshot({path:`${prefix}-ally-chain.png`});
  await page.keyboard.press('G');assert.equal(await page.evaluate(()=>window.__game.player.companionGroup),null);
  await page.evaluate(()=>{const g=window.__game;g.paused=false;});await page.waitForTimeout(300);
  await page.evaluate(()=>{const g=window.__game;g.reset();g.paused=true;g.allyLinks.timer=1000;const p=g.player;p.color='yellow';p.colorHex='#eab308';p.size=120;p.apex=true;p._specialApex=true;p.specialCooldown=0;g.entities=[p];g.abilities.start(p,0);});
- await page.screenshot({path:'reports/M8-sand-windup.png'});
+ await page.screenshot({path:`${prefix}-sand-windup.png`});
  await page.evaluate(()=>{const g=window.__game;for(let i=0;i<48;i++)g.abilities.update(1/60);});assert.equal(await page.evaluate(()=>window.__game.abilities.fields.length),1);
- await page.screenshot({path:'reports/M8-sand-field.png'});assert.deepEqual(errors,[]);
+ await page.screenshot({path:`${prefix}-sand-field.png`});assert.deepEqual(errors,[]);
  console.log(JSON.stringify({result:'PASS',chain:true,companionship:true,peaceful:true,leaveG:true,lineTogglePurity:true,inspector:true,sand:true,errors}));
 } finally {await browser.close();}

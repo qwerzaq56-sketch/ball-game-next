@@ -3,6 +3,7 @@ import { UI } from './ui.js';
 import { loadMuted, saveMuted } from './storage.js';
 import { AIInspector } from './aiInspector.js';
 import { PlayerSetup, loadPlayerProfile } from './playerProfile.js';
+import { PlayControls } from './playControls.js';
 
 class InputState {
   constructor() {
@@ -54,10 +55,10 @@ async function main() {
     const k = e.key.toLowerCase();
     input.keys.add(k);
     if(k==='g'&&!e.repeat && window.__game?.player.companionGroup)window.__game.allyLinks.leave(window.__game.player,'player-choice');
-    if(k==='e'&&!e.repeat)input._specialQueued=true;
+    if(k==='e'&&!e.repeat&&!window.__game?.paused)input._specialQueued=true;
     if (k === ' ') {
       e.preventDefault();
-      if (!e.repeat) input._dodgeQueued = true;
+      if (!e.repeat&&!window.__game?.paused) input._dodgeQueued = true;
     }
     if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) e.preventDefault();
   });
@@ -70,9 +71,9 @@ async function main() {
     input.mouseY = e.clientY - rect.top;
   });
   canvas.addEventListener('mousedown', (e) => {
-    if (e.button === 0) input.mouseDown = true;
+    if (e.button === 0&&!window.__game?.paused) input.mouseDown = true;
   });
-  window.addEventListener('blur', () => {input.keys.clear();input.mouseDown=false;});
+  window.addEventListener('blur', () => {input.keys.clear();input.mouseDown=false;input._dodgeQueued=false;input._specialQueued=false;});
   window.addEventListener('mouseup', (e) => {
     if (e.button === 0) input.mouseDown = false;
   });
@@ -81,6 +82,7 @@ async function main() {
   const playerSetup = new PlayerSetup(game, input);
   playerSetup.open();
   window.__game = game; // debug inspection hook
+  const playControls=new PlayControls(game,input);
   ui.inspector = new AIInspector(game, canvas, ui); // F2: read-only AI state window
 
   // v0.6 follow-up: the ally-absorption toggle used to be a right-click gesture on the canvas,
@@ -112,7 +114,10 @@ async function main() {
   // what made the button look broken/unresponsive.
   const resetBtn = document.getElementById('reset-btn');
   const resetConfirmOverlay = document.getElementById('reset-confirm-overlay');
+  let resetWasPaused=false;
   resetBtn.addEventListener('click', () => {
+    if(resetConfirmOverlay.style.display==='flex')return;
+    resetWasPaused=game.paused;game.paused=true;playControls.clearInput();
     resetConfirmOverlay.style.display = 'flex';
   });
   document.getElementById('reset-confirm-yes').addEventListener('click', () => {
@@ -122,6 +127,7 @@ async function main() {
   });
   document.getElementById('reset-confirm-no').addEventListener('click', () => {
     resetConfirmOverlay.style.display = 'none';
+    game.paused=resetWasPaused;playControls.clearInput();playControls.focusCanvas();
   });
 
   // v0.6 spec §16: wired once — game.js calls this via onGameOver whenever Lives hits 0.
@@ -142,6 +148,7 @@ async function main() {
     game.update(dt);
     game.render();
     ui.update(dt, game);
+    playControls.update();
 
     requestAnimationFrame(loop);
   }

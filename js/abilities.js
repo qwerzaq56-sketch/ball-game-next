@@ -50,7 +50,7 @@ export class Abilities {
   return hit&&(target.defeatSerial??0)===life;
  }
  command(owner,kind,seconds,range,cast){
-  const eligible=this.units().filter(e=>e.behavior==='ai'&&e.color===owner.color&&e.size<owner.size&&!e.apex&&dist(owner,e)<=range&&!e.command&&!e.beingAbsorbedByRef&&!(e.commandLock>0)&&!e.recovering&&e.hp/e.maxHp>.3);
+  const eligible=this.units().filter(e=>e.behavior==='ai'&&!e.companionGroup&&e.color===owner.color&&e.size<owner.size&&!e.apex&&dist(owner,e)<=range&&!e.command&&!e.beingAbsorbedByRef&&!(e.commandLock>0)&&!e.recovering&&e.hp/e.maxHp>.3);
   const recipients=eligible.filter(e=>kind!=='rally'||(e.attackUnlocked&&e.attackStack>0&&cast.target?.alive&&cast.target.size<=e.size*1.5&&e.hp/e.maxHp>.4)).sort((a,b)=>dist(owner,a)-dist(owner,b)||a.id-b.id).slice(0,4);
   for(const e of recipients){e.command={owner,kind,remaining:seconds,choices:new Map(),cast:cast.id,target:cast.target,point:cast.targetPoint};this.log('command-start',e,{kind,owner:owner.id});}
  }

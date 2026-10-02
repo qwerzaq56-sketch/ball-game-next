@@ -9,7 +9,7 @@
 <body>
   <div style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="player-identity"></span> · <span id="role-text"></span> · <span id="special-text"></span></div>
   <canvas id="game-canvas" tabindex="-1"></canvas>
-  <div id="build-id">NEXT · M8</div>
+  <div id="build-id">NEXT · M9</div>
 
   <dialog id="player-setup" aria-labelledby="player-setup-title">
     <form id="player-setup-form">
@@ -58,8 +58,10 @@
       <button id="names-toggle" class="hud-btn" type="button" aria-pressed="true">이름: ON</button>
       <button id="ranking-toggle" class="hud-btn" type="button" aria-pressed="true" aria-controls="live-ranking">순위: ON</button>
       <button id="ecology-toggle" class="hud-btn" type="button" aria-pressed="false" aria-controls="ecology-panel">생태계: OFF</button>
-      <button id="ally-links-toggle" class="hud-btn" type="button">연결선: ON</button>
+      <button id="ally-links-toggle" class="hud-btn" type="button" aria-pressed="true">연결선: ON</button>
       <button id="companion-leave" class="hud-btn" type="button" disabled>동행 이탈 (G)</button>
+      <button id="pause-btn" class="hud-btn" type="button" aria-pressed="false">일시정지 (P)</button>
+      <button id="help-btn" class="hud-btn" type="button" aria-haspopup="dialog" aria-controls="play-help">플레이 안내 (H)</button>
       <button id="reset-btn" class="hud-btn" type="button">전체 초기화</button>
     </div>
   </div>
@@ -104,8 +106,21 @@
 
   <div id="debug-panel"></div>
 
+  <div id="pause-indicator" hidden>일시정지 <span>P 또는 계속하기 버튼</span></div>
+  <dialog id="play-help" aria-labelledby="play-help-title">
+    <div class="help-heading"><h2 id="play-help-title">플레이 안내</h2><button id="help-close" class="hud-btn" type="button">닫기 · Esc</button></div>
+    <p>먹이를 먹고 성장하세요. <strong>크기</strong>는 흡수·전투·최상위 직위를 결정하고, <strong>점수</strong>는 플레이 기록입니다. TOP 10에서 두 순위를 바꿔 볼 수 있습니다.</p>
+    <dl class="help-controls"><dt>WASD / 방향키</dt><dd>이동</dd><dt>마우스 / 좌클릭</dt><dd>조준 / 공격</dd><dt>Space</dt><dd>회피</dd><dt>E</dt><dd>최상위 특수능력</dd><dt>G</dt><dd>동행 이탈</dd><dt>P / H</dt><dd>일시정지 / 안내</dd></dl>
+    <h3>같은 색 연결과 동행</h3>
+    <p>가까운 같은 색 공은 연결되고 이웃당 공격 +5%, 최대 +15%를 받습니다. 확률적으로 대열을 만들며, <strong>동행 중에는 공격·흡수·특수능력을 사용하지 않습니다.</strong> G로 이탈하면 자유 행동으로 돌아갑니다. 동행해도 외부 공격을 받을 수 있습니다.</p>
+    <h3>최상위 포식자 · 최대 3명</h3>
+    <p>크기 100 이상인 크기 상위 3개체가 후보입니다. 직위는 일정 시간 확인 후 주어집니다. 점수가 높아도 크기가 작으면 직위를 받지 못합니다.</p>
+    <ul class="help-skills"><li><i style="background:#06b6d4"></i>하늘 · 냉기 휘두르기: 전방 적을 얼립니다.</li><li><i style="background:#3b82f6"></i>파랑 · 삼중 파도: 세 방향으로 파동을 보냅니다.</li><li><i style="background:#22c55e"></i>초록 · 사기 진작: 아군 공격을 강화합니다.</li><li><i style="background:#ef4444"></i>빨강 · 전투 집결: 주변 아군을 전투에 부릅니다.</li><li><i style="background:#eab308"></i>노랑 · 모래바람: 넓은 장판에 지속 피해를 줍니다. 적의 모래바람은 빨리 벗어나세요.</li></ul>
+    <p class="help-footnote">F1 설정 · F2 AI 인스펙터 · F3 역할과 상태 · F4 생태계 기록<br>안내를 닫으면 열기 전의 진행/정지 상태로 돌아갑니다.</p>
+  </dialog>
+
   <div id="controls-hint">
-    WASD 이동 · 마우스 조준 · 좌클릭 공격 · Space 회피 · E 특수능력 · G 동행 이탈 · F1 설정 · F2 AI 보기 · F3 상태 · F4 생태계
+    WASD 이동 · 좌클릭 공격 · Space 회피 · E 특수능력 · G 동행 이탈 · P 일시정지 · H 안내 · F1–F4 디버그
   </div>
 
   <script type="module" src="js/main.js"></script>

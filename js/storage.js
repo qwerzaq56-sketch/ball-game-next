@@ -63,11 +63,11 @@ export function saveMuted(muted) {
 
 const PRESENTATION_KEY = 'ballgamenext_presentation_v1';
 export function loadPresentationPreferences() {
-  const defaults = {names:true, ranking:true, ecology:false, rankingMode:'score'};
+  const defaults = {names:true, ranking:true, ecology:false, allyLinks:true, rankingMode:'score'};
   try {
     const saved = JSON.parse(localStorage.getItem(PRESENTATION_KEY));
     if (saved && typeof saved === 'object') {
-      for (const key of ['names','ranking','ecology']) if (typeof saved[key] === 'boolean') defaults[key] = saved[key];
+      for (const key of ['names','ranking','ecology','allyLinks']) if (typeof saved[key] === 'boolean') defaults[key] = saved[key];
       if (saved.rankingMode === 'size' || saved.rankingMode === 'score') defaults.rankingMode = saved.rankingMode;
     }
   } catch { /* unavailable or malformed storage uses defaults */ }

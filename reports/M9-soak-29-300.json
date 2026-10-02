@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "seed": 29,
+  "seconds": 300,
+  "fps": 20,
+  "actualSeconds": 300,
+  "unitChecks": 23603,
+  "maxApex": 3,
+  "maxGroups": 13,
+  "playerGroupSeconds": 0,
+  "playerCasts": 0,
+  "playerDefeats": 6,
+  "ally": {
+    "joins": 339,
+    "leaves": 331
+  }
+}

@@ -40,3 +40,36 @@ test('edge drawing and refresh consume no random numbers; reset clears links and
  const ctx=new Proxy({}, {get:()=>()=>{},set:()=>true});g.allyLinks.draw(ctx,1);g.allyLinks.refresh();assert.equal(random('ai'),expected);
  g.reset();assert.equal(g.allyLinks.groups.size,0);assert.equal(g.allyLinks.edges.size,0);
 });
+
+test('a player joining an existing AI formation becomes its leader; leaders move at the slowest member pace',()=>{
+ const {g,a,b}=fixture();a.moveSpeed=200;b.moveSpeed=80;g.entities=[a,b,g.player];g.player.x=1100;g.player.y=1000;
+ g.allyLinks.refresh();assert(g.allyLinks.join(b,a));assert(g.allyLinks.join(g.player,a));
+ const group=g.allyLinks.groups.get(a.companionGroup);assert.equal(group.leader,g.player);
+ g.allyLinks.leave(g.player);assert.equal(group.leader,a);a.wanderAngle=0;a.wanderTimer=3;
+ const x=a.x;g.allyLinks.move(a,1);assert.equal(a.x-x,44);
+});
+
+test('companion danger uses separate entry and release distances, and forgets invalid threats',()=>{
+ const {g,a,b,make}=fixture();const enemy=make(1319,80,'red');g.entities=[a,b,enemy];g.buildGrid();g.allyLinks.refresh();g.allyLinks.join(a,b);
+ g.allyLinks.move(a,0);assert.equal(a.state,'flee');assert.equal(a.companionThreat,enemy);
+ enemy.x=1350;g.buildGrid();g.allyLinks.move(a,0);assert.equal(a.state,'flee');
+ enemy.x=1401;g.buildGrid();g.allyLinks.move(a,0);assert.equal(a.state,'companion');assert.equal(a.companionThreat,null);
+ enemy.x=1321;g.buildGrid();g.allyLinks.move(a,0);assert.equal(a.state,'companion');
+ enemy.x=1319;g.buildGrid();g.allyLinks.move(a,0);enemy.alive=false;g.allyLinks.move(a,0);assert.equal(a.state,'companion');
+});
+
+test('sand escape holds to 420 after entering at 360; joining removes maintained attacks and outgoing absorption',()=>{
+ const {g,a,b,make}=fixture();const owner=make(2000,120,'yellow');owner.apex=true;g.entities=[a,b,owner];
+ g.abilities.fields=[{owner,x:1359,y:1000,time:0,tick:0}];g.allyLinks.refresh();g.allyLinks.join(a,b);
+ g.allyLinks.move(a,0);assert.equal(a.state,'flee');g.abilities.fields[0].x=1419;g.allyLinks.move(a,0);assert.equal(a.state,'flee');
+ g.abilities.fields[0].x=1421;g.allyLinks.move(a,0);assert.equal(a.state,'companion');
+ g.allyLinks.leave(a);g.abilities.fields.push({owner:a,x:1000,y:1000,time:0,tick:0});b.beingAbsorbedByRef=a;
+ g.allyLinks.enter(a,{id:99});assert(!g.abilities.fields.some(f=>f.owner===a));assert.equal(b.beingAbsorbedByRef,null);
+});
+
+test('leaders steer back from borders and command skills skip peaceful companions',()=>{
+ const {g,a,b}=fixture();g.entities=[a,b];g.allyLinks.refresh();g.allyLinks.join(a,b);
+ const leader=g.allyLinks.groups.get(a.companionGroup).leader;leader.x=leader.size/2;leader.wanderAngle=Math.PI;leader.wanderTimer=2;
+ g.allyLinks.move(leader,.1);assert(leader.x>leader.size/2);
+ const owner={...g.player,size:200,color:a.color};g.abilities.command(owner,'harvest',6,500,{id:1});assert.equal(a.command,undefined);assert.equal(b.command,undefined);
+});

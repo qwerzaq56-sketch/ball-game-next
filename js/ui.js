@@ -35,7 +35,6 @@ export class UI {
     this.buildDebugPanel();
     this.ecologyUI = new EcologyUI(this);
     document.getElementById('companion-leave').addEventListener('click',()=>{if(this.game?.player.companionGroup)this.game.allyLinks.leave(this.game.player,'player-choice');});
-    document.getElementById('ally-links-toggle').addEventListener('click',()=>{if(!this.game)return;this.game.showAllyLinks=this.game.showAllyLinks===false;});
 
     window.addEventListener('keydown', (e) => {
       if (document.getElementById('player-setup').open) return;
@@ -115,9 +114,11 @@ export class UI {
     const player = game.player;
     document.getElementById('player-identity').textContent = player.displayName;
     const neighbors=game.allyLinks.neighbors(player).length;
-    document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${player.companionGroup?' · 대열 동행':''}`;
+    const group=game.allyLinks.groups.get(player.companionGroup);
+    document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${group?` · ${group.members.size}명 대열 동행 · 공격 쉬는 중`:''}`;
     document.getElementById('companion-leave').disabled=!player.companionGroup;
     document.getElementById('ally-links-toggle').textContent=`연결선: ${game.showAllyLinks===false?'OFF':'ON'}`;
+    document.getElementById('ally-links-toggle').setAttribute('aria-pressed',String(game.showAllyLinks!==false));
     const hpRatio = Math.max(0, player.hp / player.maxHp);
     this.hpFill.style.width = `${hpRatio * 100}%`;
     this.hpText.textContent = `${Math.ceil(player.hp)} / ${Math.ceil(player.maxHp)}`;
@@ -126,7 +127,9 @@ export class UI {
     this.killsText.textContent = player.kills;
     this.scoreText.textContent = Math.round(game.score);
     this.lifeText.textContent = Math.max(0, game.lives);
-    const special=document.getElementById("special-text");if(special)special.textContent=player.apex?`E · ${player.specialCooldown>0?Math.ceil(player.specialCooldown)+"s":"준비"}`:"";
+    const names={cyan:'냉기 휘두르기',blue:'삼중 파도',green:'사기 진작',red:'전투 집결',yellow:'모래바람'};
+    const special=document.getElementById('special-text');
+    if(special)special.textContent=player.apex?`E ${names[player.color]} · ${group?'동행 중 사용 불가':player.specialCast?'시전 중':player.specialCooldown>0?Math.ceil(player.specialCooldown)+'s':player.frozen>0?'빙결 중':player.attackState!=='READY'||player.dodgeState==='DODGING'?'행동 후 사용':'준비'}`:'';
     const roleText=document.getElementById("role-text");
     if(roleText)roleText.textContent=({prey:"프레이",forager:"포레이저",predator:"프레데터"})[player.role] ?? "";
 
