@@ -4,10 +4,10 @@ import {Ecology} from '../js/ecology.js';
 import {createGame} from '../tools/headless.mjs';
 import {decideAI} from '../js/ai.js';
 function fixture(n=10){return {gameTime:0,entities:Array.from({length:n},(_,i)=>({id:i+1,size:120-i,score:100-i,alive:true,behavior:'ai'}))};}
-test('role quotas and rank 5 eligibility do not promote rank 6',()=>{
- const g=fixture();g.entities.slice(4).forEach((x,i)=>x.size=99-i);const e=new Ecology();e.update(g,0);
+test('role quotas and rank 3 eligibility does not promote rank 4',()=>{
+ const g=fixture();g.entities.slice(2).forEach((x,i)=>x.size=99-i);const e=new Ecology();e.update(g,0);
  assert.equal(g.entities.filter(x=>x.role==='predator').length,2);assert.equal(g.entities.filter(x=>x.role==='prey').length,4);
- assert.equal(g.entities.filter(x=>x.apex).length,4);assert.equal(g.entities[5].apex,false);
+ assert.equal(g.entities.filter(x=>x.apex).length,2);assert.equal(g.entities[3].apex,false);
 });
 test('two evaluations, immediate death release, respawn confirmation',()=>{
  const g=fixture();const e=new Ecology();e.update(g,0);const a=g.entities[0];
@@ -36,7 +36,7 @@ test('new AI receives an immediate role without bypassing existing hysteresis',(
 
 test('apex eligibility follows size even when score order disagrees',()=>{
  const g=fixture(8);g.entities.forEach((x,i)=>{x.score=i*100;x.size=150-i*10;});const e=new Ecology();e.update(g,0);
- assert.deepEqual(g.entities.filter(x=>x.apex).map(x=>x.id),[1,2,3,4,5]);
+ assert.deepEqual(g.entities.filter(x=>x.apex).map(x=>x.id),[1,2,3]);
  const a=g.entities[0];a.score=-1000;e.update(g,2);e.update(g,2);assert.equal(a.apex,true);
  assert.equal(g.entities[7].apex,false);assert.equal(e.scoreOrder[0],8);
 });
@@ -44,4 +44,11 @@ test('equal-size apex candidates keep their previous size order and ignore score
  const g=fixture(6);g.entities.forEach(x=>x.size=120);const e=new Ecology();e.update(g,0);
  g.entities.reverse();g.entities.find(x=>x.id===6).score=9999;e.update(g,2);e.update(g,2);
  assert.deepEqual(e.sizeOrder,[1,2,3,4,5,6]);assert.equal(g.entities.find(x=>x.id===6).apex,false);
+});
+
+test('confirmed replacements never exceed three titles even during hysteresis',()=>{
+ const g=fixture(8),e=new Ecology();e.update(g,0);
+ g.entities[5].size=200;g.entities[6].size=210;g.entities[7].size=220;
+ for(let i=0;i<4;i++){e.update(g,2);assert(g.entities.filter(x=>x.apex).length<=3);}
+ assert.deepEqual(g.entities.filter(x=>x.apex).map(x=>x.id),[6,7,8]);
 });

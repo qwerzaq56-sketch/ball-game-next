@@ -1,0 +1,208 @@
+{
+ "seed": 23,
+ "seconds": 900,
+ "detection": 320,
+ "wanderScale": 1,
+ "simulatedSeconds": 900,
+ "aiAttackStartsPer30s": [
+  16,
+  35,
+  59,
+  58,
+  55,
+  31,
+  18,
+  39,
+  33,
+  56,
+  37,
+  55,
+  49,
+  45,
+  43,
+  32,
+  27,
+  33,
+  33,
+  42,
+  52,
+  33,
+  36,
+  58,
+  39,
+  70,
+  51,
+  44,
+  32,
+  36
+ ],
+ "avgAliveAIPer30s": [
+  66,
+  77,
+  80,
+  80,
+  78,
+  80,
+  80,
+  80,
+  80,
+  80,
+  80,
+  80,
+  80,
+  79,
+  80,
+  80,
+  80,
+  80,
+  80,
+  80,
+  80,
+  80,
+  79,
+  80,
+  80,
+  80,
+  80,
+  79,
+  79,
+  80
+ ],
+ "stateChangesPerSec": {
+  "sampledAI": 250,
+  "p50": "0.64",
+  "p90": "2.66",
+  "max": "8.12"
+ },
+ "topTransitions": {
+  "flee>companion": 24476,
+  "companion>flee": 24362,
+  "search>chase_eat": 3881,
+  "chase_eat>search": 3796,
+  "search>flee": 3689,
+  "flee>search": 3589,
+  "flee>chase_eat": 1804,
+  "chase_eat>flee": 1679
+ },
+ "searchFleeTotal": 7278,
+ "ally": {
+  "connectedPairSeconds": 20398.083333329698,
+  "companionUnitSeconds": 18585.699999998757,
+  "maxGroups": 18,
+  "maxGroupMembers": 5,
+  "joins": 1069,
+  "leaves": 1050
+ },
+ "apex": {
+  "maxCount": 3,
+  "samples": 1958,
+  "notBiggest": 1195,
+  "dynamics": {
+   "observedSeconds": 900,
+   "apexEntitySeconds": 1958,
+   "secondsByApexCount": {
+    "0": 146,
+    "1": 124,
+    "2": 56,
+    "3": 574
+   },
+   "distinctHolders": 7,
+   "titleGains": 17,
+   "titleLosses": 14,
+   "tenures": [
+    {
+     "id": 730,
+     "seconds": 318,
+     "ongoing": false
+    },
+    {
+     "id": 920,
+     "seconds": 4,
+     "ongoing": false
+    },
+    {
+     "id": 730,
+     "seconds": 30,
+     "ongoing": false
+    },
+    {
+     "id": 488,
+     "seconds": 586,
+     "ongoing": false
+    },
+    {
+     "id": 920,
+     "seconds": 28,
+     "ongoing": false
+    },
+    {
+     "id": 508,
+     "seconds": 84,
+     "ongoing": false
+    },
+    {
+     "id": 494,
+     "seconds": 10,
+     "ongoing": false
+    },
+    {
+     "id": 454,
+     "seconds": 516,
+     "ongoing": false
+    },
+    {
+     "id": 920,
+     "seconds": 24,
+     "ongoing": false
+    },
+    {
+     "id": 494,
+     "seconds": 16,
+     "ongoing": false
+    },
+    {
+     "id": 454,
+     "seconds": 22,
+     "ongoing": false
+    },
+    {
+     "id": 494,
+     "seconds": 6,
+     "ongoing": false
+    },
+    {
+     "id": 480,
+     "seconds": 50,
+     "ongoing": false
+    },
+    {
+     "id": 494,
+     "seconds": 12,
+     "ongoing": false
+    },
+    {
+     "id": 730,
+     "seconds": 138,
+     "ongoing": true
+    },
+    {
+     "id": 454,
+     "seconds": 78,
+     "ongoing": true
+    },
+    {
+     "id": 480,
+     "seconds": 36,
+     "ongoing": true
+    }
+   ],
+   "soleHolderRuns": [
+    {
+     "id": 488,
+     "seconds": 124,
+     "ongoing": false
+    }
+   ]
+  }
+ }
+}

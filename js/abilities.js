@@ -4,7 +4,7 @@ import { dist, isHostile, canAbsorb, canEatOrb } from './collision.js';
 import { random } from './random.js';
 export const ABILITIES = {
   cyan:{windup:.6,cooldown:10,radius:260}, blue:{windup:.6,cooldown:10,length:400,width:180},
-  green:{windup:.5,cooldown:12,radius:350},red:{windup:.8,cooldown:12,radius:450},yellow:{windup:.8,cooldown:14,radius:220},
+  green:{windup:.5,cooldown:12,radius:350},red:{windup:.8,cooldown:12,radius:450},yellow:{windup:.8,cooldown:14,radius:360},
 };
 // Side lanes are sampled once at cast start, then shared by windup and projectiles.
 export function blueWaveDirections(dir) {
@@ -32,7 +32,7 @@ export class Abilities {
  }
  endCommand(e,reason){if(!e.command)return;this.log('command-end',e,{kind:e.command.kind,reason});e.command=null;e.commandLock=3;e.target=null;e.state='search';e.decisionTimer=0;}
  redTarget(owner,dir){return this.units().filter(e=>isHostile(owner,e)&&dist(owner,e)<=500).sort((a,b)=>angleDelta(Math.atan2(a.y-owner.y,a.x-owner.x),dir)-angleDelta(Math.atan2(b.y-owner.y,b.x-owner.x),dir)||dist(owner,a)-dist(owner,b)||a.id-b.id)[0];}
- canCast(e){return this.enabled&&e.alive&&e.apex&&(e.specialCooldown??0)<=0&&!e.specialCast&&!(e.frozen>0)&&e.attackState==='READY'&&e.dodgeState!=='DODGING';}
+ canCast(e){return this.enabled&&!e.companionGroup&&e.alive&&e.apex&&(e.specialCooldown??0)<=0&&!e.specialCast&&!(e.frozen>0)&&e.attackState==='READY'&&e.dodgeState!=='DODGING';}
  start(e,dir,point,seenTarget){
   if(!this.canCast(e)||!ABILITIES[e.color])return false;
   const target=e.color==='red'?(seenTarget??this.redTarget(e,dir)):null;if(e.color==='red'&&!target)return false;
@@ -102,12 +102,12 @@ export class Abilities {
   this.waves=this.waves.filter(f=>f.time<.5-1e-8);
   const hits=new Map();
   for(const f of this.fields){f.time+=dt;f.tick+=dt;if(!f.owner.alive||!f.owner.apex)continue;
-    if(f.tick+1e-8>=.5&&f.time<=5+1e-8){f.tick-=.5;for(const t of units)if(isHostile(f.owner,t)&&dist(f,t)<=220){const raw=attackDamageForSize(f.owner.size,this.game.balance)*this.damageMultiplier(f.owner)*.15;if(!hits.has(t.id)||hits.get(t.id).raw<raw)hits.set(t.id,{t,owner:f.owner,raw});}}}
+    if(f.tick+1e-8>=.25&&f.time<=5+1e-8){f.tick-=.25;for(const t of units)if(isHostile(f.owner,t)&&dist(f,t)<=360){const raw=t.maxHp*.20*this.damageMultiplier(f.owner);if(!hits.has(t.id)||hits.get(t.id).raw<raw)hits.set(t.id,{t,owner:f.owner,raw});}}}
   for(const {t,owner,raw}of hits.values())if(owner.alive&&owner.apex)applyDamage(t,raw,this.game,owner,this.game.balance,{knockback:false,kind:'field'});
   this.fields=this.fields.filter(f=>f.time<5-1e-8&&f.owner.alive&&f.owner.apex);
  }
- miss(target){return this.fields.some(f=>f.owner===target&&dist(f,target)<=220)&&random('ai')<.25;}
- damageMultiplier(e){return e.morale?.size?1.15:1;}
+ miss(target){return this.fields.some(f=>f.owner===target&&dist(f,target)<=360)&&random('ai')<.25;}
+ damageMultiplier(e){return 1+(e.morale?.size ? .15 : 0)+(this.game.allyLinks?.bonus(e)??0);}
  commandDecision(e){
   const c=e.command;if(!c)return false;
   if(e.recovering||e.hp/e.maxHp<=.3||e.beingAbsorbedByRef){this.endCommand(e,'survival');return false;}
@@ -146,7 +146,7 @@ export class Abilities {
   const shape=(e,dir,point)=>{
     if(e.color==='cyan'){ctx.moveTo(e.x,e.y);ctx.arc(e.x,e.y,260,dir-Math.PI/3,dir+Math.PI/3);ctx.closePath();}
     else if(e.color==='blue'){for(const lane of e.directions ?? e.specialCast?.directions ?? [dir]){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(lane);ctx.rect(0,-90,400,180);ctx.restore();}}
-    else if(e.color==='yellow')ctx.arc(point.x,point.y,220,0,Math.PI*2);
+    else if(e.color==='yellow')ctx.arc(point.x,point.y,360,0,Math.PI*2);
     else ctx.arc(e.x,e.y,ABILITIES[e.color].radius,0,Math.PI*2);
   };
   for(const e of this.units())if(e.specialCast){ctx.save();ctx.beginPath();shape(e,e.specialCast.dir,e.specialCast.point);ctx.fillStyle=this.game.withAlpha(e.colorHex,.09);ctx.fill();ctx.strokeStyle=e.colorHex;ctx.lineWidth=2/zoom;ctx.setLineDash([8/zoom,5/zoom]);ctx.stroke();ctx.setLineDash([]);if(e.color==='red'&&e.specialCast.target){const t=e.specialCast.target;ctx.beginPath();ctx.arc(t.x,t.y,t.size/2+10,0,Math.PI*2);ctx.stroke();}ctx.restore();}
@@ -162,7 +162,7 @@ export class Abilities {
     ctx.lineWidth=4/zoom;ctx.strokeStyle='#111827';ctx.strokeText(labels[flash.color],flash.x,flash.y-45/zoom);
     ctx.fillStyle='#fff';ctx.fillText(labels[flash.color],flash.x,flash.y-45/zoom);ctx.restore();
   }
-  for(const f of this.fields){ctx.beginPath();ctx.arc(f.x,f.y,220,0,Math.PI*2);ctx.fillStyle='rgba(234,179,8,.12)';ctx.fill();ctx.strokeStyle='#eab308';ctx.lineWidth=2/zoom;ctx.stroke();}
+  for(const f of this.fields){ctx.beginPath();ctx.arc(f.x,f.y,360,0,Math.PI*2);ctx.fillStyle='rgba(234,179,8,.12)';ctx.fill();ctx.strokeStyle='#eab308';ctx.lineWidth=2/zoom;ctx.stroke();}
   for(const wave of this.waves){ctx.save();ctx.translate(wave.x,wave.y);ctx.rotate(wave.dir);ctx.fillStyle='rgba(59,130,246,.4)';ctx.fillRect(Math.max(0,wave.time/.5*400-20),-90,20,180);ctx.restore();}
  }
 }

@@ -73,7 +73,7 @@ export function updateAbsorptions(game, dt, balance) {
     if (!target.alive || !target.beingAbsorbedByRef) continue;
     const absorber = target.beingAbsorbedByRef;
 
-    if (!absorber.alive || target.size >= absorber.size) {
+    if (!absorber.alive || absorber.companionGroup || target.size >= absorber.size) {
       cancelAbsorption(target);
       continue;
     }

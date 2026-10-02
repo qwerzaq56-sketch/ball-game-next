@@ -4,6 +4,7 @@
 import { dist } from './collision.js';
 import {ROLE_LABELS,RELATIONSHIP_LABELS} from './presentation.js';
 
+const escapeHTML = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const WINDOW = 10; // seconds of state-change history shown as "chg/10s"
 const SORTS = {
   nearest: (a, b, p) => dist(a, p) - dist(b, p),
@@ -148,6 +149,8 @@ export class AIInspector {
       ['HP / size', `${Math.round(e.hp / e.maxHp * 100)}% / ${Math.round(e.size)}`],
       ['score (순위)', `${Math.round(e.score)} (${sr || '-'}위, size ${zr || '-'}위)`],
       ['최상위', e.apex ? 'YES' : 'no'],
+      ['아군 연결 / 보너스', `${g.allyLinks.neighbors(e).length} / +${Math.round(g.allyLinks.bonus(e)*100)}%`],
+      ['동행 대열', e.companionGroup ? `#${e.companionGroup} · ${g.allyLinks.groups.get(e.companionGroup)?.leader.displayName ?? '-'}` : '-'],
       ['공격/회피 스택', `${e.attackStack ?? 0}/${e.attackMaxStack ?? 0} · ${e.dodgeStack ?? 0}/${e.dodgeMaxStack ?? 0}`],
       ['위험감수 / 회복', `${e.riskTaking ? 'ON' : 'off'} / ${e.recovering ? 'ON' : 'off'}`],
       ['도전 대상 / 반격 대상', `${e.challengeTarget ? '#' + e.challengeTarget.id : '-'} / ${e.counterattacker ? '#' + e.counterattacker.id : '-'}`],
@@ -155,7 +158,7 @@ export class AIInspector {
       ['상태변경 (10s)', `${t ? t.times.length : 0}회`],
       ['최근 전환', t && t.hist.length ? t.hist.slice(-4).join(' | ') : '-'],
     ];
-    return '<table class="ai-detail">' + rows.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('') + '</table>';
+    return '<table class="ai-detail">' + rows.map(([k, v]) => `<tr><td>${escapeHTML(k)}</td><td>${escapeHTML(v)}</td></tr>`).join('') + '</table>';
   }
 
   render() {

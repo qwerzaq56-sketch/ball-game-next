@@ -74,6 +74,8 @@ export function updateAI(ai, dt, game, balance) {
   // (A duplicate call here previously made every AI regenerate stacks at 2x the configured
   // rate, which is what made enemies look like they could attack almost nonstop.)
 
+  if(ai.companionGroup){if(ai.dodgeState!=='DODGING')game.allyLinks.move(ai,dt);return;}
+
   // Committed to an attack or dodge animation: no fresh decisions, but charging already
   // moves the entity inside updateAttack/updateDodge.
   if (ai.attackState !== 'READY' || ai.dodgeState === 'DODGING') return;
@@ -141,8 +143,8 @@ export function decideAI(ai, game, balance) {
   ai.escapeAbsorber=null;
   const fields=game.abilities?.fields ?? [];
   const heldField=ai.fleeField;
-  const danger=fields.find(f=>f.owner.color!==ai.color&&dist(ai,f)<=220) ??
-    (fields.includes(heldField)&&heldField.owner.color!==ai.color&&dist(ai,heldField)<280 ? heldField : null);
+  const danger=fields.find(f=>f.owner.color!==ai.color&&dist(ai,f)<=360) ??
+    (fields.includes(heldField)&&heldField.owner.color!==ai.color&&dist(ai,heldField)<420 ? heldField : null);
   ai.fleeField=danger;
   if(danger){game.abilities.endCommand(ai,'sand-danger');ai.state='flee';ai.target={x:danger.x,y:danger.y,alive:true};return;}
 

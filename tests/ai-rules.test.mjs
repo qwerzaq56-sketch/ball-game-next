@@ -155,10 +155,10 @@ test('absorption escape releases beyond maintain distance plus margin',()=>{
  const radius=t.b.absorption.baseMaintainDistance+ally.size*t.b.absorption.maintainDistancePerSize+80;
  ally.x=a.x+radius; t.run([a,ally],a);assert.equal(a.escapeAbsorber,null);
 });
-test('sand escape holds to 280 and releases when the field expires',()=>{
+test('sand escape holds to 420 and releases when the field expires',()=>{
  const t=setup(), a=victim(t), owner=t.unit(200,'red',1000);
  const field={owner,x:1200,y:1000};t.g.abilities.fields=[field];
- assert.equal(t.run([a],a),'flee');field.x=1250;assert.equal(t.run([a],a),'flee');
+ assert.equal(t.run([a],a),'flee');field.x=1400;assert.equal(t.run([a],a),'flee');
  t.g.abilities.fields=[];assert.equal(t.run([a],a),'search');
 });
 

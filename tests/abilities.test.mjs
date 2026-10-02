@@ -33,9 +33,9 @@ test('blue wave hits once and pushes 120 over .2 seconds, then immunity',()=>{
 });
 test('green buff separates from command, caps four and excludes player automation',()=>{
  const {g,p}=fixture('green');for(let i=0;i<6;i++){const a=new AIEntity({x:p.x+i*10,y:p.y+50,color:'green',colorHex:'#0f0',balance:g.balance,startSize:50});g.entities.push(a);}
- g.abilities.start(p,0);ticks(g,30);assert.equal(g.abilities.damageMultiplier(p),1.15);assert.equal(p.command,undefined);assert.equal(g.entities.filter(e=>e.command).length,4);
- const a=g.entities.find(e=>e.command);g.abilities.endCommand(a,'test');assert.equal(g.abilities.damageMultiplier(a),1.15);assert.equal(a.commandLock,3);
- g.abilities.release(p);assert.equal(g.abilities.damageMultiplier(a),1);assert.equal(g.entities.filter(e=>e.command).length,0);
+ g.abilities.start(p,0);ticks(g,30);assert(Math.abs(g.abilities.damageMultiplier(p)-1.30)<1e-8);assert.equal(p.command,undefined);assert.equal(g.entities.filter(e=>e.command).length,4);
+ const a=g.entities.find(e=>e.command);g.abilities.endCommand(a,'test');assert(Math.abs(g.abilities.damageMultiplier(a)-1.30)<1e-8);assert.equal(a.commandLock,3);
+ g.abilities.release(p);assert(Math.abs(g.abilities.damageMultiplier(a)-1.15)<1e-8);assert.equal(g.entities.filter(e=>e.command).length,0);
 });
 test('red has no direct damage and refuses empty casting',()=>{
  const {g,p,t}=fixture('red');t.color='blue';g.abilities.start(p,0);ticks(g,48);assert.equal(t.hp,1000);g.entities=[p];p.specialCooldown=0;assert.equal(g.abilities.start(p,0),false);
@@ -49,11 +49,11 @@ test('blue refused candidates cannot be centrally absorbed while commanded',()=>
  t.command={kind:'devour',owner:p,choices:new Map([[small.id,false]]),remaining:4};assert.equal(g.abilities.absorptionAllowed(t,small),false);
  g.entities=[t,small];g.buildGrid();g.resolveConsumption();assert.equal(small.beingAbsorbedByRef,null);
 });
-test('yellow field ticks half-second; exact lifetime and same-tick overlap uses maximum',()=>{
+test('yellow field ticks quarter-second; exact lifetime and same-tick overlap uses maximum',()=>{
  const {g,p,t}=fixture('yellow');const q={...p,id:999};g.entities.push(q);
  g.abilities.fields=[{owner:p,x:t.x,y:t.y,time:0,tick:0},{owner:q,x:t.x,y:t.y,time:0,tick:0}];ticks(g,30);
- assert.equal(t.hp,999); // 16.5 raw minus 20 defense -> minimum 1; not two ticks
- ticks(g,270);assert.equal(g.abilities.fields.length,0);assert.equal(t.hp,990);
+ assert.equal(t.hp,620); // Two ticks of 200 raw × 1.05 ally bonus minus 20 defense; overlaps apply once.
+ ticks(g,270);assert.equal(g.abilities.fields.length,0);assert.equal(t.hp,0);
 });
 test('command reaccept lock, harvest no orb and red unseen destination completion',()=>{
  const {g,p,t}=fixture('green');t.color='green';t.command={owner:p,kind:'harvest',remaining:5};g.buildGrid();assert.equal(g.abilities.commandDecision(t),false);assert.equal(t.command,null);assert.equal(t.commandLock,3);

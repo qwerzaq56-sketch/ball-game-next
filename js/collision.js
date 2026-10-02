@@ -25,7 +25,7 @@ export function canEatOrb(eater, orb, balance) {
 // Same-color entity hierarchy: eligible to START an absorption (still subject to resistance time).
 export function canAbsorb(absorber, target) {
   if (!target.alive || !absorber.alive) return false;
-  if (target === absorber) return false;
+  if (target === absorber || absorber.companionGroup) return false;
   if (target.behavior !== 'ai' && target.behavior !== 'player') return false;
   if (target.color !== absorber.color) return false;
   if (target.beingAbsorbedByRef) return false; // already locked by another absorber

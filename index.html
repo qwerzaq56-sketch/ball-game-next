@@ -9,7 +9,7 @@
 <body>
   <div style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="player-identity"></span> · <span id="role-text"></span> · <span id="special-text"></span></div>
   <canvas id="game-canvas" tabindex="-1"></canvas>
-  <div id="build-id">NEXT · M7</div>
+  <div id="build-id">NEXT · M8</div>
 
   <dialog id="player-setup" aria-labelledby="player-setup-title">
     <form id="player-setup-form">
@@ -42,6 +42,7 @@
       <div>LIFE: <span id="life-text">3</span></div>
       <div>ALLY ABSORB: <span id="ally-absorb-text" class="ally-on">ON</span></div>
     </div>
+    <div class="hud-block" id="ally-link-status">아군 연결 0 · 공격 +0%</div>
     <div class="hud-block abilities">
       <div class="ability">
         <span class="ability-label">ATTACK</span>
@@ -57,6 +58,8 @@
       <button id="names-toggle" class="hud-btn" type="button" aria-pressed="true">이름: ON</button>
       <button id="ranking-toggle" class="hud-btn" type="button" aria-pressed="true" aria-controls="live-ranking">순위: ON</button>
       <button id="ecology-toggle" class="hud-btn" type="button" aria-pressed="false" aria-controls="ecology-panel">생태계: OFF</button>
+      <button id="ally-links-toggle" class="hud-btn" type="button">연결선: ON</button>
+      <button id="companion-leave" class="hud-btn" type="button" disabled>동행 이탈 (G)</button>
       <button id="reset-btn" class="hud-btn" type="button">전체 초기화</button>
     </div>
   </div>
@@ -102,7 +105,7 @@
   <div id="debug-panel"></div>
 
   <div id="controls-hint">
-    WASD 이동 · 마우스 조준 · 좌클릭 공격 · Space 회피 · E 특수능력 · F1 설정 · F2 AI 보기 · F3 상태 · F4 생태계
+    WASD 이동 · 마우스 조준 · 좌클릭 공격 · Space 회피 · E 특수능력 · G 동행 이탈 · F1 설정 · F2 AI 보기 · F3 상태 · F4 생태계
   </div>
 
   <script type="module" src="js/main.js"></script>

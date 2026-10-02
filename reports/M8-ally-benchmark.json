@@ -1,0 +1,20 @@
+[
+  {
+    "count": 80,
+    "refreshes": 100,
+    "meanMilliseconds": 0.153,
+    "edges": 100
+  },
+  {
+    "count": 160,
+    "refreshes": 100,
+    "meanMilliseconds": 0.228,
+    "edges": 260
+  },
+  {
+    "count": 320,
+    "refreshes": 100,
+    "meanMilliseconds": 0.501,
+    "edges": 580
+  }
+]

@@ -1,0 +1,92 @@
+{
+ "seed": 23,
+ "seconds": 300,
+ "detection": 320,
+ "wanderScale": 1,
+ "simulatedSeconds": 300,
+ "aiAttackStartsPer30s": [
+  16,
+  35,
+  59,
+  58,
+  55,
+  31,
+  18,
+  39,
+  33,
+  56
+ ],
+ "avgAliveAIPer30s": [
+  66,
+  77,
+  80,
+  80,
+  78,
+  80,
+  80,
+  80,
+  80,
+  80
+ ],
+ "stateChangesPerSec": {
+  "sampledAI": 131,
+  "p50": "0.59",
+  "p90": "2.34",
+  "max": "5.68"
+ },
+ "topTransitions": {
+  "flee>companion": 8562,
+  "companion>flee": 8530,
+  "search>chase_eat": 1309,
+  "chase_eat>search": 1231,
+  "flee>search": 1115,
+  "search>flee": 1113,
+  "flee>chase_eat": 611,
+  "chase_eat>flee": 581
+ },
+ "searchFleeTotal": 2228,
+ "ally": {
+  "connectedPairSeconds": 6364.6666666667625,
+  "companionUnitSeconds": 5942.09999999959,
+  "maxGroups": 17,
+  "maxGroupMembers": 4,
+  "joins": 332,
+  "leaves": 314
+ },
+ "apex": {
+  "maxCount": 2,
+  "samples": 184,
+  "notBiggest": 30,
+  "dynamics": {
+   "observedSeconds": 300,
+   "apexEntitySeconds": 184,
+   "secondsByApexCount": {
+    "0": 146,
+    "1": 124,
+    "2": 30
+   },
+   "distinctHolders": 2,
+   "titleGains": 2,
+   "titleLosses": 0,
+   "tenures": [
+    {
+     "id": 488,
+     "seconds": 154,
+     "ongoing": true
+    },
+    {
+     "id": 454,
+     "seconds": 30,
+     "ongoing": true
+    }
+   ],
+   "soleHolderRuns": [
+    {
+     "id": 488,
+     "seconds": 124,
+     "ongoing": false
+    }
+   ]
+  }
+ }
+}

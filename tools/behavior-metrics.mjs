@@ -15,12 +15,19 @@ const attacks = new Array(buckets).fill(0), aliveSum = new Array(buckets).fill(0
 const prev = new Map(), pairs = {}, perAI = new Map();
 let apexSamples = 0, apexNotBiggest = 0;
 const apexDynamics = new ApexMetrics();
+const ally={connectedPairSeconds:0,companionUnitSeconds:0,maxGroups:0,maxGroupMembers:0};
+let maxApexCount=0;
 
 for (let f = 0; f < seconds * 60; f++) {
   g.player.hp = g.player.maxHp; g.player.alive = true; g.gameOver = false;
   g.paused = false; g.lives = g.balance.lives.maxLives;
   g.update(dt);
   apexDynamics.observe(g.entities, dt);
+  maxApexCount=Math.max(maxApexCount,g.apexHistory.active.size);
+  ally.connectedPairSeconds+=g.allyLinks.edges.size*dt;
+  ally.companionUnitSeconds+=g.entities.filter(e=>e.alive&&e.companionGroup).length*dt;
+  ally.maxGroups=Math.max(ally.maxGroups,g.allyLinks.groups.size);
+  ally.maxGroupMembers=Math.max(ally.maxGroupMembers,0,...[...g.allyLinks.groups.values()].map(group=>group.members.size));
   // Measurement-only experiment: extend newly chosen wander segments, without
   // extra RNG calls or altering the production configuration.
   if(wanderScale!==1)for(const e of g.entities.filter(e=>e.behavior==='ai')){
@@ -60,5 +67,6 @@ console.log(JSON.stringify({
   stateChangesPerSec: {sampledAI: rates.length, p50: q(0.5), p90: q(0.9), max: q(1)},
   topTransitions: Object.fromEntries(top),
   searchFleeTotal: (pairs['search>flee'] ?? 0) + (pairs['flee>search'] ?? 0),
-  apex: {samples: apexSamples, notBiggest: apexNotBiggest, dynamics: apexDynamics.summary()},
+  ally:{...ally,...g.allyLinks.stats},
+  apex: {maxCount:maxApexCount,samples: apexSamples, notBiggest: apexNotBiggest, dynamics: apexDynamics.summary()},
 }, null, 1));

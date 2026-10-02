@@ -66,7 +66,7 @@ export function dodgeDistanceForSize(size, balance) {
 }
 
 export function canStartAttack(entity) {
-  if (entity.frozen>0 || entity.specialCast || entity.attackStack <= 0 || entity.attackState !== 'READY' || entity.dodgeState === 'DODGING') return false;
+  if (entity.companionGroup || entity.frozen>0 || entity.specialCast || entity.attackStack <= 0 || entity.attackState !== 'READY' || entity.dodgeState === 'DODGING') return false;
   if (entity.behavior === 'ai' && entity.aiAttackGateTimer > 0) return false;
   return true;
 }
@@ -177,7 +177,7 @@ export const RETALIATION_MEMORY = 3; // seconds an AI remembers its last attacke
 
 // v0.5: applyDamage now runs raw damage through Defense (spec §3) before it touches HP.
 export function applyDamage(target, rawDamage, game, attacker, balance, options = {}) {
-  if (target.invincible || !target.alive) return false;
+  if (attacker?.companionGroup || target.invincible || !target.alive) return false;
   if(options.kind!=='field' && game?.abilities?.miss(target)){game.spawnFloatingText(target.x,target.y-target.size/2,"MISS","#eab308");return false;}
   const bal = balance || (game && game.balance);
   const dmg = bal ? applyDefense(rawDamage, target.size, bal) : rawDamage;

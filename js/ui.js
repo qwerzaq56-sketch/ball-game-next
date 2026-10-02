@@ -34,6 +34,8 @@ export class UI {
     this.debugVisible = false;
     this.buildDebugPanel();
     this.ecologyUI = new EcologyUI(this);
+    document.getElementById('companion-leave').addEventListener('click',()=>{if(this.game?.player.companionGroup)this.game.allyLinks.leave(this.game.player,'player-choice');});
+    document.getElementById('ally-links-toggle').addEventListener('click',()=>{if(!this.game)return;this.game.showAllyLinks=this.game.showAllyLinks===false;});
 
     window.addEventListener('keydown', (e) => {
       if (document.getElementById('player-setup').open) return;
@@ -112,6 +114,10 @@ export class UI {
     this.game = game; // debug-panel checkbox handlers read this
     const player = game.player;
     document.getElementById('player-identity').textContent = player.displayName;
+    const neighbors=game.allyLinks.neighbors(player).length;
+    document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${player.companionGroup?' · 대열 동행':''}`;
+    document.getElementById('companion-leave').disabled=!player.companionGroup;
+    document.getElementById('ally-links-toggle').textContent=`연결선: ${game.showAllyLinks===false?'OFF':'ON'}`;
     const hpRatio = Math.max(0, player.hp / player.maxHp);
     this.hpFill.style.width = `${hpRatio * 100}%`;
     this.hpText.textContent = `${Math.ceil(player.hp)} / ${Math.ceil(player.maxHp)}`;

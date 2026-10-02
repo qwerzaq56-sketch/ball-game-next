@@ -1,3 +1,4 @@
+import { AllyLinks } from './allyLinks.js';
 import { ApexHistory } from './apexHistory.js';
 import { scoreRanking, layoutNameLabels, debugRoleLabel } from './presentation.js';
 import { Abilities } from './abilities.js';
@@ -17,7 +18,7 @@ import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
 import { startAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
 import { AudioManager } from './audio.js';
 
-const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '동행', recover: '회복' };
+const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '관계추종', companion:'대열 동행', recover: '회복' };
 const AI_PERSONALITY_LABEL = { growth: '성장형', cautious: '회피형', opportunist: '기회형' };
 
 const CELL_SIZE = 220;
@@ -52,6 +53,7 @@ export class Game {
     this.ecology = new Ecology();
     this.apexHistory = new ApexHistory();
     this.abilities = new Abilities(this);
+    this.allyLinks = new AllyLinks(this);
     this.telemetry = [];
     this.player = new Player(this.balance, this.options.profile);
     this.player.onSkillUnlock = (type) => {
@@ -164,6 +166,7 @@ export class Game {
     this.gameTime += dt;
 
     this.buildGrid();
+    this.allyLinks.update(dt);
     this.abilities.update(dt);
     this.updatePlayer(dt);
 
@@ -184,6 +187,8 @@ export class Game {
       updateDodgeStack(e, dt, b);
     }
 
+    this.allyLinks.refresh();
+    this.buildGrid();
     this.resolveConsumption();
     updateAbsorptions(this, dt, b);
     this.resolvePushApart();
@@ -196,6 +201,7 @@ export class Game {
     this.enemySpawnLoop(dt);
     this.cleanupDead();
     this.ecology.update(this, dt);
+    this.allyLinks.refresh();
     this.apexHistory.observe(this.entities, dt, this.gameTime);
     for(const e of this.entities)if(!e.apex&&e._specialApex){this.abilities.release(e);e._specialApex=false;}
     if (this.options.collect && Math.floor(this.gameTime + 1e-8) > this.telemetry.length) this.telemetry.push(this.snapshot());
@@ -265,14 +271,16 @@ export class Game {
     if (inp.keys.has('a') || inp.keys.has('arrowleft')) dx -= 1;
     if (inp.keys.has('d') || inp.keys.has('arrowright')) dx += 1;
 
+    const group=this.allyLinks.groups.get(p.companionGroup);
+    const moveSpeed=group ? Math.min(p.moveSpeed,...[...group.members].map(e=>e.moveSpeed))*.85 : p.moveSpeed;
     const moving = dx !== 0 || dy !== 0;
     const moveAngle = moving ? Math.atan2(dy, dx) : p.facing;
 
     if (p.attackState === 'READY' && p.dodgeState !== 'DODGING') {
       if (moving) {
         const len = Math.hypot(dx, dy);
-        p.x += (dx / len) * p.moveSpeed * dt;
-        p.y += (dy / len) * p.moveSpeed * dt;
+        p.x += (dx / len) * moveSpeed * dt;
+        p.y += (dy / len) * moveSpeed * dt;
       }
       p.facing = aimAngle;
     }
@@ -498,6 +506,7 @@ export class Game {
   // spent and Game Over triggers consistently regardless of which one happened.
   handlePlayerDefeat(reason) {
     this.player.defeatSerial=(this.player.defeatSerial??0)+1;
+    if(this.player.companionGroup)this.allyLinks.leave(this.player,'defeat');
     this.abilities.release(this.player);
     this.player._specialApex=false;
     this.player.frozen=0;this.player.wavePush=null;this.player.morale?.clear();
@@ -628,6 +637,7 @@ export class Game {
     this.drawTerritories(ctx);
     this.drawWorldBorder(ctx);
     this.abilities.draw(ctx,this.camera.zoom);
+    if(this.showAllyLinks!==false)this.allyLinks.draw(ctx,this.camera.zoom);
     this.drawAbsorptionLinks(ctx);
     this.drawEntities(ctx);
     this.drawParticles(ctx);
