@@ -1,6 +1,8 @@
 # Ball Game NEXT — 클라우드 작업 브리프 (자기완결, 2026-10-03)
 
-이 문서만으로 작업을 시작할 수 있게 핵심만 담았다. 기획서 전문은 클라우드에서 볼 수 없으므로 아래가 기준이다.
+이 문서에는 M3부터의 원래 브리프를 보존한다. 현재 기획은 저장소 GAME_DESIGN.md의 NEXT/M5 절과 reports/M5-development.md를 함께 읽는다.
+
+> M5 후속 개발 완료: 고정 개체 이름·점수 TOP 10·F4 생태계 기록·파란색 3방향 파동을 구현했다. 현재 작업 브랜치 codex/cloud-next-m4를 그대로 사용하고, 새 작업을 위해 통합 브랜치에서 다시 만들지 않는다. 현재 테스트는 `node --test --test-isolation=none` 72개 통과. 아래 원래 브리프의 “제안만” 상태 중 이름/순위와 삼중 파도는 후속 사용자 개발 위임에 따라 구현 상태로 갱신됐다.
 
 ## 0. 저장소·브랜치 규칙 (필수)
 - 저장소: https://github.com/qwerzaq56-sketch/ball-game-next (public). **작업 시작 브랜치: `feat/integrate-cloud-m3` (이 브리프가 포함된 최신 커밋)** → 여기서 새 브랜치 `codex/cloud-next-m4` 를 따서 작업. `feat/integrate-cloud-m3`와 `main`에는 push하지 않는다.

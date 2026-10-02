@@ -1,0 +1,100 @@
+{
+ "seed": 23,
+ "seconds": 300,
+ "detection": 320,
+ "wanderScale": 1,
+ "simulatedSeconds": 300,
+ "aiAttackStartsPer30s": [
+  52,
+  56,
+  63,
+  74,
+  71,
+  71,
+  71,
+  34,
+  89,
+  56
+ ],
+ "avgAliveAIPer30s": [
+  65,
+  71,
+  79,
+  78,
+  79,
+  78,
+  76,
+  80,
+  78,
+  76
+ ],
+ "stateChangesPerSec": {
+  "sampledAI": 164,
+  "p50": "0.39",
+  "p90": "0.61",
+  "max": "0.97"
+ },
+ "topTransitions": {
+  "search>chase_eat": 1654,
+  "chase_eat>search": 1625,
+  "search>flee": 1529,
+  "flee>search": 1509,
+  "flee>chase_eat": 819,
+  "chase_eat>flee": 724,
+  "chase_fight>flee": 393,
+  "search>chase_fight": 285
+ },
+ "searchFleeTotal": 3038,
+ "apex": {
+  "samples": 256,
+  "notBiggest": 74,
+  "dynamics": {
+   "observedSeconds": 300,
+   "apexEntitySeconds": 256,
+   "secondsByApexCount": {
+    "0": 118,
+    "1": 142,
+    "2": 10,
+    "3": 26,
+    "4": 4
+   },
+   "distinctHolders": 4,
+   "titleGains": 5,
+   "titleLosses": 1,
+   "tenures": [
+    {
+     "id": 454,
+     "seconds": 20,
+     "ongoing": false
+    },
+    {
+     "id": 480,
+     "seconds": 182,
+     "ongoing": true
+    },
+    {
+     "id": 497,
+     "seconds": 40,
+     "ongoing": true
+    },
+    {
+     "id": 639,
+     "seconds": 10,
+     "ongoing": true
+    },
+    {
+     "id": 454,
+     "seconds": 4,
+     "ongoing": true
+    }
+   ],
+   "soleHolderRuns": [
+    {
+     "id": 480,
+     "seconds": 142,
+     "ongoing": false
+    }
+   ]
+  }
+ }
+}

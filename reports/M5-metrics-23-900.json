@@ -1,0 +1,292 @@
+{
+ "seed": 23,
+ "seconds": 900,
+ "detection": 320,
+ "wanderScale": 1,
+ "simulatedSeconds": 900,
+ "aiAttackStartsPer30s": [
+  52,
+  56,
+  63,
+  74,
+  71,
+  71,
+  71,
+  34,
+  89,
+  56,
+  65,
+  79,
+  77,
+  42,
+  81,
+  71,
+  61,
+  85,
+  66,
+  92,
+  73,
+  51,
+  40,
+  54,
+  76,
+  59,
+  45,
+  37,
+  68,
+  56
+ ],
+ "avgAliveAIPer30s": [
+  65,
+  71,
+  79,
+  78,
+  79,
+  78,
+  76,
+  80,
+  78,
+  76,
+  74,
+  76,
+  77,
+  78,
+  77,
+  77,
+  78,
+  77,
+  78,
+  77,
+  72,
+  67,
+  67,
+  69,
+  67,
+  64,
+  61,
+  60,
+  62,
+  58
+ ],
+ "stateChangesPerSec": {
+  "sampledAI": 386,
+  "p50": "0.39",
+  "p90": "0.59",
+  "max": "1.00"
+ },
+ "topTransitions": {
+  "chase_eat>search": 4886,
+  "search>chase_eat": 4868,
+  "search>flee": 4620,
+  "flee>search": 4435,
+  "flee>chase_eat": 2309,
+  "chase_eat>flee": 2142,
+  "chase_fight>flee": 1046,
+  "search>chase_fight": 771
+ },
+ "searchFleeTotal": 9055,
+ "apex": {
+  "samples": 3000,
+  "notBiggest": 2222,
+  "dynamics": {
+   "observedSeconds": 900,
+   "apexEntitySeconds": 2999.233,
+   "secondsByApexCount": {
+    "0": 118,
+    "1": 142,
+    "2": 10,
+    "3": 28,
+    "4": 258.767,
+    "5": 341.233,
+    "6": 2
+   },
+   "distinctHolders": 11,
+   "titleGains": 35,
+   "titleLosses": 30,
+   "tenures": [
+    {
+     "id": 454,
+     "seconds": 20,
+     "ongoing": false
+    },
+    {
+     "id": 639,
+     "seconds": 50,
+     "ongoing": false
+    },
+    {
+     "id": 469,
+     "seconds": 28,
+     "ongoing": false
+    },
+    {
+     "id": 454,
+     "seconds": 86,
+     "ongoing": false
+    },
+    {
+     "id": 639,
+     "seconds": 12,
+     "ongoing": false
+    },
+    {
+     "id": 454,
+     "seconds": 4,
+     "ongoing": false
+    },
+    {
+     "id": 1196,
+     "seconds": 32,
+     "ongoing": false
+    },
+    {
+     "id": 497,
+     "seconds": 168,
+     "ongoing": false
+    },
+    {
+     "id": 1196,
+     "seconds": 8,
+     "ongoing": false
+    },
+    {
+     "id": 497,
+     "seconds": 8,
+     "ongoing": false
+    },
+    {
+     "id": 497,
+     "seconds": 24,
+     "ongoing": false
+    },
+    {
+     "id": 484,
+     "seconds": 8,
+     "ongoing": false
+    },
+    {
+     "id": 1196,
+     "seconds": 148,
+     "ongoing": false
+    },
+    {
+     "id": 639,
+     "seconds": 218,
+     "ongoing": false
+    },
+    {
+     "id": 497,
+     "seconds": 7.233,
+     "ongoing": false
+    },
+    {
+     "id": 508,
+     "seconds": 40,
+     "ongoing": false
+    },
+    {
+     "id": 639,
+     "seconds": 20,
+     "ongoing": false
+    },
+    {
+     "id": 484,
+     "seconds": 116,
+     "ongoing": false
+    },
+    {
+     "id": 469,
+     "seconds": 18,
+     "ongoing": false
+    },
+    {
+     "id": 484,
+     "seconds": 8,
+     "ongoing": false
+    },
+    {
+     "id": 639,
+     "seconds": 22,
+     "ongoing": false
+    },
+    {
+     "id": 732,
+     "seconds": 4,
+     "ongoing": false
+    },
+    {
+     "id": 508,
+     "seconds": 130,
+     "ongoing": false
+    },
+    {
+     "id": 454,
+     "seconds": 422,
+     "ongoing": false
+    },
+    {
+     "id": 732,
+     "seconds": 8,
+     "ongoing": false
+    },
+    {
+     "id": 454,
+     "seconds": 6,
+     "ongoing": false
+    },
+    {
+     "id": 508,
+     "seconds": 14,
+     "ongoing": false
+    },
+    {
+     "id": 469,
+     "seconds": 108,
+     "ongoing": false
+    },
+    {
+     "id": 732,
+     "seconds": 10,
+     "ongoing": false
+    },
+    {
+     "id": 469,
+     "seconds": 8,
+     "ongoing": false
+    },
+    {
+     "id": 480,
+     "seconds": 782,
+     "ongoing": true
+    },
+    {
+     "id": 1106,
+     "seconds": 274,
+     "ongoing": true
+    },
+    {
+     "id": 639,
+     "seconds": 126,
+     "ongoing": true
+    },
+    {
+     "id": 1630,
+     "seconds": 48,
+     "ongoing": true
+    },
+    {
+     "id": 732,
+     "seconds": 14,
+     "ongoing": true
+    }
+   ],
+   "soleHolderRuns": [
+    {
+     "id": 480,
+     "seconds": 142,
+     "ongoing": false
+    }
+   ]
+  }
+ }
+}
