@@ -161,3 +161,14 @@ test('sand escape holds to 280 and releases when the field expires',()=>{
  assert.equal(t.run([a],a),'flee');field.x=1250;assert.equal(t.run([a],a),'flee');
  t.g.abilities.fields=[];assert.equal(t.run([a],a),'search');
 });
+
+test('contact defense lets cautious prey answer contact but never pursue distant equals',()=>{
+ const t=setup(), a=victim(t,'prey','cautious'), foe=t.unit(100,'red',1120);
+ assert.equal(t.run([a,foe],a),'chase_fight');assert.equal(a.target,foe);
+ foe.x=1250;assert.notEqual(t.run([a,foe],a),'chase_fight');
+});
+test('contact defense flees without a stack and still yields to recovery',()=>{
+ const t=setup(), a=victim(t), foe=t.unit(100,'red',1120);
+ a.attackStack=0;assert.equal(t.run([a,foe],a),'flee');
+ a.attackStack=2;a.hp=a.maxHp*.3;assert.notEqual(t.run([a,foe],a),'chase_fight');
+});

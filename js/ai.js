@@ -189,6 +189,15 @@ export function decideAI(ai, game, balance) {
     dist(ai,hitBy)<=cfg.detectionRange && (ai.personality!=='cautious'||safe(hitBy,hitBy))){
     ai.state='chase_fight';ai.target=hitBy;return;
   }
+  // Reactive contact defense, never a new long-distance hunt. Survival/retaliation
+  // remain above this rule, and prey only attacks an enemy already at contact range.
+  const contact=closest(within.filter(e=>isHostile(ai,e)&&!threats.includes(e)&&
+    dist(ai,e)<=Math.min(160,(ai.size+e.size)/2+40)));
+  if(contact){
+    if(hp>.3 && canStartAttack(ai) && dist(ai,contact)<=attackReach(ai,balance) &&
+      (ai.personality!=='cautious'||safe(contact,contact))){ai.state='chase_fight';ai.target=contact;return;}
+    game.abilities?.endCommand(ai,'contact-defense');ai.state='flee';ai.target=contact;return;
+  }
   const opportunist=ai.personality==='opportunist';
   const lastHit=opportunist && hp>=.6 && canStartAttack(ai) ? closest(within.filter(e=>isHostile(ai,e)&&
     e.size<=ai.size*1.2&&e.attackState==='RECOVERY'&&!e.invincible&&dist(ai,e)<=attackRangeForSize(ai.size,balance)&&
