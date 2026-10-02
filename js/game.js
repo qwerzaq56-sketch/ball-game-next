@@ -15,6 +15,9 @@ import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
 import { startAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
 import { AudioManager } from './audio.js';
 
+const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '동행', recover: '회복' };
+const AI_PERSONALITY_LABEL = { growth: '성장형', cautious: '회피형', opportunist: '기회형' };
+
 const CELL_SIZE = 220;
 
 export class Game {
@@ -43,6 +46,7 @@ export class Game {
     resetRandom(this.seed);
     resetEntityIds();
     this.gameTime = 0;
+    this.showAILabels = true; // head-up state + personality labels over AI (debug aid, F3)
     this.ecology = new Ecology();
     this.abilities = new Abilities(this);
     this.telemetry = [];
@@ -688,6 +692,7 @@ export class Game {
       .sort((a, b) => a.size - b.size);
 
     for (const e of visible) this.drawEntity(ctx, e);
+    if (this.showAILabels) this.drawAILabels(ctx, visible);
   }
 
   isRoughlyVisible(e) {
@@ -799,6 +804,28 @@ export class Game {
       ctx.fillStyle = e.hp / e.maxHp > 0.3 ? '#4ade80' : '#f87171';
       ctx.fillRect(bx, by, barW * Math.max(0, e.hp / e.maxHp), barH);
     }
+  }
+
+  // Floating "state · personality" tag above each AI. Read-only; constant on-screen font size.
+  drawAILabels(ctx, visible) {
+    const z = this.camera.zoom;
+    ctx.save();
+    ctx.font = `${11 / z}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 3 / z;
+    for (const e of visible) {
+      if (!e.alive || e.behavior !== 'ai') continue;
+      const state = AI_STATE_LABEL[e.recovering ? 'recover' : e.state] ?? e.state;
+      const text = `${e.apex ? '★ ' : ''}${state} · ${AI_PERSONALITY_LABEL[e.personality] ?? '-'}`;
+      const x = e.x, y = e.y - e.size / 2 - 16;
+      ctx.strokeStyle = 'rgba(0,0,0,0.75)';
+      ctx.strokeText(text, x, y);
+      ctx.fillStyle = e.state === 'flee' ? '#fde68a' : e.state === 'chase_fight' ? '#fca5a5' : '#ffffff';
+      ctx.fillText(text, x, y);
+    }
+    ctx.restore();
   }
 
   drawParticles(ctx) {

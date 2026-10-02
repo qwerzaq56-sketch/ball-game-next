@@ -39,6 +39,11 @@ export class UI {
         this.debugVisible = !this.debugVisible;
         this.debugPanel.style.display = this.debugVisible ? 'block' : 'none';
       }
+      if (e.key === 'F3' && this.game) {
+        e.preventDefault();
+        this.game.showAILabels = !this.game.showAILabels;
+        if (this.aiLabelCheckbox) this.aiLabelCheckbox.checked = this.game.showAILabels;
+      }
     });
   }
 
@@ -281,6 +286,21 @@ export class UI {
     row.appendChild(span);
     row.appendChild(checkbox);
     box.appendChild(row);
+
+    const labelRow = document.createElement('label');
+    labelRow.className = 'debug-row';
+    const labelSpan = document.createElement('span');
+    labelSpan.textContent = 'AI 상태·성격 라벨 (F3)';
+    const labelBox = document.createElement('input');
+    labelBox.type = 'checkbox';
+    labelBox.checked = true; // matches Game#showAILabels default
+    labelBox.addEventListener('change', () => {
+      if (this.game) this.game.showAILabels = labelBox.checked;
+    });
+    this.aiLabelCheckbox = labelBox;
+    labelRow.appendChild(labelSpan);
+    labelRow.appendChild(labelBox);
+    box.appendChild(labelRow);
     return box;
   }
 
