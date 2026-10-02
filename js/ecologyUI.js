@@ -103,6 +103,15 @@ export class EcologyUI {
   }
   renderEcology(game) {
     const s=game.apexHistory.summary(game.gameTime);
+    const units=game.entities.filter(e=>e.alive&&e.behavior!=='orb');
+    const roles=document.getElementById('ecology-roles');roles.replaceChildren();
+    for(const [key,label] of [['prey','프레이'],['forager','포레이저'],['predator','프레데터']]) {
+      const count=units.filter(e=>e.role===key).length;
+      const cell=element('div',`ecology-role ${key}`);
+      cell.append(element('span','',label),element('strong','',`${count} · ${units.length?Math.round(count/units.length*100):0}%`));roles.append(cell);
+    }
+    const members=units.filter(e=>e.companionGroup).length;
+    document.getElementById('ecology-companions').textContent=`동행 ${members} / ${units.length}개체 · ${game.allyLinks.groups.size}개 대열 · 진입 ${game.allyLinks.stats.joins} / 이탈 ${game.allyLinks.stats.leaves}`;
     document.getElementById('ecology-time').textContent=durationLabel(game.gameTime);
     document.getElementById('ecology-summary').textContent=`현재 ${s.current.length} · 획득 ${s.gains} · 상실 ${s.losses}`;
     const stats=document.getElementById('ecology-periods'); stats.replaceChildren();

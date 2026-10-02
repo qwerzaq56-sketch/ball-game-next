@@ -1,6 +1,6 @@
-import {dist,isHostile} from './collision.js';
+import {dist,isHostile,canAbsorb} from './collision.js';
 import {random} from './random.js';
-import {cancelAbsorption} from './absorption.js';
+import {cancelAbsorption,maintainDistanceFor} from './absorption.js';
 
 export const ALLY_RULES={enter:100,release:140,bonus:.05,bonusCap:3,decisionSeconds:3,joinChance:.18,leaveChance:.08,maxGroup:6,threatEnter:320,threatRelease:400};
 const key=(a,b)=>a.id<b.id?`${a.id}:${b.id}`:`${b.id}:${a.id}`;
@@ -41,7 +41,7 @@ export class AllyLinks {
   if(a.behavior==='player')group.leader=a;return true;
  }
  enter(e,group){
-  e.companionGroup=group.id;e.companionCooldown=ALLY_RULES.decisionSeconds;e.attackState='READY';e.trail=[];e.specialCast=null;e.retaliateTarget=null;e.challengeTarget=null;e.escapeAbsorber=null;e.companionThreat=null;
+  e.companionGroup=group.id;e.companionCooldown=ALLY_RULES.decisionSeconds;e.attackState='READY';e.trail=[];e.specialCast=null;e.retaliateTarget=null;e.challengeTarget=null;e.companionThreat=null;
   cancelAbsorption(e);
   for(const target of this.game.entities)if(target.beingAbsorbedByRef===e)cancelAbsorption(target);
   this.game.abilities.endCommand(e,'companionship');
@@ -72,13 +72,15 @@ export class AllyLinks {
  move(e,dt){
   const group=this.groups.get(e.companionGroup);if(!group)return false;
   // Survival escape takes priority, but never starts an attack or a cast.
+  if(e.beingAbsorbedByRef)e.escapeAbsorber=e.beingAbsorbedByRef;
+  if(!e.beingAbsorbedByRef&&e.escapeAbsorber&&(!unit(e.escapeAbsorber)||!canAbsorb(e.escapeAbsorber,e)||dist(e,e.escapeAbsorber)>maintainDistanceFor(e.escapeAbsorber,this.game.balance)+80))e.escapeAbsorber=null;
   const fields=this.game.abilities.fields;
   const remembered=e.companionThreat;
   const held=remembered && (fields.includes(remembered)
    ? remembered.owner.alive&&remembered.owner.apex&&remembered.owner.color!==e.color&&dist(e,remembered)<=420
    : unit(remembered)&&isHostile(e,remembered)&&remembered.size>=e.size*1.2&&dist(e,remembered)<=ALLY_RULES.threatRelease);
   const danger=fields.find(f=>f.owner.alive&&f.owner.apex&&f.owner.color!==e.color&&dist(e,f)<=360);
-  const threat=e.beingAbsorbedByRef??(held?remembered:null)??danger??this.game.getNearbyEntities(e,ALLY_RULES.threatEnter)
+  const threat=e.beingAbsorbedByRef??e.escapeAbsorber??(held?remembered:null)??danger??this.game.getNearbyEntities(e,ALLY_RULES.threatEnter)
    .filter(t=>unit(t)&&isHostile(e,t)&&t.size>=e.size*1.2&&dist(e,t)<=ALLY_RULES.threatEnter)
    .sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id)[0];
   e.companionThreat=threat??null;

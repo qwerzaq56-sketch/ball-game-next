@@ -19,6 +19,13 @@ export class TouchControls {
         if(kind==='special')input._specialQueued=true;
       });
     }
+    this.attack.addEventListener('pointermove',e=>{
+      if(this.pointers.get(e.pointerId)!=='attack'||this.blocked())return;
+      e.preventDefault();const r=this.attack.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,length=Math.hypot(dx,dy);
+      if(length<8)return;
+      const player=game.worldToScreen(game.player.x,game.player.y);
+      input.mouseX=player.x+dx/length*180;input.mouseY=player.y+dy/length*180;
+    });
     for(const event of ['pointerup','pointercancel','lostpointercapture'])window.addEventListener(event,e=>this.release(e.pointerId));
     for(const event of ['pointerdown','pointermove'])canvas.addEventListener(event,e=>{
       if(e.pointerType!=='touch'||this.blocked())return;

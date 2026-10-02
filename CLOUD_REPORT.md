@@ -1,5 +1,7 @@
 # CLOUD M4 report
 
+> 최신 M11: 생태계 역할·동행 현황·F2 구성원·터치 드래그 조준 및 장시간 검증. [보고서](reports/M11-development.md).
+
 > 최신 M10: 터치 조이스틱·다중 터치 전투·가로 화면 HUD. [검증 보고서](reports/M10-development.md).
 
 > 최신 M9: 대열 안정화·P 일시정지·H 플레이 안내·동행 HUD 및 설정 저장. [검증 보고서](reports/M9-development.md).

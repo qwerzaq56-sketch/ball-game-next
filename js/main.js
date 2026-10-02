@@ -55,7 +55,7 @@ async function main() {
     if (document.getElementById('player-setup').open || e.target.closest?.('input,textarea,select')) return;
     const k = e.key.toLowerCase();
     input.keys.add(k);
-    if(k==='g'&&!e.repeat && window.__game?.player.companionGroup)window.__game.allyLinks.leave(window.__game.player,'player-choice');
+    if(k==='g'&&!e.repeat && !document.getElementById('play-help').open && document.getElementById('reset-confirm-overlay').style.display!=='flex' && window.__game?.player.companionGroup)window.__game.allyLinks.leave(window.__game.player,'player-choice');
     if(k==='e'&&!e.repeat&&!window.__game?.paused)input._specialQueued=true;
     if (k === ' ') {
       e.preventDefault();

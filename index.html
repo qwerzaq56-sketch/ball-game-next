@@ -9,7 +9,7 @@
 <body>
   <div id="player-info" style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="player-identity"></span> · <span id="role-text"></span> · <span id="special-text"></span></div>
   <canvas id="game-canvas" tabindex="-1"></canvas>
-  <div id="build-id">NEXT · M10</div>
+  <div id="build-id">NEXT · M11</div>
 
   <dialog id="player-setup" aria-labelledby="player-setup-title">
     <form id="player-setup-form">
@@ -74,6 +74,8 @@
   <aside id="ecology-panel" class="observer-panel" aria-label="이번 런의 apex 기록" hidden>
     <div class="observer-heading"><strong>생태계</strong><span id="ecology-time"></span><button id="ecology-close" type="button" aria-label="생태계 패널 닫기">×</button></div>
     <p id="ecology-summary"></p>
+    <div id="ecology-roles" aria-label="생존 개체 역할 분포"></div>
+    <p id="ecology-companions"></p>
     <div id="ecology-periods"></div>
     <p id="ecology-longest"></p>
     <ul id="apex-current"></ul>
@@ -109,13 +111,13 @@
   <div id="pause-indicator" hidden>일시정지 <span>P 또는 계속하기 버튼</span></div>
   <div id="touch-controls" aria-label="터치 게임 조작">
     <div id="touch-stick" role="group" aria-label="이동 조이스틱"><span id="touch-knob"></span><span class="touch-label">이동</span></div>
-    <div id="touch-actions"><button id="touch-special" type="button" aria-label="특수능력">E 스킬</button><button id="touch-dodge" type="button" aria-label="회피">회피</button><button id="touch-attack" type="button" aria-label="공격 유지">공격</button></div>
+    <div id="touch-actions"><button id="touch-special" type="button" aria-label="특수능력">E 스킬</button><button id="touch-dodge" type="button" aria-label="회피">회피</button><button id="touch-attack" type="button" aria-label="공격 유지 및 드래그 조준">조준<br>공격</button></div>
   </div>
   <dialog id="play-help" aria-labelledby="play-help-title">
     <div class="help-heading"><h2 id="play-help-title">플레이 안내</h2><button id="help-close" class="hud-btn" type="button">닫기 · Esc</button></div>
     <p>먹이를 먹고 성장하세요. <strong>크기</strong>는 흡수·전투·최상위 직위를 결정하고, <strong>점수</strong>는 플레이 기록입니다. TOP 10에서 두 순위를 바꿔 볼 수 있습니다.</p>
     <dl class="help-controls"><dt>WASD / 방향키</dt><dd>이동</dd><dt>마우스 / 좌클릭</dt><dd>조준 / 공격</dd><dt>Space</dt><dd>회피</dd><dt>E</dt><dd>최상위 특수능력</dd><dt>G</dt><dd>동행 이탈</dd><dt>P / H</dt><dd>일시정지 / 안내</dd></dl>
-    <p>터치 화면에서는 왼쪽 조이스틱으로 이동하고 화면을 터치해 조준합니다. 오른쪽 공격 버튼을 누르고 있으면 공격하며, 회피·E 버튼을 함께 사용할 수 있습니다. 동행 중에는 HUD의 ‘동행 이탈’ 버튼으로 나갑니다.</p>
+    <p>터치 화면에서는 왼쪽 조이스틱으로 이동하고 화면을 터치해 조준합니다. 오른쪽 공격 버튼을 누른 채 드래그하면 그 방향으로 조준·공격합니다. 회피·E 버튼도 함께 사용할 수 있습니다. 동행 중에는 HUD의 ‘동행 이탈’ 버튼으로 나갑니다.</p>
     <h3>같은 색 연결과 동행</h3>
     <p>가까운 같은 색 공은 연결되고 이웃당 공격 +5%, 최대 +15%를 받습니다. 확률적으로 대열을 만들며, <strong>동행 중에는 공격·흡수·특수능력을 사용하지 않습니다.</strong> G로 이탈하면 자유 행동으로 돌아갑니다. 동행해도 외부 공격을 받을 수 있습니다.</p>
     <h3>최상위 포식자 · 최대 3명</h3>

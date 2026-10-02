@@ -151,6 +151,8 @@ export class AIInspector {
       ['최상위', e.apex ? 'YES' : 'no'],
       ['아군 연결 / 보너스', `${g.allyLinks.neighbors(e).length} / +${Math.round(g.allyLinks.bonus(e)*100)}%`],
       ['동행 대열', e.companionGroup ? `#${e.companionGroup} · ${g.allyLinks.groups.get(e.companionGroup)?.leader.displayName ?? '-'}` : '-'],
+      ['대열 구성원', e.companionGroup ? [...(g.allyLinks.groups.get(e.companionGroup)?.members ?? [])].map(m=>`${m.displayName} #${m.id}${m===g.allyLinks.groups.get(e.companionGroup)?.leader?' (리더)':''}`).join(' · ') : '-'],
+      ['동행 도주 원인', e.companionThreat ? e.companionThreat.owner ? `모래바람 · ${e.companionThreat.owner.displayName}` : `${e.companionThreat.displayName} #${e.companionThreat.id}` : '-'],
       ['공격/회피 스택', `${e.attackStack ?? 0}/${e.attackMaxStack ?? 0} · ${e.dodgeStack ?? 0}/${e.dodgeMaxStack ?? 0}`],
       ['위험감수 / 회복', `${e.riskTaking ? 'ON' : 'off'} / ${e.recovering ? 'ON' : 'off'}`],
       ['도전 대상 / 반격 대상', `${e.challengeTarget ? '#' + e.challengeTarget.id : '-'} / ${e.counterattacker ? '#' + e.counterattacker.id : '-'}`],

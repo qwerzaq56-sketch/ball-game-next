@@ -10,3 +10,6 @@ test('near-edge placement allows a faster escape instead of forced 80 percent da
 test('slower prey take more damage; fast prey have a meaningful escape advantage',()=>{
  const fast=sandEscape({speed:155}),slow=sandEscape({speed:105});assert(fast.lostFraction<slow.lostFraction);assert(slow.lostFraction<=1);
 });
+test('sand escape calibration holds across the supported 20–120Hz frame range',()=>{
+ for(const fps of [20,30,60,120])for(const size of [20,40,60]){const r=sandEscape({fps,size});assert(r.escaped&&r.alive);assert(r.lostFraction>=.75&&r.lostFraction<=.85,JSON.stringify(r));}
+});

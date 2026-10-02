@@ -73,3 +73,10 @@ test('leaders steer back from borders and command skills skip peaceful companion
  g.allyLinks.move(leader,.1);assert(leader.x>leader.size/2);
  const owner={...g.player,size:200,color:a.color};g.abilities.command(owner,'harvest',6,500,{id:1});assert.equal(a.command,undefined);assert.equal(b.command,undefined);
 });
+test('companions keep escaping same-color absorbers beyond their size-driven connection range',()=>{
+ const {g,a,b,make}=fixture(),owner=make(1529,1000);g.entities=[a,b,owner];g.allyLinks.refresh();g.allyLinks.join(a,b);
+ a.beingAbsorbedByRef=owner;g.allyLinks.move(a,0);assert.equal(a.state,'flee');assert.equal(a.escapeAbsorber,owner);
+ a.beingAbsorbedByRef=null;owner.x=1550;g.allyLinks.move(a,0);assert.equal(a.state,'flee');
+ owner.x=1611;g.allyLinks.move(a,0);assert.equal(a.state,'companion');assert.equal(a.escapeAbsorber,null);
+ owner.x=1529;a.escapeAbsorber=owner;g.allyLinks.leave(a);g.allyLinks.join(a,b);assert.equal(a.escapeAbsorber,owner);owner.alive=false;g.allyLinks.move(a,0);assert.equal(a.escapeAbsorber,null);
+});
