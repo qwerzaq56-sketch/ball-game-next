@@ -4,7 +4,11 @@
 import {createGame} from './headless.mjs';
 
 const seed = Number(process.argv[2] ?? 11), seconds = Number(process.argv[3] ?? 300);
-const g = createGame(seed), dt = 1 / 60, win = 30;
+const detection=Number(process.argv[4] ?? 320), wanderScale=Number(process.argv[5] ?? 1);
+const g = createGame(seed);
+g.balance.ai.detectionRange=detection;
+const wanderTimers=new Map();
+const dt = 1 / 60, win = 30;
 const buckets = Math.ceil(seconds / win);
 const attacks = new Array(buckets).fill(0), aliveSum = new Array(buckets).fill(0), aliveN = new Array(buckets).fill(0);
 const prev = new Map(), pairs = {}, perAI = new Map();
@@ -14,6 +18,13 @@ for (let f = 0; f < seconds * 60; f++) {
   g.player.hp = g.player.maxHp; g.player.alive = true; g.gameOver = false;
   g.paused = false; g.lives = g.balance.lives.maxLives;
   g.update(dt);
+  // Measurement-only experiment: extend newly chosen wander segments, without
+  // extra RNG calls or altering the production configuration.
+  if(wanderScale!==1)for(const e of g.entities.filter(e=>e.behavior==='ai')){
+    const previous=wanderTimers.get(e.id) ?? Infinity;
+    if(e.wanderTimer>previous)e.wanderTimer*=wanderScale;
+    wanderTimers.set(e.id,e.wanderTimer);
+  }
   const w = Math.min(buckets - 1, Math.floor(f / 60 / win));
   const ais = g.entities.filter(e => e.alive && e.behavior === 'ai');
   for (const e of ais) {
@@ -40,7 +51,7 @@ const rates = [...perAI.values()].map(s => ({secs: (s.last - s.first) / 60, c: s
 const q = p => rates.length ? rates[Math.min(rates.length - 1, Math.floor(rates.length * p))].toFixed(2) : '-';
 const top = Object.entries(pairs).sort((a, b) => b[1] - a[1]).slice(0, 8);
 console.log(JSON.stringify({
-  seed, seconds, simulatedSeconds: Number(g.gameTime.toFixed(3)),
+  seed, seconds, detection, wanderScale, simulatedSeconds: Number(g.gameTime.toFixed(3)),
   aiAttackStartsPer30s: attacks,
   avgAliveAIPer30s: aliveSum.map((a, i) => Math.round(a / Math.max(1, aliveN[i]))),
   stateChangesPerSec: {sampledAI: rates.length, p50: q(0.5), p90: q(0.9), max: q(1)},

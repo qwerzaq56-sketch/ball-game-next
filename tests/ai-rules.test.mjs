@@ -134,11 +134,11 @@ test('retaliation: cautious AI needs the attacker spot free of other threats', (
   assert.equal(t.run([c2,foe2],c2),'chase_fight');
 });
 
-test('flee hysteresis keeps a remembered threat beyond sensing and releases at 360',()=>{
+test('flee hysteresis keeps a remembered threat beyond sensing and releases at 400',()=>{
  const t=setup(), a=victim(t), foe=t.unit(130,'red',1300);
  assert.equal(t.run([a,foe],a),'flee');
  foe.x=1340;assert.equal(t.run([a,foe],a),'flee');
- foe.x=1360;assert.equal(t.run([a,foe],a),'search');
+ foe.x=1400;assert.equal(t.run([a,foe],a),'search');
  foe.x=1300;t.run([a,foe],a);foe.alive=false;
  assert.equal(t.run([a,foe],a),'search');
 });

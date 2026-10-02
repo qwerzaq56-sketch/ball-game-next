@@ -170,10 +170,10 @@ export function decideAI(ai, game, balance) {
   const duel=duelTarget(ai,game,balance,threats,safe);
   const threat=closest(threats.filter(t=>t!==duel));
   // Keep the last threat beyond the entry sensing boundary; do not reset flee every
-  // frame at 320. Release at 360, or immediately when it dies/ceases to be hostile.
+  // frame at 320. Release at 400, or immediately when it dies/ceases to be hostile.
   const heldThreat=ai.fleeThreat;
   const heldDanger=heldThreat?.alive && isHostile(ai,heldThreat) && heldThreat.size>=ai.size*1.2 &&
-    heldThreat!==duel && dist(ai,heldThreat)<360 ? heldThreat : null;
+    heldThreat!==duel && dist(ai,heldThreat)<400 ? heldThreat : null;
   const fleeFrom=threat ?? heldDanger;
   ai.fleeThreat=!risk ? fleeFrom : null;
   if(fleeFrom && !risk){game.abilities?.endCommand(ai,'threat');ai.state='flee';ai.target=fleeFrom;return;}
