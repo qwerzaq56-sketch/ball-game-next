@@ -6,6 +6,11 @@ export const ABILITIES = {
   cyan:{windup:.6,cooldown:10,radius:260}, blue:{windup:.6,cooldown:10,length:400,width:180},
   green:{windup:.5,cooldown:12,radius:350},red:{windup:.8,cooldown:12,radius:450},yellow:{windup:.8,cooldown:14,radius:220},
 };
+// Side lanes are sampled once at cast start, then shared by windup and projectiles.
+export function blueWaveDirections(dir) {
+  const radians = Math.PI / 180;
+  return [dir, dir + (-120 + random('ai') * 80) * radians, dir + (40 + random('ai') * 80) * radians];
+}
 export function attackReach(e,b){return Math.max(20,b.combatScaling.baseAttackRange*Math.pow(e.size/b.combatScaling.referenceSize,b.combatScaling.attackRangeGrowthExponent))*(e.apex?.7:1);}
 export function inCone(origin,target,dir,radius,angle=Math.PI*2/3){
   const d=dist(origin,target);return d<=radius && Math.abs(Math.atan2(Math.sin(Math.atan2(target.y-origin.y,target.x-origin.x)-dir),Math.cos(Math.atan2(target.y-origin.y,target.x-origin.x)-dir)))<=angle/2;
@@ -35,7 +40,8 @@ export class Abilities {
   let p=point??{x:e.x+Math.cos(dir)*350,y:e.y+Math.sin(dir)*350};const d=dist(e,p);
   if(d>350)p={x:e.x+(p.x-e.x)*350/d,y:e.y+(p.y-e.y)*350/d};
   p={x:Math.max(0,Math.min(w.worldWidth,p.x)),y:Math.max(0,Math.min(w.worldHeight,p.y))};
-  e.specialCooldown=cfg.cooldown;e.specialCast={id:++this.castId,time:0,dir,point:p,target,targetPoint:target?{x:target.x,y:target.y}:null};
+  const directions=e.color==='blue'?blueWaveDirections(dir):null;
+  e.specialCooldown=cfg.cooldown;e.specialCast={directions,id:++this.castId,time:0,dir,point:p,target,targetPoint:target?{x:target.x,y:target.y}:null};
   this.log('special-start',e,{color:e.color,cast:e.specialCast.id});return true;
  }
  damage(owner,target,multiplier,kind='direct'){
@@ -49,12 +55,17 @@ export class Abilities {
   for(const e of recipients){e.command={owner,kind,remaining:seconds,choices:new Map(),cast:cast.id,target:cast.target,point:cast.targetPoint};this.log('command-start',e,{kind,owner:owner.id});}
  }
  fire(e,cast){
-  this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,point:{...cast.point},remaining:.75});
+  this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,directions:cast.directions ? [...cast.directions] : null,point:{...cast.point},remaining:.75});
   this.log('special-fire',e,{color:e.color,cast:cast.id});const units=this.units();
   if(e.color==='cyan')for(const t of units){if(!isHostile(e,t)||!inCone(e,t,cast.dir,260))continue;
     if(this.damage(e,t,.5)&&t.alive&&!(t.freezeImmune>0)){t.frozen=1;t.attackState='READY';t.dodgeState='READY';t.invincible=false;t.trail=[];cancelAbsorption(t);for(const o of units)if(o.beingAbsorbedByRef===t)cancelAbsorption(o);if(t.specialCast)t.specialCast=null;}
   }
-  if(e.color==='blue'){this.waves.push({owner:e,x:e.x,y:e.y,dir:cast.dir,time:0,hit:new Set()});this.command(e,'devour',4,350,cast);}
+  if(e.color==='blue'){
+    // One cast, one shared registry: even overlapping lanes hit each target only once.
+    const hit=new Set();
+    for(const dir of cast.directions ?? [cast.dir])this.waves.push({owner:e,cast:cast.id,x:e.x,y:e.y,dir,time:0,hit});
+    this.command(e,'devour',4,350,cast);
+  }
   if(e.color==='green'){
     for(const t of units)if(t.color===e.color&&dist(e,t)<=350){t.morale??=new Map();t.morale.set(e.id,Math.max(t.morale.get(e.id)??0,5));}
     this.command(e,'harvest',5,350,cast);
@@ -134,12 +145,12 @@ export class Abilities {
  draw(ctx,zoom){
   const shape=(e,dir,point)=>{
     if(e.color==='cyan'){ctx.moveTo(e.x,e.y);ctx.arc(e.x,e.y,260,dir-Math.PI/3,dir+Math.PI/3);ctx.closePath();}
-    else if(e.color==='blue'){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(dir);ctx.rect(0,-90,400,180);ctx.restore();}
+    else if(e.color==='blue'){for(const lane of e.directions ?? e.specialCast?.directions ?? [dir]){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(lane);ctx.rect(0,-90,400,180);ctx.restore();}}
     else if(e.color==='yellow')ctx.arc(point.x,point.y,220,0,Math.PI*2);
     else ctx.arc(e.x,e.y,ABILITIES[e.color].radius,0,Math.PI*2);
   };
   for(const e of this.units())if(e.specialCast){ctx.save();ctx.beginPath();shape(e,e.specialCast.dir,e.specialCast.point);ctx.fillStyle=this.game.withAlpha(e.colorHex,.09);ctx.fill();ctx.strokeStyle=e.colorHex;ctx.lineWidth=2/zoom;ctx.setLineDash([8/zoom,5/zoom]);ctx.stroke();ctx.setLineDash([]);if(e.color==='red'&&e.specialCast.target){const t=e.specialCast.target;ctx.beginPath();ctx.arc(t.x,t.y,t.size/2+10,0,Math.PI*2);ctx.stroke();}ctx.restore();}
-  const labels={cyan:'냉기 휘두르기',blue:'파도',green:'사기 진작',red:'전투 집결',yellow:'모래바람'};
+  const labels={cyan:'냉기 휘두르기',blue:'삼중 파도',green:'사기 진작',red:'전투 집결',yellow:'모래바람'};
   for(const flash of this.flashes){
     ctx.save();ctx.globalAlpha=Math.min(1,flash.remaining/.25);
     ctx.beginPath();shape(flash,flash.dir,flash.point);

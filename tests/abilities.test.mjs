@@ -97,3 +97,58 @@ test('cast flash captures origin and expires independently of damage/cooldown',(
  ticks(g,46);assert.equal(g.abilities.flashes.length,0);assert.equal(t.hp,965);
  assert(p.specialCooldown>8);
 });
+
+import {blueWaveDirections} from '../js/abilities.js';
+test('blue three-lane directions use two AI draws once, within separated side ranges',()=>{
+  resetRandom(23);const r1=random('ai'),r2=random('ai'),next=random('ai');
+  resetRandom(23);const dirs=blueWaveDirections(1);
+  assert.equal(dirs[0],1);assert.equal(dirs[1],1+(-120+r1*80)*Math.PI/180);assert.equal(dirs[2],1+(40+r2*80)*Math.PI/180);assert.equal(random('ai'),next);
+  for(let seed=0;seed<100;seed++){resetRandom(seed);const d=blueWaveDirections(0);assert(d[1]>=-2*Math.PI/3&&d[1]<=-2*Math.PI/9);assert(d[2]>=2*Math.PI/9&&d[2]<=2*Math.PI/3);}
+});
+test('blue directions remain fixed through windup; cooldown and cast count apply once',()=>{
+  const {g,p}=fixture('blue');g.abilities.start(p,.3);const dirs=[...p.specialCast.directions];
+  ticks(g,35);assert.deepEqual(p.specialCast.directions,dirs);assert.equal(g.abilities.waves.length,0);
+  ticks(g,1);assert.equal(g.abilities.waves.length,3);assert.deepEqual(g.abilities.waves.map(w=>w.dir),dirs);
+  assert.deepEqual(g.abilities.flashes[0].directions,dirs);
+  assert.equal(g.abilities.events.filter(e=>e.type==='special-fire').length,1);
+  assert(Math.abs(p.specialCooldown-9.4)<1e-8);
+  assert.equal(g.abilities.waves[0].hit,g.abilities.waves[1].hit);
+});
+test('overlapping blue lanes cannot triple damage, knockback or consume multiple MISS rolls',()=>{
+  const {g,p,t}=fixture('blue');t.x=p.x+10;g.abilities.start(p,0);
+  p.specialCast.directions=[0,-Math.PI/3,Math.PI/3];
+  let hits=0;const damage=g.abilities.damage.bind(g.abilities);
+  g.abilities.damage=(...args)=>{hits++;return damage(...args)};
+  ticks(g,36);ticks(g,12);assert.equal(hits,1);assert.equal(t.hp,965);
+  assert(Math.abs(t.x-(p.x+130))<1e-6);ticks(g,30);assert.equal(t.hp,965);assert.equal(hits,1);
+});
+test('blue side lanes hit separate targets, behind-caster target stays untouched',()=>{
+  const {g,p,t}=fixture('blue');t.x=p.x+200;
+  const targets=[-Math.PI/3,Math.PI/3,Math.PI].map(dir=>{
+    const a=new AIEntity({x:p.x+200*Math.cos(dir),y:p.y+200*Math.sin(dir),color:'red',colorHex:'#f00',balance:g.balance,startSize:40});a.hp=a.maxHp=1000;return a;
+  });g.entities.push(...targets);g.abilities.start(p,0);p.specialCast.directions=[0,-Math.PI/3,Math.PI/3];ticks(g,70);
+  assert.equal(t.hp,965);assert.equal(targets[0].hp,965);assert.equal(targets[1].hp,965);assert.equal(targets[2].hp,1000);
+});
+test('dodging a blue windup cancels all three lanes without refund or fire event',()=>{
+  const {g,p}=fixture('blue');g.abilities.start(p,0);startDodge(p,0,g.balance);ticks(g,40);
+  assert.equal(g.abilities.waves.length,0);assert.equal(g.abilities.events.filter(e=>e.type==='special-fire').length,0);assert(p.specialCooldown>9);
+});
+test('rejected blue casting consumes no extra AI draws',()=>{
+  const {g,p}=fixture('blue');p.specialCooldown=1;resetRandom(19);const expected=random('ai');resetRandom(19);
+  assert.equal(g.abilities.start(p,0),false);assert.equal(random('ai'),expected);
+});
+
+test('blue windup and activation drawing reuse stored lanes without random draws',()=>{
+  const {g,p}=fixture('blue');g.abilities.start(p,0);
+  const dirs=[...p.specialCast.directions];
+  const ctx=new Proxy({}, {get:()=>()=>{},set:()=>true});
+  resetRandom(7);const expectedAI=random('ai'),expectedNames=random('names');resetRandom(7);
+  for(let i=0;i<10;i++)g.abilities.draw(ctx,1);
+  assert.deepEqual(p.specialCast.directions,dirs);assert.equal(random('ai'),expectedAI);assert.equal(random('names'),expectedNames);
+  ticks(g,36);resetRandom(8);const next=random('ai');resetRandom(8);g.abilities.draw(ctx,.5);assert.equal(random('ai'),next);
+});
+test('shared blue registry also records invincible targets once across overlapping lanes',()=>{
+  const {g,p,t}=fixture('blue');t.x=p.x+10;t.invincible=true;g.abilities.start(p,0);p.specialCast.directions=[0,-Math.PI/3,Math.PI/3];
+  let attempts=0;const damage=g.abilities.damage.bind(g.abilities);g.abilities.damage=(...args)=>{attempts++;return damage(...args)};
+  ticks(g,40);assert.equal(attempts,1);assert.equal(t.hp,1000);assert.equal(t.wavePush,undefined);
+});
