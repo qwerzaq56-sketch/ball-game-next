@@ -87,7 +87,7 @@ export class EcologyUI {
       const row=this.rows[i]; row.li.hidden=false; row.button.dataset.id=e.id;
       row.button.classList.toggle('is-player',e===game.player);
       row.button.disabled=e.behavior!=='ai';
-      row.button.title=e.behavior==='ai' ? `${e.displayName} · 크기 ${Math.round(e.size)} · 클릭하여 살펴보기` : '플레이어';
+      row.button.title=e.behavior==='ai' ? `${e.displayName} · 크기 ${Math.round(e.size)} · F2 인스펙터가 열려 있을 때 클릭하여 살펴보기` : '플레이어';
       row.name.textContent=`${e.apex ? '★ ' : ''}${e.displayName}`;
       row.score.textContent=(bySize ? Math.floor(e.size) : Math.round(e.score)).toLocaleString('ko-KR');
       row.secondary.textContent=bySize ? `점수 ${Math.round(e.score)}` : `크기 ${Math.floor(e.size)}`;

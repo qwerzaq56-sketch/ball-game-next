@@ -26,3 +26,7 @@
 F3에 역할/프레데터 관계와 상태/성격을 두 줄로 표시. 플레이어 역할 포함. 프레이(보라)/포레이저(초록)/프레데터(분홍), 프레데터 관계는 종속/도전/독립. F2 목록·상세도 한글로 통일하고 비프레데터에게 남은 관계 데이터는 표시하지 않음. 이름은 디버그 두 줄 위로 배치.
 
 `node --test --test-isolation=none` **79/79 통과**. 역할 전환 시 관계 숨김 및 실제 draw의 게임 상태/AI 난수 불변 회귀 포함. `node tools/browser-debug-roles.mjs`에서 세 역할/세 관계의 Canvas 표시, F3 토글, F2 상세 통과. 페이지 오류 0. 화면: `M6-debug-roles.png`. `git diff --check` 통과.
+
+## 후속: TOP 10 클릭 동작
+
+사용자 요청에 따라 순위 클릭은 Inspector를 자동으로 켜지 않는다. F2로 열어 둔 상태에서만 해당 AI 상세 정보를 선택한다. 닫힌 상태에서는 기존 선택도 바꾸지 않는다. 툴팁·README·기획서에 반영했다. `BROWSER_REPORT_PREFIX=/tmp/inspector-ranking-regression node tools/browser-m5.mjs`에서 닫힌 상태 클릭/열린 상태 선택과 기존 게임 회귀 전부 통과, 페이지 오류 0.

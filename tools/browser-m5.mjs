@@ -27,7 +27,12 @@ try {
   });
   await page.waitForTimeout(350);
   await page.locator('.rank-row:not(:disabled)').first().click();await page.waitForTimeout(300);
+  assert.equal(await page.locator('#ai-inspector').isVisible(),false);
+  await page.keyboard.press('F2');
+  const selectedName=await page.locator('.rank-row:not(:disabled)').first().locator('.rank-name').innerText();
+  await page.locator('.rank-row:not(:disabled)').first().click();await page.waitForTimeout(300);
   assert(await page.locator('#ai-inspector').isVisible());
+  assert((await page.locator('#ai-detail').innerText()).includes(selectedName.replace('★ ','')));
   assert.match(await page.locator('#ai-detail').innerText(),/이름/);
   await page.keyboard.press('F2');await page.keyboard.press('F1');assert(await page.locator('#debug-panel').isVisible());await page.keyboard.press('F1');
   await page.keyboard.press('F4');assert(await page.locator('#ecology-panel').isVisible());

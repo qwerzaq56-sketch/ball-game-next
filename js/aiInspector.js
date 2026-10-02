@@ -56,9 +56,8 @@ export class AIInspector {
   }
 
   select(id) {
-    if (!this.ais().some(e => e.id === id)) return;
+    if (!this.visible || !this.ais().some(e => e.id === id)) return;
     this.selectedId = id;
-    if (!this.visible) this.toggle();
     this.lastRender = 0;
   }
 
