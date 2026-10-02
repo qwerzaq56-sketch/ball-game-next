@@ -56,7 +56,7 @@ try {
    const enemy=g.entities.filter(e=>e.alive&&e.behavior==='ai'&&e.color!==p.color&&Math.hypot(e.x-p.x,e.y-p.y)<400).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];
    const aim=enemy??target??p,screen=g.worldToScreen(aim.x,aim.y);g.input.mouseX=screen.x;g.input.mouseY=screen.y;g.input.mouseDown=!!enemy&&!escape;
    if(p.apex&&enemy)g.input._specialQueued=true;if(escape&&p.dodgeStack>0)g.input._dodgeQueued=true;
-   return {...s,gameSeconds:+g.gameTime.toFixed(2),size:+p.size.toFixed(2),score:p.score,defeats:p.defeatSerial??0,liveAI:g.entities.filter(e=>e.alive&&e.behavior==='ai').length,groups:g.allyLinks.groups.size,joins:g.allyLinks.stats.joins,leaves:g.allyLinks.stats.leaves,specialFires:g.abilities.specialFires??g.abilities.events.filter(e=>e.type==='special-fire').length,heapBytes:performance.memory?.usedJSHeapSize??null};
+   return {...s,gameSeconds:+g.gameTime.toFixed(2),size:+p.size.toFixed(2),score:p.score,defeats:p.defeatSerial??0,liveAI:g.entities.filter(e=>e.alive&&e.behavior==='ai').length,groups:g.allyLinks.groups.size,joins:g.allyLinks.stats.joins,leaves:g.allyLinks.stats.leaves,specialFires:g.abilities.specialFires??g.abilities.events.filter(e=>e.type==='special-fire').length,era:g.era?{phase:g.era.phase.id,cycle:g.era.cycle,apocalypses:g.era.completedApocalypses,duels:g.era.duelStarts}:null,relics:g.relics?{items:g.relics.items.length,pickups:g.relics.pickups}:null,heapBytes:performance.memory?.usedJSHeapSize??null};
   });
   if(sample.violation)throw Error(sample.violation);
   report.latest={wallSeconds:+elapsed.toFixed(1),...sample};

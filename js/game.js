@@ -1,3 +1,4 @@
+import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection } from './vectorArt.js';
 import { Relics } from './relics.js';
 import { Era } from './era.js';
 import { Biomes } from './biomes.js';
@@ -345,6 +346,7 @@ export class Game {
           if (!circlesOverlap(eater, target)) continue;
           target.alive = false;
           eater.addGrowth(target.growthValue*this.relics.growthMultiplier(eater), b);
+          eater.scalePulseTimer=Math.max(eater.scalePulseTimer,.2);
           this.awardScore(eater, target.growthValue);
           this.spawnGrowthParticles(target.x, target.y, target.colorHex);
           if (eater === this.player) {
@@ -832,6 +834,9 @@ export class Game {
     ctx.arc(e.x, e.y, r, 0, Math.PI * 2);
     ctx.fill();
 
+    drawSpeciesMark(ctx,e,this.camera.zoom);
+    drawGrowthPulse(ctx,e,this.camera.zoom);
+    drawPlayerDirection(ctx,e,this.camera.zoom);
     ctx.lineWidth = Math.max(1.5, r * 0.08);
     ctx.strokeStyle = e.behavior === 'player' ? '#ffffff' : (beingAbsorbed ? '#ffffff' : 'rgba(0,0,0,0.45)');
     ctx.stroke();

@@ -1,3 +1,5 @@
+> 최신 M22: 색상 벡터 문양·플레이어 방향·몸체 밖 성장 링. 테스트134개, Chromium/전후 생태계 결과 동일. reports/M22-development.md.
+
 > 최신 M21: 초원·사막·유물3종. 테스트133개·실제 터치 검증·2시드15분 활성 시뮬레이션 통과. reports/M21-development.md.
 
 > 최신 M20: Era·전선 이동·결투 관찰·파멸 조우. 단위 테스트126개, 브라우저/3시드20분 검증. 상세 한계: reports/M20-development.md.
