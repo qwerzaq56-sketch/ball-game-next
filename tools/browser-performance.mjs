@@ -10,7 +10,7 @@ try {
   const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto('http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();
   await page.evaluate(()=>{const g=window.__game;g.seed=23;g.reset();});
-  if(scenario==='desktop-debug'){await page.keyboard.press('F2');await page.keyboard.press('F3');await page.keyboard.press('F4');}
+  if(scenario==='desktop-debug'){await page.keyboard.press('F1');await page.keyboard.press('F2');await page.keyboard.press('F3');await page.keyboard.press('F4');}
   await page.waitForTimeout(1500);
   await page.evaluate(()=>{
    const g=window.__game;window.__timings={update:[],render:[],ui:[],interval:[],previous:performance.now(),started:performance.now(),gameStart:g.gameTime,activeFrames:0};

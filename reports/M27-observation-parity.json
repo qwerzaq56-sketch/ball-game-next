@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "baseline": "8d71f21",
+  "seed": 23,
+  "gameSeconds": 600,
+  "policy": "local-survival-v1 normal Life",
+  "comparison": "snapshot except observation metadata; ecology/abilities/Era events; ally stats; next world/ai/physics RNG",
+  "sha256": "d8b521b6c59ff5b6f1d1f58e33921c99059793eba32549769ef9f5e0ef975f72"
+}

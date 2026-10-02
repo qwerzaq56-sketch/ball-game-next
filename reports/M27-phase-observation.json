@@ -1,0 +1,50 @@
+{
+  "result": "PASS",
+  "controlledByPhase": {
+    "abundance": {
+      "seconds": 4.99999999999999,
+      "secondsByCount": {
+        "absent": 2.000000000000001,
+        "solo": 2.9999999999999973,
+        "coexist": 0
+      },
+      "titleGains": 1,
+      "titleLosses": 0,
+      "attackStarts": 0,
+      "playerDefeats": 0,
+      "longestAbsent": 2.000000000000001,
+      "longestSolo": 2.9999999999999973
+    },
+    "war": {
+      "seconds": 5.999999999999987,
+      "secondsByCount": {
+        "absent": 0,
+        "solo": 4.99999999999999,
+        "coexist": 1.0000000000000002
+      },
+      "titleGains": 1,
+      "titleLosses": 1,
+      "attackStarts": 0,
+      "playerDefeats": 0,
+      "longestAbsent": 0,
+      "longestSolo": 3.999999999999994
+    },
+    "decline": {
+      "seconds": 1.0000000000000002,
+      "secondsByCount": {
+        "absent": 1.0000000000000002,
+        "solo": 0,
+        "coexist": 0
+      },
+      "titleGains": 0,
+      "titleLosses": 1,
+      "attackStarts": 0,
+      "playerDefeats": 0,
+      "longestAbsent": 1.0000000000000002,
+      "longestSolo": 0
+    }
+  },
+  "exportReadOnly": true,
+  "mobile": true,
+  "errors": []
+}

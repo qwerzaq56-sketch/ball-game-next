@@ -2,6 +2,7 @@ export class DiagnosticsUI {
  constructor(game,ui){
   this.game=game;this.ui=ui;this.last=0;this.root=document.createElement('section');this.root.className='debug-section';this.root.id='observation-tools';
   this.root.innerHTML='<h3>자동 플레이 · 관찰</h3><label class="debug-row"><span>자동 플레이 (실험)</span><input id="autoplay-toggle" type="checkbox"></label><p id="autoplay-status" class="hint"></p><p class="hint">직접 이동/공격/터치하면 수동으로 돌아옵니다. Life와 피해는 일반 플레이 규칙을 따릅니다.</p><p id="run-metrics-summary"></p><canvas id="run-metrics-chart" width="280" height="90" aria-label="최근 플레이어와 가장 큰 AI의 크기 변화"></canvas><p class="hint">파랑: 내 크기 · 초록: 가장 큰 AI</p><button id="metrics-export" class="hud-btn" type="button">관찰 JSON 저장</button><p id="run-seed" class="hint"></p>';
+  const phaseTable=document.createElement('div');phaseTable.id='phase-observation';this.root.insertBefore(phaseTable,this.root.querySelector('#metrics-export'));
   ui.debugPanel.firstElementChild.insertBefore(this.root,ui.debugPanel.firstElementChild.children[1]);this.toggle=this.root.querySelector('#autoplay-toggle');this.toggle.addEventListener('change',()=>{game.autoplay.setEnabled(this.toggle.checked);game.canvas.focus?.();});
   this.root.querySelector('#metrics-export').addEventListener('click',()=>{
    const json=JSON.stringify(game.runMetrics.export(game),null,2),url=URL.createObjectURL(new Blob([json],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`ball-next-${game.seed}-${Math.floor(game.gameTime)}s.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -12,6 +13,13 @@ export class DiagnosticsUI {
   this.toggle.checked=g.autoplay.enabled;this.root.querySelector('#autoplay-status').textContent=g.autoplay.enabled?`ON · ${g.gameOver?'게임 종료':g.paused?'일시정지':g.autoplay.reason}`:'OFF · 수동 플레이';
   const s=m.samples.at(-1);this.root.querySelector('#run-metrics-summary').textContent=`관찰 ${Math.floor(m.seconds)}s · 공격 시작 ${m.attackStarts} · ${s?.liveAI??g.entities.filter(e=>e.alive&&e.behavior==='ai').length} AI · 내 크기 ${Math.floor(g.player.size)} / 점수 ${g.player.score}`;
   this.root.querySelector('#run-seed').textContent=`시드 ${g.seed} · 최근 ${m.samples.length}개 샘플 · 자동 ${Math.floor(m.autoSeconds)}s`;
+  const table=this.root.querySelector('#phase-observation');table.replaceChildren();
+  const note=document.createElement('p');note.className='hint';note.textContent='시기별 직위 시간: 0명 / 1명 / 2–3명 · 상실 횟수';table.append(note);
+  for(const [key,label]of [['abundance','영양기'],['competition','경쟁기'],['war','전쟁기'],['decline','쇠퇴기'],['off','시기 OFF']]){
+   const stats=m.byPhase[key];if(!stats)continue;const row=document.createElement('p');row.className='hint';
+   const percent=n=>stats.seconds?Math.round(n/stats.seconds*100):0;
+   row.textContent=`${label} ${Math.floor(stats.seconds+1e-8)}s · ${['absent','solo','coexist'].map(k=>percent(stats.secondsByCount[k])+'%').join(' / ')} · 상실 ${stats.titleLosses}`;table.append(row);
+  }
   this.drawChart(m.samples.slice(-60));
  }
  drawChart(samples){
