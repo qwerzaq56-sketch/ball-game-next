@@ -12,7 +12,7 @@
 <body>
   <div id="player-info" style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="player-identity"></span> · <span id="era-text"></span> · <span id="region-text"></span> · <span id="role-text"></span> · <span id="special-text"></span></div>
   <canvas id="game-canvas" tabindex="-1"></canvas>
-  <div id="build-id">NEXT · M67</div>
+  <div id="build-id">NEXT · M68</div>
 
   <dialog id="player-setup" aria-labelledby="player-setup-title">
     <form id="player-setup-form">
@@ -74,7 +74,7 @@
   </div>
 
   <aside id="starter-guide" hidden><span id="starter-guide-text"></span><button id="starter-guide-close" type="button" aria-label="시작 조작 안내 닫기">×</button></aside>
-  <nav id="minimal-tools"><button id="quick-sprint" type="button" hidden>달리기</button><span id="play-time">플레이 0:00</span><button id="quick-absorb" type="button" aria-pressed="false">흡수 OFF</button><button id="quick-map" type="button">지도</button><button id="quick-ecology" type="button">생태계</button><button id="quick-balance" type="button">분석</button><button id="quick-ranking" type="button">순위</button></nav>
+  <nav id="minimal-tools"><button id="quick-sprint" type="button" hidden>달리기</button><button id="auto-companion" type="button" aria-pressed="false">자동 동행 OFF</button><span id="play-time">플레이 0:00</span><button id="quick-absorb" type="button" aria-pressed="false">흡수 OFF</button><button id="quick-map" type="button">지도</button><button id="quick-ecology" type="button">생태계</button><button id="quick-balance" type="button">분석</button><button id="quick-ranking" type="button">순위</button></nav>
   <aside id="live-ranking" class="observer-panel" aria-label="실시간 순위">
     <div class="observer-heading"><strong>TOP 10</strong><button id="ranking-layout" type="button" title="순위 표시: 바 → 축약 → 전체" aria-label="순위 표시 크기 전환">풀</button><div class="ranking-modes" role="group" aria-label="순위 기준"><button id="ranking-mode-score" type="button" aria-pressed="true">점수</button><button id="ranking-mode-size" type="button" aria-pressed="false">크기</button></div></div>
     <ol id="live-ranking-list"></ol>

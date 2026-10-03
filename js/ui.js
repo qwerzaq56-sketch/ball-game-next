@@ -25,6 +25,7 @@ export class UI {
     const stopSprint=()=>{if(this.game)this.game.input.sprintHeld=false;};
     for(const event of ['pointerup','pointercancel','lostpointercapture'])this.sprintButton.addEventListener(event,stopSprint);
     window.addEventListener('blur',stopSprint);
+    this.autoCompanionButton=document.getElementById('auto-companion');this.autoCompanionButton.addEventListener('click',()=>{if(this.game)this.game.allyLinks.setAutoOffer(!this.game.player.autoCompanionOffer);});
     this.absorbButton=document.getElementById('quick-absorb');this.absorbButton.addEventListener('click',()=>{if(this.game&&!this.game.paused&&!this.game.gameOver)this.game.input.absorbToggle=!this.game.input.absorbToggle;});
     this.allyAbsorbText = document.getElementById('ally-absorb-text');
     this.attackPips = document.getElementById('attack-pips');
@@ -148,6 +149,7 @@ export class UI {
     document.getElementById('region-text').textContent=game.biomes.status(player);
     const field=game.era.apocalypse;document.getElementById('era-text').textContent=game.era.status()+(field?field.active?' · 파멸 위험':' · 파멸 전조':'');
     this.updateEraBadge(game);
+    this.autoCompanionButton.textContent=player.autoCompanionOffer?'자동 동행 ON':'자동 동행 OFF';this.autoCompanionButton.setAttribute('aria-pressed',String(!!player.autoCompanionOffer));
     this.sprintButton.hidden=game.player.size<(game.balance.sprint?.unlockSize??150);
     this.sprintButton.textContent=`${game.player.sprinting?'달리는 중':'달리기'} ${Math.round(100*(game.player.sprintGauge??(game.balance.sprint?.capacitySeconds??3))/(game.balance.sprint?.capacitySeconds??3))}%`;
     this.sprintButton.style.background=`linear-gradient(90deg,rgba(56,189,248,.3) ${Math.round(100*(game.player.sprintGauge??3)/(game.balance.sprint?.capacitySeconds??3))}%,rgba(15,23,42,.85) 0)`;

@@ -742,3 +742,5 @@ html{height:100%}body{height:100dvh;width:100%;overscroll-behavior:none}#game-ca
 @media(pointer:coarse){#touch-stick{width:144px;height:144px}#touch-knob{width:64px;height:64px;left:40px;top:40px}.panel-moved{max-width:calc(100vw - 8px)}}
 #ecology-panel .observer-heading,#live-ranking .observer-heading,#minimap-panel .minimap-heading,#debug-panel h2,#ai-inspector .ai-head,#play-help .help-heading,#minimal-tools{touch-action:none;cursor:grab}
 .panel-moved .observer-heading,.panel-moved .ai-head{cursor:grabbing}
+@media(pointer:coarse){#minimal-tools{flex-wrap:wrap}}
+#auto-companion[aria-pressed='true']{border-color:#86efac;color:#86efac}

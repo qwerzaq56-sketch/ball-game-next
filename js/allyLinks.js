@@ -69,7 +69,7 @@ export class AllyLinks {
  inviteRange(owner){return Math.max(280,this.game.balance.ai.detectionRange*.65+Math.max(0,owner.size-40)*.65);}
  offer(owner){
   if(this.game.paused||this.game.gameOver||!unit(owner)||owner.frozen>0||owner.attackState!=='READY'||owner.dodgeState==='DODGING'||owner.specialCast||owner.beingAbsorbedByRef||(owner.inviteReadyAt??0)>this.game.gameTime)return false;
-  owner.inviteReadyAt=this.game.gameTime+8;owner.inviteFlashUntil=this.game.gameTime+.8;let accepted=0;const range=this.inviteRange(owner);
+  owner.inviteReadyAt=this.game.gameTime+5;owner.inviteFlashUntil=this.game.gameTime+.8;let accepted=0;const range=this.inviteRange(owner);
   for(const target of this.game.getNearbyEntities(owner,range).filter(t=>unit(t)&&t!==owner&&!t.companionGroup&&!t.beingAbsorbedByRef&&dist(owner,t)<=range&&(t.color===owner.color||this.truceUntil>this.game.gameTime)).sort((a,b)=>dist(owner,a)-dist(owner,b)||a.id-b.id).slice(0,3)){
    if(random('ai')<affinity(target).accept&&this.recruit(owner,target,target.color!==owner.color))accepted++;
   }
@@ -119,7 +119,10 @@ export class AllyLinks {
   if(group&&group.members.size<2){this.groups.delete(group.id);for(const last of group.members){last.companionGroup=null;last.companionThreat=null;last.companionCooldown=ALLY_RULES.decisionSeconds;if(last.behavior==='ai'){last.state='search';last.target=null;last.decisionTimer=0;}this.log('leave',last,'group-dissolved');}}
   else if(group&&!group.members.has(group.leader))group.leader=this.leader([...group.members]);
  }
+ setAutoOffer(enabled){this.game.player.autoCompanionOffer=enabled;this.game.player.nextAutoCompanionOffer=this.game.gameTime+5;}
  update(dt){
+  const p=this.game.player;if(p.autoCompanionOffer&&this.game.gameTime>=(p.nextAutoCompanionOffer??0)){p.nextAutoCompanionOffer=this.game.gameTime+5;this.offer(p);}
+
   const cycle=Math.floor(this.game.gameTime/120),local=this.game.gameTime%120;
   if(local>=60&&local<80&&cycle!==this.truceCycle){this.truceCycle=cycle;this.truceUntil=cycle*120+80;this.game.spawnFloatingText(this.game.player.x,this.game.player.y-100,'우정 축제 · 다른 색에도 동행 제안 가능','#c4b5fd');}
   this.refresh();

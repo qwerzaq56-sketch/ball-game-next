@@ -150,7 +150,7 @@ export class Abilities {
   for(const r of this.musters){const enemy=attacker===r.owner?target:target===r.owner?attacker:null;if(enemy?.alive&&isHostile(r.owner,enemy))r.targets.add(enemy);}
  }
  updateMusters(dt){
-  for(const r of this.musters){r.gatherRemaining=Math.max(0,r.gatherRemaining-dt);r.remaining-=dt;}
+  for(const r of this.musters){r.point={x:r.owner.x,y:r.owner.y};r.gatherRemaining=Math.max(0,r.gatherRemaining-dt);r.remaining-=dt;}
   this.musters=this.musters.filter(r=>r.remaining>0&&r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex);
   this.rallies=this.rallies.filter(r=>!r.muster||this.musters.includes(r));
  }
@@ -200,7 +200,7 @@ export class Abilities {
     }
   }
   this.waves=this.waves.filter(f=>f.time<(f.skill?.waveDuration??.5)-1e-8);
-  for(const f of this.embers){const used=Math.min(dt,Math.max(0,f.duration-f.time));f.time+=dt;f.tick+=used;if(!f.owner.alive)continue;
+  for(const f of this.embers){f.x=f.owner.x;f.y=f.owner.y;const used=Math.min(dt,Math.max(0,f.duration-f.time));f.time+=dt;f.tick+=used;if(!f.owner.alive)continue;
    while(f.tick+1e-8>=f.tickInterval){f.tick-=f.tickInterval;for(const t of units)if(t.alive&&isHostile(f.owner,t)&&dist(f,t)<=f.radius)applyDamage(t,attackDamageForSize(f.owner.size,this.game.balance)*this.damageMultiplier(f.owner)*f.damage,this.game,f.owner,this.game.balance,{knockback:false,skillToken:f.skillToken});}
   }
   this.embers=this.embers.filter(f=>f.time<f.duration-1e-8&&f.owner.alive);
