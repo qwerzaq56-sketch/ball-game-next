@@ -1,0 +1,16 @@
+{
+  "result": "PASS",
+  "E": "yellow-dust",
+  "R": "yellow-storm",
+  "dust": 15,
+  "multiplier": 3,
+  "fields": 1,
+  "apex": "최상위 포식자",
+  "growth": {
+    "start": 200,
+    "partial": 206.81963557687615,
+    "target": 244,
+    "final": 244
+  },
+  "errors": []
+}

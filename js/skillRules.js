@@ -1,5 +1,6 @@
 const rule=(label,min,max,step)=>({label,min,max,step});
 export const SKILL_RULES={
+ visualRadiusMultiplier:rule('장막 표시 크기',1,5,.1),invulnerableSeconds:rule('무적(초)',.1,3,.1),
  shieldHpFraction:rule('보호막 HP 비율',.01,.5,.01),shieldDuration:rule('보호막(초)',1,20,1),blastDelay:rule('폭발 지연(초)',.2,5,.1),blastRadius:rule('폭발 반경',50,1500,20),blastDamage:rule('폭발 피해 배율',.05,3,.05),fieldDamage:rule('냉기 틱 피해 배율',.05,2,.05),freezeHitCount:rule('빙결 필요 타격',1,10,1),
  summonAttackInheritance:rule('소환 공격력 계승',0,1,.05),acceptChance:rule('수락 확률',0,1,.05),buffDefense:rule('방어력 추가',0,.5,.01),buffStackCap:rule('강화 중첩 상한',1,10,1),summonSizeVariation:rule('소환 크기 편차',0,.5,.05),summonSizeCapFraction:rule('소환 크기 상한 비율',.05,.2,.01),
  gatherDuration:rule('집결(초)',1,10,.5),

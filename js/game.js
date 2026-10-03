@@ -620,7 +620,7 @@ export class Game {
     if(this.player.companionGroup)this.allyLinks.leave(this.player,'defeat');
     this.abilities.release(this.player);
     this.player._specialApex=false;
-    this.player.frozen=0;this.player.shieldHp=0;this.player.shieldRemaining=0;this.player.wavePush=null;this.player.morale?.clear();
+    this.player.frozen=0;this.player.dustInvulnerableRemaining=0;this.player.dustUntil=0;this.player.shieldHp=0;this.player.shieldRemaining=0;this.player.wavePush=null;this.player.morale?.clear();
     this.ecology.release(this.player, this.gameTime, reason);
     this.lives -= 1;
     if (this.lives > 0) {
@@ -985,7 +985,7 @@ export class Game {
       ctx.stroke();
     }
 
-    if (e.invincible) {
+    if (e.invincible || e.dustInvulnerableRemaining>0) {
       ctx.beginPath();
       ctx.strokeStyle = 'rgba(255,255,255,0.9)';
       ctx.lineWidth = 2 / this.camera.zoom;

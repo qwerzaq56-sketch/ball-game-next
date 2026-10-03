@@ -9,13 +9,13 @@ export const SKILL_CATALOG = {
  'red-embers':{color:'red',slot:'E',name:'불씨 장판',effect:'embers',windup:.25,cooldown:9,radius:260,fieldDuration:5,tickInterval:.5,damage:.65},
  'red-muster':{color:'red',slot:'R',name:'혈족 집결',effect:'muster',windup:.6,cooldown:16,gatherDuration:3,buffDuration:8,buffDamage:.3,buffSpeed:1.25},
  'red-vigor':{color:'red',slot:'E',name:'사냥 박동',effect:'vigor',windup:.25,cooldown:9,radius:260,buffDuration:4,buffDamage:.15,buffSpeed:1.12},
- 'yellow-dust':{color:'yellow',slot:'E',name:'먼지 장막',effect:'dust',windup:.3,cooldown:9,buffDuration:3,missChance:.15},
+ 'yellow-dust':{color:'yellow',slot:'E',name:'먼지 장막',effect:'dust',windup:.3,cooldown:9,buffDuration:15,missChance:.15,visualRadiusMultiplier:3,invulnerableSeconds:.8},
  'cyan-freeze':{color:'cyan',slot:'R',name:'냉기 휘두르기',effect:'legacy',windup:.6,cooldown:10,radius:260,damage:.5,freezeSeconds:1},
  'blue-trident':{color:'blue',slot:'R',name:'삼중 파도',effect:'legacy',windup:.6,cooldown:10,length:400,width:180,damage:.5,pushDuration:.2,pushSpeed:600,waveDuration:.5,commandDuration:4,commandRadius:350},
  'green-summon':{color:'green',slot:'R',name:'숲의 부름',effect:'summon',windup:.5,cooldown:18,radius:350,summonCount:2,summonAbsorbDelay:30,summonSizeFraction:.16,summonSizeVariation:.2,summonSizeCapFraction:.2,summonAttackInheritance:.5,buffDuration:5,buffDamage:.15},
  'green-morale':{color:'green',slot:'R',name:'사기 진작 (복구 후보)',effect:'legacy',windup:.5,cooldown:12,radius:350,buffDuration:5,buffDamage:.15},
  'red-rally':{color:'red',slot:'R',name:'사냥 지휘',effect:'legacy',windup:.8,cooldown:12,radius:250,castRange:350,buffRadius:450,buffDuration:6,buffDamage:.3,buffSpeed:1.25},
- 'yellow-storm':{color:'yellow',slot:'R',name:'모래바람',effect:'legacy',windup:.8,cooldown:14,radius:288,castRange:350,fieldDuration:5,tickInterval:.25,hpFraction:.2,missChance:.25},
+ 'yellow-storm':{color:'yellow',slot:'R',name:'모래바람',effect:'legacy',windup:.8,cooldown:14,radius:216,castRange:350,fieldDuration:5,tickInterval:.25,hpFraction:.1,missChance:.25},
 };
 export const DEFAULT_SKILLS={cyan:{E:'cyan-shield',R:'cyan-burst'},blue:{E:'blue-ripple',R:'blue-trident'},green:{E:'green-invite',R:'green-summon'},red:{E:'red-embers',R:'red-muster'},yellow:{E:'yellow-dust',R:'yellow-storm'}};
 export function selectedSkill(balance,color,slot){const selected=balance.abilitySkills?.loadout?.[color]?.[slot]??DEFAULT_SKILLS[color]?.[slot],valid=SKILL_CATALOG[selected]?.color===color&&SKILL_CATALOG[selected]?.slot===slot,id=valid?selected:DEFAULT_SKILLS[color]?.[slot],base=SKILL_CATALOG[id];return {...base,...skillOverrides(id,balance.abilitySkills?.overrides?.[id],base),id};}
