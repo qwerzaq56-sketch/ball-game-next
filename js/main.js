@@ -78,7 +78,7 @@ async function main() {
   });
   window.addEventListener('pointerdown',e=>{
     const inspecting=e.target===canvas&&e.shiftKey&&e.button===0&&window.__game?.ui.inspector?.visible;
-    if((e.target===canvas&&!inspecting)||e.target.closest?.('#touch-controls'))window.__game?.autoplay.setEnabled(false);
+    if((e.target===canvas&&!inspecting&&!window.__game?.paused)||e.target.closest?.('#touch-controls'))window.__game?.autoplay.setEnabled(false);
   },true);
   canvas.addEventListener('mousedown', (e) => {
     if (e.sourceCapabilities?.firesTouchEvents) return;

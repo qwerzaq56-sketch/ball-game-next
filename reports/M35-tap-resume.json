@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "touchResume": true,
+  "noAttackOnResume": true,
+  "nextGestureAttacks": true,
+  "cancelKeepsPause": true,
+  "mouseResume": true,
+  "backgroundResume": true,
+  "helpResetProtected": true,
+  "autoplayPreserved": true,
+  "gameOverProtected": true,
+  "errors": []
+}

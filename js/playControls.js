@@ -5,7 +5,15 @@ export class PlayControls {
     this.help=document.getElementById('play-help');
     this.pauseButton=document.getElementById('pause-btn');
     this.pauseIndicator=document.getElementById('pause-indicator');
-    this.pauseReason='';this.lastHistory=game.apexHistory;
+    this.pauseReason='';this.lastHistory=game.apexHistory;this.resumePointers=new Set();
+    const canvas=document.getElementById('game-canvas');
+    canvas.addEventListener('pointerdown',e=>{if(game.paused&&!this.blocked()&&!this.help.open&&(e.pointerType!=='mouse'||e.button===0)){this.resumePointers.add(e.pointerId);e.preventDefault();}});
+    window.addEventListener('pointerup',e=>{
+      if(!this.resumePointers.delete(e.pointerId))return;
+      if(!game.paused||this.blocked()||this.help.open)return;
+      e.preventDefault();e.stopImmediatePropagation();this.togglePause();
+    },true);
+    window.addEventListener('pointercancel',e=>this.resumePointers.delete(e.pointerId));
     document.getElementById('help-btn').addEventListener('click',()=>this.openHelp());
     document.getElementById('help-close').addEventListener('click',()=>this.help.close());
     this.help.addEventListener('close',()=>{game.paused=this.helpWasPaused;this.pauseReason=this.helpWasPaused?this.helpWasReason:'';this.clearInput();this.focusCanvas();});
@@ -21,8 +29,9 @@ export class PlayControls {
   clearInput(){this.input.keys.clear();this.input.touchMove={x:0,y:0};this.input.mouseDown=false;this.input._dodgeQueued=false;this.input._dodgeAngle=null;this.input._attackQueued=null;this.input._specialQueued=false;}
   focusCanvas(){document.getElementById('game-canvas').focus({preventScroll:true});}
   blocked(){return this.game.gameOver||document.getElementById('player-setup').open||document.getElementById('reset-confirm-overlay').style.display==='flex';}
-  pause(reason='일시정지'){this.lastHistory=this.game.apexHistory;this.game.paused=true;this.pauseReason=reason;this.clearInput();this.game.stopContinuousAudio();}
+  pause(reason='일시정지'){this.resumePointers.clear();this.lastHistory=this.game.apexHistory;this.game.paused=true;this.pauseReason=reason;this.clearInput();this.game.stopContinuousAudio();}
   backgroundPause(){
+    this.resumePointers.clear();
     if(this.blocked())return;
     if(this.help.open){this.helpWasPaused=true;this.helpWasReason='창 전환으로 일시정지';this.pause(this.helpWasReason);return;}
     if(!this.game.paused)this.pause('창 전환으로 일시정지');
