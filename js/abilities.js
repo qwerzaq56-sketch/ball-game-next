@@ -91,14 +91,14 @@ export class Abilities {
     this.command(e,'devour',cfg.commandDuration??4,cfg.commandRadius??350,cast);
   }
   if(e.color==='green'){
-    for(const t of units)if(t.color===e.color&&dist(e,t)<=cfg.radius){t.morale??=new Map();t.morale.set(e.id,Math.max(t.morale.get(e.id)??0,cfg.buffDuration??5));t.moralePower??=new Map();t.moralePower.set(e.id,cfg.buffDamage??.15);this.metrics.count(e,cast,'buffs');}
-    for(const t of units.filter(t=>(t.behavior==='ai'||t.behavior==='player')&&t!==e&&t.color===e.color&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id))if(this.game.allyLinks.recruit(e,t))this.metrics.count(e,cast,'recruits');
+    for(const t of units)if(t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=cfg.radius){t.morale??=new Map();t.morale.set(e.id,Math.max(t.morale.get(e.id)??0,cfg.buffDuration??5));t.moralePower??=new Map();t.moralePower.set(e.id,cfg.buffDamage??.15);this.metrics.count(e,cast,'buffs');}
+    for(const t of units.filter(t=>(t.behavior==='ai'||t.behavior==='player')&&t!==e&&t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id))if(this.game.allyLinks.recruit(e,t))this.metrics.count(e,cast,'recruits');
   }
   if(e.color==='red'){
     const origin={...cast.point,_world:this.game.balance.world};
     const rally={owner:e,point:{...cast.point},expires:this.game.gameTime+(cfg.buffDuration??6),buffSpeed:cfg.buffSpeed??1.25,buffDamage:cfg.buffDamage??.3,targets:new Set(units.filter(t=>isHostile(e,t)&&dist(origin,t)<=cfg.radius))};
     if(rally.targets.size){this.rallies=this.rallies.filter(r=>r.owner!==e);this.rallies.push(rally);this.metrics.count(e,cast,'marks',rally.targets.size);
-     for(const ally of units.filter(t=>t.color===e.color&&dist(e,t)<=(cfg.buffRadius??450))){
+     for(const ally of units.filter(t=>t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=(cfg.buffRadius??450))){
       ally.rallyBuffs??=new Map();ally.rallyBuffs.set(e.id,rally);this.metrics.count(e,cast,'buffs');
       if(ally.behavior==='ai'&&ally.attackUnlocked&&ally.hp/ally.maxHp>.4&&!ally.beingAbsorbedByRef){this.endCommand(ally,'new-rally');ally.command={owner:e,kind:'rally',remaining:cfg.buffDuration??6,targets:rally.targets,point:rally.point,target:[...rally.targets][0]};this.log('command-start',ally,{kind:'rally',owner:e.id});}
      }
@@ -111,7 +111,7 @@ export class Abilities {
   this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,point:{x:e.x,y:e.y},remaining:.75,normal:true,skill:cfg,size:e.size});
   this.log('special-fire',e,{slot:'E',skill:cfg.id,cast:cast.id});
   if(cfg.effect==='invite'){
-   for(const t of units.filter(t=>t!==e&&!t.companionGroup&&t.color===e.color&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b))) {
+   for(const t of units.filter(t=>t!==e&&!t.companionGroup&&t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b))) {
     const group=this.game.allyLinks.groups.get(e.companionGroup);if(group?.members.size>=6)break;
     if(random('ai')<(cfg.acceptChance??.8)&&this.game.allyLinks.recruit(e,t))this.metrics.count(e,cast,'recruits');
    }
@@ -121,7 +121,7 @@ export class Abilities {
     t.inviteBuffs=t.inviteBuffs.slice(-Math.max(1,Math.floor(cfg.buffStackCap??5)));t.recruitedUntil=Math.max(t.recruitedUntil??0,this.game.gameTime+20);this.metrics.count(e,cast,'buffs');
    }
   }else if(cfg.effect==='vigor'){
-   for(const t of units)if(t.color===e.color&&dist(e,t)<=cfg.radius){t.vigorUntil=this.game.gameTime+(cfg.buffDuration??4);t.vigorEffect={damage:cfg.buffDamage??.15,speed:cfg.buffSpeed??1.12};this.metrics.count(e,cast,'buffs');}
+   for(const t of units)if(t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=cfg.radius){t.vigorUntil=this.game.gameTime+(cfg.buffDuration??4);t.vigorEffect={damage:cfg.buffDamage??.15,speed:cfg.buffSpeed??1.12};this.metrics.count(e,cast,'buffs');}
   }else if(cfg.effect==='dust'){e.dustUntil=this.game.gameTime+(cfg.buffDuration??3);e.dustChance=cfg.missChance??.15;}
   else for(const t of units)if(isHostile(e,t)&&inCone(e,t,cast.dir,cfg.radius)&&this.damage(e,t,cfg.damage??(cfg.effect==='chill'?.35:.4),'direct',cast)&&t.alive){
    if(cfg.effect==='chill'&&!(t.freezeImmune>0)){t.frozen=cfg.freezeSeconds??.35;t.attackState='READY';t.dodgeState='READY';t.invincible=false;t.trail=[];cancelAbsorption(t);for(const other of units)if(other.beingAbsorbedByRef===t)cancelAbsorption(other);t.specialCast=null;}
@@ -213,7 +213,7 @@ export class Abilities {
  absorptionAllowed(e,t){return e.command?.kind!=='devour'||(t!==e.command.owner&&!t.apex&&e.command.choices.get(t.id)===true);}
  canAffect(e,target,slot='R'){
   if(!this.canCast(e,slot))return false;const cfg=this.skill(e,slot),group=this.game.allyLinks.groups.get(e.companionGroup),room=6-(group?.members.size??1);
-  if(cfg.effect==='invite')return this.invitePower(e,'damage')<.15||room>0&&this.units().some(t=>t!==e&&t.color===e.color&&!t.companionGroup&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3&&dist(e,t)<=cfg.radius);
+  if(cfg.effect==='invite')return this.invitePower(e,'damage')<.15||room>0&&this.units().some(t=>t!==e&&t.color===e.color&&!isHostile(e,t)&&!t.companionGroup&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3&&dist(e,t)<=cfg.radius);
   if(!target?.alive||!isHostile(e,target))return false;const dir=angleTo(e,target);
   if(['chill','ripple'].includes(cfg.effect)||slot==='R'&&e.color==='cyan')return inCone(e,target,dir,cfg.radius);
   if(slot==='R'&&e.color==='blue')return inWave(e,target,dir,cfg.length,cfg.width);
@@ -226,13 +226,13 @@ export class Abilities {
   if(!this.canCast(e,slot)||e.recovering||e.state==='flee'||e.beingAbsorbedByRef)return false;
   const nearby=this.game.getNearbyEntities(e,Math.max(320,cfg.buffRadius??cfg.radius??350)).filter(t=>t.alive);
   const enemies=nearby.filter(t=>isHostile(e,t)&&dist(e,t)<=this.game.biomes.sensingRange(e,320));
-  const target=enemies.sort((a,b)=>dist(e,a)-dist(e,b))[0];if(!target){if(e.color==='green'&&slot==='E'&&e.companionAffinity!=='independent'&&nearby.some(t=>t!==e&&t.color===e.color&&!t.companionGroup))return this.start(e,e.facing,null,null,slot);return false;}
+  const target=enemies.sort((a,b)=>dist(e,a)-dist(e,b))[0];if(!target){if(e.color==='green'&&slot==='E'&&e.companionAffinity!=='independent'&&nearby.some(t=>t!==e&&t.color===e.color&&!isHostile(e,t)&&!t.companionGroup))return this.start(e,e.facing,null,null,slot);return false;}
   const dir=angleTo(e,target);
   if(slot==='E'){const cfg=this.skill(e,slot);if(['chill','ripple'].includes(cfg.effect)&&!inCone(e,target,dir,cfg.radius))return false;if(canStartAttack(e)&&e.color!=='green')return false;if(e.color==='green'&&cfg.effect!=='invite'&&!nearby.some(t=>t!==e&&t.color===e.color))return false;return this.start(e,dir,null,target,slot);}
   if(e.color==='cyan'&&!inCone(e,target,dir,cfg.radius))return false;
   if(e.color==='blue'&&!inWave(e,target,dir,cfg.length,cfg.width))return false;
-  if(e.color==='green'&&!canStartAttack(e)&&!nearby.some(t=>t.color===e.color&&dist(e,t)<=cfg.radius&&canStartAttack(t)))return false;
-  if(e.color==='red'&&!nearby.some(t=>t!==e&&t.color===e.color&&dist(e,t)<=(cfg.buffRadius??450)&&t.attackUnlocked&&t.hp/t.maxHp>.4))return false;
+  if(e.color==='green'&&!canStartAttack(e)&&!nearby.some(t=>t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=cfg.radius&&canStartAttack(t)))return false;
+  if(e.color==='red'&&!nearby.some(t=>t!==e&&t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=(cfg.buffRadius??450)&&t.attackUnlocked&&t.hp/t.maxHp>.4))return false;
   return this.start(e,dir,{x:target.x,y:target.y},target,slot);
  }
  draw(ctx,zoom){

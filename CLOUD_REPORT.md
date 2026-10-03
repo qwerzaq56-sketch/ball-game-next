@@ -1,3 +1,7 @@
+## M59 완료
+
+흡수25%진행/75%완료충격·최대HP1%생존선,접촉경계공격/도주,전쟁기80%선언·공격누적20%역참전·복수전쟁·HP10%도주 구현. [전쟁 기획](WAR_STATE_DESIGN.md), [검증 보고](reports/M59-development.md).
+
 ## M58 완료
 
 대형 공격 템포·적 경계/반격·몸 표면 감지·청크 렌더 순서·흡수 이탈/HP 비용·영구 초록 R 소환/30초 흡수·ESC 일시정지 구현. 새 [크기별 시각화 기획](SIZE_RISK_RETURN_DESIGN.md), [개발 백로그](DEVELOPMENT_BACKLOG.md). 검증 및 한계는 [M58 보고서](reports/M58-development.md).

@@ -1,0 +1,22 @@
+{
+  "result": "PASS",
+  "wars": [
+    [
+      "B",
+      "C"
+    ],
+    [
+      "A"
+    ],
+    [
+      "A"
+    ]
+  ],
+  "ended": true,
+  "midway": 26.59090909090909,
+  "finalHp": 20,
+  "floor": 20,
+  "absorbed": true,
+  "wartime": "전쟁기 · 120s · 전쟁 상대 2명",
+  "errors": []
+}

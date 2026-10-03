@@ -28,13 +28,14 @@ export function canAbsorb(absorber, target) {
   if (!target.alive || !absorber.alive || target.summoned&&!target.summoned.absorbable || absorber.summoned) return false;
   if (target === absorber || absorber.companionGroup) return false;
   if (target.behavior !== 'ai' && target.behavior !== 'player') return false;
-  if (target.color !== absorber.color) return false;
+  if (target.color !== absorber.color || absorber.warTargets?.has(target)||target.warTargets?.has(absorber)) return false;
   if (target.beingAbsorbedByRef) return false; // already locked by another absorber
   return target.size < absorber.size;
 }
 
 // Different-color combatants (orbs are passive resources, never hostile).
 export function isHostile(a, b) {
+  if(a.behavior!=='orb'&&b.behavior!=='orb'&&(a.warTargets?.has(b)||b.warTargets?.has(a)))return true;
   if (a.color === b.color || a.companionGroup && a.companionGroup===b.companionGroup) return false;
   if (a.behavior === 'orb' || b.behavior === 'orb') return false;
   return true;

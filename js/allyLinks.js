@@ -15,7 +15,7 @@ const unit=e=>e.alive&&(e.behavior==='ai'||e.behavior==='player');
 export class AllyLinks {
  constructor(game){this.game=game;this.edges=new Map();this.groups=new Map();this.nextGroup=1;this.timer=0;this.events=[];this.stats={joins:0,leaves:0};this.truceUntil=0;this.truceCycle=-1;}
  tether(group){const lead=group.leader;return Math.max(ALLY_RULES.release,2*Math.max(attackChargeDistanceForSize(lead.size,this.game.balance,lead.apex),dodgeDistanceForSize(lead.size,this.game.balance)));}
- connected(a,b){return a!==b&&unit(a)&&unit(b)&&(a.color===b.color||a.companionGroup&&a.companionGroup===b.companionGroup)&&dist(a,b)-(a.size+b.size)/2<=(a.companionGroup&&a.companionGroup===b.companionGroup&&this.groups.has(a.companionGroup)?this.tether(this.groups.get(a.companionGroup)):(this.edges.has(key(a,b))?ALLY_RULES.release:ALLY_RULES.enter));}
+ connected(a,b){return a!==b&&!a.warTargets?.has(b)&&!b.warTargets?.has(a)&&unit(a)&&unit(b)&&(a.color===b.color||a.companionGroup&&a.companionGroup===b.companionGroup)&&dist(a,b)-(a.size+b.size)/2<=(a.companionGroup&&a.companionGroup===b.companionGroup&&this.groups.has(a.companionGroup)?this.tether(this.groups.get(a.companionGroup)):(this.edges.has(key(a,b))?ALLY_RULES.release:ALLY_RULES.enter));}
  neighbors(e){return this.game.entities.filter(t=>this.connected(e,t));}
  bonus(e){return Math.min(ALLY_RULES.bonusCap,this.neighbors(e).filter(t=>t.color===e.color).length)*ALLY_RULES.bonus;}
  refresh(){
@@ -76,7 +76,7 @@ export class AllyLinks {
   this.game.spawnFloatingText(owner.x,owner.y-owner.size/2-30,accepted?`동행 제안 · ${accepted}명 수락`:'동행 제안 · 수락 없음','#c4b5fd');return true;
  }
  recruit(owner,target,mixed=false){
-  if(target===owner||target.companionGroup||!unit(target)||target.color!==owner.color&&!mixed)return false;
+  if(owner.warTargets?.has(target)||target.warTargets?.has(owner)||target===owner||target.companionGroup||!unit(target)||target.color!==owner.color&&!mixed)return false;
   if(mixed&&this.truceUntil<=this.game.gameTime)return false;
   let group=this.groups.get(owner.companionGroup);
   if(group&&group.members.size>=ALLY_RULES.maxGroup)return false;
@@ -85,7 +85,7 @@ export class AllyLinks {
   group.members.add(target);this.enter(target,group);target.recruitedUntil=this.game.gameTime+20;if(owner.behavior==='player'||!group.leader?.alive)group.leader=owner;this.personality(group);return true;
  }
  join(a,b){
-  if(a.companionGroup||!this.connected(a,b)||a.beingAbsorbedByRef||b.beingAbsorbedByRef)return false;
+  if(a.warTargets?.has(b)||b.warTargets?.has(a)||a.companionGroup||!this.connected(a,b)||a.beingAbsorbedByRef||b.beingAbsorbedByRef)return false;
   let group=this.groups.get(b.companionGroup);
   if(group&&group.members.size>=ALLY_RULES.maxGroup)return false;
   if(!group){group={id:this.nextGroup++,color:a.color,leader:this.leader([a,b]),members:new Set([b])};this.groups.set(group.id,group);this.enter(b,group);}

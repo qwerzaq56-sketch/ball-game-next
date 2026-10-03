@@ -3,7 +3,10 @@
     "enabled": true
   },
   "era": {
-    "enabled": true
+    "enabled": true,
+    "warEntryChance": 0.8,
+    "warRetaliationDamageRatio": 0.2,
+    "warFleeHpRatio": 0.1
   },
   "biomes": {
     "terrainDefenseScale": 200,
@@ -73,7 +76,9 @@
     "maintainDistancePerSize": 0.5,
     "maxAbsorptionSpeed": 5,
     "pullForce": 1,
-    "healthCostFraction": 0.12
+    "healthCostFraction": 0.12,
+    "healthCostProgressFraction": 0.25,
+    "healthFloorFraction": 0.01
   },
   "combat": {
     "knockbackDuration": 0.15,

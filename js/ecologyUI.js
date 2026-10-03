@@ -115,7 +115,7 @@ export class EcologyUI {
   renderEcology(game) {
     const s=game.apexHistory.summary(game.gameTime);
     document.getElementById('ecology-era').textContent=`${game.era.status()} · ${game.era.cycle+1}주기 · 파멸 완료 ${game.era.completedApocalypses}`;
-    document.getElementById('ecology-duels').textContent=`전선 이동 ${game.entities.filter(e=>e.alive&&e.behavior==='ai'&&e.state==='war_move').length} · 결투 ${game.era.duels.size}쌍 · 시작 ${game.era.duelStarts} / 종료 ${game.era.duelEnds}`;
+    document.getElementById('ecology-duels').textContent=`전쟁 ${game.entities.filter(e=>e.alive&&game.era.activeWar(e)).length}명 · 전선 이동 ${game.entities.filter(e=>e.alive&&e.behavior==='ai'&&e.state==='war_move').length} · 결투 ${game.era.duels.size}쌍 · 시작 ${game.era.duelStarts} / 종료 ${game.era.duelEnds}`;
     const duels=document.getElementById('duel-events');duels.replaceChildren();for(const d of game.era.recentDuels.slice(0,3))duels.append(element('li','apex-event',`${d.type==='start'?'결투 시작':'결투 종료'} · ${d.challengerName} → ${d.targetName}`));
     const units=game.entities.filter(e=>e.alive&&e.behavior!=='orb');
     const roles=document.getElementById('ecology-roles');roles.replaceChildren();

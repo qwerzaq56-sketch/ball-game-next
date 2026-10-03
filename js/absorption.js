@@ -50,10 +50,19 @@ export function absorptionGrowthFor(absorber,target,balance){
  return Math.max(0,growthFromSize(size,absorber.baseSize,ratio,balance.growth)-absorber.growth)*(absorber.color==='green'?(balance.absorption.greenGrowthMultiplier??.85):1);
 }
 
+export function payAbsorptionHealth(absorber,target,amount,balance){
+ const floor=absorber.maxHp*(balance.absorption.healthFloorFraction??.01),lost=Math.min(Math.max(0,amount),Math.max(0,absorber.hp-floor));
+ absorber.hp-=lost;target.absorptionHealthPaid=(target.absorptionHealthPaid??0)+lost;
+ if(lost>0){absorber.regenTimer=0;absorber.hitFlash=balance.combat.hitFlashDuration;absorber.damageReceived=(absorber.damageReceived??0)+lost;absorber.damageHpRatio=(absorber.damageHpRatio??0)+lost/absorber.maxHp;}
+ return lost;
+}
 function completeAbsorption(absorber, target, game, balance) {
   const gained = growthRewardFor(target.behavior === 'orb' ? target.growthValue : absorptionGrowthFor(absorber,target,balance),absorber,balance);
-  if(target.behavior!=='orb')game.balanceLog?.absorb(absorber,target,gained);
+  const beforeGrowth={...absorber};
   absorber.addGrowth(gained, balance);
+  const burst=payAbsorptionHealth(absorber,target,(target.absorptionHealthCost??0)*(1-(balance.absorption.healthCostProgressFraction??.25)),balance);
+  if(burst>0){game.spawnFloatingText(absorber.x,absorber.y,`−${Math.round(burst)} HP`,'#fb7185');if(absorber===game.player)game.audio.damage();}
+  if(target.behavior!=='orb')game.balanceLog?.absorb({...beforeGrowth,maxHp:absorber.maxHp},target,gained);
   game.awardScore(absorber, gained);
   game.spawnAbsorptionParticles(target.x, target.y, target.colorHex);
   absorber.scalePulseTimer = 0.3; // short "grew bigger" scale pulse on the absorber
@@ -101,10 +110,8 @@ export function updateAbsorptions(game, dt, balance) {
 
     const proximity = 1 - Math.min(1, d / maintainDistance); // 1 at contact, 0 at the edge
     const advance=Math.min(Math.max(0,target.absorptionRequired-target.absorptionProgress),cfg.maxAbsorptionSpeed*proximity*dt);
-    const cost=(target.absorptionHealthCost??0)*advance/target.absorptionRequired;
-    if(absorber.hp<=cost+1){cancelAbsorption(target);continue;}
-    absorber.hp-=cost;target.absorptionHealthPaid=(target.absorptionHealthPaid??0)+cost;
-    if(cost>0)absorber.regenTimer=0;
+    const cost=(target.absorptionHealthCost??0)*(cfg.healthCostProgressFraction??.25)*advance/target.absorptionRequired;
+    payAbsorptionHealth(absorber,target,cost,balance);
     target.absorptionProgress += advance;
 
     if (proximity > 0) {

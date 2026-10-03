@@ -22,6 +22,7 @@ import {angleTo,delta} from './topology.js';
 // Dodge distance switches from the exponential Size curve to the flat linear one the spec
 // gives directly (spec §6): `baseDistance + size * distanceGrowth`.
 
+import {isHostile} from './collision.js';
 import { cancelAbsorption } from './absorption.js';
 
 export function attackDamageForSize(size, balance) {
@@ -191,7 +192,7 @@ export const RETALIATION_MEMORY = 3; // seconds an AI remembers its last attacke
 
 // v0.5: applyDamage now runs raw damage through Defense (spec §3) before it touches HP.
 export function applyDamage(target, rawDamage, game, attacker, balance, options = {}) {
-  if ((attacker && (attacker.color===target.color||attacker.companionGroup&&attacker.companionGroup===target.companionGroup)) || target.invincible || !target.alive) return false;
+  if ((attacker && !isHostile(attacker,target)) || target.invincible || !target.alive) return false;
   if(options.kind!=='field' && game?.abilities?.miss(target)){game.spawnFloatingText(target.x,target.y-target.size/2,"MISS","#eab308");return false;}
   const bal = balance || (game && game.balance);
   const defended = bal ? applyDefense(rawDamage, target.size, bal,game?.abilities?.defenseMultiplier(target)??1) : rawDamage;
@@ -203,6 +204,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   if(options.skillToken)game?.abilities?.metrics?.hit(options.skillToken,lost,target.maxHp);
   target.damageReceived=(target.damageReceived??0)+lost;
   target.damageHpRatio=(target.damageHpRatio??0)+lost/Math.max(1,target.maxHp);
+  game?.era?.observeWarDamage(attacker,target,lost,options);
   target.hp -= dmg;
   target.hitFlash = cfg ? cfg.hitFlashDuration : 0.08;
   target.regenTimer = 0; // taking a hit resets the HP regen delay

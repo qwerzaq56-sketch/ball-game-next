@@ -18,6 +18,13 @@ export class Autoplay {
   if(!this.enabled)return;const g=this.game,p=g.player;
   if(g.gameOver||!p.alive){this.action=null;this.reason='게임 종료';return;}
   this.timer-=dt;this.dodgeWait=Math.max(0,this.dodgeWait-dt);if(this.timer>0)return;this.timer=.1;
+  const warTarget=g.era.warTarget(p);
+  if(warTarget){
+   const escape=p.hp/p.maxHp<=(g.balance.era.warFleeHpRatio??.1),d=delta(p,warTarget),length=Math.hypot(d.x,d.y),sign=escape?-1:1;
+   const skillSlot=!escape?(['R','E'].find(slot=>g.abilities.canAffect(p,warTarget,slot))??null):null;
+   this.reason=`전쟁 ${p.warTargets.size}명 · ${escape?'긴급 도주':'공격'}`;
+   this.action={skillSlot,move:length?{x:sign*d.x/length,y:sign*d.y/length}:{x:0,y:0},aim:warTarget,attack:!escape&&dist(p,warTarget)<=p.size/2+warTarget.size/2+600&&canStartAttack(p),dodge:escape&&canStartDodge(p),special:!!skillSlot};return;
+  }
   const range=Math.min(800,g.biomes.playerSightRadius());
   const candidates=g.getNearbyEntities(p,range).filter(e=>e.alive&&dist(p,e)<=range);
   const threats=candidates.filter(e=>e.behavior!=='orb'&&dist(p,e)<360&&(isHostile(p,e)&&e.size>=p.size*1.2||canAbsorb(e,p)));

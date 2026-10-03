@@ -79,6 +79,10 @@ export function updateAI(ai, dt, game, balance) {
   // (A duplicate call here previously made every AI regenerate stacks at 2x the configured
   // rate, which is what made enemies look like they could attack almost nonstop.)
 
+  if(game.era.warDecision(ai)){
+    if(ai.attackState==='READY'&&ai.dodgeState!=='DODGING'){game.abilities.considerAI(ai);moveAI(ai,dt,balance,game);}return;
+  }
+
   if(ai.companionGroup){
     if(ai.attackState!=='READY'||ai.dodgeState==='DODGING')return;
     reactToThreats(ai,game,balance);if(ai.dodgeState==='DODGING')return;
@@ -145,7 +149,8 @@ function duelTarget(ai, game, balance, threats, safe) {
 }
 
 export function decideAI(ai, game, balance) {
-  ai.guardMode=false;
+  if(game.era.warDecision(ai))return;
+  ai.warCombat=false;ai.guardMode=false;
   const cfg={...balance.ai,detectionRange:game.biomes.sensingRange(ai),absorptionDetectionRange:game.biomes.sensingRange(ai,balance.ai.absorptionDetectionRange)}, hp=ai.hp/ai.maxHp;
   const environment=game.biomes.danger(ai,!!ai.environmentThreat);ai.environmentThreat=environment;
   if(environment){game.abilities?.endCommand(ai,'environment-escape');ai.state='flee';ai.target=environment;return;}
@@ -296,6 +301,7 @@ function moveAI(ai, dt, balance,game) {
 
   if(ai.state==='flee'&&ai.guardMode&&ai.target){
     const gap=dist(ai,ai.target)-(ai.size+ai.target.size)/2;
+    if(gap<=0&&ai.hp/ai.maxHp>.4&&canStartAttack(ai)&&ai.target.size<=ai.size*2.8){startAttack(ai,angleTo(ai,ai.target),balance);return;}
     targetAngle=angleTo(ai.target,ai);speed*=gap<(balance.ai.guardSurfaceDistance??140)?1.3:0;
   } else if (ai.state === 'flee' && ai.target) {
     targetAngle = angleTo(ai.target,ai);
