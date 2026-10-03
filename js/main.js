@@ -58,9 +58,10 @@ async function main() {
   window.addEventListener('keydown', (e) => {
     if (document.getElementById('player-setup').open || e.target.closest?.('input,textarea,select') || (e.target.closest?.('button')&&(e.key===' '||e.key==='Enter'))) return;
     const k = e.key.toLowerCase();
-    if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright',' ','e','g'].includes(k))window.__game?.autoplay.setEnabled(false);
+    if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright',' ','e','g','q'].includes(k))window.__game?.autoplay.setEnabled(false);
     input.keys.add(k);
     if(k==='g'&&!e.repeat && !window.__game?.paused && !document.getElementById('play-help').open && document.getElementById('reset-confirm-overlay').style.display!=='flex' && window.__game?.player.companionGroup)window.__game.allyLinks.leave(window.__game.player,'player-choice');
+    if(k==='q'&&!e.repeat&&!window.__game?.paused&&!window.__game?.gameOver&&!document.getElementById('play-help').open&&document.getElementById('reset-confirm-overlay').style.display!=='flex')window.__game.allyLinks.offer(window.__game.player);
     if(k==='e'&&!e.repeat&&!window.__game?.paused)input._specialQueued=true;
     if (k === ' ') {
       e.preventDefault();

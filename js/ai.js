@@ -81,6 +81,7 @@ export function updateAI(ai, dt, game, balance) {
   if(ai.companionGroup){
     if(ai.attackState!=='READY'||ai.dodgeState==='DODGING')return;
     reactToThreats(ai,game,balance);if(ai.dodgeState==='DODGING')return;
+    if(!game.biomes.danger(ai)&&!ai.beingAbsorbedByRef&&!ai.escapeAbsorber&&!game.abilities.fields.some(f=>isHostile(ai,f.owner)&&dist(ai,f)<420)&&game.abilities.commandDecision(ai)){moveAI(ai,dt,balance,game);return;}
     if(game.allyLinks.combat(ai)){if(ai.attackState==='READY')moveAI(ai,dt,balance,game);}
     else game.allyLinks.move(ai,dt);return;
   }
@@ -152,7 +153,7 @@ export function decideAI(ai, game, balance) {
     game.abilities?.endCommand(ai,'absorption-escape');ai.state='flee';ai.target=absorber;return;
   }
   ai.escapeAbsorber=null;
-  const fields=game.abilities?.fields ?? [];
+  const fields=(game.abilities?.fields ?? []).filter(f=>isHostile(ai,f.owner));
   const heldField=ai.fleeField;
   const danger=fields.find(f=>f.owner.color!==ai.color&&dist(ai,f)<=360) ??
     (fields.includes(heldField)&&heldField.owner.color!==ai.color&&dist(ai,heldField)<420 ? heldField : null);
@@ -164,7 +165,7 @@ export function decideAI(ai, game, balance) {
     ai.challengeTarget.hp/ai.challengeTarget.maxHp>.4 || dist(ai,ai.challengeTarget)>cfg.detectionRange))ai.challengeTarget=null;
   const nearby=game.getNearbyEntities(ai,Math.max(cfg.detectionRange,cfg.absorptionDetectionRange));
   const within=nearby.filter(e=>e.alive&&dist(ai,e)<=cfg.detectionRange);
-  const threats=within.filter(e=>isHostile(ai,e)&&e.size>=ai.size*1.2&&!(ai.command?.kind==='rally'&&e===ai.command.target&&e.size<=ai.size*1.5));
+  const threats=within.filter(e=>isHostile(ai,e)&&e.size>=ai.size*1.2&&!(ai.command?.kind==='rally'&&(e===ai.command.target||ai.command.targets?.has(e))));
   const safe=(e,except)=>threats.every(t=>t===except||dist(e,t)>=160);
   const food=within.filter(e=>canEatOrb(ai,e,balance));
   const closest=list=>[...list].sort((a,b)=>dist(ai,a)-dist(ai,b)||a.id-b.id)[0];
@@ -281,7 +282,7 @@ function reactToThreats(ai, game, balance) {
 
 function moveAI(ai, dt, balance,game) {
   let targetAngle = null;
-  let speed = ai.moveSpeed;
+  let speed = ai.moveSpeed*(game?.abilities.speedMultiplier(ai)??1);
 
   if (ai.state === 'flee' && ai.target) {
     targetAngle = angleTo(ai.target,ai);

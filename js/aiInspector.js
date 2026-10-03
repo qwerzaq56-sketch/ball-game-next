@@ -155,6 +155,7 @@ export class AIInspector {
       ['score (순위)', `${Math.round(e.score)} (${sr || '-'}위, size ${zr || '-'}위)`],
       ['최상위', e.apex ? 'YES' : 'no'],
       ['아군 연결 / 보너스', `${g.allyLinks.neighbors(e).length} / +${Math.round(g.allyLinks.bonus(e)*100)}%`],
+      ['동행 성향', ({social:'동행 선호',neutral:'중립',independent:'독립 선호'})[e.companionAffinity]??'중립'],
       ['동행 대열', e.companionGroup ? `#${e.companionGroup} · ${g.allyLinks.groups.get(e.companionGroup)?.leader.displayName ?? '-'}` : '-'],
       ['대열 성격 / 가중치', e.companionGroup ? (()=>{const group=g.allyLinks.groups.get(e.companionGroup);const kind=group&&g.allyLinks.personality(group);return `${({challenge:'도전형',opportunity:'기회형',avoidance:'회피형'})[kind]??'-'} · ${JSON.stringify(group?g.allyLinks.profile(group).weights:{})} (리더 ×3)`;})() : '-'],
       ['대열 구성원', e.companionGroup ? [...(g.allyLinks.groups.get(e.companionGroup)?.members ?? [])].map(m=>`${m.displayName} #${m.id}${m===g.allyLinks.groups.get(e.companionGroup)?.leader?' (리더)':''}`).join(' · ') : '-'],

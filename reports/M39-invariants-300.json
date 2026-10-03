@@ -1,0 +1,434 @@
+{
+  "result": "PASS",
+  "results": [
+    {
+      "seed": 7,
+      "fps": 30,
+      "policy": "local-survival-v2",
+      "lifePolicy": "ordinary lives; no replenishment",
+      "requestedSeconds": 300,
+      "actualSeconds": 300,
+      "stop": "duration",
+      "frames": 9000,
+      "unitChecks": 23836,
+      "maxApex": 5,
+      "maxGroups": 13,
+      "maxSize": 128.58868392120934,
+      "player": {
+        "size": 100.22336262548184,
+        "score": 2609,
+        "lives": 3,
+        "defeats": 0,
+        "firstApexSeconds": null
+      },
+      "era": {
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relicPickupsAllUnits": 5,
+      "apex": {
+        "current": [
+          {
+            "id": 1022,
+            "name": "\uace0\uc694\ud55c \ub9e4 1022",
+            "color": "#EAB308",
+            "since": 123.99999999999552,
+            "seconds": 176.0000000000275
+          },
+          {
+            "id": 1167,
+            "name": "\ub2ec\ube5b \uc0b4\ucfa1\uc774 1167",
+            "color": "#22C55E",
+            "since": 129.9999999999952,
+            "seconds": 170.00000000002782
+          },
+          {
+            "id": 1512,
+            "name": "\uc0c8\ubcbd \uc0b4\ucfa1\uc774 1512",
+            "color": "#22D3EE",
+            "since": 153.99999999999383,
+            "seconds": 146.0000000000292
+          },
+          {
+            "id": 2076,
+            "name": "\ub2ec\ube5b \ud45c\ubc94 2076",
+            "color": "#22C55E",
+            "since": 229.9999999999895,
+            "seconds": 70.00000000003351
+          },
+          {
+            "id": 2231,
+            "name": "\uace0\uc694\ud55c \uace0\ub798 2231",
+            "color": "#3B82F6",
+            "since": 267.99999999999756,
+            "seconds": 32.000000000025466
+          }
+        ],
+        "recent": [
+          {
+            "id": 2231,
+            "name": "\uace0\uc694\ud55c \uace0\ub798 2231",
+            "color": "#3B82F6",
+            "since": 267.99999999999756,
+            "type": "gain",
+            "time": 267.99999999999756
+          },
+          {
+            "id": 507,
+            "name": "\ud669\uae08 \uc0b4\ucfa1\uc774 507",
+            "color": "#22D3EE",
+            "since": 253.99999999998815,
+            "endedAt": 267.99999999999756,
+            "seconds": 14.000000000009408,
+            "type": "loss",
+            "time": 267.99999999999756
+          },
+          {
+            "id": 507,
+            "name": "\ud669\uae08 \uc0b4\ucfa1\uc774 507",
+            "color": "#22D3EE",
+            "since": 253.99999999998815,
+            "type": "gain",
+            "time": 253.99999999998815
+          },
+          {
+            "id": 2076,
+            "name": "\ub2ec\ube5b \ud45c\ubc94 2076",
+            "color": "#22C55E",
+            "since": 229.9999999999895,
+            "type": "gain",
+            "time": 229.9999999999895
+          },
+          {
+            "id": 1512,
+            "name": "\uc0c8\ubcbd \uc0b4\ucfa1\uc774 1512",
+            "color": "#22D3EE",
+            "since": 153.99999999999383,
+            "type": "gain",
+            "time": 153.99999999999383
+          },
+          {
+            "id": 1167,
+            "name": "\ub2ec\ube5b \uc0b4\ucfa1\uc774 1167",
+            "color": "#22C55E",
+            "since": 129.9999999999952,
+            "type": "gain",
+            "time": 129.9999999999952
+          },
+          {
+            "id": 1022,
+            "name": "\uace0\uc694\ud55c \ub9e4 1022",
+            "color": "#EAB308",
+            "since": 123.99999999999552,
+            "type": "gain",
+            "time": 123.99999999999552
+          }
+        ],
+        "completed": [
+          {
+            "id": 507,
+            "name": "\ud669\uae08 \uc0b4\ucfa1\uc774 507",
+            "color": "#22D3EE",
+            "since": 253.99999999998815,
+            "endedAt": 267.99999999999756,
+            "seconds": 14.000000000009408
+          }
+        ],
+        "gains": 6,
+        "losses": 1,
+        "secondsByCount": {
+          "absent": 123.96666666666219,
+          "solo": 5.9999999999999885,
+          "coexist": 170.03333333332625
+        },
+        "longestTenure": 176.0000000000275,
+        "longestSolo": 5.999999999999673
+      },
+      "historySizes": {
+        "abilities": 46,
+        "ecology": 7,
+        "era": 1,
+        "ally": 100,
+        "samples": 300
+      }
+    },
+    {
+      "seed": 11,
+      "fps": 30,
+      "policy": "local-survival-v2",
+      "lifePolicy": "ordinary lives; no replenishment",
+      "requestedSeconds": 300,
+      "actualSeconds": 300,
+      "stop": "duration",
+      "frames": 9000,
+      "unitChecks": 23781,
+      "maxApex": 5,
+      "maxGroups": 12,
+      "maxSize": 128.92904982987505,
+      "player": {
+        "size": 91.68941681507803,
+        "score": 2108,
+        "lives": 3,
+        "defeats": 0,
+        "firstApexSeconds": null
+      },
+      "era": {
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relicPickupsAllUnits": 4,
+      "apex": {
+        "current": [
+          {
+            "id": 726,
+            "name": "\uc7bf\ube5b \ub291\ub300 726",
+            "color": "#3B82F6",
+            "since": 159.9999999999935,
+            "seconds": 140.00000000002953
+          },
+          {
+            "id": 1240,
+            "name": "\ub2ec\ube5b \uace0\ub798 1240",
+            "color": "#EAB308",
+            "since": 159.9999999999935,
+            "seconds": 140.00000000002953
+          },
+          {
+            "id": 2160,
+            "name": "\uc0c8\ubcbd \uace0\ub798 2160",
+            "color": "#22C55E",
+            "since": 245.9999999999886,
+            "seconds": 54.00000000003442
+          },
+          {
+            "id": 2327,
+            "name": "\ubc14\ub78c \uc218\ub2ec 2327",
+            "color": "#22C55E",
+            "since": 265.99999999999596,
+            "seconds": 34.00000000002706
+          },
+          {
+            "id": 2470,
+            "name": "\ubcc4\ube5b \uc0b4\ucfa1\uc774 2470",
+            "color": "#EAB308",
+            "since": 284.0000000000103,
+            "seconds": 16.000000000012733
+          }
+        ],
+        "recent": [
+          {
+            "id": 2470,
+            "name": "\ubcc4\ube5b \uc0b4\ucfa1\uc774 2470",
+            "color": "#EAB308",
+            "since": 284.0000000000103,
+            "type": "gain",
+            "time": 284.0000000000103
+          },
+          {
+            "id": 530,
+            "name": "\uc7bf\ube5b \uacf0 530",
+            "color": "#22D3EE",
+            "since": 185.999999999992,
+            "endedAt": 284.0000000000103,
+            "seconds": 98.00000000001828,
+            "type": "loss",
+            "time": 284.0000000000103
+          },
+          {
+            "id": 2327,
+            "name": "\ubc14\ub78c \uc218\ub2ec 2327",
+            "color": "#22C55E",
+            "since": 265.99999999999596,
+            "type": "gain",
+            "time": 265.99999999999596
+          },
+          {
+            "id": 2160,
+            "name": "\uc0c8\ubcbd \uace0\ub798 2160",
+            "color": "#22C55E",
+            "since": 245.9999999999886,
+            "type": "gain",
+            "time": 245.9999999999886
+          },
+          {
+            "id": 530,
+            "name": "\uc7bf\ube5b \uacf0 530",
+            "color": "#22D3EE",
+            "since": 185.999999999992,
+            "type": "gain",
+            "time": 185.999999999992
+          },
+          {
+            "id": 1240,
+            "name": "\ub2ec\ube5b \uace0\ub798 1240",
+            "color": "#EAB308",
+            "since": 159.9999999999935,
+            "type": "gain",
+            "time": 159.9999999999935
+          },
+          {
+            "id": 726,
+            "name": "\uc7bf\ube5b \ub291\ub300 726",
+            "color": "#3B82F6",
+            "since": 159.9999999999935,
+            "type": "gain",
+            "time": 159.9999999999935
+          }
+        ],
+        "completed": [
+          {
+            "id": 530,
+            "name": "\uc7bf\ube5b \uacf0 530",
+            "color": "#22D3EE",
+            "since": 185.999999999992,
+            "endedAt": 284.0000000000103,
+            "seconds": 98.00000000001828
+          }
+        ],
+        "gains": 6,
+        "losses": 1,
+        "secondsByCount": {
+          "absent": 159.96666666666016,
+          "solo": 0,
+          "coexist": 140.03333333332796
+        },
+        "longestTenure": 140.00000000002953,
+        "longestSolo": 0
+      },
+      "historySizes": {
+        "abilities": 28,
+        "ecology": 7,
+        "era": 1,
+        "ally": 100,
+        "samples": 300
+      }
+    },
+    {
+      "seed": 23,
+      "fps": 30,
+      "policy": "local-survival-v2",
+      "lifePolicy": "ordinary lives; no replenishment",
+      "requestedSeconds": 300,
+      "actualSeconds": 300,
+      "stop": "duration",
+      "frames": 9000,
+      "unitChecks": 23846,
+      "maxApex": 5,
+      "maxGroups": 11,
+      "maxSize": 150.8668703000783,
+      "player": {
+        "size": 92.02342645050189,
+        "score": 2226,
+        "lives": 3,
+        "defeats": 0,
+        "firstApexSeconds": null
+      },
+      "era": {
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relicPickupsAllUnits": 4,
+      "apex": {
+        "current": [
+          {
+            "id": 700,
+            "name": "\uadf8\ub298 \uae4c\ub9c8\uadc0 700",
+            "color": "#22D3EE",
+            "since": 83.9999999999978,
+            "seconds": 216.00000000002524
+          },
+          {
+            "id": 1273,
+            "name": "\uc548\uac1c \uc0ac\uc2b4 1273",
+            "color": "#EAB308",
+            "since": 171.9999999999928,
+            "seconds": 128.0000000000302
+          },
+          {
+            "id": 1892,
+            "name": "\ud669\uae08 \uc5ec\uc6b0 1892",
+            "color": "#EF4444",
+            "since": 201.9999999999911,
+            "seconds": 98.00000000003192
+          },
+          {
+            "id": 1236,
+            "name": "\uace0\uc694\ud55c \ub9e4 1236",
+            "color": "#EAB308",
+            "since": 257.9999999999896,
+            "seconds": 42.000000000033424
+          },
+          {
+            "id": 454,
+            "name": "\uc7bf\ube5b \uacf0 454",
+            "color": "#3B82F6",
+            "since": 269.99999999999915,
+            "seconds": 30.000000000023874
+          }
+        ],
+        "recent": [
+          {
+            "id": 454,
+            "name": "\uc7bf\ube5b \uacf0 454",
+            "color": "#3B82F6",
+            "since": 269.99999999999915,
+            "type": "gain",
+            "time": 269.99999999999915
+          },
+          {
+            "id": 1236,
+            "name": "\uace0\uc694\ud55c \ub9e4 1236",
+            "color": "#EAB308",
+            "since": 257.9999999999896,
+            "type": "gain",
+            "time": 257.9999999999896
+          },
+          {
+            "id": 1892,
+            "name": "\ud669\uae08 \uc5ec\uc6b0 1892",
+            "color": "#EF4444",
+            "since": 201.9999999999911,
+            "type": "gain",
+            "time": 201.9999999999911
+          },
+          {
+            "id": 1273,
+            "name": "\uc548\uac1c \uc0ac\uc2b4 1273",
+            "color": "#EAB308",
+            "since": 171.9999999999928,
+            "type": "gain",
+            "time": 171.9999999999928
+          },
+          {
+            "id": 700,
+            "name": "\uadf8\ub298 \uae4c\ub9c8\uadc0 700",
+            "color": "#22D3EE",
+            "since": 83.9999999999978,
+            "type": "gain",
+            "time": 83.9999999999978
+          }
+        ],
+        "completed": [],
+        "gains": 5,
+        "losses": 0,
+        "secondsByCount": {
+          "absent": 83.96666666666447,
+          "solo": 87.99999999999757,
+          "coexist": 128.03333333332864
+        },
+        "longestTenure": 216.00000000002524,
+        "longestSolo": 87.99999999999501
+      },
+      "historySizes": {
+        "abilities": 33,
+        "ecology": 5,
+        "era": 1,
+        "ally": 100,
+        "samples": 300
+      }
+    }
+  ]
+}

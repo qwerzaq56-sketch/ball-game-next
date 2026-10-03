@@ -9,12 +9,14 @@ import {cancelAbsorption,maintainDistanceFor} from './absorption.js';
 
 export const ALLY_RULES={enter:100,release:140,bonus:.05,bonusCap:3,decisionSeconds:3,joinChance:.18,leaveChance:.08,maxGroup:6,freeRadius:60,spring:2,catchup:1.6,leaderPace:.9,threatEnter:320,threatRelease:400};
 const key=(a,b)=>a.id<b.id?`${a.id}:${b.id}`:`${b.id}:${a.id}`;
+export const AFFINITY={social:{join:.30,leave:.03,accept:.85,label:'동행 선호'},neutral:{join:.18,leave:.08,accept:.60,label:'중립'},independent:{join:.07,leave:.18,accept:.25,label:'독립 선호'}};
+const affinity=e=>AFFINITY[e.companionAffinity]??AFFINITY.neutral;
 const unit=e=>e.alive&&(e.behavior==='ai'||e.behavior==='player');
 export class AllyLinks {
- constructor(game){this.game=game;this.edges=new Map();this.groups=new Map();this.nextGroup=1;this.timer=0;this.events=[];this.stats={joins:0,leaves:0};}
- connected(a,b){return a!==b&&unit(a)&&unit(b)&&a.color===b.color&&dist(a,b)-(a.size+b.size)/2<=(this.edges.has(key(a,b))?ALLY_RULES.release:ALLY_RULES.enter);}
+ constructor(game){this.game=game;this.edges=new Map();this.groups=new Map();this.nextGroup=1;this.timer=0;this.events=[];this.stats={joins:0,leaves:0};this.truceUntil=0;this.truceCycle=-1;}
+ connected(a,b){return a!==b&&unit(a)&&unit(b)&&(a.color===b.color||a.companionGroup&&a.companionGroup===b.companionGroup)&&dist(a,b)-(a.size+b.size)/2<=(this.edges.has(key(a,b))?ALLY_RULES.release:ALLY_RULES.enter);}
  neighbors(e){return this.game.entities.filter(t=>this.connected(e,t));}
- bonus(e){return Math.min(ALLY_RULES.bonusCap,this.neighbors(e).length)*ALLY_RULES.bonus;}
+ bonus(e){return Math.min(ALLY_RULES.bonusCap,this.neighbors(e).filter(t=>t.color===e.color).length)*ALLY_RULES.bonus;}
  refresh(){
   const units=this.game.entities.filter(unit),grid=new Map(),byColor=new Map(),radii=new Map(),cell=220;
   for(const e of units){const k=`${Math.floor(e.x/cell)}:${Math.floor(e.y/cell)}`;if(!grid.has(k))grid.set(k,[]);grid.get(k).push(e);if(!byColor.has(e.color))byColor.set(e.color,[]);byColor.get(e.color).push(e);radii.set(e.color,Math.max(radii.get(e.color)??0,e.size/2));}
@@ -26,9 +28,11 @@ export class AllyLinks {
     for(const b of grid.get(`${x}:${y}`)??[])if(a.id<b.id&&this.connected(a,b))next.set(key(a,b),[a,b]);
    }
   }
+  for(const group of this.groups.values())for(const a of group.members)for(const b of group.members)if(a.id<b.id&&this.connected(a,b))next.set(key(a,b),[a,b]);
   this.edges=next;
   for(const group of [...this.groups.values()]) {
-   for(const e of [...group.members])if(e.companionGroup===group.id&&(!unit(e)||e.color!==group.color||!units.includes(e)))this.leave(e,'invalid');
+   if(group.truceUntil&&group.truceUntil<=this.game.gameTime)group.truceUntil=0;
+   for(const e of [...group.members])if(e.companionGroup===group.id&&(!unit(e)||e.color!==group.color&&!group.truceUntil||!units.includes(e)))this.leave(e,'invalid');
    if(!this.groups.has(group.id))continue;
    if(!group.members.has(group.leader))group.leader=this.leader([...group.members]);
    for(const e of [...group.members])if(this.groups.has(group.id)&&e!==group.leader&&!(e.recruitedUntil>this.game.gameTime)&&!this.path(e,group.leader,group.members))this.leave(e,'disconnected');
@@ -45,7 +49,7 @@ export class AllyLinks {
  personality(group){return this.profile(group).personality;}
  combat(e){
   const g=this.groups.get(e.companionGroup);if(!g)return false;e.state='companion';e.target=null;
-  if(this.game.biomes.danger(e,!!e.environmentThreat)||e.beingAbsorbedByRef||e.escapeAbsorber||this.game.abilities.fields.some(f=>f.owner.color!==e.color&&dist(e,f)<420))return false;
+  if(this.game.biomes.danger(e,!!e.environmentThreat)||e.beingAbsorbedByRef||e.escapeAbsorber||this.game.abilities.fields.some(f=>isHostile(e,f.owner)&&dist(e,f)<420))return false;
   const kind=this.personality(g);
   const allies=[...g.members].filter(m=>unit(m)&&dist(e,m)<320);
   const power=Math.sqrt(allies.reduce((n,m)=>n+m.size*m.size*(m.hp/m.maxHp),0));
@@ -57,11 +61,21 @@ export class AllyLinks {
   if(dist(e,target)<=attackReach(e,this.game.balance)+(e.size+target.size)/2&&canStartAttack(e))startAttack(e,angle,this.game.balance);
   return true;
  }
- recruit(owner,target){
-  if(target===owner||target.companionGroup||!unit(target)||target.color!==owner.color)return false;
+ offer(owner){
+  if(this.game.paused||this.game.gameOver||!unit(owner)||owner.frozen>0||owner.attackState!=='READY'||owner.dodgeState==='DODGING'||owner.specialCast||owner.beingAbsorbedByRef||(owner.inviteReadyAt??0)>this.game.gameTime)return false;
+  owner.inviteReadyAt=this.game.gameTime+8;owner.inviteFlashUntil=this.game.gameTime+.8;let accepted=0;
+  for(const target of this.game.getNearbyEntities(owner,280).filter(t=>unit(t)&&t!==owner&&!t.companionGroup&&!t.beingAbsorbedByRef&&dist(owner,t)<=280&&(t.color===owner.color||this.truceUntil>this.game.gameTime)).sort((a,b)=>dist(owner,a)-dist(owner,b)||a.id-b.id).slice(0,3)){
+   if(random('ai')<affinity(target).accept&&this.recruit(owner,target,target.color!==owner.color))accepted++;
+  }
+  this.game.spawnFloatingText(owner.x,owner.y-owner.size/2-30,accepted?`동행 제안 · ${accepted}명 수락`:'동행 제안 · 수락 없음','#c4b5fd');return true;
+ }
+ recruit(owner,target,mixed=false){
+  if(target===owner||target.companionGroup||!unit(target)||target.color!==owner.color&&!mixed)return false;
+  if(mixed&&this.truceUntil<=this.game.gameTime)return false;
   let group=this.groups.get(owner.companionGroup);
   if(group&&group.members.size>=ALLY_RULES.maxGroup)return false;
   if(!group){group={id:this.nextGroup++,color:owner.color,leader:owner,members:new Set([owner])};this.groups.set(group.id,group);this.enter(owner,group);}
+  if(mixed)group.truceUntil=this.truceUntil;
   group.members.add(target);this.enter(target,group);target.recruitedUntil=this.game.gameTime+5;group.leader=owner;this.personality(group);return true;
  }
  join(a,b){
@@ -87,28 +101,30 @@ export class AllyLinks {
   else if(group&&!group.members.has(group.leader))group.leader=this.leader([...group.members]);
  }
  update(dt){
+  const cycle=Math.floor(this.game.gameTime/120),local=this.game.gameTime%120;
+  if(local>=60&&local<80&&cycle!==this.truceCycle){this.truceCycle=cycle;this.truceUntil=cycle*120+80;this.game.spawnFloatingText(this.game.player.x,this.game.player.y-100,'우정 축제 · 다른 색에도 동행 제안 가능','#c4b5fd');}
   this.refresh();
   for(const e of this.game.entities)e.companionCooldown=Math.max(0,(e.companionCooldown??0)-dt);
   this.timer-=dt;if(this.timer>0)return;this.timer+=ALLY_RULES.decisionSeconds;
   const candidates=this.game.entities.filter(unit).sort((a,b)=>a.id-b.id);
   for(const e of candidates){
    if(e.companionCooldown>0)continue;
-   if(e.companionGroup){if(random('ai')<ALLY_RULES.leaveChance)this.leave(e);continue;}
+   if(e.companionGroup){if(random('ai')<affinity(e).leave)this.leave(e);continue;}
    if(e.behavior!=='ai'||e.frozen>0||e.beingAbsorbedByRef||e.recovering||e.attackState!=='READY'||e.dodgeState==='DODGING')continue;
-   const neighbor=this.neighbors(e).filter(n=>!n.beingAbsorbedByRef&&!(n.companionCooldown>0)&&!(n.frozen>0)&&!n.recovering&&n.dodgeState!=='DODGING'&&n.attackState==='READY'&&!n.specialCast&&(!n.companionGroup||this.groups.get(n.companionGroup)?.members.size<ALLY_RULES.maxGroup))
+   const neighbor=(this.truceUntil>this.game.gameTime?candidates.filter(n=>n!==e&&dist(e,n)<=280):this.neighbors(e)).filter(n=>!n.beingAbsorbedByRef&&!(n.companionCooldown>0)&&!(n.frozen>0)&&!n.recovering&&n.dodgeState!=='DODGING'&&n.attackState==='READY'&&!n.specialCast&&(!n.companionGroup||this.groups.get(n.companionGroup)?.members.size<ALLY_RULES.maxGroup))
     .sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id)[0];
-   if(neighbor&&random('ai')<ALLY_RULES.joinChance)this.join(e,neighbor);
+   if(neighbor&&random('ai')<affinity(e).join){if(neighbor.color===e.color)this.join(e,neighbor);else this.recruit(e,neighbor,true);}
   }
  }
  move(e,dt){
-  const group=this.groups.get(e.companionGroup);if(!group)return false;
+  const group=this.groups.get(e.companionGroup);if(!group)return false;const moveSpeed=e.moveSpeed*this.game.abilities.speedMultiplier(e);
   e.companionVelocity={x:0,y:0};
   const environment=this.game.biomes.danger(e,!!e.environmentThreat);e.environmentThreat=environment;
-  if(environment){const angle=angleTo(environment,e);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*e.moveSpeed*1.3*dt;e.y+=Math.sin(angle)*e.moveSpeed*1.3*dt;return true;}
+  if(environment){const angle=angleTo(environment,e);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*moveSpeed*1.3*dt;e.y+=Math.sin(angle)*moveSpeed*1.3*dt;return true;}
   // Survival movement follows only when no collective engagement is selected.
   if(e.beingAbsorbedByRef)e.escapeAbsorber=e.beingAbsorbedByRef;
   if(!e.beingAbsorbedByRef&&e.escapeAbsorber&&(!unit(e.escapeAbsorber)||!canAbsorb(e.escapeAbsorber,e)||dist(e,e.escapeAbsorber)>maintainDistanceFor(e.escapeAbsorber,this.game.balance)+80))e.escapeAbsorber=null;
-  const fields=this.game.abilities.fields;
+  const fields=this.game.abilities.fields.filter(f=>isHostile(e,f.owner));
   const remembered=e.companionThreat;
   const held=remembered && (fields.includes(remembered)
    ? remembered.owner.alive&&remembered.owner.apex&&remembered.owner.color!==e.color&&dist(e,remembered)<=420
@@ -118,12 +134,12 @@ export class AllyLinks {
    .filter(t=>unit(t)&&isHostile(e,t)&&t.size>=e.size*1.2&&dist(e,t)<=ALLY_RULES.threatEnter)
    .sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id)[0];
   e.companionThreat=threat??null;
-  if(threat){const angle=angleTo(threat,e);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*e.moveSpeed*1.3*dt;e.y+=Math.sin(angle)*e.moveSpeed*1.3*dt;return true;}
+  if(threat){const angle=angleTo(threat,e);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*moveSpeed*1.3*dt;e.y+=Math.sin(angle)*moveSpeed*1.3*dt;return true;}
   e.state='companion';
   if(group.leader===e){e.wanderTimer-=dt;if(e.wanderTimer<=0){e.wanderAngle=random('ai')*Math.PI*2;e.wanderTimer=3;}const w=this.game.balance.world,pad=e.size/2+60;
    if(!w.wrap&&((e.x<pad&&Math.cos(e.wanderAngle)<0)||(e.x>w.worldWidth-pad&&Math.cos(e.wanderAngle)>0)))e.wanderAngle=Math.PI-e.wanderAngle;
    if(!w.wrap&&((e.y<pad&&Math.sin(e.wanderAngle)<0)||(e.y>w.worldHeight-pad&&Math.sin(e.wanderAngle)>0)))e.wanderAngle=-e.wanderAngle;
-   const route=this.game.biomes.routePoint(e,{x:e.x+Math.cos(e.wanderAngle)*300,y:e.y+Math.sin(e.wanderAngle)*300});e.facing=angleTo(e,route);e.companionVelocity={x:Math.cos(e.facing)*e.moveSpeed*ALLY_RULES.leaderPace,y:Math.sin(e.facing)*e.moveSpeed*ALLY_RULES.leaderPace};e.x+=e.companionVelocity.x*dt;e.y+=e.companionVelocity.y*dt;return true;}
+   const route=this.game.biomes.routePoint(e,{x:e.x+Math.cos(e.wanderAngle)*300,y:e.y+Math.sin(e.wanderAngle)*300});e.facing=angleTo(e,route);e.companionVelocity={x:Math.cos(e.facing)*moveSpeed*ALLY_RULES.leaderPace,y:Math.sin(e.facing)*moveSpeed*ALLY_RULES.leaderPace};e.x+=e.companionVelocity.x*dt;e.y+=e.companionVelocity.y*dt;return true;}
   const members=[...group.members].filter(m=>m!==group.leader).sort((a,b)=>a.id-b.id),i=members.indexOf(e);
   const lead=group.leader,back=lead.facing+Math.PI;
   const gap=(lead.size+e.size)/2+35,side=(i%2?1:-1)*(25+Math.floor(i/2)*30);
@@ -134,15 +150,16 @@ export class AllyLinks {
   const spring=d>free?(d-free)*(1-Math.exp(-ALLY_RULES.spring*dt))/Math.max(dt,1e-8):0;
   const velocity=lead.companionVelocity??{x:0,y:0};
   const toward=delta(e,route);let vx=velocity.x+(d>0?toward.x/d*spring:0),vy=velocity.y+(d>0?toward.y/d*spring:0);
-  const speed=Math.hypot(vx,vy),cap=e.moveSpeed*ALLY_RULES.catchup;
+  const speed=Math.hypot(vx,vy),cap=moveSpeed*ALLY_RULES.catchup;
   if(speed>cap){vx*=cap/speed;vy*=cap/speed;}
   e.companionVelocity={x:vx,y:vy};if(speed>1)e.facing=Math.atan2(vy,vx);
   e.x+=vx*dt;e.y+=vy*dt;return true;
  }
- draw(ctx,zoom){const view=worldView(this.game.canvas,this.game.renderCamera??this.game.camera);ctx.save();ctx.lineWidth=2/zoom;for(const [a,b]of this.edges.values()){
+ draw(ctx,zoom){for(const e of this.game.entities)if(e.alive&&e.inviteFlashUntil>this.game.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,280,0,Math.PI*2);ctx.strokeStyle='rgba(196,181,253,.65)';ctx.lineWidth=2/zoom;ctx.stroke();ctx.restore();}const view=worldView(this.game.canvas,this.game.renderCamera??this.game.camera);ctx.save();ctx.lineWidth=2/zoom;for(const [a,b]of this.edges.values()){
   const image=near(a,b);
   if(!segmentInView(view,a,image,2/zoom)||!this.connected(a,b))continue;const d=dist(a,b);if(d<1||d<=(a.size+b.size)/2)continue;
   const toward=delta(a,b),dx=toward.x/d,dy=toward.y/d;ctx.beginPath();ctx.moveTo(a.x+dx*a.size/2,a.y+dy*a.size/2);ctx.lineTo(image.x-dx*b.size/2,image.y-dy*b.size/2);
-  ctx.strokeStyle=this.game.withAlpha(a.colorHex,a.companionGroup && a.companionGroup===b.companionGroup ? .7 : .3);ctx.stroke();
+  if(a.color!==b.color)ctx.setLineDash([8/zoom,5/zoom]);else ctx.setLineDash([]);
+  ctx.strokeStyle=this.game.withAlpha(a.color!==b.color?'#c4b5fd':a.colorHex,a.companionGroup && a.companionGroup===b.companionGroup ? .7 : .3);ctx.stroke();
  }ctx.restore();}
 }

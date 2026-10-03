@@ -13,7 +13,9 @@ function commitCandidate(e, field, value, immediate) {
   if (e[count]>=2) {e[field]=value;e[count]=0;}
 }
 export function assignPersonality(e) {
-  if(e.behavior!=='ai' || e.personality) return;
+  if(e.behavior!=='ai')return;
+  if(!e.companionAffinity){const affinity=random('affinity');e.companionAffinity=affinity<.35?'social':affinity<.75?'neutral':'independent';}
+  if(e.personality)return;
   const r=random('ai');e.personality=r<.34?'growth':r<.67?'cautious':'opportunist';
 }
 export class Ecology {

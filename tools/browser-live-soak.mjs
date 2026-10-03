@@ -29,7 +29,7 @@ try {
    if(apex>this.balance.ecology.maxApex)s.violation=`apex cap ${apex}`;
    for(const group of this.allyLinks.groups.values()){
     if(group.members.size<2||group.members.size>6||!group.members.has(group.leader))s.violation='group membership';
-    for(const e of group.members)if(!e.alive||e.color!==group.color||e.companionGroup!==group.id)s.violation=`invalid member #${e.id}`;
+    for(const e of group.members)if(!e.alive||e.color!==group.color&&!(group.truceUntil>this.gameTime)||e.companionGroup!==group.id)s.violation=`invalid member #${e.id}`;
    }
    if(this.gameTime-s.lastCheck>=1){s.lastCheck=this.gameTime;for(const e of units){s.checks++;s.maxSize=Math.max(s.maxSize,e.size);for(const k of ['x','y','size','hp','maxHp','moveSpeed','facing'])if(!Number.isFinite(e[k]))s.violation=`nonfinite ${k} #${e.id}`;if(!(e.hp>0&&e.hp<=e.maxHp+1e-6))s.violation=`health #${e.id}`;if(e.companionGroup&&!this.allyLinks.groups.has(e.companionGroup))s.violation=`orphan #${e.id}`;}}
   };

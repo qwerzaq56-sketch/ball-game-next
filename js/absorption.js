@@ -40,8 +40,14 @@ export function cancelAbsorption(target) {
   target.absorptionRequired = 0;
 }
 
+export function absorptionGrowthFor(absorber,target,balance){
+ const ratio=balance.growth.growthToSizeRatio,efficiency=balance.absorption.areaEfficiency??.8;
+ const size=Math.sqrt(absorber.size*absorber.size+target.size*target.size*efficiency);
+ return Math.max(0,Math.pow(Math.max(0,size-absorber.baseSize)/ratio,2)-absorber.growth);
+}
+
 function completeAbsorption(absorber, target, game, balance) {
-  const gained = target.behavior === 'orb' ? target.growthValue : target.growth;
+  const gained = target.behavior === 'orb' ? target.growthValue : absorptionGrowthFor(absorber,target,balance);
   absorber.addGrowth(gained, balance);
   game.awardScore(absorber, gained);
   game.spawnAbsorptionParticles(target.x, target.y, target.colorHex);

@@ -36,6 +36,7 @@ export class UI {
     this.debugVisible = false;
     this.buildDebugPanel();
     this.ecologyUI = new EcologyUI(this);
+    document.getElementById('companion-invite').addEventListener('click',()=>{if(this.game&&!this.game.paused&&!this.game.gameOver){this.game.autoplay.setEnabled(false);this.game.allyLinks.offer(this.game.player);}});
     document.getElementById('companion-leave').addEventListener('click',()=>{if(this.game&&!this.game.paused&&this.game.player.companionGroup){this.game.autoplay.setEnabled(false);this.game.allyLinks.leave(this.game.player,'player-choice');}});
 
     window.addEventListener('keydown', (e) => {
@@ -134,6 +135,8 @@ export class UI {
     document.getElementById('region-text').textContent=game.biomes.status(player);
     const field=game.era.apocalypse;document.getElementById('era-text').textContent=game.era.status()+(field?field.active?' · 파멸 위험':' · 파멸 전조':'');
     this.updateEraBadge(game);
+    const invitation=document.getElementById('companion-invite'),wait=Math.ceil(Math.max(0,(player.inviteReadyAt??0)-game.gameTime));
+    invitation.textContent=game.allyLinks.truceUntil>game.gameTime?`동행 Q · 축제 ${Math.ceil(game.allyLinks.truceUntil-game.gameTime)}s`:wait?`동행 제안 ${wait}s`:'동행 제안 (Q)';invitation.disabled=game.paused||game.gameOver||wait>0||player.frozen>0||!!player.specialCast||player.attackState!=='READY'||player.dodgeState==='DODGING'||!!player.beingAbsorbedByRef;
     const neighbors=game.allyLinks.neighbors(player).length;
     const group=game.allyLinks.groups.get(player.companionGroup);
     document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${group?` · ${group.members.size}명 대열 · ${({challenge:"도전형",opportunity:"기회형",avoidance:"회피형"})[game.allyLinks.personality(group)]}`:''}`;
@@ -148,7 +151,7 @@ export class UI {
     this.killsText.textContent = player.kills;
     this.scoreText.textContent = Math.round(game.score);
     this.lifeText.textContent = Math.max(0, game.lives);
-    const names={cyan:'냉기 휘두르기',blue:'삼중 파도',green:'사기 진작',red:'전투 집결',yellow:'모래바람'};
+    const names={cyan:'냉기 휘두르기',blue:'삼중 파도',green:'사기 진작',red:'사냥 지휘',yellow:'모래바람'};
     const special=document.getElementById('special-text');
     if(special)special.textContent=player.apex?`E ${names[player.color]} · ${player.specialCast?'시전 중':player.specialCooldown>0?Math.ceil(player.specialCooldown)+'s':player.frozen>0?'빙결 중':player.attackState!=='READY'||player.dodgeState==='DODGING'?'행동 후 사용':'준비'}`:'';
     const roleText=document.getElementById("role-text");

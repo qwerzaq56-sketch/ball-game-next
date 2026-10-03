@@ -29,7 +29,7 @@ test('followers form up without combat and group dissolves when separated or dea
  a.x=1000;b.x=1100;a.companionCooldown=0;b.companionCooldown=0;g.allyLinks.refresh();g.allyLinks.join(b,a);a.alive=false;g.allyLinks.refresh();assert.equal(b.companionGroup,null);
 });
 test('player is the formation leader and formation entry/exit can occur probabilistically',()=>{
- const {g,a}=fixture();g.player.x=a.x;g.player.y=a.y;g.entities=[g.player,a];
+ const {g,a}=fixture();a.companionAffinity='neutral';g.player.x=a.x;g.player.y=a.y;g.entities=[g.player,a];
  let joinSeed;for(let s=0;s<100;s++){resetRandom(s);if(random('ai')<.18){joinSeed=s;break;}}
  resetRandom(joinSeed);g.allyLinks.update(0);assert(g.player.companionGroup);assert.equal(g.allyLinks.groups.get(a.companionGroup).leader,g.player);
  let leaveSeed;for(let s=0;s<100;s++){resetRandom(s);if(random('ai')<.08){leaveSeed=s;break;}}

@@ -181,7 +181,7 @@ export const RETALIATION_MEMORY = 3; // seconds an AI remembers its last attacke
 
 // v0.5: applyDamage now runs raw damage through Defense (spec §3) before it touches HP.
 export function applyDamage(target, rawDamage, game, attacker, balance, options = {}) {
-  if ((attacker && attacker.color===target.color) || target.invincible || !target.alive) return false;
+  if ((attacker && (attacker.color===target.color||attacker.companionGroup&&attacker.companionGroup===target.companionGroup)) || target.invincible || !target.alive) return false;
   if(options.kind!=='field' && game?.abilities?.miss(target)){game.spawnFloatingText(target.x,target.y-target.size/2,"MISS","#eab308");return false;}
   const bal = balance || (game && game.balance);
   const dmg = bal ? applyDefense(rawDamage, target.size, bal) : rawDamage;

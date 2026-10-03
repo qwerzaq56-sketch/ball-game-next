@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "genuineTouch": true,
+  "minimalUI": true,
+  "persisted": true,
+  "multitouchMovement": true,
+  "attackOnRelease": true,
+  "dodgeOnRelease": true,
+  "canvasAttackOnRelease": true,
+  "companionCanvasAttack": true,
+  "singleAttack": true,
+  "cancelPauseResizeNoFire": true,
+  "screenTapNoAttack": true,
+  "errors": []
+}

@@ -36,6 +36,7 @@
     ]
   },
   "absorption": {
+    "areaEfficiency": 0.8,
     "baseResistanceTime": 0.2,
     "resistancePerSize": 0.02,
     "baseMaintainDistance": 30,

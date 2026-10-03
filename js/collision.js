@@ -35,7 +35,7 @@ export function canAbsorb(absorber, target) {
 
 // Different-color combatants (orbs are passive resources, never hostile).
 export function isHostile(a, b) {
-  if (a.color === b.color) return false;
+  if (a.color === b.color || a.companionGroup && a.companionGroup===b.companionGroup) return false;
   if (a.behavior === 'orb' || b.behavior === 'orb') return false;
   return true;
 }

@@ -20,7 +20,7 @@ export class Autoplay {
   this.timer-=dt;this.dodgeWait=Math.max(0,this.dodgeWait-dt);if(this.timer>0)return;this.timer=.1;
   const candidates=g.getNearbyEntities(p,800).filter(e=>e.alive&&dist(p,e)<=800);
   const threats=candidates.filter(e=>e.behavior!=='orb'&&dist(p,e)<360&&(isHostile(p,e)&&e.size>=p.size*1.2||canAbsorb(e,p)));
-  const sand=g.abilities.fields.find(f=>f.owner.alive&&f.owner.apex&&f.owner.color!==p.color&&dist(p,f)<420);
+  const sand=g.abilities.fields.find(f=>f.owner.alive&&f.owner.apex&&isHostile(p,f.owner)&&dist(p,f)<420);
   const environment=g.biomes.danger(p);const danger=p.beingAbsorbedByRef??environment??sand??threats.sort((a,b)=>dist(p,a)-dist(p,b)||a.id-b.id)[0];
   let target,escape=!!danger;
   if(danger){const away=delta(danger,p);target={x:p.x+away.x,y:p.y+away.y};if(target.x===p.x&&target.y===p.y)target.x+=100;this.reason=`도주 · ${environment?.name??(sand?'모래바람':'위협')}`;}

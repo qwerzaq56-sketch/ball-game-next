@@ -67,7 +67,7 @@ test('MISS blocks damage and extra effects; invincibility does not consume rando
 });
 test('rally shares activation position and never automatically controls the player',()=>{
  const {g,p,t}=fixture('red');t.color='blue';const a=new AIEntity({x:p.x+20,y:p.y,color:'red',colorHex:'#f00',balance:g.balance,startSize:60});g.entities.push(a);a.attackStack=1;
- g.abilities.start(p,0);t.x+=100;t.y+=30;ticks(g,48);assert.equal(a.command.target,t);assert.deepEqual(a.command.point,{x:t.x,y:t.y});assert.equal(p.command,undefined);
+ g.abilities.start(p,0);t.x+=100;t.y+=30;ticks(g,48);assert.equal(a.command.target,t);assert.deepEqual(a.command.point,{x:p.x+100,y:p.y});assert.equal(p.command,undefined);
 });
 test('frozen owner cannot start actions and death removes owned buffs/commands/field',()=>{
  const {g,p,t}=fixture('green');p.frozen=1;assert.equal(g.abilities.start(p,0),false);assert.equal(canStartAttack(p),false);

@@ -243,7 +243,7 @@ export class Game {
     this.buildGrid();
     this.resolveConsumption();
     updateAbsorptions(this, dt, b);
-    this.resolvePushApart();
+    this.resolvePushApart(dt);
     this.clampAllToWorld();
     this.updateCamera(dt);
     this.updateParticles(dt);
@@ -341,7 +341,7 @@ export class Game {
     dx+=inp.touchMove?.x??0;dy+=inp.touchMove?.y??0;
     }
 
-    const moveSpeed=p.moveSpeed;
+    const moveSpeed=p.moveSpeed*this.abilities.speedMultiplier(p);
     const moving = dx !== 0 || dy !== 0;
     const moveAngle = moving ? Math.atan2(dy, dx) : p.facing;
 
@@ -415,16 +415,17 @@ export class Game {
   // movement collision; an in-progress attack CHARGE or a DODGE passes straight through so the
   // hitbox/i-frames keep working exactly as before (spec §18-2 explicitly separates "movement
   // collision" from "attack hitbox"). Orbs are unaffected — they stay simple passive pickups.
-  resolvePushApart() {
+  resolvePushApart(dt=1/60) {
+    const radius=this.entities.reduce((n,e)=>e.alive&&e.behavior!=='orb'?Math.max(n,e.size/2):n,0);
     for (const a of this.entities) {
       if (!a.alive || (a.behavior !== 'player' && a.behavior !== 'ai')) continue;
       if (a.attackState === 'CHARGING' || a.dodgeState === 'DODGING') continue;
 
-      const nearby = this.getNearbyEntities(a, a.size);
+      const nearby = this.getNearbyEntities(a, a.size/2+radius);
       for (const b of nearby) {
         if (a.id >= b.id) continue; // each pair resolved once
         if (!b.alive || (b.behavior !== 'player' && b.behavior !== 'ai')) continue;
-        if (a.color === b.color) continue; // same-color relationships go through absorption
+        if (!isHostile(a,b)) continue; // same-color relationships go through absorption
         if (b.attackState === 'CHARGING' || b.dodgeState === 'DODGING') continue;
 
         const d = dist(a, b);
@@ -432,7 +433,7 @@ export class Game {
         if (d >= minDist) continue;
 
         const angle = d > 0.001 ? angleTo(b,a) : random('physics') * Math.PI * 2;
-        const overlap = minDist - d;
+        const overlap = Math.min((minDist-d)*(1-Math.exp(-10*dt)),250*dt);
         const totalSize = a.size + b.size;
         a.x += Math.cos(angle) * overlap * (b.size / totalSize);
         a.y += Math.sin(angle) * overlap * (b.size / totalSize);

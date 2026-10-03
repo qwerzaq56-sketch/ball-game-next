@@ -1,6 +1,7 @@
 // Combined-runtime invariants with normal gameplay lives, not a survival guarantee.
 import assert from 'node:assert/strict';
 import {createGame} from './headless.mjs';
+import {isHostile} from '../js/collision.js';
 import {canStartAttack} from '../js/combat.js';
 const seconds=Number(process.argv[2]??3600),seeds=(process.argv[3]??'7,11,23').split(',').map(Number),fps=Number(process.argv[4]??60);
 assert(seconds>0&&seconds<=14400&&seeds.every(Number.isInteger)&&fps>=20&&fps<=120);
@@ -13,7 +14,7 @@ for(const seed of seeds){
   if(g.player.apex&&firstPlayerApex===null)firstPlayerApex=g.gameTime;
   for(const group of g.allyLinks.groups.values()){
    assert(group.members.size>=2&&group.members.size<=6&&group.members.has(group.leader),'group structure');
-   for(const e of group.members){assert(e.alive&&units.includes(e)&&e.color===group.color&&e.companionGroup===group.id,'group member');assert([...group.members].every(t=>t.color===e.color),'friendly group');assert(!units.some(t=>t.beingAbsorbedByRef===e),'peaceful outgoing absorption');}
+   for(const e of group.members){assert(e.alive&&units.includes(e)&&(e.color===group.color||group.truceUntil>g.gameTime)&&e.companionGroup===group.id,'group member');assert([...group.members].every(t=>!isHostile(e,t)),'friendly group');assert(!units.some(t=>t.beingAbsorbedByRef===e),'peaceful outgoing absorption');}
   }
   if(frames%fps===0){
    for(const e of units){checks++;maxSize=Math.max(maxSize,e.size);for(const key of ['x','y','size','hp','maxHp','moveSpeed','facing'])assert(Number.isFinite(e[key]),`${key} finite #${e.id}`);assert(e.hp>0&&e.hp<=e.maxHp+1e-6,'health');assert(e.x>=0&&e.x<=g.balance.world.worldWidth&&e.y>=0&&e.y<=g.balance.world.worldHeight,'world center');if(e.companionGroup)assert(g.allyLinks.groups.has(e.companionGroup),'orphan');}

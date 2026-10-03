@@ -682,3 +682,8 @@ body.mobile-minimal #hud > #era-status {display:flex;}
 }
 
 @media (pointer:fine) { body:not(.mobile-minimal) #live-ranking {top:54px;} }
+
+body.mobile-minimal .hud-controls > #companion-invite {display:block;font-size:10px;min-height:26px;padding:3px 6px;}
+/* Keep invitation outside the compact HUD's row flow. */
+body.mobile-minimal .hud-controls > #companion-invite {position:fixed;right:max(8px,env(safe-area-inset-right));top:calc(max(8px,env(safe-area-inset-top)) + 44px);max-width:110px;pointer-events:auto;}
+body.mobile-minimal #hud > .hud-controls {backdrop-filter:none;-webkit-backdrop-filter:none;}

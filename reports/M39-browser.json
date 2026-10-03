@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "keyboardInvitation": true,
+  "mixedColorEvent": true,
+  "redMarks": {
+    "count": 2,
+    "speed": 1.25,
+    "damage": 1.35,
+    "command": "rally"
+  },
+  "geometry": {
+    "absorbedSize": 122.96340919151517,
+    "firstFramePush": 2.083333333333485
+  },
+  "mobileInvitation": true,
+  "mobileHudHeight": 74,
+  "errors": []
+}
