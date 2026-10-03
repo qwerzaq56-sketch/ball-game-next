@@ -12,7 +12,7 @@
 <body>
   <div id="player-info" style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="player-identity"></span> · <span id="era-text"></span> · <span id="region-text"></span> · <span id="role-text"></span> · <span id="special-text"></span></div>
   <canvas id="game-canvas" tabindex="-1"></canvas>
-  <div id="build-id">NEXT · M56</div>
+  <div id="build-id">NEXT · M57</div>
 
   <dialog id="player-setup" aria-labelledby="player-setup-title">
     <form id="player-setup-form">
@@ -75,7 +75,7 @@
 
   <nav id="minimal-tools"><span id="play-time">플레이 0:00</span><button id="quick-map" type="button">지도</button><button id="quick-ecology" type="button">생태계</button><button id="quick-balance" type="button">분석</button><button id="quick-ranking" type="button">순위</button></nav>
   <aside id="live-ranking" class="observer-panel" aria-label="실시간 순위">
-    <div class="observer-heading"><strong>TOP 10</strong><button id="ranking-layout" type="button">풀</button><div class="ranking-modes" role="group" aria-label="순위 기준"><button id="ranking-mode-score" type="button" aria-pressed="true">점수</button><button id="ranking-mode-size" type="button" aria-pressed="false">크기</button></div></div>
+    <div class="observer-heading"><strong>TOP 10</strong><button id="ranking-layout" type="button" title="순위 표시: 바 → 축약 → 전체" aria-label="순위 표시 크기 전환">풀</button><div class="ranking-modes" role="group" aria-label="순위 기준"><button id="ranking-mode-score" type="button" aria-pressed="true">점수</button><button id="ranking-mode-size" type="button" aria-pressed="false">크기</button></div></div>
     <ol id="live-ranking-list"></ol>
     <div id="my-rank"></div>
   </aside>
@@ -123,12 +123,12 @@
   <div id="mobile-orientation-hint">가로로 돌리면 더 넓게 플레이할 수 있어요</div>
   <div id="touch-controls" aria-label="터치 게임 조작">
     <div id="touch-stick" role="group" aria-label="이동 조이스틱"><span id="touch-knob"></span><span class="touch-label">이동</span></div>
-    <div id="touch-actions"><button id="touch-ultimate" type="button" aria-label="최상위 R 스킬">R 스킬</button><button id="touch-special" type="button" aria-label="특수능력">E 스킬</button><button id="touch-dodge" type="button" aria-label="회피">회피</button><button id="touch-attack" type="button" aria-label="드래그 조준 후 손을 떼면 공격">조준<br>공격</button></div>
+    <div id="touch-actions"><button id="touch-absorb" type="button" aria-pressed="false">흡수 OFF</button><button id="touch-ultimate" type="button" aria-label="최상위 R 스킬">R 스킬</button><button id="touch-special" type="button" aria-label="특수능력">E 스킬</button><button id="touch-dodge" type="button" aria-label="회피">회피</button><button id="touch-attack" type="button" aria-label="드래그 조준 후 손을 떼면 공격">조준<br>공격</button></div>
   </div>
   <dialog id="play-help" aria-labelledby="play-help-title">
     <div class="help-heading"><h2 id="play-help-title">플레이 안내</h2><button id="help-close" class="hud-btn" type="button">닫기 · Esc</button></div>
     <p>먹이를 먹고 성장하세요. <strong>크기</strong>는 흡수·전투·최상위 직위를 결정하고, <strong>점수</strong>는 플레이 기록입니다. TOP 10에서 두 순위를 바꿔 볼 수 있습니다.</p>
-    <dl class="help-controls"><dt>WASD / 방향키</dt><dd>이동</dd><dt>마우스 / 좌클릭</dt><dd>조준 / 공격</dd><dt>Space</dt><dd>회피</dd><dt>E / R</dt><dd>크기 100부터 일반 E / 최상위 직위 보유 시 R</dd><dt>Q</dt><dd>동행 제안 (우정 축제에는 다른 색도 가능)</dd><dt>G</dt><dd>동행 이탈</dd><dt>U</dt><dd>최소 / 전체 UI 전환</dd><dt>P / H</dt><dd>일시정지 / 안내</dd></dl>
+    <dl class="help-controls"><dt>WASD / 방향키</dt><dd>이동</dd><dt>마우스 / 좌클릭</dt><dd>조준 / 누르고 충전 후 떼면 공격</dd><dt>우클릭 유지 / 모바일 흡수 버튼</dt><dd>동족 흡수 활성화 / 모바일 켜기·끄기</dd><dt>Space</dt><dd>회피</dd><dt>E / R</dt><dd>크기 100부터 일반 E / 최상위 직위 보유 시 R</dd><dt>Q</dt><dd>동행 제안 (우정 축제에는 다른 색도 가능)</dd><dt>G</dt><dd>동행 이탈</dd><dt>U</dt><dd>최소 / 전체 UI 전환</dd><dt>P / H</dt><dd>일시정지 / 안내</dd></dl>
     <p>터치 화면에서는 왼쪽 조이스틱으로 이동하고 화면을 터치해 조준합니다. 공격·회피 버튼을 드래그해 방향을 정하고 손을 떼면 실행합니다. 버튼 위 숫자는 남은 충전/최대 충전, 아래 막대는 다음 충전 진행률입니다. 빈 화면에서도 8px 이상 드래그 후 손을 떼면 공격합니다. 취소된 터치는 실행하지 않습니다. 맵의 좌우·상하 끝은 서로 이어집니다. 가로 화면을 권장하며 폰 회전에 맞춰 배치가 자동 전환됩니다. Safari에서는 공유 → 홈 화면에 추가로 실행하면 브라우저 표시줄 없이 플레이할 수 있습니다. 흰색 화살표는 캐릭터 중심에서 조준 방향을 표시합니다. 상단 ‘전체 UI / 최소 UI’로 표시량을 바꿀 수 있습니다. E 버튼은 누르면 실행합니다. 동행 중에는 HUD의 ‘동행 이탈’ 버튼으로 나갑니다.</p>
     <h3>시기와 지역 탐험</h3>
     <p>영양기·경쟁기·전쟁기·쇠퇴기가 순환합니다. 전쟁기에는 전투 가능한 AI가 전선으로 이동하고, 쇠퇴기의 파멸 조우는 노란 전조 후 붉은 위험 범위가 됩니다. 미리 벗어나고 종료 후 보상을 찾아보세요.</p>
@@ -145,7 +145,7 @@
   </dialog>
 
   <div id="controls-hint">
-    WASD 이동 · 좌클릭 공격 · Space 회피 · E 성장 스킬 · R 최상위 스킬 · Q 동행 제안 · G 동행 이탈 · P 일시정지 · H 안내 · U 최소 UI · F1–F4 디버그
+    WASD 이동 · 좌클릭 충전·떼면 공격 · 우클릭 유지 흡수 · Space 회피 · E 성장 스킬 · R 최상위 스킬 · Q 동행 제안 · G 동행 이탈 · P 일시정지 · H 안내 · U 최소 UI · F1–F4 디버그
   </div>
 
   <script type="module" src="js/main.js"></script>

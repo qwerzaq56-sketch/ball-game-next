@@ -4,13 +4,14 @@ export class TouchControls {
   constructor(game,input,canvas) {
     this.game=game;this.input=input;this.canvas=canvas;this.pointers=new Map();this.gestures=new Map();
     const toggle=document.getElementById('mobile-ui-toggle');
-    const coarse=window.matchMedia('(pointer:coarse)').matches,key=coarse?'ball-mobile-minimal':'ball-desktop-minimal';
+    const coarse=window.matchMedia('(pointer:coarse)').matches;input.touchMode=coarse;const key=coarse?'ball-mobile-minimal':'ball-desktop-minimal';
     let minimal=coarse;try{const saved=localStorage.getItem(key);if(saved!==null)minimal=saved==='true';}catch{}
     const apply=()=>{document.body.classList.toggle('mobile-minimal',minimal);toggle.textContent=minimal?'전체 UI':'최소 UI';toggle.setAttribute('aria-pressed',String(minimal));};
     const switchUI=()=>{minimal=!minimal;apply();try{localStorage.setItem(key,String(minimal));}catch{}};
     apply();toggle.addEventListener('click',switchUI);
     window.addEventListener('keydown',e=>{if(e.code==='KeyU'&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!['INPUT','TEXTAREA','SELECT'].includes(e.target?.tagName)&&!document.querySelector('dialog[open]')){e.preventDefault();switchUI();}});
     this.root=document.getElementById('touch-controls');
+    this.absorb=document.getElementById('touch-absorb');this.absorb.addEventListener('click',()=>{if(!this.blocked())input.absorbToggle=!input.absorbToggle;});
     this.stick=document.getElementById('touch-stick');this.knob=document.getElementById('touch-knob');
     this.attack=document.getElementById('touch-attack');this.dodge=document.getElementById('touch-dodge');this.special=document.getElementById('touch-special');this.ultimate=document.getElementById('touch-ultimate');
     this.stick.addEventListener('pointerdown',e=>{
@@ -22,7 +23,7 @@ export class TouchControls {
       button.addEventListener('pointerdown',e=>{
         if(e.pointerType==='mouse'||this.blocked()||button.disabled||(kind!=='special'&&this.gestures.size))return;
         e.preventDefault();button.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,kind);
-        if(kind==='attack'||kind==='dodge'||kind==='ultimate'){this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,kind});this.aim(e);}
+        if(kind==='attack'||kind==='dodge'||kind==='ultimate'){this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,kind,started:game.gameTime});this.aim(e);}
         if(kind==='special')input._specialQueued=true;
       });
     }
@@ -34,7 +35,7 @@ export class TouchControls {
     canvas.addEventListener('pointerdown',e=>{
       if(e.pointerType!=='touch'||this.blocked()||!game.player.attackUnlocked||this.gestures.size)return;
       e.preventDefault();canvas.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,'attack');
-      this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,canvas:true,kind:"attack"});this.aim(e);
+      this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,canvas:true,kind:"attack",started:game.gameTime});this.aim(e);
     });
     window.addEventListener('blur',()=>this.clear());
     window.addEventListener('resize',()=>this.clear());
@@ -59,15 +60,15 @@ export class TouchControls {
   showAim(angle,kind,distance=180){
     const p=this.game.worldToScreen(this.game.player.x,this.game.player.y);
     this.input.mouseX=p.x+Math.cos(angle)*180;this.input.mouseY=p.y+Math.sin(angle)*180;
-    this.game.touchAim={angle,kind};
+    this.game.touchAim={angle,kind,chargeSeconds:kind==='attack'?Math.max(0,this.game.gameTime-(this.gestures.values().next().value?.started??this.game.gameTime)):0};
     if(kind==='ultimate'){const player=this.game.player,point=this.game.abilities.aimPoint(player,angle,{x:player.x+Math.cos(angle)*distance/this.game.camera.zoom,y:player.y+Math.sin(angle)*distance/this.game.camera.zoom}),screen=this.game.worldToScreen(point.x,point.y);this.input.mouseX=screen.x;this.input.mouseY=screen.y;this.game.touchAim.point=point;}
   }
   release(id,fire=false){
     const kind=this.pointers.get(id);if(!kind)return;this.pointers.delete(id);
     const gesture=this.gestures.get(id);this.gestures.delete(id);
-    if(gesture&&fire&&!this.blocked()&&(!gesture.canvas||gesture.dragged)){
+    if(gesture&&fire&&!this.blocked()&&(!gesture.canvas||gesture.dragged||this.game.gameTime-gesture.started>=.15)){
       if(kind==='ultimate'&&!touchActionFeedback(this.game,kind).disabled)this.input._ultimateQueued={angle:gesture.angle,point:{...this.game.touchAim.point}};
-      if(kind==='attack')this.input._attackQueued=gesture.angle;
+      if(kind==='attack')this.input._attackQueued={angle:gesture.angle,charge:Math.min(1,(this.game.gameTime-gesture.started)/(this.game.balance.attack.manualChargeSeconds??1.5))};
       if(kind==='dodge'){this.input._dodgeAngle=gesture.angle;this.input._dodgeQueued=true;}
     }
     if(!this.gestures.size)this.game.touchAim=null;
@@ -76,7 +77,7 @@ export class TouchControls {
   }
   clear(){
     for(const id of [...this.pointers.keys()])this.release(id);
-    this.input.touchMove={x:0,y:0};this.input.mouseDown=false;this.input._dodgeQueued=false;this.input._dodgeAngle=null;this.input._attackQueued=null;this.input._specialQueued=false;this.input._ultimateQueued=false;
+    this.input.touchMove={x:0,y:0};this.input.mouseDown=false;this.input.absorbHeld=false;this.input.attackChargeSeconds=0;this.input._dodgeQueued=false;this.input._dodgeAngle=null;this.input._attackQueued=null;this.input._specialQueued=false;this.input._ultimateQueued=false;
   }
   update(){
     const fresh=this.lastHistory!==this.game.apexHistory;
@@ -84,6 +85,7 @@ export class TouchControls {
     this.lastHistory=this.game.apexHistory;this.wasPaused=this.game.paused;
     const gesture=this.gestures.values().next().value;if(gesture)this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180);
     const p=this.game.player,blocked=this.blocked();
+    this.absorb.disabled=blocked;this.absorb.textContent=this.input.absorbToggle?'흡수 ON':'흡수 OFF';this.absorb.setAttribute('aria-pressed',String(!!this.input.absorbToggle));
     for(const [button,kind]of [[this.attack,'attack'],[this.dodge,'dodge'],[this.special,'special'],[this.ultimate,'ultimate']]){
       const feedback=touchActionFeedback(this.game,kind);
       button.disabled=feedback.disabled;

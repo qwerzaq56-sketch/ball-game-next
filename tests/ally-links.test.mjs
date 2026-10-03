@@ -94,7 +94,7 @@ test('followers keep offsets inside the free band and ease back beyond it',()=>{
  member.x=target.x+30;member.y=target.y;const x=member.x;g.allyLinks.move(member,.1);assert.equal(member.x,x);
  member.x=target.x-120;const start=member.x;g.allyLinks.move(member,.1);assert(member.x>start);assert(member.x<target.x-60);
  assert(Math.hypot(member.companionVelocity.x,member.companionVelocity.y)<=member.moveSpeed*1.6+1e-8);
- lead.companionVelocity={x:90,y:0};member.x=target.x;member.y=target.y;const before=member.x;g.allyLinks.move(member,.1);assert.equal(member.x-before,9);
+ lead.companionVelocity={x:90,y:0};member.x=target.x;member.y=target.y;const before=member.x;g.allyLinks.move(member,.1);assert(Math.abs(member.x-before-5.85)<1e-8);
 });
 test('a player-led spring formation keeps up through consecutive simulation frames',()=>{
  const {g,a,b}=fixture(),p=g.player;g.entities=[p,a,b];p.size=80;p.x=2500;p.y=2500;

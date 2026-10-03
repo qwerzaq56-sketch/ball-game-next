@@ -1,0 +1,22 @@
+{
+  "result": "PASS",
+  "status": "6실행 · 726개체 표본 · M57 blue/green normal-life survival autoplay, all living AI; 30Hz, 5s observations; autoplay uses instant uncharged attacks, not human charge timing · 보상/심각도는 조건부 평균, 피해는 전체 노출 평균",
+  "charts": [
+    "해당 크기가 관측된 평균 진행시간 · 초 (20초 구간 추정)",
+    "크기 구간에서 보낸 관찰 시간 (개체·초)",
+    "평균 크기 · 직경",
+    "먹이·흡수·사냥 중 충분한 성장 기회 · %",
+    "먹이 성장 기회 노출 · %",
+    "위기 노출 · %",
+    "새 먹이 성장 기회 · 개체·분당",
+    "새 위기 · 개체·분당",
+    "먹이 기회 1회 평균 보상 · 직경",
+    "실제 받은 피해 · HP%/개체 표본",
+    "위기 상대 심각도 · 0~1",
+    "실제 성장 속도 · 직경/초"
+  ],
+  "currentSixRuns": true,
+  "bandFilters": true,
+  "legacyDataset": true,
+  "errors": []
+}

@@ -331,10 +331,11 @@ export class UI {
     span.textContent = 'Ally Absorption (아군 흡수)';
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
-    checkbox.checked = true; // matches Player's default (player.js)
+    checkbox.checked = false; // matches Player's default (player.js)
     checkbox.addEventListener('change', () => {
-      if (this.game) this.game.player.allyAbsorptionEnabled = checkbox.checked;
+      if(this.game?.input.touchMode)this.game.input.absorbToggle=checkbox.checked;
     });
+    checkbox.title='PC는 우클릭 유지, 모바일은 흡수 버튼으로 전환';checkbox.disabled=!window.matchMedia('(pointer:coarse)').matches;
     this.allyAbsorbCheckbox = checkbox;
     row.appendChild(span);
     row.appendChild(checkbox);

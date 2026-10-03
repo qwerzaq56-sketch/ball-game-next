@@ -56,13 +56,14 @@ export class Biomes {
  playerCanSee(e){return e===this.game.player||dist(this.game.player,e)-(e.size??0)/2<=this.playerSightRadius()*2;}
  drawBlizzardOverlay(ctx){
   const radius=this.playerSightRadius();if(!Number.isFinite(radius))return;const g=this.game,p=g.worldToScreen(g.player.x,g.player.y),r=radius*g.camera.zoom;
-  // Snapshot once per frame; blur only the surrounding annulus, keeping the player clear.
-  this.fogCanvas??=document.createElement('canvas');const layer=this.fogCanvas;
-  if(layer.width!==g.canvas.width||layer.height!==g.canvas.height){layer.width=g.canvas.width;layer.height=g.canvas.height;}
-  const c=layer.getContext('2d');c.clearRect(0,0,layer.width,layer.height);c.save();c.filter='blur(5px)';c.drawImage(g.canvas,0,0);c.restore();
-  c.globalCompositeOperation='destination-in';const mask=c.createRadialGradient(p.x,p.y,r*.4,p.x,p.y,r*2);mask.addColorStop(0,'transparent');mask.addColorStop(.35,'white');mask.addColorStop(1,'white');c.fillStyle=mask;c.fillRect(0,0,layer.width,layer.height);c.globalCompositeOperation='source-over';
+  // Quarter-resolution resampling softens the surroundings without a full-screen blur filter.
+  this.fogCanvas??=document.createElement('canvas');const layer=this.fogCanvas,scale=.25;
+  const width=Math.ceil(g.canvas.width*scale),height=Math.ceil(g.canvas.height*scale);
+  if(layer.width!==width||layer.height!==height){layer.width=width;layer.height=height;}
+  const c=layer.getContext('2d');c.clearRect(0,0,width,height);c.drawImage(g.canvas,0,0,width,height);
+  c.globalCompositeOperation='destination-in';const mask=c.createRadialGradient(p.x*scale,p.y*scale,r*.4*scale,p.x*scale,p.y*scale,r*2*scale);mask.addColorStop(0,'transparent');mask.addColorStop(.35,'white');mask.addColorStop(1,'white');c.fillStyle=mask;c.fillRect(0,0,width,height);c.globalCompositeOperation='source-over';
   const fog=ctx.createRadialGradient(p.x,p.y,r*.4,p.x,p.y,r*2);fog.addColorStop(0,'rgba(224,235,247,0)');fog.addColorStop(.35,'rgba(224,235,247,.18)');fog.addColorStop(.75,'rgba(148,169,190,.48)');fog.addColorStop(1,'rgba(39,55,71,.88)');
-  ctx.save();ctx.drawImage(layer,0,0);ctx.fillStyle=fog;ctx.fillRect(0,0,g.canvas.width,g.canvas.height);ctx.restore();
+  ctx.save();ctx.imageSmoothingEnabled=true;ctx.drawImage(layer,0,0,g.canvas.width,g.canvas.height);ctx.fillStyle=fog;ctx.fillRect(0,0,g.canvas.width,g.canvas.height);ctx.restore();
  }
  sensingRange(e,base=this.game.balance.ai.detectionRange){return this.regionAt(e)?.id==='snow'&&this.blizzard()?base*.65:base;}
  hazards(){return [...this.rivers,...(this.game.era?.apocalypse?[this.game.era.apocalypse]:[])];}

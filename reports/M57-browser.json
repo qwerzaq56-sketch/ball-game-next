@@ -1,0 +1,35 @@
+{
+  "result": "PASS",
+  "focus": {
+    "active": "player-start",
+    "log": [
+      "player-start"
+    ]
+  },
+  "holding": "READY",
+  "released": {
+    "power": 1.3333333333333333,
+    "held": true
+  },
+  "fullPower": 2,
+  "rank": {
+    "width": 30.40625,
+    "height": 24,
+    "star": "★",
+    "visible": true
+  },
+  "perf": {
+    "before": {
+      "mean": 30.835000000149012,
+      "p95": 45.400000005960464
+    },
+    "after": {
+      "mean": 12.189999999850988,
+      "p95": 27.299999997019768
+    },
+    "layerPixels": 57600,
+    "screenPixels": 921600
+  },
+  "mobileAbsorb": true,
+  "errors": []
+}

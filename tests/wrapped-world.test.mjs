@@ -21,7 +21,7 @@ test('wrapped neighbors, overlap and combat agree on shortest directions across 
 });
 test('food pickup and absorption pull use the short path at the seam',()=>{
  const g=legacyWorld(),p=g.player;p.x=4995;p.y=2500;p.size=80;const food=spawnOrb(g.balance,{x:5,y:2500});g.entities=[p,food];g.buildGrid();g.resolveConsumption();assert.equal(food.alive,false);
- p.size=100;const target=actor(g,5,2500,p.color);target.beingAbsorbedByRef=p;target.absorptionRequired=100;target.absorptionProgress=0;g.entities=[p,target];updateAbsorptions(g,.1,g.balance);assert(target.x<5);assert(target.absorptionProgress>0);
+ p.size=100;p.allyAbsorptionEnabled=true;const target=actor(g,5,2500,p.color);target.beingAbsorbedByRef=p;target.absorptionRequired=100;target.absorptionProgress=0;g.entities=[p,target];updateAbsorptions(g,.1,g.balance);assert(target.x<5);assert(target.absorptionProgress>0);
 });
 test('same-color links and peaceful formations stay connected across the map seam',()=>{
  const g=legacyWorld(),a=actor(g,4990),b=actor(g,40);g.entities=[a,b];g.allyLinks.refresh();assert.equal(g.allyLinks.edges.size,1);assert(g.allyLinks.join(a,b));g.allyLinks.refresh();assert.equal(g.allyLinks.groups.size,1);

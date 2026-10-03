@@ -1,0 +1,162 @@
+[
+  {
+    "variant": "M57-blue",
+    "band": "20\u201339",
+    "samples": 2807,
+    "seconds": 9840.000000001188,
+    "time": 251.35375846099038,
+    "opportunity": 73.28108300676878,
+    "risk": 18.346989668685428,
+    "hp": 10.059359285782197
+  },
+  {
+    "variant": "M57-blue",
+    "band": "40\u201379",
+    "samples": 9292,
+    "seconds": 45850.000000004366,
+    "time": 221.22040464916057,
+    "opportunity": 59.78260869565217,
+    "risk": 25.860955660783468,
+    "hp": 7.815541888210807
+  },
+  {
+    "variant": "M57-blue",
+    "band": "80\u2013159",
+    "samples": 3771,
+    "seconds": 18730.00000000219,
+    "time": 220.5913550782286,
+    "opportunity": 31.026252983293556,
+    "risk": 21.5062317687616,
+    "hp": 5.621012474768564
+  },
+  {
+    "variant": "M57-blue",
+    "band": "160\u2013399",
+    "samples": 3956,
+    "seconds": 19515.000000006745,
+    "time": 375.1870576339737,
+    "opportunity": 11.501516683518705,
+    "risk": 9.55510616784631,
+    "hp": 3.117405710862436
+  },
+  {
+    "variant": "M57-blue",
+    "band": "400\u2013499",
+    "samples": 532,
+    "seconds": 2659.9999999993775,
+    "time": 525.1503759398496,
+    "opportunity": 3.3834586466165413,
+    "risk": 7.518796992481203,
+    "hp": 2.2044861534091487
+  },
+  {
+    "variant": "M57-blue",
+    "band": "500\u2013799",
+    "samples": 32,
+    "seconds": 159.99999999996015,
+    "time": 534.375,
+    "opportunity": 6.25,
+    "risk": 6.25,
+    "hp": 0.32012327085605724
+  },
+  {
+    "variant": "M57-blue",
+    "band": "800\u20131499",
+    "samples": 0,
+    "seconds": 0,
+    "time": null,
+    "opportunity": null,
+    "risk": null,
+    "hp": null
+  },
+  {
+    "variant": "M57-blue",
+    "band": "1500+",
+    "samples": 0,
+    "seconds": 0,
+    "time": null,
+    "opportunity": null,
+    "risk": null,
+    "hp": null
+  },
+  {
+    "variant": "M57-green",
+    "band": "20\u201339",
+    "samples": 2674,
+    "seconds": 9270.000000001208,
+    "time": 247.3522812266268,
+    "opportunity": 74.3829468960359,
+    "risk": 16.080777860882574,
+    "hp": 10.749431438385985
+  },
+  {
+    "variant": "M57-green",
+    "band": "40\u201379",
+    "samples": 9268,
+    "seconds": 45665.000000004635,
+    "time": 216.52999568407424,
+    "opportunity": 58.22183858437635,
+    "risk": 25.129477772982305,
+    "hp": 7.414848561760423
+  },
+  {
+    "variant": "M57-green",
+    "band": "80\u2013159",
+    "samples": 3761,
+    "seconds": 18710.000000001906,
+    "time": 230.28715767083222,
+    "opportunity": 28.955065142249403,
+    "risk": 20.52645572985908,
+    "hp": 4.850402419155788
+  },
+  {
+    "variant": "M57-green",
+    "band": "160\u2013399",
+    "samples": 3830,
+    "seconds": 18820.00000000792,
+    "time": 368.30809399477806,
+    "opportunity": 11.070496083550914,
+    "risk": 10.809399477806789,
+    "hp": 3.320162560399033
+  },
+  {
+    "variant": "M57-green",
+    "band": "400\u2013499",
+    "samples": 668,
+    "seconds": 3329.9999999995384,
+    "time": 514.5808383233533,
+    "opportunity": 4.790419161676647,
+    "risk": 6.736526946107785,
+    "hp": 2.7659712990052805
+  },
+  {
+    "variant": "M57-green",
+    "band": "500\u2013799",
+    "samples": 107,
+    "seconds": 534.9999999998133,
+    "time": 540.4672897196261,
+    "opportunity": 4.672897196261682,
+    "risk": 3.7383177570093453,
+    "hp": 2.078895499378748
+  },
+  {
+    "variant": "M57-green",
+    "band": "800\u20131499",
+    "samples": 0,
+    "seconds": 0,
+    "time": null,
+    "opportunity": null,
+    "risk": null,
+    "hp": null
+  },
+  {
+    "variant": "M57-green",
+    "band": "1500+",
+    "samples": 0,
+    "seconds": 0,
+    "time": null,
+    "opportunity": null,
+    "risk": null,
+    "hp": null
+  }
+]

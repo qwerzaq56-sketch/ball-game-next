@@ -711,3 +711,9 @@ body.mobile-minimal #debug-panel{z-index:20}
  #touch-dodge { grid-column:1 / span 2;grid-row:2;min-height:48px!important;border-radius:28px!important; }
  #touch-attack { grid-column:3;grid-row:1 / span 2; }
 }
+
+/* Keep the ranking layout switch small, including coarse-pointer global button rules. */
+#ranking-layout{font-size:10px;padding:2px 5px;min-width:26px!important;min-height:24px!important;line-height:1.1;margin:0;flex:0 0 auto}
+.rank-apex{color:#facc15;font-size:12px;flex:0 0 12px;text-shadow:0 0 5px #facc1588}
+#touch-absorb{position:absolute;left:-64px;bottom:0;width:56px;font-size:11px!important;min-height:32px!important;border-radius:14px!important}
+#touch-absorb[aria-pressed="true"]{border-color:#86efac;background:#14532d}

@@ -1,4 +1,4 @@
-import {canStartAttack,startAttack,attackChargeDistanceForSize,dodgeDistanceForSize} from './combat.js';
+import {canStartAttack,startAttack,canStartDodge,startDodge,attackChargeDistanceForSize,dodgeDistanceForSize} from './combat.js';
 import {attackReach} from './abilities.js';
 import {delta,angleTo,near} from './topology.js';
 import {worldView,segmentInView} from './renderVisibility.js';
@@ -66,10 +66,11 @@ export class AllyLinks {
   if(dist(e,target)<=attackReach(e,this.game.balance)+(e.size+target.size)/2&&canStartAttack(e))startAttack(e,angle,this.game.balance);
   return true;
  }
+ inviteRange(owner){return Math.max(280,this.game.balance.ai.detectionRange*.65+Math.max(0,owner.size-40)*.65);}
  offer(owner){
   if(this.game.paused||this.game.gameOver||!unit(owner)||owner.frozen>0||owner.attackState!=='READY'||owner.dodgeState==='DODGING'||owner.specialCast||owner.beingAbsorbedByRef||(owner.inviteReadyAt??0)>this.game.gameTime)return false;
-  owner.inviteReadyAt=this.game.gameTime+8;owner.inviteFlashUntil=this.game.gameTime+.8;let accepted=0;
-  for(const target of this.game.getNearbyEntities(owner,280).filter(t=>unit(t)&&t!==owner&&!t.companionGroup&&!t.beingAbsorbedByRef&&dist(owner,t)<=280&&(t.color===owner.color||this.truceUntil>this.game.gameTime)).sort((a,b)=>dist(owner,a)-dist(owner,b)||a.id-b.id).slice(0,3)){
+  owner.inviteReadyAt=this.game.gameTime+8;owner.inviteFlashUntil=this.game.gameTime+.8;let accepted=0;const range=this.inviteRange(owner);
+  for(const target of this.game.getNearbyEntities(owner,range).filter(t=>unit(t)&&t!==owner&&!t.companionGroup&&!t.beingAbsorbedByRef&&dist(owner,t)<=range&&(t.color===owner.color||this.truceUntil>this.game.gameTime)).sort((a,b)=>dist(owner,a)-dist(owner,b)||a.id-b.id).slice(0,3)){
    if(random('ai')<affinity(target).accept&&this.recruit(owner,target,target.color!==owner.color))accepted++;
   }
   this.game.spawnFloatingText(owner.x,owner.y-owner.size/2-30,accepted?`동행 제안 · ${accepted}명 수락`:'동행 제안 · 수락 없음','#c4b5fd');return true;
@@ -150,21 +151,28 @@ export class AllyLinks {
   const gap=(lead.size+e.size)/2+35,side=(i%2?1:-1)*(25+Math.floor(i/2)*30);
   const w=this.game.balance.world;
   const point={x:boundCenter(lead.x+Math.cos(back)*gap-Math.sin(back)*side,e.size,w.worldWidth,w.wrap),y:boundCenter(lead.y+Math.sin(back)*gap+Math.cos(back)*side,e.size,w.worldHeight,w.wrap)};
-  const route=this.game.biomes.routePoint(e,point),d=dist(e,route);
-  const free=ALLY_RULES.freeRadius+Math.min(40,e.size*.1);
-  const spring=d>free?(d-free)*(1-Math.exp(-ALLY_RULES.spring*dt))/Math.max(dt,1e-8):0;
+  const route={...this.game.biomes.routePoint(e,point)};
+  const baseDistance=dist(e,route);
+  const free=ALLY_RULES.freeRadius+Math.min(80,lead.size*.12),phase=this.game.gameTime*.8+e.id*1.618;
+  const offset=Math.min(45,free*.4),sway={x:Math.cos(phase)*offset,y:Math.sin(phase*.73)*offset};route.x+=sway.x;route.y+=sway.y;
+  const gapToLead=dist(e,lead)-(e.size+lead.size)/2;
+  if(gapToLead>this.tether(group)*.72&&canStartDodge(e)&&!this.game.biomes.danger(e)){startDodge(e,angleTo(e,lead),this.game.balance);return true;}
+  const d=dist(e,route);
+  const spring=baseDistance>free&&d>free?(d-free)*(1-Math.exp(-ALLY_RULES.spring*dt))/Math.max(dt,1e-8):0;
   const velocity=lead.companionVelocity??{x:0,y:0};
-  const toward=delta(e,route);let vx=velocity.x+(d>0?toward.x/d*spring:0),vy=velocity.y+(d>0?toward.y/d*spring:0);
+  const toward=delta(e,route);let vx=velocity.x*.65+(d>0?toward.x/d*spring:0),vy=velocity.y*.65+(d>0?toward.y/d*spring:0);
   const speed=Math.hypot(vx,vy),cap=moveSpeed*ALLY_RULES.catchup;
   if(speed>cap){vx*=cap/speed;vy*=cap/speed;}
   e.companionVelocity={x:vx,y:vy};if(speed>1)e.facing=Math.atan2(vy,vx);
   e.x+=vx*dt;e.y+=vy*dt;return true;
  }
- draw(ctx,zoom){for(const e of this.game.entities)if(e.alive&&e.inviteFlashUntil>this.game.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,280,0,Math.PI*2);ctx.strokeStyle='rgba(196,181,253,.65)';ctx.lineWidth=2/zoom;ctx.stroke();ctx.restore();}const view=worldView(this.game.canvas,this.game.renderCamera??this.game.camera);ctx.save();ctx.lineWidth=2/zoom;for(const [a,b]of this.edges.values()){
+ draw(ctx,zoom){for(const e of this.game.entities)if(e.alive&&e.inviteFlashUntil>this.game.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,this.inviteRange(e),0,Math.PI*2);ctx.strokeStyle='rgba(196,181,253,.65)';ctx.lineWidth=2/zoom;ctx.stroke();ctx.restore();}const view=worldView(this.game.canvas,this.game.renderCamera??this.game.camera);ctx.save();ctx.lineWidth=2/zoom;for(const [a,b]of this.edges.values()){
   const image=near(a,b);
   if(!segmentInView(view,a,image,2/zoom)||!this.connected(a,b))continue;const d=dist(a,b);if(d<1||d<=(a.size+b.size)/2)continue;
   const toward=delta(a,b),dx=toward.x/d,dy=toward.y/d;ctx.beginPath();ctx.moveTo(a.x+dx*a.size/2,a.y+dy*a.size/2);ctx.lineTo(image.x-dx*b.size/2,image.y-dy*b.size/2);
   if(a.color!==b.color)ctx.setLineDash([8/zoom,5/zoom]);else ctx.setLineDash([]);
-  ctx.strokeStyle=this.game.withAlpha(a.color!==b.color?'#c4b5fd':a.colorHex,a.companionGroup && a.companionGroup===b.companionGroup ? .7 : .3);ctx.stroke();
+  const linked=a.companionGroup&&a.companionGroup===b.companionGroup,color=a.color!==b.color?'#c4b5fd':a.colorHex;
+  if(linked){ctx.strokeStyle=this.game.withAlpha(color,.16);ctx.lineWidth=10/zoom;ctx.stroke();ctx.strokeStyle=this.game.withAlpha(color,.75);ctx.lineWidth=4/zoom;ctx.stroke();ctx.strokeStyle='#f0fff4';ctx.lineWidth=1.5/zoom;ctx.stroke();}
+  else{ctx.strokeStyle=this.game.withAlpha(color,.3);ctx.lineWidth=2/zoom;ctx.stroke();}
  }ctx.restore();}
 }

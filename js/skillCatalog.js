@@ -20,5 +20,6 @@ export function apexTerritoryRadius(e,balance){return 900*Math.sqrt(Math.max(100
 export function scaledSkill(balance,e,slot){
  const cfg=selectedSkill(balance,e.color,slot),scale=Math.max(1,e.size/(balance.abilitySkills?.rangeReferenceSize??350));
  for(const key of ['radius','length','width','castRange','buffRadius','commandRadius'])if(Number.isFinite(cfg[key]))cfg[key]*=scale;
+ if(e.color==='green'&&slot==='E')cfg.radius=Math.max(cfg.radius,balance.ai.detectionRange*.65+Math.max(0,e.size-40)*.65);
  return cfg;
 }

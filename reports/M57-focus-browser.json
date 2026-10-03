@@ -1,0 +1,20 @@
+{
+  "result": "PASS",
+  "rows": [
+    {
+      "saved": null,
+      "active": "player-name",
+      "value": ""
+    },
+    {
+      "saved": "나",
+      "active": "player-start",
+      "value": "나"
+    },
+    {
+      "saved": "SavedName",
+      "active": "player-start",
+      "value": "SavedName"
+    }
+  ]
+}

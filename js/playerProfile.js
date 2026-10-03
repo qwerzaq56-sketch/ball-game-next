@@ -38,14 +38,16 @@ export class PlayerSetup {
     });
     this.dialog.addEventListener('cancel',e=>e.preventDefault()); // Choosing a player starts the run.
   }
-  clearInput() {this.input.keys.clear();this.input.touchMove={x:0,y:0};this.input.mouseDown=false;this.input._dodgeQueued=false;this.input._dodgeAngle=null;this.input._attackQueued=null;this.input._specialQueued=false;this.input._ultimateQueued=false;}
+  clearInput() {this.input.keys.clear();this.input.touchMove={x:0,y:0};this.input.mouseDown=false;this.input.absorbHeld=false;this.input.attackChargeSeconds=0;this.input._dodgeQueued=false;this.input._dodgeAngle=null;this.input._attackQueued=null;this.input._specialQueued=false;this.input._ultimateQueued=false;}
   open() {
     this.game.paused=true;this.clearInput();
     const profile=normalizeProfile(this.game.options.profile,this.game.balance.colors);
-    this.name.value=profile.name==='나'?'':profile.name;
+    let savedName=profile.name!=='나';try{savedName||=!!JSON.parse(localStorage.getItem(PROFILE_KEY))?.name?.trim();}catch{}
+    this.name.value=savedName?profile.name:'';
     this.form.elements['player-color'].value=profile.color;this.updatePreview();
+    this.name.toggleAttribute('autofocus',!this.name.value.trim());document.getElementById('player-start').toggleAttribute('autofocus',!!this.name.value.trim());
     if(!this.dialog.open)this.dialog.showModal();
-    this.name.focus();
+    if(this.name.value.trim())document.getElementById('player-start').focus();else this.name.focus();
   }
   updatePreview() {
     const color=this.game.balance.colors.find(c=>c.id===this.form.elements['player-color'].value);

@@ -26,7 +26,7 @@ export class Player extends Entity {
     this.onSkillUnlock = null; // set by Game to trigger the HUD banner
     // v0.6 spec §7: right-click toggles whether the player can absorb same-color (ally) balls.
     // Starts ON — matches v0.1-0.5 behavior by default, opt-out rather than opt-in.
-    this.allyAbsorptionEnabled = true;
+    this.allyAbsorptionEnabled = false;
     this._recomputeStacks(balance, false);
   }
 

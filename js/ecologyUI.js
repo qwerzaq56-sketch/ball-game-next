@@ -24,13 +24,13 @@ export class EcologyUI {
       button.type = 'button';
       const rank = element('span','rank-number',i+1);
       const dot = element('span','rank-dot');
-      const name = element('span','rank-name');
+      const name = element('span','rank-name'),apex=element('span','rank-apex');
       const score = element('span','rank-score');
       const secondary = element('span','rank-secondary');
       const values = element('span','rank-values'); values.append(score,secondary);
-      button.append(rank,dot,name,values); li.append(button); list.append(li);
+      button.append(rank,dot,apex,name,values); li.append(button); list.append(li);
       button.addEventListener('click', () => this.ui.inspector?.select(Number(button.dataset.id)));
-      this.rows.push({li,button,rank,dot,name,score,secondary});
+      this.rows.push({li,button,rank,dot,apex,name,score,secondary});
     }
     for (const mode of ['score','size']) {
       document.getElementById(`ranking-mode-${mode}`).addEventListener('click', () => {
@@ -105,7 +105,7 @@ export class EcologyUI {
       row.button.classList.toggle('is-player',e===game.player);
       row.button.disabled=e.behavior!=='ai';
       row.button.title=e.behavior==='ai' ? `${e.displayName} · 크기 ${Math.round(e.size)} · F2 인스펙터가 열려 있을 때 클릭하여 살펴보기` : '플레이어';
-      row.name.textContent=`${e.apex ? '★ ' : ''}${e.displayName}`;
+      row.apex.textContent=e.apex?'★':'';row.apex.setAttribute('aria-label',e.apex?'최상위 포식자':'');row.name.textContent=e.displayName;
       row.score.textContent=(bySize ? Math.floor(e.size) : Math.round(e.score)).toLocaleString('ko-KR');
       row.secondary.textContent=bySize ? `점수 ${Math.round(e.score)}` : `크기 ${Math.floor(e.size)}`;
       row.dot.style.backgroundColor=e.colorHex;

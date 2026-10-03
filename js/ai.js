@@ -198,6 +198,9 @@ export function decideAI(ai, game, balance) {
   if(fleeFrom && !risk){game.abilities?.endCommand(ai,'threat');ai.state='flee';ai.target=fleeFrom;return;}
   if(ai.state==='flee'){ai.state='search';ai.target=null;}
   if(ai.recovering){game.abilities?.endCommand(ai,'recovery');ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
+  // Nearby combat can interrupt navigation and collection instead of waiting for route arrival.
+  const interrupt=hp>.4&&canStartAttack(ai)?closest(within.filter(t=>isHostile(ai,t)&&t.size<=ai.size*1.15&&dist(ai,t)<=attackReach(ai,balance)+(ai.size+t.size)/2+90&&(ai.personality!=='cautious'||safe(t,t)))):null;
+  if(interrupt){game.abilities?.endCommand(ai,'combat-opportunity');ai.state='chase_fight';ai.target=interrupt;return;}
   if(game.abilities?.commandDecision(ai))return;
   game.abilities?.considerAI(ai);
   // General retaliation (v0.25): after survival rules, answer whoever just hit us if we can fight.

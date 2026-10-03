@@ -37,7 +37,7 @@
   "dodge": {
     "dodgeDuration": 0.2,
     "dodgeInvincibleTime": 0.22,
-    "dodgeCooldown": 3.0,
+    "dodgeCooldown": 3,
     "effectLifetime": 0.3,
     "baseDistance": 100,
     "distanceGrowth": 0.8
@@ -76,7 +76,7 @@
   },
   "combat": {
     "knockbackDuration": 0.15,
-    "knockbackResistance": 1.0,
+    "knockbackResistance": 1,
     "hitFlashDuration": 0.08,
     "hitParticleLifetime": 0.25
   },
@@ -87,7 +87,7 @@
     "attackDamagePerSize": 1,
     "baseAttackRange": 120,
     "attackRangeGrowthExponent": 1.05,
-    "chargeDistanceMultiplier": 1.0,
+    "chargeDistanceMultiplier": 1,
     "attackChargeDurationBase": 0,
     "attackChargeDurationPerSize": 0.004,
     "attackTelegraphTimeBase": 0,
@@ -99,8 +99,8 @@
     "attackTimingSizeScale": 0.5714285714285714
   },
   "healthRegen": {
-    "delay": 5.0,
-    "baseRate": 2.0,
+    "delay": 5,
+    "baseRate": 2,
     "regenPerSize": 0.05
   },
   "ai": {
@@ -112,7 +112,7 @@
     "fleeThreshold": 0.3,
     "absorptionDetectionRange": 400,
     "absorptionPriorityRatio": 1.5,
-    "highPriorityAbsorptionRatio": 2.0,
+    "highPriorityAbsorptionRatio": 2,
     "attackCooldown": 1.8,
     "absorptionAttemptChance": 0.6,
     "lowHealthAttackChance": 0.15
@@ -131,7 +131,7 @@
     "orbSpawnInterval": 0.06,
     "initialEnemyCount": 60,
     "maxEnemyCount": 80,
-    "enemySpawnInterval": 2.0,
+    "enemySpawnInterval": 2,
     "minimumOrbDensity": 12.5,
     "naturalFoodGrowthMultiplier": 1,
     "maximumReplenishBatch": 6
@@ -161,7 +161,7 @@
     "orbMaxCount": 40,
     "orbSizeGrowthPerEnemySize": 0.25,
     "orbSpreadBase": 20,
-    "orbSpreadMultiplier": 2.0,
+    "orbSpreadMultiplier": 2,
     "retainedGrowthFraction": 0.9,
     "growthPerSize": 4,
     "retainBodyCapital": false
@@ -171,15 +171,15 @@
   },
   "camera": {
     "maxBodyScreenFraction": 0.42,
-    "baseZoom": 1.0,
+    "baseZoom": 1,
     "zoomOutPerSize": 0.003,
-    "maxZoomOut": 2.0
+    "maxZoomOut": 2
   },
   "audio": {
-    "masterVolume": 1.0,
+    "masterVolume": 1,
     "sfxVolume": 0.8,
     "attackVolume": 0.8,
-    "damageVolume": 1.0,
+    "damageVolume": 1,
     "dodgeVolume": 0.7,
     "deathVolume": 0.8
   },

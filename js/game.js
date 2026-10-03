@@ -319,11 +319,12 @@ export class Game {
     const p = this.player;
     const inp = this.input;
     p.companionVelocity={x:0,y:0};
+    p.allyAbsorptionEnabled=this.autoplay.enabled||!!inp.absorbHeld||!!(inp.touchMode&&inp.absorbToggle);
 
     const releasedUltimate=inp._ultimateQueued;inp._ultimateQueued=false;
     const releasedAttack=inp._attackQueued;inp._attackQueued=null;
     const releasedDodgeAngle=inp._dodgeAngle;inp._dodgeAngle=null;
-    if(p.frozen>0){if(releasedDodgeAngle!=null)inp.consumeDodge();inp.consumeSpecial?.();return;}
+    if(p.frozen>0){inp.attackChargeSeconds=0;p.attackHoldProgress=0;if(releasedDodgeAngle!=null)inp.consumeDodge();inp.consumeSpecial?.();return;}
     updateAttack(p, dt, b, this.hostileTargetsFor(p), this);
     updateDodge(p, dt, b);
 
@@ -331,6 +332,8 @@ export class Game {
     // still work, so the player can walk or dodge out of the grab.
 
     const auto=this.autoplay.enabled?this.autoplay.action:null;
+    if(!auto&&inp.mouseDown&&canStartAttack(p))inp.attackChargeSeconds=(inp.attackChargeSeconds??0)+dt;
+    p.attackHoldProgress=inp.mouseDown?Math.min(1,(inp.attackChargeSeconds??0)/(b.attack.manualChargeSeconds??1.5)):this.touchAim?.kind==='attack'?Math.min(1,(this.touchAim.chargeSeconds??0)/(b.attack.manualChargeSeconds??1.5)):0;
     const mouseWorld = auto?.aim??this.screenToWorld(inp.mouseX, inp.mouseY);
     const aimAngle = angleTo(p,mouseWorld);
 
@@ -362,8 +365,8 @@ export class Game {
     const special=auto?auto.special:inp.consumeSpecial?.();if(auto)auto.special=false;
     if(special)this.abilities.start(p,aimAngle,mouseWorld,null,auto?(auto.skillSlot??(p.apex?'R':'E')):'E');
     if(releasedUltimate&&!auto)this.abilities.start(p,Number.isFinite(releasedUltimate.angle)?releasedUltimate.angle:aimAngle,releasedUltimate.point??mouseWorld,null,'R');
-    if ((auto?auto.attack:(inp.mouseDown||releasedAttack!=null)) && p.attackUnlocked && canStartAttack(p)) {
-      startAttack(p, !auto&&releasedAttack!=null?releasedAttack:aimAngle, b);
+    if ((auto?auto.attack:(releasedAttack!=null)) && p.attackUnlocked && canStartAttack(p)) {
+      startAttack(p, !auto&&releasedAttack!=null?(typeof releasedAttack==='number'?releasedAttack:releasedAttack.angle??aimAngle):aimAngle, b,!auto&&typeof releasedAttack==='object'?releasedAttack.charge??0:0);
       this.audio.telegraph();
     }
     const dodge=auto?auto.dodge:inp.consumeDodge();if(auto)auto.dodge=false;
@@ -876,7 +879,11 @@ export class Game {
         const x=e.x+(e.apex?(i?1:-1)*32/this.camera.zoom:0),y=e.y-r-entityLabelRows(e,this.showAILabels,true).skill/this.camera.zoom;ctx.strokeText(label,x,y);ctx.fillStyle=ready?'#fff':'#94a3b8';ctx.fillText(label,x,y);
       }ctx.restore();
     }
-    if(e.apex){ctx.beginPath();ctx.arc(e.x,e.y,r+8,0,Math.PI*2);ctx.strokeStyle=this.withAlpha(e.colorHex,(e.specialCooldown??0)>0?.3:.65);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();}
+    if(e.apex){const z=this.camera.zoom;ctx.save();ctx.strokeStyle='#facc15';ctx.lineWidth=3/z;ctx.beginPath();ctx.arc(e.x,e.y,r+9/z,0,Math.PI*2);ctx.stroke();
+      for(let i=0;i<6;i++){const a=i*Math.PI/3+this.gameTime*.25,x=e.x+Math.cos(a)*(r+17/z),y=e.y+Math.sin(a)*(r+17/z);ctx.beginPath();ctx.moveTo(x,y-4/z);ctx.lineTo(x+3/z,y);ctx.lineTo(x,y+4/z);ctx.lineTo(x-3/z,y);ctx.closePath();ctx.fillStyle='#fde68a';ctx.fill();}
+      ctx.font=`bold ${16/z}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3/z;ctx.strokeStyle='#0f172a';ctx.strokeText('♛',e.x,e.y-r-74/z);ctx.fillStyle='#facc15';ctx.fillText('♛',e.x,e.y-r-74/z);ctx.restore();}
+
+    if(e===this.player&&e.attackHoldProgress>0){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+14/this.camera.zoom,-Math.PI/2,-Math.PI/2+Math.PI*2*e.attackHoldProgress);ctx.strokeStyle='#fff';ctx.lineWidth=4/this.camera.zoom;ctx.stroke();ctx.restore();}
 
     // dodge afterimages — each fades independently over dodge.effectLifetime, then is pruned
     // (see combat.js#updateDodge), so they never linger on screen after the dodge ends.

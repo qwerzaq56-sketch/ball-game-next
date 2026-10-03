@@ -45,7 +45,7 @@ export function cancelAbsorption(target) {
 export function absorptionGrowthFor(absorber,target,balance){
  const ratio=balance.growth.growthToSizeRatio,efficiency=balance.absorption.areaEfficiency??.8;
  const size=Math.sqrt(absorber.size*absorber.size+target.size*target.size*efficiency);
- return Math.max(0,growthFromSize(size,absorber.baseSize,ratio,balance.growth)-absorber.growth);
+ return Math.max(0,growthFromSize(size,absorber.baseSize,ratio,balance.growth)-absorber.growth)*(absorber.color==='green'?(balance.absorption.greenGrowthMultiplier??.85):1);
 }
 
 function completeAbsorption(absorber, target, game, balance) {
@@ -85,7 +85,7 @@ export function updateAbsorptions(game, dt, balance) {
     if (!target.alive || !target.beingAbsorbedByRef) continue;
     const absorber = target.beingAbsorbedByRef;
 
-    if (!absorber.alive || absorber.companionGroup || target.size >= absorber.size) {
+    if (!absorber.alive || absorber.companionGroup || absorber.behavior==='player'&&!absorber.allyAbsorptionEnabled || target.size >= absorber.size) {
       cancelAbsorption(target);
       continue;
     }
