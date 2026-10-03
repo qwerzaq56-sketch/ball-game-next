@@ -190,6 +190,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
 
   const lost=Math.min(Math.max(0,target.hp),dmg);
   game?.balanceLog?.hit(target,lost,target.maxHp);
+  if(options.skillToken)game?.abilities?.metrics?.hit(options.skillToken,lost,target.maxHp);
   target.damageReceived=(target.damageReceived??0)+lost;
   target.damageHpRatio=(target.damageHpRatio??0)+lost/Math.max(1,target.maxHp);
   target.hp -= dmg;

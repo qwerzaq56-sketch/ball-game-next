@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "liveCounts": true,
+  "observationExport": true,
+  "chartImport": true,
+  "legacyDataNoFalseZeros": true,
+  "typeFilter": true,
+  "errors": []
+}

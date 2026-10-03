@@ -256,6 +256,7 @@ export class Game {
     this.ecology.update(this, dt);
     this.allyLinks.refresh();
     this.era.observeDuels();
+    this.abilities.metrics.reconcile();
     this.runMetrics.observe(this,dt);
     this.apexHistory.observe(this.entities, dt, this.gameTime);
     for(const e of this.entities)if(!e.apex&&e._specialApex){this.abilities.loseApex(e);}
@@ -358,7 +359,7 @@ export class Game {
     }
 
     const special=auto?auto.special:inp.consumeSpecial?.();if(auto)auto.special=false;
-    if(special)this.abilities.start(p,aimAngle,mouseWorld,null,auto?(p.apex?'R':'E'):'E');
+    if(special)this.abilities.start(p,aimAngle,mouseWorld,null,auto?(auto.skillSlot??(p.apex?'R':'E')):'E');
     if(inp._ultimateQueued&&!auto){inp._ultimateQueued=false;this.abilities.start(p,aimAngle,mouseWorld,null,'R');}
     if ((auto?auto.attack:(inp.mouseDown||releasedAttack!=null)) && p.attackUnlocked && canStartAttack(p)) {
       startAttack(p, !auto&&releasedAttack!=null?releasedAttack:aimAngle, b);

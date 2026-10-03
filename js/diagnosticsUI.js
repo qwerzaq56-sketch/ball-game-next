@@ -6,6 +6,7 @@ export class DiagnosticsUI {
   this.game=game;this.ui=ui;this.last=0;this.root=document.createElement('section');this.root.className='debug-section';this.root.id='observation-tools';
   this.root.innerHTML='<h3>자동 플레이 · 관찰</h3><label class="debug-row"><span>자동 플레이 (실험)</span><input id="autoplay-toggle" type="checkbox"></label><p id="autoplay-status" class="hint"></p><p class="hint">직접 이동/공격/터치하면 수동으로 돌아옵니다. Life와 피해는 일반 플레이 규칙을 따릅니다.</p><p id="run-metrics-summary"></p><p id="evaluation-summary" class="hint"></p><canvas id="run-metrics-chart" width="280" height="90" aria-label="최근 플레이어와 가장 큰 AI의 크기 변화"></canvas><p class="hint">파랑: 내 크기 · 초록: 가장 큰 AI</p><button id="metrics-export" class="hud-btn" type="button">관찰 JSON 저장</button><p id="run-seed" class="hint"></p>';
   attachBalanceFeedback(game,this.root);
+  const skillTable=document.createElement('details');skillTable.innerHTML='<summary>종족별 E/R 사용과 결과</summary><p class="hint">피해는 스킬의 직접 타격만 집계합니다. 버프를 받은 일반 공격은 포함하지 않습니다.</p><div id="skill-observation"></div>';this.root.append(skillTable);
   const phaseTable=document.createElement('div');phaseTable.id='phase-observation';this.root.insertBefore(phaseTable,this.root.querySelector('#metrics-export'));
   this.csvButton=document.createElement('button');this.csvButton.id='metrics-csv-export';this.csvButton.className='hud-btn';this.csvButton.type='button';this.csvButton.textContent='최근 샘플 CSV 저장';this.csvButton.disabled=true;this.root.querySelector('#metrics-export').after(this.csvButton);
   const seedControls=document.createElement('div');seedControls.innerHTML='<label class="debug-row"><span>재시작 시드</span><input id="run-seed-input" type="number" min="0" max="9007199254740991" step="1"></label><button id="seed-restart" class="hud-btn" type="button">이 시드로 재시작</button><p id="seed-reset-hint" class="hint" aria-live="polite">같은 시드로 시작 배치를 다시 살펴볼 수 있습니다.</p>';this.root.append(seedControls);
@@ -30,12 +31,14 @@ export class DiagnosticsUI {
   const s=m.samples.at(-1);this.root.querySelector('#run-metrics-summary').textContent=`관찰 ${Math.floor(m.seconds)}s · 공격 시작 ${m.attackStarts} · ${s?.liveAI??g.entities.filter(e=>e.alive&&e.behavior==='ai').length} AI · 내 크기 ${Math.floor(g.player.size)} / 점수 ${g.player.score}`;
   this.root.querySelector('#run-seed').textContent=`시드 ${g.seed} · 최근 ${m.samples.length}개 샘플 · 자동 ${Math.floor(m.autoSeconds)}s`;
   const table=this.root.querySelector('#phase-observation');table.replaceChildren();
-  const note=document.createElement('p');note.className='hint';note.textContent='시기별 직위 시간: 0명 / 1명 / 2–3명 · 상실 횟수';table.append(note);
+  const note=document.createElement('p');note.className='hint';note.textContent='시기별 직위 시간: 0명 / 1명 / 2명 이상 · 상실 횟수';table.append(note);
   for(const [key,label]of [['abundance','영양기'],['competition','경쟁기'],['war','전쟁기'],['decline','쇠퇴기'],['off','시기 OFF']]){
    const stats=m.byPhase[key];if(!stats)continue;const row=document.createElement('p');row.className='hint';
    const percent=n=>stats.seconds?Math.round(n/stats.seconds*100):0;
    row.textContent=`${label} ${Math.floor(stats.seconds+1e-8)}s · ${['absent','solo','coexist'].map(k=>percent(stats.secondsByCount[k])+'%').join(' / ')} · 상실 ${stats.titleLosses}`;table.append(row);
   }
+  const skills=this.root.querySelector('#skill-observation');if(skills.parentElement.open){skills.replaceChildren();const totals=new Map();for(const row of g.abilities.metrics.export().rows){const key=`${row.type} ${row.color} ${row.slot} ${row.skill}`,total=totals.get(key)??{...row,starts:0,fires:0,cancelled:0,damage:0,hpRatio:0,recruits:0,summons:0,buffs:0,marks:0};for(const field of ['starts','fires','cancelled','damage','hpRatio','recruits','summons','buffs','marks'])total[field]+=row[field];totals.set(key,total);}for(const row of totals.values()){const p=document.createElement('p');p.className='hint';p.textContent=`${row.type==='player'?'나':'AI'} ${row.color} ${row.slot} · ${row.skill} · 시작/완료/취소 ${row.starts}/${row.fires}/${row.cancelled} · 피해 ${Math.round(row.damage)} (${(row.hpRatio*100).toFixed(1)}% 누적) · 모집 ${row.recruits} · 소환 ${row.summons} · 강화 ${row.buffs} · 표적 ${row.marks}`;skills.append(p);}if(!skills.children.length)skills.textContent='아직 스킬 사용 기록이 없습니다.';}
+
   this.drawChart(m.samples.slice(-60));
  }
  drawChart(samples){

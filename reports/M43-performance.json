@@ -1,0 +1,111 @@
+{
+  "platform": "cloud Chromium headless; not physical mobile hardware",
+  "policy": "stationary player with replenished health/lives; active simulation required",
+  "results": [
+    {
+      "scenario": "desktop",
+      "seconds": 6.02,
+      "frames": 358,
+      "activeFrames": 358,
+      "gameSeconds": 6.017,
+      "entities": 1612,
+      "summary": {
+        "update": {
+          "samples": 357,
+          "p50Ms": 8.9,
+          "p95Ms": 13.1,
+          "maxMs": 17.7
+        },
+        "render": {
+          "samples": 357,
+          "p50Ms": 1.5,
+          "p95Ms": 2.5,
+          "maxMs": 5.8
+        },
+        "ui": {
+          "samples": 357,
+          "p50Ms": 0.4,
+          "p95Ms": 1.7,
+          "maxMs": 2.7
+        },
+        "interval": {
+          "samples": 357,
+          "p50Ms": 16.7,
+          "p95Ms": 20.2,
+          "maxMs": 24.8
+        }
+      },
+      "errors": []
+    },
+    {
+      "scenario": "desktop-debug",
+      "seconds": 6.01,
+      "frames": 354,
+      "activeFrames": 354,
+      "gameSeconds": 6.016,
+      "entities": 1578,
+      "summary": {
+        "update": {
+          "samples": 353,
+          "p50Ms": 8.6,
+          "p95Ms": 11.3,
+          "maxMs": 22.2
+        },
+        "render": {
+          "samples": 353,
+          "p50Ms": 1.4,
+          "p95Ms": 2.2,
+          "maxMs": 4.3
+        },
+        "ui": {
+          "samples": 353,
+          "p50Ms": 0.4,
+          "p95Ms": 2.5,
+          "maxMs": 3.9
+        },
+        "interval": {
+          "samples": 353,
+          "p50Ms": 16.7,
+          "p95Ms": 21.9,
+          "maxMs": 29.5
+        }
+      },
+      "errors": []
+    },
+    {
+      "scenario": "touch",
+      "seconds": 6.01,
+      "frames": 359,
+      "activeFrames": 359,
+      "gameSeconds": 6.016,
+      "entities": 1526,
+      "summary": {
+        "update": {
+          "samples": 358,
+          "p50Ms": 8.7,
+          "p95Ms": 12.4,
+          "maxMs": 28.2
+        },
+        "render": {
+          "samples": 358,
+          "p50Ms": 1.4,
+          "p95Ms": 2.4,
+          "maxMs": 3.7
+        },
+        "ui": {
+          "samples": 358,
+          "p50Ms": 0.4,
+          "p95Ms": 0.8,
+          "maxMs": 1.6
+        },
+        "interval": {
+          "samples": 358,
+          "p50Ms": 16.7,
+          "p95Ms": 19.1,
+          "maxMs": 33
+        }
+      },
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "seed": 7,
+    "seconds": 899.9999999998388,
+    "playerSize": 490.3160602004632,
+    "totals": {
+      "starts": 775,
+      "fires": 728,
+      "cancelled": 47,
+      "damage": 6152.230141915753,
+      "summons": 37,
+      "recruits": 68
+    },
+    "playerFires": {
+      "E": 27,
+      "R": 18
+    },
+    "rows": 188
+  },
+  {
+    "seed": 11,
+    "seconds": 899.9999999998388,
+    "playerSize": 470.4229498157598,
+    "totals": {
+      "starts": 743,
+      "fires": 714,
+      "cancelled": 29,
+      "damage": 1663.5195359884783,
+      "summons": 44,
+      "recruits": 74
+    },
+    "playerFires": {
+      "E": 39,
+      "R": 38
+    },
+    "rows": 187
+  },
+  {
+    "seed": 23,
+    "seconds": 899.9999999998388,
+    "playerSize": 469.20658039937075,
+    "totals": {
+      "starts": 440,
+      "fires": 418,
+      "cancelled": 22,
+      "damage": 12649.566418924016,
+      "summons": 2,
+      "recruits": 13
+    },
+    "playerFires": {
+      "E": 35,
+      "R": 11
+    },
+    "rows": 160
+  }
+]

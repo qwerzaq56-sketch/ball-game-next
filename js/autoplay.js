@@ -37,6 +37,7 @@ export class Autoplay {
   target={x:boundCenter(target.x,p.size,w.worldWidth,w.wrap),y:boundCenter(target.y,p.size,w.worldHeight,w.wrap)};
   const {x:dx,y:dy}=delta(p,target),length=Math.hypot(dx,dy),enemy=candidates.filter(e=>isHostile(p,e)&&dist(p,e)<=350).sort((a,b)=>dist(p,a)-dist(p,b)||a.id-b.id)[0];
   const dodge=escape&&this.dodgeWait<=0&&canStartDodge(p);if(dodge)this.dodgeWait=.8;
-  this.action={move:length>8?{x:dx/length,y:dy/length}:{x:0,y:0},aim:enemy??target,attack:!escape&&p.hp/p.maxHp>.3&&!!enemy&&canStartAttack(p),dodge,special:!escape&&!!enemy&&g.abilities.canCast(p,p.apex?'R':'E')};
+  const skillSlot=!escape&&enemy?(['R','E'].find(slot=>g.abilities.canCast(p,slot))??null):null;
+  this.action={skillSlot,move:length>8?{x:dx/length,y:dy/length}:{x:0,y:0},aim:enemy??target,attack:!escape&&p.hp/p.maxHp>.3&&!!enemy&&canStartAttack(p),dodge,special:!!skillSlot};
  }
 }
