@@ -1,3 +1,4 @@
+import {BiomeObjects} from './biomeObjects.js';
 import {updateGrowthMotion} from './growthMotion.js';
 import {updateSprint} from './sprint.js';
 import {delta,angleTo,near,wrap} from './topology.js';
@@ -67,7 +68,7 @@ export class Game {
     this.apexHistory = new ApexHistory();
     this.abilities = new Abilities(this);
     this.allyLinks = new AllyLinks(this);
-    this.biomes = new Biomes(this);
+    this.biomes = new Biomes(this);this.biomeObjects=new BiomeObjects(this);
     this.era = new Era(this);
     this.relics = new Relics(this);
     this.autoplay = new Autoplay(this);
@@ -219,6 +220,7 @@ export class Game {
     this.relics.update(dt);
 
     this.buildGrid();
+    this.biomeObjects.update();
     this.allyLinks.update(dt);
     this.abilities.update(dt);
     for(const e of this.entities)if(e.alive&&e.behavior==='ai'&&e.apex)this.abilities.considerAI(e);
@@ -757,7 +759,7 @@ export class Game {
       this.renderCamera={...this.camera,x:this.camera.x-ox,y:this.camera.y-oy};
       if(layer===0){
       this.drawGrid(ctx);
-      this.biomes.draw(ctx,this.camera.zoom);
+      this.biomes.draw(ctx,this.camera.zoom);this.biomeObjects.draw(ctx,this.camera.zoom);
       }else{
       this.era.draw(ctx,this.camera.zoom);
       this.relics.draw(ctx,this.camera.zoom);

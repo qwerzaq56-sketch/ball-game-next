@@ -1,3 +1,4 @@
+import {loadObjectPreset} from './biomeObjectCatalog.js';
 import {installMovablePanels} from './movablePanels.js';
 import { DiagnosticsUI } from './diagnosticsUI.js';
 import { Game } from './game.js';
@@ -48,7 +49,7 @@ async function main() {
   let balance;
   try {
     balance = await loadBalance();
-    const presetError=loadSavedSkillPreset(balance);if(presetError)window.__skillPresetError=presetError;
+    loadObjectPreset(balance);const presetError=loadSavedSkillPreset(balance);if(presetError)window.__skillPresetError=presetError;
   } catch (err) {
     document.getElementById('load-error').style.display = 'block';
     document.getElementById('load-error').textContent =

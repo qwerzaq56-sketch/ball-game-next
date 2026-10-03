@@ -230,7 +230,7 @@ export class Abilities {
  miss(target){if((target.dustUntil??0)>this.game.gameTime)return random('ai')<(target.dustChance??.15);const fields=this.fields.filter(f=>f.owner===target&&dist(f,target)<=(f.radius??360));return fields.length>0&&random('ai')<Math.max(...fields.map(f=>f.missChance??.25));}
  rallyActive(e){return [...(e.rallyBuffs?.values()??[])].some(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex&&!isHostile(e,r.owner));}
  rallyPower(e,key,fallback){return Math.max(0,...[...(e.rallyBuffs?.values()??[])].filter(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex&&!isHostile(e,r.owner)).map(r=>r[key]??fallback));}
- speedMultiplier(e){return Math.max(1,this.rallyPower(e,'buffSpeed',1.25),(e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.speed??1.12):1);}
+ speedMultiplier(e){return Math.max(1,(e.objectSpeedUntil??0)>this.game.gameTime?(e.objectSpeedMultiplier??1):1,this.rallyPower(e,'buffSpeed',1.25),(e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.speed??1.12):1);}
  invitePower(e,key){return (e.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime).reduce((sum,b)=>sum+(b[key]??0),0);}
  defenseMultiplier(e){return 1+this.invitePower(e,'defense')+(this.game.biomes?.defenseBonus(e)??0);}
  damageMultiplier(e){return 1+this.invitePower(e,'damage')+((e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.damage??.15):0)+this.rallyPower(e,'buffDamage',.3)+(this.game.relics?.damageBonus(e)??0)+(e.morale?.size?Math.max(...[...e.morale.keys()].map(id=>e.moralePower?.get(id)??.15)):0)+(this.game.allyLinks?.bonus(e)??0);}

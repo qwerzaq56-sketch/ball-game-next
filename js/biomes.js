@@ -63,7 +63,7 @@ export class Biomes {
   }
  }
  moveMultiplier(e){return this.enabled&&this.regionAt(e)?.id==='lake'?(e.color==='blue'?(this.game.balance.biomes.blueWaterMoveMultiplier??.9):(this.game.balance.biomes.waterMoveMultiplier??.65)):1;}
- frostResistance(e){const c=this.game.balance.biomes;return Math.min(.85,(e.color==='cyan'?(c.cyanFrostResistance??.65):0)+Math.min(c.frostSizeResistanceCap??.15,Math.max(0,e.size-40)*(c.frostSizeResistancePerSize??.00025)));}
+ frostResistance(e){const c=this.game.balance.biomes;return Math.min(.85,((e.objectFrostUntil??0)>this.game.gameTime?(e.objectFrostResistance??0):0)+(e.color==='cyan'?(c.cyanFrostResistance??.65):0)+Math.min(c.frostSizeResistanceCap??.15,Math.max(0,e.size-40)*(c.frostSizeResistancePerSize??.00025)));}
  blizzard(){return this.enabled&&this.game.gameTime%24>=16;}
  playerSightRadius(){return this.regionAt(this.game.player)?.id==='snow'&&this.blizzard()?this.game.balance.ai.detectionRange*.65+Math.max(0,this.game.player.size-40)*.65:Infinity;}
  playerCanSee(e){return e===this.game.player||dist(this.game.player,e)-(e.size??0)/2<=this.playerSightRadius()*2;}

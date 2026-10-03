@@ -1,3 +1,7 @@
+## M73 완료 — 지형 오브젝트 후보 선택
+
+6개 지형에 각각 2개, 총 12개 오브젝트를 기획·구현했다. F1에서 후보 선택과 수치 조정, 기기 저장·JSON 교환·기본값 복구를 제공한다. 전체 테스트 313개와 Chromium 설정/복원 검증 통과. [상세 기획](BIOME_OBJECT_CATALOG_DESIGN.md), [검증 보고](reports/M73-development.md). 전용 장기 통계·오브젝트 탐색 AI·전용 아트는 백로그다.
+
 ## M72 완료 — 고정 최신 플레이 링크
 
 `play.html`은 새로고침마다 개발 브랜치 최신SHA를 확인하고 해당 게임을 같은 페이지 안에 불러온다. [고정 링크](https://raw.githack.com/qwerzaq56-sketch/ball-game-next/codex/cloud-next-m4/play.html). Chromium 모의API로 동일URL 새로고침 시 새SHA 전환/실패 재시도 검증 통과. 공개URL 접근은 클라우드 프록시 제한으로 직접 검증하지 못했다.
