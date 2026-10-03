@@ -1,0 +1,83 @@
+[
+  {
+    "seed": 7,
+    "before": {
+      "endSize": 440.6038803264691,
+      "defeats": 1,
+      "endMaxSize": 687.7632173509269,
+      "lateMeanOrbs": 651.8688524590164,
+      "lateMinOrbs": 598,
+      "lateMaxOrbs": 766,
+      "crisisPct": 18.181818181818183,
+      "hpLossPctPerSample": 2.2802575779204775,
+      "largeSamples": 34,
+      "largeRealizedPct": 5.882352941176471
+    },
+    "after": {
+      "endSize": 378.4505456399281,
+      "defeats": 0,
+      "endMaxSize": 467.316925369513,
+      "lateMeanOrbs": 804.8688524590164,
+      "lateMinOrbs": 796,
+      "lateMaxOrbs": 846,
+      "crisisPct": 16.52892561983471,
+      "hpLossPctPerSample": 1.9286610127030637,
+      "largeSamples": 0,
+      "largeRealizedPct": null
+    }
+  },
+  {
+    "seed": 11,
+    "before": {
+      "endSize": 415.41854000565144,
+      "defeats": 0,
+      "endMaxSize": 463.2945400690797,
+      "lateMeanOrbs": 609.016393442623,
+      "lateMinOrbs": 589,
+      "lateMaxOrbs": 667,
+      "crisisPct": 11.570247933884298,
+      "hpLossPctPerSample": 0.6353828135499447,
+      "largeSamples": 17,
+      "largeRealizedPct": 0.0
+    },
+    "after": {
+      "endSize": 402.594298952809,
+      "defeats": 0,
+      "endMaxSize": 498.3733994259943,
+      "lateMeanOrbs": 804.2786885245902,
+      "lateMinOrbs": 775,
+      "lateMaxOrbs": 847,
+      "crisisPct": 14.87603305785124,
+      "hpLossPctPerSample": 0.8809148790324899,
+      "largeSamples": 2,
+      "largeRealizedPct": 0.0
+    }
+  },
+  {
+    "seed": 23,
+    "before": {
+      "endSize": 369.9834742947735,
+      "defeats": 0,
+      "endMaxSize": 451.77655129068944,
+      "lateMeanOrbs": 614.5573770491803,
+      "lateMinOrbs": 593,
+      "lateMaxOrbs": 656,
+      "crisisPct": 17.355371900826448,
+      "hpLossPctPerSample": 1.2368697348048965,
+      "largeSamples": 0,
+      "largeRealizedPct": null
+    },
+    "after": {
+      "endSize": 460.95029357071166,
+      "defeats": 0,
+      "endMaxSize": 514.3013230702182,
+      "lateMeanOrbs": 804.9016393442623,
+      "lateMinOrbs": 795,
+      "lateMaxOrbs": 847,
+      "crisisPct": 14.87603305785124,
+      "hpLossPctPerSample": 0.21723503764682756,
+      "largeSamples": 37,
+      "largeRealizedPct": 2.7027027027027026
+    }
+  }
+]

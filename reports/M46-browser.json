@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "fixture": "bounded food replenishment, 80 consumption/refill cycles in Chromium; not a natural playthrough",
+  "target": 800,
+  "min": 800,
+  "max": 800,
+  "afterCap": 795,
+  "cap": 795,
+  "errors": []
+}

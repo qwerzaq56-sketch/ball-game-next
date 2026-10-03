@@ -489,7 +489,10 @@ export class Game {
 
     const orbCount = this.entities.reduce((n, e) => n + (e.alive && e.behavior === 'orb' ? 1 : 0), 0);
     const floor=(s.minimumOrbDensity??0)*this.balance.world.worldWidth*this.balance.world.worldHeight/1e6;
-    const batch=Math.min(s.maximumReplenishBatch??1,1+Math.ceil(Math.max(0,floor-orbCount)/200),Math.max(0,s.maxOrbCount-orbCount));
+    // Refill the actual deficit; proportional batches settled below the density target.
+    const target=Math.min(s.maxOrbCount,Math.ceil(floor));
+    const desired=orbCount<target?target-orbCount:1;
+    const batch=Math.min(s.maximumReplenishBatch??1,desired,Math.max(0,s.maxOrbCount-orbCount));
     for(let i=0;i<batch;i++)this.entities.push(spawnOrb(this.balance));
   }
 

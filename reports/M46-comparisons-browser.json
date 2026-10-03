@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "lazyInitialLoad": true,
+  "policy18Runs": true,
+  "foodBeforeAfter": true,
+  "worldFiltersExplicit": true,
+  "legacyMissingHidden": true,
+  "errors": []
+}
