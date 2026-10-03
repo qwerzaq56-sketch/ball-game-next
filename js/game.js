@@ -309,7 +309,9 @@ export class Game {
     const p = this.player;
     const inp = this.input;
 
-    if(p.frozen>0)return;
+    const releasedAttack=inp._attackQueued;inp._attackQueued=null;
+    const releasedDodgeAngle=inp._dodgeAngle;inp._dodgeAngle=null;
+    if(p.frozen>0){if(releasedDodgeAngle!=null)inp.consumeDodge();return;}
     updateAttack(p, dt, b, this.hostileTargetsFor(p), this);
     updateDodge(p, dt, b);
 
@@ -347,13 +349,13 @@ export class Game {
 
     const special=auto?auto.special:inp.consumeSpecial?.();if(auto)auto.special=false;
     if(special)this.abilities.start(p,aimAngle,mouseWorld);
-    if ((auto?auto.attack:inp.mouseDown) && p.attackUnlocked && canStartAttack(p)) {
-      startAttack(p, aimAngle, b);
+    if ((auto?auto.attack:(inp.mouseDown||releasedAttack!=null)) && p.attackUnlocked && canStartAttack(p)) {
+      startAttack(p, !auto&&releasedAttack!=null?releasedAttack:aimAngle, b);
       this.audio.telegraph();
     }
     const dodge=auto?auto.dodge:inp.consumeDodge();if(auto)auto.dodge=false;
     if (dodge && p.dodgeUnlocked && canStartDodge(p)) {
-      startDodge(p, moveAngle, b);
+      startDodge(p, !auto&&releasedDodgeAngle!=null?releasedDodgeAngle:moveAngle, b);
       this.audio.dodge();
     }
   }

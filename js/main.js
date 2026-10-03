@@ -14,6 +14,7 @@ class InputState {
     this.mouseY = 0;
     this.mouseDown = false;
     this._dodgeQueued = false;
+    this._attackQueued=null;this._dodgeAngle=null;
     this._specialQueued = false;
   }
   consumeSpecial() {const value=this._specialQueued;this._specialQueued=false;return value;}
@@ -78,9 +79,10 @@ async function main() {
     if((e.target===canvas&&!inspecting)||e.target.closest?.('#touch-controls'))window.__game?.autoplay.setEnabled(false);
   },true);
   canvas.addEventListener('mousedown', (e) => {
+    if (e.sourceCapabilities?.firesTouchEvents) return;
     if (e.button === 0&&!window.__game?.paused) input.mouseDown = true;
   });
-  window.addEventListener('blur', () => {input.keys.clear();input.mouseDown=false;input._dodgeQueued=false;input._specialQueued=false;});
+  window.addEventListener('blur', () => {input.keys.clear();input.mouseDown=false;input._dodgeQueued=false;input._dodgeAngle=null;input._attackQueued=null;input._specialQueued=false;});
   window.addEventListener('mouseup', (e) => {
     if (e.button === 0) input.mouseDown = false;
   });

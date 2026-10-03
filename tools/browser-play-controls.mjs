@@ -13,6 +13,8 @@ try {
  await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>window.__game.paused),true);
  await page.locator('#pause-btn').click();await page.waitForFunction(()=>!window.__game.paused);await page.waitForTimeout(100);assert((await page.evaluate(()=>window.__game.gameTime))>time);
  await page.locator('#help-btn').click();time=await page.evaluate(()=>window.__game.gameTime);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>window.__game.gameTime),time);
+ // M30 makes Space activate a focused button; test gameplay keys on the dialog itself.
+ await page.locator('#play-help').evaluate(el=>{el.tabIndex=-1;el.focus();});
  await page.keyboard.press('e');await page.keyboard.press('Space');assert.equal(await page.evaluate(()=>window.__game.input._specialQueued),false);assert.equal(await page.evaluate(()=>window.__game.input._dodgeQueued),false);
  await page.screenshot({path:`${prefix}-play-help.png`});
  await page.locator('#help-close').click();await page.waitForFunction(()=>!window.__game.paused);

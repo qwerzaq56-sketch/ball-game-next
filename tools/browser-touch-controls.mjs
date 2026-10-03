@@ -7,7 +7,7 @@ const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(
 const prefix=process.env.BROWSER_TOUCH_REPORT_PREFIX??'reports/M10';
 const center=async selector=>{const r=await page.locator(selector).boundingBox();return {x:r.x+r.width/2,y:r.y+r.height/2};};
 try {
- await page.goto(process.argv[2]??'http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();
+ await page.goto(process.argv[2]??'http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();await page.locator('#mobile-ui-toggle').click();
  await page.evaluate(()=>{const g=window.__game,p=g.player;g.entities=[p];g.ecology.timer=1000;g.allyLinks.timer=1000;p.size=80;p.attackUnlocked=true;p.attackStack=p.attackMaxStack=3;p.dodgeUnlocked=true;p.dodgeStack=p.dodgeMaxStack=2;p.apex=true;p._specialApex=true;p.specialCooldown=0;});await page.waitForTimeout(150);
  assert(await page.locator('#touch-stick').isVisible());assert.equal(await page.locator('#touch-special').isDisabled(),false);
  const cdp=await context.newCDPSession(page),stick=await center('#touch-stick'),attack=await center('#touch-attack'),dodge=await center('#touch-dodge'),special=await center('#touch-special');
@@ -17,13 +17,13 @@ try {
  await touch('touchStart',[point(1,stick)]);await touch('touchMove',[point(1,{x:stick.x+35,y:stick.y})]);await page.waitForTimeout(250);
  assert((await page.evaluate(()=>window.__game.player.x))>startX);
  await touch('touchStart',[point(1,{x:stick.x+35,y:stick.y}),point(2,attack)]);await page.waitForTimeout(100);
- assert.equal(await page.evaluate(()=>window.__game.input.mouseDown),true);assert((await page.evaluate(()=>window.__game.player.attackStack))<3);
+ assert.equal(await page.evaluate(()=>window.__game.input.mouseDown),false);assert.equal(await page.evaluate(()=>window.__game.player.attackStack),3);
  await page.evaluate(()=>window.__game.player.frozen=.5);
  await touch('touchMove',[point(1,{x:stick.x+35,y:stick.y}),point(2,{x:attack.x+35,y:attack.y})]);await page.waitForTimeout(50);
  assert.equal(await page.evaluate(()=>{const g=window.__game,p=g.worldToScreen(g.player.x,g.player.y);return g.input.mouseX>p.x+160&&Math.abs(g.input.mouseY-p.y)<8;}),true);
  await page.evaluate(()=>window.__game.player.frozen=0);
  await touch('touchCancel',[]);await page.waitForTimeout(50);assert.equal(await page.evaluate(()=>window.__game.input.mouseDown),false);assert.deepEqual(await page.evaluate(()=>window.__game.input.touchMove),{x:0,y:0});
- await touch('touchStart',[point(3,dodge)]);await page.waitForTimeout(50);assert.equal(await page.evaluate(()=>window.__game.player.dodgeState),'DODGING');await touch('touchEnd',[]);await page.waitForTimeout(1000);
+ await touch('touchStart',[point(3,dodge)]);await page.waitForTimeout(50);assert.equal(await page.evaluate(()=>window.__game.player.dodgeState),'READY');await touch('touchEnd',[]);await page.waitForTimeout(50);assert.equal(await page.evaluate(()=>window.__game.player.dodgeState),'DODGING');await page.waitForTimeout(1000);
  // Touching the battlefield aims without starting an attack.
  await touch('touchStart',[point(4,{x:300,y:400})]);await touch('touchEnd',[]);assert.equal(await page.evaluate(()=>window.__game.input.mouseDown),false);
  await touch('touchStart',[point(5,special)]);await touch('touchEnd',[]);await page.waitForFunction(()=>window.__game.player.specialCast?.directions.length===3);
