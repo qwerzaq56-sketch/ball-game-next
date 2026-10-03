@@ -49,3 +49,9 @@ export function debugRoleLabel(entity) {
   const relationship=entity.role==='predator' ? RELATIONSHIP_LABELS[entity.relationship] : null;
   return `${entity.apex ? '★ ' : ''}${role}${relationship ? ' · '+relationship : ''}`;
 }
+
+// Screen-pixel rows keep name, debug role/state and skill readiness distinct at every zoom.
+export function entityLabelRows(entity,debug,skills){
+ const skill=14,state=skills?28:14,role=entity.behavior==='player'?state:state+14;
+ return {skill,state,role,name:debug?role+16:skills?30:18};
+}

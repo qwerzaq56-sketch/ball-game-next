@@ -9,7 +9,7 @@ import { Era } from './era.js';
 import { Biomes } from './biomes.js';
 import { AllyLinks } from './allyLinks.js';
 import { ApexHistory } from './apexHistory.js';
-import { scoreRanking, layoutNameLabels, debugRoleLabel } from './presentation.js';
+import { scoreRanking, layoutNameLabels, debugRoleLabel, entityLabelRows } from './presentation.js';
 import { Abilities } from './abilities.js';
 import { acceptsAbsorption } from './species.js';
 import { Ecology } from './ecology.js';
@@ -773,7 +773,7 @@ export class Game {
       .filter(e => this.biomes.playerCanSee(e)&&this.isRoughlyVisible(this.balance.world.wrap?near(this.camera,e,this.balance.world):e)).map(e => {
         const point = this.worldToScreen(e.x, e.y-e.size/2);
         const text = `${e.apex ? "★ " : ""}${e.displayName}`;
-        return {id:e.id, text, color:e.colorHex, x:point.x, y:point.y-(this.showAILabels ? 50 : 18), textWidth:ctx.measureText(text).width};
+        return {id:e.id, text, color:e.colorHex, x:point.x, y:point.y-entityLabelRows(e,this.showAILabels,this.abilities.unlocked(e,'E')).name, textWidth:ctx.measureText(text).width};
       });
     this.visibleNameLabels = layoutNameLabels(candidates, this.canvas.width, this.canvas.height, this.ui.overlayRects ?? []);
     for (const label of this.visibleNameLabels) {
@@ -866,7 +866,7 @@ export class Game {
       ctx.save();ctx.font=`bold ${12/this.camera.zoom}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3/this.camera.zoom;ctx.strokeStyle='#0f172a';
       for(const [i,slot] of ['E','R'].entries())if(this.abilities.unlocked(e,slot)){
         const ready=this.abilities.canCast(e,slot),label=e.specialCast?.slot===slot?`${slot} …`:this.abilities.cooldown(e,slot)>0?`${slot} ${Math.ceil(this.abilities.cooldown(e,slot))}`:ready?`${slot} ◆`:`${slot} ◇`;
-        const x=e.x+(e.apex?(i?1:-1)*32/this.camera.zoom:0),y=e.y-r-22/this.camera.zoom;ctx.strokeText(label,x,y);ctx.fillStyle=ready?'#fff':'#94a3b8';ctx.fillText(label,x,y);
+        const x=e.x+(e.apex?(i?1:-1)*32/this.camera.zoom:0),y=e.y-r-entityLabelRows(e,this.showAILabels,true).skill/this.camera.zoom;ctx.strokeText(label,x,y);ctx.fillStyle=ready?'#fff':'#94a3b8';ctx.fillText(label,x,y);
       }ctx.restore();
     }
     if(e.apex){ctx.beginPath();ctx.arc(e.x,e.y,r+8,0,Math.PI*2);ctx.strokeStyle=this.withAlpha(e.colorHex,(e.specialCooldown??0)>0?.3:.65);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();}
@@ -971,10 +971,10 @@ export class Game {
     if(e.command){ctx.save();ctx.strokeStyle='#ffffff';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([3/this.camera.zoom,6/this.camera.zoom]);ctx.beginPath();ctx.arc(e.x,e.y,r+16,0,Math.PI*2);ctx.stroke();ctx.restore();}
     // hp bar for AI / player
     if ((e.behavior === 'ai' || e.behavior === 'player') && e.hp < e.maxHp) {
-      const barW = Math.max(24, r * 1.6);
-      const barH = 5;
+      const barW = Math.max(24/this.camera.zoom,r*1.6);
+      const barH = 5/this.camera.zoom;
       const bx = e.x - barW / 2;
-      const by = e.y - r - 14;
+      const by = e.y-r-9/this.camera.zoom;
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.fillRect(bx, by, barW, barH);
       ctx.fillStyle = e.hp / e.maxHp > 0.3 ? '#4ade80' : '#f87171';
@@ -993,19 +993,20 @@ export class Game {
     ctx.lineWidth = 3 / z;
     for (const e of visible) {
       if (!e.alive || (e.behavior !== 'ai' && e.behavior !== 'player')) continue;
-      const x = e.x, y = e.y - e.size / 2 - 16;
+      const x=e.x,top=e.y-e.size/2,rows=entityLabelRows(e,true,this.abilities.unlocked(e,'E'));
+      const roleY=top-rows.role/z,stateY=top-rows.state/z;
       ctx.strokeStyle = 'rgba(0,0,0,0.85)';
       const role = debugRoleLabel(e);
-      ctx.strokeText(role,x,y-15/z);
+      ctx.strokeText(role,x,roleY);
       ctx.fillStyle = e.role==='predator' ? '#fda4af' : e.role==='prey' ? '#a5b4fc' : '#86efac';
-      ctx.fillText(role,x,y-15/z);
+      ctx.fillText(role,x,roleY);
       if(e.behavior==='player') continue;
       const state = AI_STATE_LABEL[e.recovering ? 'recover' : e.state] ?? e.state;
       const text = `${state} · ${AI_PERSONALITY_LABEL[e.personality] ?? '-'}`;
       ctx.strokeStyle = 'rgba(0,0,0,0.75)';
-      ctx.strokeText(text, x, y);
+      ctx.strokeText(text,x,stateY);
       ctx.fillStyle = e.state === 'flee' ? '#fde68a' : e.state === 'chase_fight' ? '#fca5a5' : '#ffffff';
-      ctx.fillText(text, x, y);
+      ctx.fillText(text,x,stateY);
     }
     ctx.restore();
   }

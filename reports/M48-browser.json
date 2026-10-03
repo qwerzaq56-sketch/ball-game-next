@@ -1,0 +1,27 @@
+{
+  "result": "PASS",
+  "rows": [
+    {
+      "zoom": 0.25,
+      "roleStateGap": 14,
+      "stateSkillGap": 14,
+      "healthBelowSkill": true
+    },
+    {
+      "zoom": 1,
+      "roleStateGap": 14,
+      "stateSkillGap": 14,
+      "healthBelowSkill": true
+    },
+    {
+      "zoom": 2,
+      "roleStateGap": 14,
+      "stateSkillGap": 14,
+      "healthBelowSkill": true
+    }
+  ],
+  "F3Retained": true,
+  "landscapeAndPortrait": true,
+  "fixture": "static labels and health at controlled zoom, no balance inference",
+  "errors": []
+}
