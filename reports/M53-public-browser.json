@@ -1,0 +1,7 @@
+{
+  "result": "BLOCKED_BY_CLOUD_NETWORK",
+  "url": "https://raw.githack.com/qwerzaq56-sketch/ball-game-next/6eb39fb3fb1ab4a71a271df4ef0c8a1b62f3741e/index.html",
+  "browserError": "ERR_TUNNEL_CONNECTION_FAILED",
+  "proxyResponse": "403 Forbidden on CONNECT tunnel",
+  "localValidation": "237 tests and Chromium game/input/balance checks passed; this is not a claim that the public URL failed in the user browser."
+}

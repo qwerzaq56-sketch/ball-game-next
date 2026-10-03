@@ -22,3 +22,10 @@
 ## 최종 자원 실험 결과
 
 M51의9실행600초가 모두 완료됐고 후보 평균Size498.6/542.0은 기본414.0보다 크지만 초기 성장도 빨라졌다.400+5초 성장 기준은2.6/8.7/9.8%로 후반 병목이 남는다. 밀도25는 보충 처리량 때문에 목표1600 미달이다. 기본12.5/1을 유지한다. 정책/최신 기본 자료는 balance.html, 상세 한계는 M51-development.md를 따른다.
+
+## 공개 링크 확인 범위
+
+최종 게임 코드 커밋6eb39fb3fb1ab4a71a271df4ef0c8a1b62f3741e를 지정 브랜치에 푸시했다. 공개 raw.githack 링크를 Chromium/curl로 직접 확인하려 했으나 클라우드 프록시 CONNECT가403을 반환했다. [네트워크 기록](M53-public-browser.json). 사용자 브라우저에서의 링크 실패를 확인한 것은 아니다. 로컬 Chromium의 게임/키·터치/그래프 검증과237개 테스트는 통과했으며 물리 Safari는 미검증이다.
+
+플레이: https://raw.githack.com/qwerzaq56-sketch/ball-game-next/6eb39fb3fb1ab4a71a271df4ef0c8a1b62f3741e/index.html
+밸런스: https://raw.githack.com/qwerzaq56-sketch/ball-game-next/6eb39fb3fb1ab4a71a271df4ef0c8a1b62f3741e/balance.html
