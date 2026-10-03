@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "colorRuns15": true,
+  "playerFires226": true,
+  "normalizedHP": true,
+  "supportEffects": true,
+  "hitEventsNotHitRate": true,
+  "filters": true,
+  "errors": []
+}
