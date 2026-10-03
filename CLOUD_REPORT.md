@@ -1,3 +1,7 @@
+## M58 완료
+
+대형 공격 템포·적 경계/반격·몸 표면 감지·청크 렌더 순서·흡수 이탈/HP 비용·영구 초록 R 소환/30초 흡수·ESC 일시정지 구현. 새 [크기별 시각화 기획](SIZE_RISK_RETURN_DESIGN.md), [개발 백로그](DEVELOPMENT_BACKLOG.md). 검증 및 한계는 [M58 보고서](reports/M58-development.md).
+
 # NEXT M57 — 눈보라 성능·충전 공격·흡수 조작·대열 추종·현재 그래프
 
 요청한 UI/직위 표시, 이름 포커스, 눈보라 경량화, 충전 해제 공격, 우클릭/모바일 흡수, 빛나는 동행 선, 자유 추종/회피, 초록 흡수85%, 제안 범위 확대 및 이동 중 전투 전환을 구현했다. 전체256개 테스트와 실제 Chromium PC/다중 터치 검증 통과.6회×10분 시뮬레이션 그래프 제공. [상세 보고](reports/M57-development.md), [전체 그래프](reports/M57-current-balance.png).

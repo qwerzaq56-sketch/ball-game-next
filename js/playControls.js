@@ -21,7 +21,7 @@ export class PlayControls {
     window.addEventListener('keydown',e=>{
       if(e.repeat||e.target.closest?.('input,textarea,select')||document.getElementById('player-setup').open)return;
       if(e.key.toLowerCase()==='h'){e.preventDefault();if(this.help.open)this.help.close();else this.openHelp();}
-      if(e.key.toLowerCase()==='p'&&!this.help.open){e.preventDefault();this.togglePause();}
+      if((e.key.toLowerCase()==='p'||e.key==='Escape')&&!this.help.open){e.preventDefault();this.togglePause();}
     });
     window.addEventListener('blur',()=>this.backgroundPause());
     document.addEventListener('visibilitychange',()=>{if(document.hidden)this.backgroundPause();});

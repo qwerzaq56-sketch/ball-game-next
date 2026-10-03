@@ -29,7 +29,7 @@
     "lateTransition": 50
   },
   "attack": {
-    "manualChargeSeconds": 1.5,
+    "manualChargeSeconds": 0.9,
     "maxChargeDamageBonus": 1,
     "attackCooldown": 1.5,
     "attackRecoveryTime": 0.4
@@ -72,7 +72,8 @@
     "baseMaintainDistance": 30,
     "maintainDistancePerSize": 0.5,
     "maxAbsorptionSpeed": 5,
-    "pullForce": 1
+    "pullForce": 1,
+    "healthCostFraction": 0.12
   },
   "combat": {
     "knockbackDuration": 0.15,
@@ -96,7 +97,9 @@
     "defensePerSize": 0.5,
     "minimumDamage": 1,
     "knockbackForce": 500,
-    "attackTimingSizeScale": 0.5714285714285714
+    "attackTimingSizeScale": 0.5714285714285714,
+    "attackTimingSoftcapSize": 200,
+    "attackTimingBeyondScale": 0.25
   },
   "healthRegen": {
     "delay": 5.0,
@@ -115,7 +118,8 @@
     "highPriorityAbsorptionRatio": 2.0,
     "attackCooldown": 1.8,
     "absorptionAttemptChance": 0.6,
-    "lowHealthAttackChance": 0.15
+    "lowHealthAttackChance": 0.15,
+    "guardSurfaceDistance": 140
   },
   "world": {
     "wrap": true,

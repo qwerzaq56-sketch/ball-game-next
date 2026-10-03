@@ -33,6 +33,8 @@ export function startAbsorption(absorber, target, balance, game) {
   target.beingAbsorbedByRef = absorber;
   target.absorptionProgress = 0;
   target.absorptionRequired = resistanceTimeFor(target, balance);
+  target.absorptionHealthPaid=0;
+  target.absorptionHealthCost=absorber.maxHp*(balance.absorption.healthCostFraction??.12)*Math.min(1,target.size/absorber.size)*Math.max(0,Math.min(1,target.hp/target.maxHp));
   if (game && (absorber === game.player || target === game.player)) game.audio.absorbStart();
 }
 
@@ -98,7 +100,12 @@ export function updateAbsorptions(game, dt, balance) {
     }
 
     const proximity = 1 - Math.min(1, d / maintainDistance); // 1 at contact, 0 at the edge
-    target.absorptionProgress += cfg.maxAbsorptionSpeed * proximity * dt;
+    const advance=Math.min(Math.max(0,target.absorptionRequired-target.absorptionProgress),cfg.maxAbsorptionSpeed*proximity*dt);
+    const cost=(target.absorptionHealthCost??0)*advance/target.absorptionRequired;
+    if(absorber.hp<=cost+1){cancelAbsorption(target);continue;}
+    absorber.hp-=cost;target.absorptionHealthPaid=(target.absorptionHealthPaid??0)+cost;
+    if(cost>0)absorber.regenTimer=0;
+    target.absorptionProgress += advance;
 
     if (proximity > 0) {
       const pull = 1 - Math.pow(1 - cfg.pullForce * proximity, dt);

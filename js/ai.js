@@ -103,7 +103,7 @@ export function updateAI(ai, dt, game, balance) {
   }
 
   if(ai.state==='relationship' && ai.relationshipOwner && (ai.role!=='predator'||ai.apex||!ai.relationshipOwner.alive||!ai.relationshipOwner.apex||dist(ai,ai.relationshipOwner)>apexTerritoryRadius(ai.relationshipOwner,balance))){ai.target=null;ai.state='search';ai.decisionTimer=0;}
-  if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && ai.state!=="command_move" && ai.state!=="war_move" && (!ai.target.alive || dist(ai,ai.target)>game.biomes.sensingRange(ai,ai.state==="chase_eat" && (ai.target.behavior!=="orb"&&ai.target.behavior!=="relic") ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
+  if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && ai.state!=="guard" && ai.state!=="command_move" && ai.state!=="war_move" && (!ai.target.alive || dist(ai,ai.target)>game.biomes.sensingRange(ai,ai.state==="chase_eat" && (ai.target.behavior!=="orb"&&ai.target.behavior!=="relic") ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
   ai.decisionTimer -= dt;
   if (ai.decisionTimer <= 0) {
     ai.decisionTimer = 0.2 + random('ai') * 0.15;
@@ -145,6 +145,7 @@ function duelTarget(ai, game, balance, threats, safe) {
 }
 
 export function decideAI(ai, game, balance) {
+  ai.guardMode=false;
   const cfg={...balance.ai,detectionRange:game.biomes.sensingRange(ai),absorptionDetectionRange:game.biomes.sensingRange(ai,balance.ai.absorptionDetectionRange)}, hp=ai.hp/ai.maxHp;
   const environment=game.biomes.danger(ai,!!ai.environmentThreat);ai.environmentThreat=environment;
   if(environment){game.abilities?.endCommand(ai,'environment-escape');ai.state='flee';ai.target=environment;return;}
@@ -164,8 +165,9 @@ export function decideAI(ai, game, balance) {
   ai.recovering=hp<=.3 || (ai.recovering && hp<.6);
   if(ai.challengeTarget && (ai.role!=='predator'||ai.apex||hp<=.4 || !ai.challengeTarget.alive || !ai.challengeTarget.apex ||
     ai.challengeTarget.hp/ai.challengeTarget.maxHp>.4 || dist(ai,ai.challengeTarget)>cfg.detectionRange))ai.challengeTarget=null;
-  const nearby=game.getNearbyEntities(ai,Math.max(cfg.detectionRange,cfg.absorptionDetectionRange));
-  const within=nearby.filter(e=>e.alive&&dist(ai,e)<=cfg.detectionRange);
+  const bodyMargin=ai.size/2+game.entities.reduce((m,e)=>e.alive&&e.behavior!=='orb'?Math.max(m,e.size/2):m,0);
+  const nearby=game.getNearbyEntities(ai,Math.max(cfg.detectionRange,cfg.absorptionDetectionRange)+bodyMargin);
+  const within=nearby.filter(e=>e.alive&&dist(ai,e)<=cfg.detectionRange+((ai.size>=300||e.size>=300)?(ai.size+e.size)/2:0));
   const threats=within.filter(e=>isHostile(ai,e)&&e.size>=ai.size*1.2&&!(ai.command?.kind==='rally'&&(e===ai.command.target||ai.command.targets?.has(e))));
   const safe=(e,except)=>threats.every(t=>t===except||dist(e,t)>=160);
   const food=within.filter(e=>canEatOrb(ai,e,balance));
@@ -191,11 +193,15 @@ export function decideAI(ai, game, balance) {
     heldThreat!==duel && dist(ai,heldThreat)<400 ? heldThreat : null;
   const fleeFrom=threat ?? heldDanger;
   ai.fleeThreat=!risk ? fleeFrom : null;
-  if(fleeFrom && !risk && hp>.4 && canStartAttack(ai) && fleeFrom.size<=ai.size*(1.8+Math.min(1,Math.max(0,fleeFrom.size-100)/300)) &&
-    (fleeFrom.attackState==='RECOVERY'||(fleeFrom.attackState==='READY'&&ai.personality!=='cautious'&&random('ai')<Math.min(.6,Math.max(0,fleeFrom.size-100)/500))) && dist(ai,fleeFrom)<=attackReach(ai,balance)+(ai.size+fleeFrom.size)/2 && game.gameTime>(ai.nextHarass??0)){
-    ai.nextHarass=game.gameTime+Math.max(1.5,3-Math.max(0,fleeFrom.size-100)/200);ai.state='chase_fight';ai.target=fleeFrom;return;
+  if(fleeFrom && !risk){
+    ai.guardMode=true;game.abilities?.endCommand(ai,'guard');
+    const surface=dist(ai,fleeFrom)-(ai.size+fleeFrom.size)/2;
+    const counter=game.gameTime>(ai.nextHarass??0)&&hp>.4&&canStartAttack(ai)&&fleeFrom.size<=ai.size*2.8&&surface<=80&&
+      (surface<=15||fleeFrom.attackState==='RECOVERY'||ai.retaliateTarget===fleeFrom);
+    if(counter)ai.nextHarass=game.gameTime+1.5;
+    ai.state=counter?'chase_fight':'flee';ai.target=fleeFrom;return;
   }
-  if(fleeFrom && !risk){game.abilities?.endCommand(ai,'threat');ai.state='flee';ai.target=fleeFrom;return;}
+  ai.guardMode=false;
   if(ai.state==='flee'){ai.state='search';ai.target=null;}
   if(ai.recovering){game.abilities?.endCommand(ai,'recovery');ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
   // Nearby combat can interrupt navigation and collection instead of waiting for route arrival.
@@ -288,7 +294,10 @@ function moveAI(ai, dt, balance,game) {
   let targetAngle = null;
   let speed = ai.moveSpeed*(game?.abilities.speedMultiplier(ai)??1);
 
-  if (ai.state === 'flee' && ai.target) {
+  if(ai.state==='flee'&&ai.guardMode&&ai.target){
+    const gap=dist(ai,ai.target)-(ai.size+ai.target.size)/2;
+    targetAngle=angleTo(ai.target,ai);speed*=gap<(balance.ai.guardSurfaceDistance??140)?1.3:0;
+  } else if (ai.state === 'flee' && ai.target) {
     targetAngle = angleTo(ai.target,ai);
     // v0.3: fleeing a low-HP threat gets a burst of speed, but fleeing an absorption grab
     // (spec §1) does not — you're still partly held, so the absorber gets a fair chance.

@@ -9,9 +9,9 @@ export function assessOpportunityChannels(game,p,nearby,needed,foodGrowth,threat
  const safe=(target,ignored)=>!game.biomes.danger(target)&&!fields.some(f=>dist(target,f)<=(f.radius??360))&&threats.every(t=>t===ignored||dist(target,t)>160);
  let absorptionGain=0,huntGain=0,huntEstimatedSeconds=null,absorptionTargets=0,huntTargets=0;
  if(!environment&&!fields.length&&!p.beingAbsorbedByRef&&p.hp/p.maxHp>.3)for(const t of nearby){
-  if(t.behavior==='orb'||t.summoned)continue;
+  if(t.behavior==='orb'||t.summoned&&!t.summoned.absorbable)continue;
   if(canAbsorb(p,t)&&safe(t,null)){const amount=gain(absorptionGrowthFor(p,t,b));absorptionTargets++;absorptionGain=Math.max(absorptionGain,amount);}
-  if(isHostile(p,t)&&p.attackUnlocked&&p.hp/p.maxHp>=.6&&t.size<=p.size*.9&&safe(t,t)){
+  if(!t.summoned&&isHostile(p,t)&&p.attackUnlocked&&p.hp/p.maxHp>=.6&&t.size<=p.size*.9&&safe(t,t)){
    const kr=b.killReward,direct=kr.baseReward*Math.pow(t.size/kr.referenceSize,kr.growthExponent)*kr.growthRewardMultiplier,reward=direct+minimumDeathDropGrowth(t,b)*(game.relics?.growthMultiplier(p)??1),amount=gain(reward),damage=applyDefense(attackDamageForEntity(p,b)*(game.abilities?.damageMultiplier(p)??1),t.size,b,game.abilities?.defenseMultiplier(t)??1),hits=Math.ceil(t.hp/Math.max(1,damage)),cycle=Math.max(p.behavior==='player'?b.attack.attackCooldown:b.ai.attackCooldown,attackChargeDurationForSize(p.size,b)+attackTelegraphTimeForSize(p.size,b)+b.attack.attackRecoveryTime);
    huntTargets++;if(amount>huntGain){huntGain=amount;huntEstimatedSeconds=hits*cycle;}
   }

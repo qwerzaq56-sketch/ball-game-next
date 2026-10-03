@@ -136,7 +136,7 @@ export class Abilities {
    const dir=e.facing+(i?1:-1)*Math.PI/2,d=e.size/2+55,w=g.balance.world;
    const size=e.size*Math.min(.2,cfg.summonSizeCapFraction??.2,Math.max(.01,(cfg.summonSizeFraction??.16)*(1+(random('ai')*2-1)*(cfg.summonSizeVariation??.2))));
    const t=new AIEntity({balance:g.balance,color:e.color,colorHex:e.colorHex,x:boundCenter(e.x+Math.cos(dir)*d,0,w.worldWidth,w.wrap),y:boundCenter(e.y+Math.sin(dir)*d,0,w.worldHeight,w.wrap),startSize:size});
-   t.growth=0;t.summoned={owner:e,attackInheritance:cfg.summonAttackInheritance??.5,expires:g.gameTime+(cfg.summonDuration??15)};t.displayName='숲의 동행';t.companionAffinity='social';t._recomputeStacks(g.balance,true);t.attackMaxStack=Math.max(1,t.attackMaxStack);t.attackStack=t.attackMaxStack;t.attackUnlocked=true;t.dodgeMaxStack=Math.max(1,t.dodgeMaxStack);t.dodgeStack=t.dodgeMaxStack;t.dodgeUnlocked=true;g.entities.push(t);g.ecology.initializeUnit(g,t);t.personality='growth';g.allyLinks.recruit(e,t);this.metrics.count(e,cast,'summons');this.log('summon',e,{target:t.id,expires:t.summoned.expires});
+   t.growth=0;t.summoned={owner:e,attackInheritance:cfg.summonAttackInheritance??.5,absorbableAt:g.gameTime+(cfg.summonAbsorbDelay??30)};t.displayName='숲의 동행';t.companionAffinity='social';t._recomputeStacks(g.balance,true);t.attackMaxStack=Math.max(1,t.attackMaxStack);t.attackStack=t.attackMaxStack;t.attackUnlocked=true;t.dodgeMaxStack=Math.max(1,t.dodgeMaxStack);t.dodgeStack=t.dodgeMaxStack;t.dodgeUnlocked=true;g.entities.push(t);g.ecology.initializeUnit(g,t);t.personality='growth';g.allyLinks.recruit(e,t);this.metrics.count(e,cast,'summons');this.log('summon',e,{target:t.id,absorbableAt:t.summoned.absorbableAt});
   }
  }
  update(dt){
@@ -146,7 +146,7 @@ export class Abilities {
   this.rallies=this.rallies.filter(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex);
   for(const unit of units)for(const [id,r] of unit.rallyBuffs??[])if(!this.rallies.includes(r))unit.rallyBuffs.delete(id);
   for(const e of this.game.entities){
-    if(e.summoned&&(e.summoned.expires<=this.game.gameTime||!e.summoned.owner.alive||!e.summoned.owner.apex)){e.alive=false;this.game.allyLinks.leave(e,'summon-expiry');this.game.relics.release(e);this.game.ecology.release(e,this.game.gameTime,'summon-expiry');this.release(e);}
+    if(e.summoned)e.summoned.absorbable=this.game.gameTime>=e.summoned.absorbableAt;
     if(!e.alive){this.release(e);e._specialApex=false;}
     else if(!e.apex&&e._specialApex){this.loseApex(e);}
     e.inviteBuffs=(e.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime);

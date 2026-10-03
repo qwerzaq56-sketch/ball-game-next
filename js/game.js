@@ -320,6 +320,7 @@ export class Game {
     const inp = this.input;
     p.companionVelocity={x:0,y:0};
     p.allyAbsorptionEnabled=this.autoplay.enabled||!!inp.absorbHeld||!!(inp.touchMode&&inp.absorbToggle);
+    if(p.allyAbsorptionEnabled&&p.companionGroup)this.allyLinks.leave(p,'absorption-enabled');
 
     const releasedUltimate=inp._ultimateQueued;inp._ultimateQueued=false;
     const releasedAttack=inp._attackQueued;inp._attackQueued=null;
@@ -738,12 +739,14 @@ export class Game {
     let margin=650;for(const e of this.entities)if(e.alive)margin=Math.max(margin,e.size/2+120);
     const minX=w.wrap?Math.floor((view.left-margin)/w.worldWidth):0,maxX=w.wrap?Math.floor((view.right+margin)/w.worldWidth):0;
     const minY=w.wrap?Math.floor((view.top-margin)/w.worldHeight):0,maxY=w.wrap?Math.floor((view.bottom+margin)/w.worldHeight):0;
-    for(let x=minX;x<=maxX;x++)for(let y=minY;y<=maxY;y++){
+    for(const layer of [0,1])for(let x=minX;x<=maxX;x++)for(let y=minY;y<=maxY;y++){
       const ox=x*w.worldWidth,oy=y*w.worldHeight;
       ctx.save();ctx.translate(ox,oy);ctx.beginPath();ctx.rect(0,0,w.worldWidth,w.worldHeight);
       this.renderCamera={...this.camera,x:this.camera.x-ox,y:this.camera.y-oy};
+      if(layer===0){
       this.drawGrid(ctx);
       this.biomes.draw(ctx,this.camera.zoom);
+      }else{
       this.era.draw(ctx,this.camera.zoom);
       this.relics.draw(ctx,this.camera.zoom);
       this.drawTerritories(ctx);
@@ -755,7 +758,7 @@ export class Game {
       this.drawParticles(ctx);
       this.drawFloatingTexts(ctx);
       this.drawTouchAim(ctx);
-
+      }
       ctx.restore();
     }
     this.renderCamera=null;
@@ -1015,7 +1018,7 @@ export class Game {
       ctx.fillStyle = e.role==='predator' ? '#fda4af' : e.role==='prey' ? '#a5b4fc' : '#86efac';
       ctx.fillText(role,x,roleY);
       if(e.behavior==='player') continue;
-      const state = AI_STATE_LABEL[e.recovering ? 'recover' : e.state] ?? e.state;
+      const state = e.guardMode?'경계':AI_STATE_LABEL[e.recovering ? 'recover' : e.state] ?? e.state;
       const text = `${state} · ${AI_PERSONALITY_LABEL[e.personality] ?? '-'}`;
       ctx.strokeStyle = 'rgba(0,0,0,0.75)';
       ctx.strokeText(text,x,stateY);

@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "escapePause": true,
+  "persistent": true,
+  "detached": true,
+  "summons": 2,
+  "charge": 0.9,
+  "errors": []
+}
