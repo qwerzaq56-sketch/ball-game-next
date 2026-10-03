@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "held": {
+    "move": 1,
+    "aim": "attack",
+    "charge": 0.48330000000000023
+  },
+  "fired": {
+    "charge": 0.6110000000000005,
+    "state": "CHARGING",
+    "move": 1
+  },
+  "cancelCleared": true,
+  "errors": [],
+  "defaultMovementFacing": true,
+  "dragAimOverrides": true,
+  "tapDodgeFollowsFacing": true
+}

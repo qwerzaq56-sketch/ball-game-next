@@ -32,3 +32,8 @@ test('oversized or hostile group merges fail atomically without splitting either
  const g=createGame(7),units=Array.from({length:7},(_,i)=>actor(g,'green',4000+i*20));g.entities=units;g.buildGrid();for(let i=1;i<4;i++)g.allyLinks.recruit(units[0],units[i]);for(let i=5;i<7;i++)g.allyLinks.recruit(units[4],units[i]);const ids=units.map(e=>e.companionGroup);assert.equal(g.allyLinks.merge(units[0],units[4]),false);assert.deepEqual(units.map(e=>e.companionGroup),ids);
  g.allyLinks.leave(units[3]);units[0].warTargets=new Set([units[6]]);assert.equal(g.allyLinks.merge(units[0],units[4]),false);assert.equal(units[6].companionGroup,ids[6]);
 });
+
+test('movement drives default facing; explicit drag overrides it and a tap dodge follows facing',()=>{
+ const g=createGame(7),p=g.player;g.entities=[p];g.biomes.enabled=false;g.input.touchMode=true;g.input.touchMove={x:0,y:1};g.updatePlayer(.01);assert.equal(p.facing,Math.PI/2);
+ g.touchAim={kind:'attack',dragged:true,angle:Math.PI,chargeSeconds:.2};g.updatePlayer(.01);assert.equal(p.facing,Math.PI);g.touchAim=null;g.input.touchMove={x:0,y:0};p.dodgeUnlocked=true;p.dodgeStack=1;p.dodgeMaxStack=1;g.input.consumeDodge=()=>true;g.updatePlayer(.01);assert.equal(p.dodgeDir,Math.PI);
+});

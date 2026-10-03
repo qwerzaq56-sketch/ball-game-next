@@ -339,8 +339,7 @@ export class Game {
     const auto=this.autoplay.enabled?this.autoplay.action:null;
     if(!auto&&inp.mouseDown&&canStartAttack(p))inp.attackChargeSeconds=(inp.attackChargeSeconds??0)+dt;
     p.attackHoldProgress=inp.mouseDown?Math.min(1,(inp.attackChargeSeconds??0)/(b.attack.manualChargeSeconds??1.5)):this.touchAim?.kind==='attack'?Math.min(1,(this.touchAim.chargeSeconds??0)/(b.attack.manualChargeSeconds??1.5)):0;
-    const mouseWorld = auto?.aim??this.screenToWorld(inp.mouseX, inp.mouseY);
-    const aimAngle = angleTo(p,mouseWorld);
+    let mouseWorld = auto?.aim??this.screenToWorld(inp.mouseX, inp.mouseY);
 
     let dx = 0;
     let dy = 0;
@@ -356,6 +355,10 @@ export class Game {
     const sprintMultiplier=updateSprint(p,dt,b,{held:!auto&&(inp.keys.has(' ')||inp.sprintHeld),moving});
     const moveSpeed=p.moveSpeed*this.abilities.speedMultiplier(p)*this.biomes.moveMultiplier(p)*sprintMultiplier;
     const moveAngle = moving ? Math.atan2(dy, dx) : p.facing;
+    const dragAngle=this.touchAim?.dragged?this.touchAim.angle:Number.isFinite(releasedAttack?.angle)?releasedAttack.angle:Number.isFinite(releasedDodgeAngle)?releasedDodgeAngle:null;
+    const mouseAiming=!inp.touchMode&&(inp.mouseDown||releasedAttack!=null);
+    const aimAngle=auto?angleTo(p,mouseWorld):dragAngle??(mouseAiming?angleTo(p,mouseWorld):moveAngle);
+    if(!auto&&!mouseAiming)mouseWorld={x:p.x+Math.cos(aimAngle)*350,y:p.y+Math.sin(aimAngle)*350};
 
     if (p.attackState === 'READY' && p.dodgeState !== 'DODGING') {
       if (moving) {
@@ -381,7 +384,7 @@ export class Game {
     }
     const dodge=auto?auto.dodge:inp.consumeDodge();if(auto)auto.dodge=false;
     if (dodge && p.dodgeUnlocked && canStartDodge(p)) {
-      startDodge(p, !auto&&releasedDodgeAngle!=null?releasedDodgeAngle:moveAngle, b);
+      startDodge(p, !auto&&releasedDodgeAngle!=null?releasedDodgeAngle:p.facing, b);
       this.audio.dodge();
     }
   }

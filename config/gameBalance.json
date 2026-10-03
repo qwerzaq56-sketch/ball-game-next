@@ -106,7 +106,8 @@
     "maintainDistancePerSize": 0.5,
     "maxAbsorptionSpeed": 5,
     "pullForce": 1,
-    "healthCostProgressFraction": 0.25,
+    "healthCostProgressFraction": 1,
+    "successHealthRefundFraction": 0.25,
     "healthFloorFraction": 0.01,
     "healthRatioCurve": [
       {

@@ -67,10 +67,8 @@ function completeAbsorption(absorber, target, game, balance) {
   absorber.addGrowth(gained, balance);
   // Absorption growth raises capacity; it does not erase the intended health risk.
   absorber.hp=Math.max(absorber.maxHp*(balance.absorption.healthFloorFraction??.01),Math.min(beforeGrowth.hp,absorber.maxHp));
-  const recovery=Math.min(Math.max(0,-(target.absorptionHealthCost??0)),Math.max(0,absorber.maxHp-absorber.hp));absorber.hp+=recovery;target.absorptionHealthRecovered=recovery;
+  const recovery=Math.min(Math.max(0,-(target.absorptionHealthCost??0))+(target.absorptionHealthPaid??0)*(balance.absorption.successHealthRefundFraction??.25),Math.max(0,absorber.maxHp-absorber.hp));absorber.hp+=recovery;target.absorptionHealthRecovered=recovery;
   if(recovery>0)game.spawnFloatingText(absorber.x,absorber.y,`+${Math.round(recovery)} HP`,'#86efac');
-  const burst=payAbsorptionHealth(absorber,target,(target.absorptionHealthCost??0)*(1-(balance.absorption.healthCostProgressFraction??.25)),balance);
-  if(burst>0){game.spawnFloatingText(absorber.x,absorber.y,`−${Math.round(burst)} HP`,'#fb7185');if(absorber===game.player)game.audio.damage();}
   if(target.behavior!=='orb')game.balanceLog?.absorb({...beforeGrowth,maxHp:absorber.maxHp},target,gained);
   game.awardScore(absorber, gained);
   game.spawnAbsorptionParticles(target.x, target.y, target.colorHex);
@@ -119,7 +117,7 @@ export function updateAbsorptions(game, dt, balance) {
 
     const proximity = 1 - Math.min(1, d / maintainDistance); // 1 at contact, 0 at the edge
     const advance=Math.min(Math.max(0,target.absorptionRequired-target.absorptionProgress),cfg.maxAbsorptionSpeed*proximity*dt);
-    const cost=(target.absorptionHealthCost??0)*(cfg.healthCostProgressFraction??.25)*advance/target.absorptionRequired;
+    const cost=(target.absorptionHealthCost??0)*(cfg.healthCostProgressFraction??1)*advance/target.absorptionRequired;
     payAbsorptionHealth(absorber,target,cost,balance);
     target.absorptionProgress += advance;
 

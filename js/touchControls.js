@@ -61,15 +61,16 @@ export class TouchControls {
   }
   aim(e){
     const gesture=this.gestures.get(e.pointerId);if(!gesture)return;
+    if(!gesture.dragged)gesture.angle=this.game.player.facing;
     const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
     gesture.distance=Math.hypot(dx,dy);
     if(gesture.distance>=8){gesture.angle=Math.atan2(dy,dx);gesture.dragged=true;}
-    this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180);
+    this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180,!!gesture.dragged);
   }
-  showAim(angle,kind,distance=180){
+  showAim(angle,kind,distance=180,dragged=false){
     const p=this.game.worldToScreen(this.game.player.x,this.game.player.y);
     this.input.mouseX=p.x+Math.cos(angle)*180;this.input.mouseY=p.y+Math.sin(angle)*180;
-    this.game.touchAim={angle,kind,chargeSeconds:kind==='attack'?Math.max(0,this.game.gameTime-(this.gestures.values().next().value?.started??this.game.gameTime)):0};
+    this.game.touchAim={angle,kind,dragged,chargeSeconds:kind==='attack'?Math.max(0,this.game.gameTime-(this.gestures.values().next().value?.started??this.game.gameTime)):0};
     if(kind==='ultimate'){const player=this.game.player,point=this.game.abilities.aimPoint(player,angle,{x:player.x+Math.cos(angle)*distance/this.game.camera.zoom,y:player.y+Math.sin(angle)*distance/this.game.camera.zoom}),screen=this.game.worldToScreen(point.x,point.y);this.input.mouseX=screen.x;this.input.mouseY=screen.y;this.game.touchAim.point=point;}
   }
   release(id,fire=false){
@@ -92,7 +93,7 @@ export class TouchControls {
     const fresh=this.lastHistory!==this.game.apexHistory;
     if(fresh||(!this.wasPaused&&this.game.paused))this.clear();
     this.lastHistory=this.game.apexHistory;this.wasPaused=this.game.paused;
-    const gesture=this.gestures.values().next().value;if(gesture)this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180);
+    const gesture=this.gestures.values().next().value;if(gesture&&!gesture.dragged)gesture.angle=this.game.player.facing;if(gesture)this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180,!!gesture.dragged);
     const p=this.game.player,blocked=this.blocked();
     this.absorb.disabled=blocked;this.absorb.textContent=this.input.absorbToggle?'흡수 ON':'흡수 OFF';this.absorb.setAttribute('aria-pressed',String(!!this.input.absorbToggle));
     for(const [button,kind]of [[this.attack,'attack'],[this.dodge,'dodge'],[this.special,'special'],[this.ultimate,'ultimate']]){
