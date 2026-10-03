@@ -7,5 +7,5 @@ export function updateSprint(e,dt,balance,{held=false,moving=false}={}){
  e.sprinting=unlocked&&held&&moving&&e.attackState==='READY'&&e.dodgeState!=='DODGING'&&!e.frozen&&!e.sprintExhausted&&e.sprintGauge>0;
  if(e.sprinting){e.sprintGauge=Math.max(0,e.sprintGauge-dt);if(e.sprintGauge===0)e.sprintExhausted=true;}
  else if(!held)e.sprintGauge=Math.min(capacity,e.sprintGauge+dt*(c.recoveryPerSecond??.6));
- return e.sprinting?(c.speedMultiplier??1.5):1;
+ return e.sprinting?(c.speedMultiplier??2.1):1;
 }

@@ -1,3 +1,4 @@
+import {chargedAttackDistance} from './combat.js';
 import {BiomeObjects} from './biomeObjects.js';
 import {updateGrowthMotion} from './growthMotion.js';
 import {updateSprint} from './sprint.js';
@@ -942,13 +943,12 @@ export class Game {
       }
     }
 
-    const minimumCharge=this.balance.attack.minChargeDistanceFraction??.03;
-    const chargePreview=e.currentChargeDistance*(minimumCharge+(1-minimumCharge)*(e.attackHoldProgress??0))/(minimumCharge+(1-minimumCharge)*(e.currentAttackCharge??.75));
+    const chargePreview=chargedAttackDistance(e.size,this.balance,e.apex,e.attackHoldProgress??0);
     const aiming=e===this.player&&(this.touchAim?.kind==='attack'||this.input.mouseDown||e.autoChargeSeconds>0)&&e.attackUnlocked&&e.attackState==='READY';
     if(aiming||(e===this.player&&e.attackState==='TELEGRAPH')||e.attackState==='CHARGING'){
       const hitRadius=e.size/2;
       const direction=aiming?(this.touchAim?.angle??angleTo(e,this.autoplay.action?.aim??this.screenToWorld(this.input.mouseX,this.input.mouseY))):e.attackDir;
-      const remaining=aiming?attackChargeDistanceForSize(e.size,this.balance,e.apex)*((this.balance.attack.minChargeDistanceFraction??.03)+(1-(this.balance.attack.minChargeDistanceFraction??.03))*(e.attackHoldProgress??0)):e.attackState==='TELEGRAPH'?chargePreview:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
+      const remaining=aiming?chargedAttackDistance(e.size,this.balance,e.apex,e.attackHoldProgress??0):e.attackState==='TELEGRAPH'?chargePreview:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
       ctx.save();ctx.translate(e.x,e.y);ctx.rotate(direction);ctx.beginPath();ctx.moveTo(0,-hitRadius);ctx.lineTo(remaining,-hitRadius);ctx.arc(remaining,0,hitRadius,-Math.PI/2,Math.PI/2);ctx.lineTo(0,hitRadius);ctx.arc(0,0,hitRadius,Math.PI/2,Math.PI*1.5);ctx.closePath();ctx.fillStyle='rgba(255,255,255,.055)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1/this.camera.zoom;ctx.stroke();ctx.restore();
     }
     // telegraph indicator

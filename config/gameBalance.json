@@ -57,7 +57,8 @@
     "attackCooldown": 1.5,
     "attackRecoveryTime": 0.4,
     "minChargeDamageMultiplier": 0.35,
-    "minChargeDistanceFraction": 0.03,
+    "minimumChargeDistance": 70,
+    "minChargeDistanceFraction": 0.12,
     "aiChargeFraction": 0.75,
     "aiMinChargeFraction": 0.3
   },
@@ -65,7 +66,7 @@
     "unlockSize": 150,
     "capacitySeconds": 3,
     "recoveryPerSecond": 0.6,
-    "speedMultiplier": 1.5
+    "speedMultiplier": 2.1
   },
   "dodge": {
     "dodgeDuration": 0.2,

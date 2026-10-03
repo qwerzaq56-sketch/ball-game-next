@@ -54,6 +54,12 @@ export function attackChargeDistanceForSize(size,balance,apex=false){
  return Math.min(c.maxChargeDistance??600,attackRangeForSize(size,balance)*c.chargeDistanceMultiplier)*(apex?.7:1);
 }
 
+// Shared by actual movement and the charge preview; zero charge still advances visibly.
+export function chargedAttackDistance(size,balance,apex=false,charge=0){
+ const full=attackChargeDistanceForSize(size,balance,apex),minimum=Math.min(full,Math.max(balance.attack.minimumChargeDistance??70,full*(balance.attack.minChargeDistanceFraction??.12)));
+ return minimum+(full-minimum)*Math.max(0,Math.min(1,charge));
+}
+
 // v0.6 spec §4-2: bigger balls hit harder and further, but need longer to wind up — a
 // deliberate risk/reward tradeoff, not just a range bonus. Independent of attackRangeForSize;
 // see startAttack for how the two combine into an actual dash speed.
@@ -99,7 +105,7 @@ export function startAttack(entity, dirAngle, balance,charge=entity.behavior==='
   entity.trail = [];
   const c = balance.combatScaling;
   entity.currentAttackRange = attackRangeForSize(entity.size, balance);
-  entity.currentChargeDistance = attackChargeDistanceForSize(entity.size,balance,entity.apex)*((balance.attack.minChargeDistanceFraction??.03)+(1-(balance.attack.minChargeDistanceFraction??.03))*level);
+  entity.currentChargeDistance = chargedAttackDistance(entity.size,balance,entity.apex,level);
   entity.currentChargeDuration = Math.max(.08,attackChargeDurationForSize(entity.size, balance)*(.2+.8*level));
   entity.currentTelegraphTime = entity.behavior==='ai'?(balance.attack.manualChargeSeconds??.9)*level:0;
   if (entity.behavior === 'ai') entity.aiAttackGateTimer = balance.ai.attackCooldown;
@@ -293,6 +299,7 @@ export function canStartDodge(entity) {
 }
 
 export function startDodge(entity, dirAngle, balance) {
+  // Dodge preserves both incoming and outgoing absorption links; distance checks own escape.
   entity.specialCast=null;
   entity.dodgeStack -= 1;
 
