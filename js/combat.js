@@ -208,7 +208,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   let dmg = Math.max(bal?.combatScaling?.minimumDamage??1,defended*Math.max(0,Math.min(1,options.postDefenseMultiplier??1)));
   const shield=Math.min(dmg,Math.max(0,target.shieldHp??0));target.shieldHp=Math.max(0,(target.shieldHp??0)-shield);dmg-=shield;
   if(shield>0){target.shieldDamageAbsorbed=(target.shieldDamageAbsorbed??0)+shield;target.regenTimer=0;}
-  if(dmg<=0){target.hitFlash=.08;return true;}
+  if(dmg<=0){target.hitFlash=.08;game?.spawnHitImpact?.(target,attacker,shield,{shield:true,field:options.kind==='field'});return true;}
   const cfg = game ? game.balance.combat : null;
 
   const lost=Math.min(Math.max(0,target.hp),dmg);
@@ -234,7 +234,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   if (target.beingAbsorbedByRef) cancelAbsorption(target); // a hit breaks an absorption connection
 
   if (game) {
-    game.spawnHitParticles(target.x, target.y, target.colorHex);
+    if(game.spawnHitImpact)game.spawnHitImpact(target,attacker,lost,{field:options.kind==='field'});else game.spawnHitParticles(target.x, target.y, target.colorHex);
     if (attacker === game.player) game.audio.hit();
     if (target === game.player) game.audio.damage();
   }

@@ -31,7 +31,7 @@ test('large bodies stay visible when their centers are outside the old fixed-mar
 test('offscreen particle rendering skips drawing without removing effects and keeps intersecting rings',()=>{
  const g=createGame(7);g.camera={x:2500,y:2500,zoom:1};let arcs=0;
  g.particles=[{x:4500,y:4500,size:3,type:'dot',life:.5,maxLife:1,color:'#ffffff'},{x:3150,y:2500,size:10,type:'ring',life:.1,maxLife:1,color:'#ffffff'}];
- const before=JSON.stringify(g.particles),ctx={beginPath(){},arc(){arcs++;},fill(){},stroke(){}};
+ const before=JSON.stringify(g.particles),ctx={save(){},restore(){},beginPath(){},arc(){arcs++;},fill(){},stroke(){}};
  g.drawParticles(ctx);assert.equal(arcs,1);assert.equal(JSON.stringify(g.particles),before);
 });
 

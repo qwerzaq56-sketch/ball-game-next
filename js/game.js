@@ -80,7 +80,7 @@ export class Game {
       this.audio.unlock();
     };
     this.entities = [this.player];
-    this.particles = [];
+    this.particles = [];this.playerHitUntil=0;
     this.floatingTexts = [];
     this.grid = new Map();
     this.gridOrder = null;
@@ -645,6 +645,16 @@ export class Game {
 
   // ---------- particles ----------
 
+  spawnHitImpact(target,attacker,lost,{field=false,shield=false}={}) {
+    const now=this.gameTime;if(now<(target.nextImpactVisualAt??-1)||this.particles.length+16>900)return;
+    target.nextImpactVisualAt=now+(field?.22:.075);target.hitVisualUntil=now+.18;target.hitVisualShield=shield;
+    const z=Math.max(.08,this.camera.zoom),power=Math.min(1,Math.max(.2,lost/Math.max(1,target.maxHp)*5)),toward=attacker?delta(attacker,target,this.balance.world):{x:0,y:0},length=Math.hypot(toward.x,toward.y),angle=length?Math.atan2(toward.y,toward.x):0;
+    const x=target.x-(length?toward.x/length*target.size/2:0),y=target.y-(length?toward.y/length*target.size/2:0),color=shield?'#a5f3fc':'#ffffff',count=field?4:8+Math.round(power*6),life=field?.18:.28;
+    this.particles.push({x,y,vx:0,vy:0,life:.24,maxLife:.24,color,size:(10+power*12)/z,type:'impact-ring'});
+    for(let i=0;i<count;i++){const a=angle+(random('visual')-.5)*Math.PI*1.6,speed=(70+random('visual')*160)*(1+power)/z;this.particles.push({x,y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life,maxLife:life,color:i%3?color:target.colorHex,size:(1.5+power*2)/z,type:'impact-spark'});}
+    if(target===this.player&&!shield)this.playerHitUntil=now+.18;
+  }
+
   spawnHitParticles(x, y, color) {
     const life = this.balance.combat.hitParticleLifetime;
     for (let i = 0; i < 12; i++) {
@@ -780,6 +790,7 @@ export class Game {
     ctx.restore();
     this.drawNames(ctx);
     this.biomes.drawBlizzardOverlay(ctx);
+    if((this.playerHitUntil??0)>this.gameTime){ctx.save();ctx.globalAlpha=.4*Math.min(1,(this.playerHitUntil-this.gameTime)/.18);ctx.strokeStyle='#fb7185';ctx.lineWidth=6;ctx.strokeRect(3,3,this.canvas.width-6,this.canvas.height-6);ctx.restore();}
   }
 
   drawTouchAim(ctx) {
@@ -964,7 +975,7 @@ export class Game {
 
     // body
     ctx.beginPath();
-    ctx.fillStyle = e.hitFlash > 0 ? '#ffffff' : e.colorHex;
+    ctx.fillStyle = (e.hitVisualUntil!=null?e.hitVisualUntil-this.gameTime>.12:e.hitFlash>0) ? '#ffffff' : e.colorHex;
     ctx.arc(e.x, e.y, r, 0, Math.PI * 2);
     ctx.fill();
 
@@ -973,6 +984,7 @@ export class Game {
     ctx.stroke();
     // Canvas save/restore does not restore the current path. Stroke the body before
     // decorative helpers replace it with their marks, pulse circles or arrow triangles.
+    if((e.hitVisualUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+3/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle=e.hitVisualShield?'#a5f3fc':'#ffffff';ctx.globalAlpha=Math.min(1,(e.hitVisualUntil-this.gameTime)/.18);ctx.lineWidth=4/this.camera.zoom;ctx.stroke();ctx.restore();}
     if((e.shieldHp??0)>0){ctx.beginPath();ctx.arc(e.x,e.y,r+7/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#a5f3fc';ctx.lineWidth=3/this.camera.zoom;ctx.stroke();}
     if(this.abilities.frostMarks.some(m=>m.target===e)){ctx.beginPath();ctx.arc(e.x,e.y,r+12/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#67e8f9';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([5/this.camera.zoom,4/this.camera.zoom]);ctx.stroke();ctx.setLineDash([]);}
     if((e.frostbiteRemaining??0)>0||(this.biomes.enabled&&this.biomes.regionAt(e)?.id==='lake')){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.fillStyle=(e.frostbiteRemaining??0)>0?'rgba(185,225,255,.42)':'rgba(25,110,230,.30)';ctx.fill();ctx.restore();}
@@ -1046,23 +1058,25 @@ export class Game {
   }
 
   drawParticles(ctx) {
-    const view=worldView(this.canvas,this.renderCamera??this.camera);
+    ctx.save();const view=worldView(this.canvas,this.renderCamera??this.camera);
     for (const p of this.particles) {
-      const extent=p.type==='ring'?p.size*4+2:p.size;
+      const extent=p.type==='ring'||p.type==='impact-ring'?p.size*4+2:p.type==='impact-spark'?p.size+Math.hypot(p.vx,p.vy)*.025:p.size;
       if(!boxInView(view,p.x-extent,p.y-extent,p.x+extent,p.y+extent))continue;
       const alpha = Math.max(0, p.life / p.maxLife);
       ctx.beginPath();
       ctx.fillStyle = this.withAlpha(p.color, alpha);
-      if (p.type === 'ring') {
+      if (p.type === 'ring'||p.type==='impact-ring') {
         ctx.arc(p.x, p.y, p.size * (1 - alpha) * 3 + p.size, 0, Math.PI * 2);
-        ctx.lineWidth = 2;
+        ctx.lineWidth = p.type==='impact-ring'?2.5/this.camera.zoom:2;
         ctx.strokeStyle = this.withAlpha(p.color, alpha);
         ctx.stroke();
+      } else if(p.type==='impact-spark'){ctx.moveTo(p.x,p.y);ctx.lineTo(p.x-p.vx*.025,p.y-p.vy*.025);ctx.strokeStyle=this.withAlpha(p.color,alpha);ctx.lineWidth=p.size*alpha;ctx.lineCap='round';ctx.stroke();
       } else {
         ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
         ctx.fill();
       }
     }
+    ctx.restore();
   }
 
   drawFloatingTexts(ctx) {
