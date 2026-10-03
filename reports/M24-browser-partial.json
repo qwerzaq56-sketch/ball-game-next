@@ -1,0 +1,178 @@
+{
+  "commit": "3538afb80b93e3e937e394755a8785d07b4934a2",
+  "workingTreeDirty": false,
+  "policy": "built-in local-survival-v1; normal lives, no replenishment",
+  "startedAt": "2026-10-02T23:01:26.580Z",
+  "deadline": "2026-10-03T03:00:00.000Z",
+  "status": "INTERRUPTED_PROCESS",
+  "timeline": [
+    {
+      "wallSeconds": 0.8,
+      "frames": 2,
+      "checks": 0,
+      "maxApex": 0,
+      "maxGroups": 0,
+      "maxSize": 0,
+      "lastCheck": 0,
+      "violation": null,
+      "gameSeconds": 0.03,
+      "size": 20,
+      "score": 0,
+      "lives": 3,
+      "gameOver": false,
+      "autoplay": "\uba39\uc774 \ud0d0\uc0c9",
+      "defeats": 0,
+      "liveAI": 61,
+      "groups": 0,
+      "joins": 0,
+      "leaves": 0,
+      "specialFires": 0,
+      "era": {
+        "phase": "abundance",
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relics": {
+        "items": 1,
+        "pickups": 0
+      },
+      "heapBytes": 6407759
+    },
+    {
+      "wallSeconds": 601.8,
+      "frames": 36043,
+      "checks": 42920,
+      "maxApex": 3,
+      "maxGroups": 17,
+      "maxSize": 217.2167325411142,
+      "lastCheck": 600.125899999857,
+      "violation": null,
+      "gameSeconds": 600.94,
+      "size": 197.23,
+      "score": 16321,
+      "lives": 3,
+      "gameOver": false,
+      "autoplay": "\uba39\uc774 \ud0d0\uc0c9",
+      "defeats": 0,
+      "liveAI": 70,
+      "groups": 9,
+      "joins": 711,
+      "leaves": 693,
+      "specialFires": 41,
+      "era": {
+        "phase": "abundance",
+        "cycle": 1,
+        "apocalypses": 1,
+        "duels": 0
+      },
+      "relics": {
+        "items": 1,
+        "pickups": 10
+      },
+      "heapBytes": 17832634
+    },
+    {
+      "wallSeconds": 1202.8,
+      "frames": 72012,
+      "checks": 77181,
+      "maxApex": 3,
+      "maxGroups": 17,
+      "maxSize": 314.62394914106744,
+      "lastCheck": 1201.3020999985229,
+      "violation": null,
+      "gameSeconds": 1201.69,
+      "size": 264.57,
+      "score": 32747,
+      "lives": 3,
+      "gameOver": false,
+      "autoplay": "\uba39\uc774 \ud0d0\uc0c9",
+      "defeats": 0,
+      "liveAI": 50,
+      "groups": 4,
+      "joins": 1258,
+      "leaves": 1250,
+      "specialFires": 92,
+      "era": {
+        "phase": "abundance",
+        "cycle": 2,
+        "apocalypses": 2,
+        "duels": 0
+      },
+      "relics": {
+        "items": 1,
+        "pickups": 20
+      },
+      "heapBytes": 21742118
+    },
+    {
+      "wallSeconds": 1803.5,
+      "frames": 107994,
+      "checks": 110959,
+      "maxApex": 3,
+      "maxGroups": 17,
+      "maxSize": 413.43828778477587,
+      "lastCheck": 1801.6943999983423,
+      "violation": null,
+      "gameSeconds": 1802.11,
+      "size": 307.31,
+      "score": 43927,
+      "lives": 3,
+      "gameOver": false,
+      "autoplay": "\uba39\uc774 \ud0d0\uc0c9",
+      "defeats": 0,
+      "liveAI": 68,
+      "groups": 11,
+      "joins": 1810,
+      "leaves": 1785,
+      "specialFires": 130,
+      "era": {
+        "phase": "competition",
+        "cycle": 3,
+        "apocalypses": 3,
+        "duels": 0
+      },
+      "relics": {
+        "items": 0,
+        "pickups": 31
+      },
+      "heapBytes": 25381613
+    }
+  ],
+  "errors": [],
+  "latest": {
+    "wallSeconds": 1902.3,
+    "frames": 113915,
+    "checks": 116288,
+    "maxApex": 3,
+    "maxGroups": 17,
+    "maxSize": 416.426083072372,
+    "lastCheck": 1900.090399998314,
+    "violation": null,
+    "gameSeconds": 1900.86,
+    "size": 335.36,
+    "score": 51429,
+    "lives": 3,
+    "gameOver": false,
+    "autoplay": "\uc6d4\ub4dc \ud0d0\uc0c9",
+    "defeats": 0,
+    "liveAI": 45,
+    "groups": 4,
+    "joins": 1880,
+    "leaves": 1872,
+    "specialFires": 137,
+    "era": {
+      "phase": "competition",
+      "cycle": 3,
+      "apocalypses": 3,
+      "duels": 0
+    },
+    "relics": {
+      "items": 0,
+      "pickups": 32
+    },
+    "heapBytes": 7891852
+  },
+  "interruptionObservedAt": "2026-10-02T23:56:58.186797+00:00",
+  "interruption": "Process absent and report stale; no recorded page errors; requested deadline completion not verified."
+}

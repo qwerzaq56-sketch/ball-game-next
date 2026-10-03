@@ -1,3 +1,5 @@
+> 최신 M28: 자동 탐색 목적지 유지·재방문 회피(local-survival-v2). 테스트147개/브라우저·터치/3시드 일반 Life 비교 완료. 이전 장기 실행은 프로세스 중단으로 partial 기록, 최신 코호트 재개. reports/M28-development.md.
+
 > 최신 M27: Era별 누적 직위/공격/패배 관찰. 테스트145개, 읽기 전용 브라우저/600초 결정론 검증. M25 세 시드 각각1시간 게임 시간 검사624804건 완료. reports/M25-development.md, reports/M27-development.md.
 
 > 최신 M26: Shift 인스펙터 선택의 자동 모드 유지·정지 중 동행 이탈 차단. M25 전선 표시/몸체 테두리 수정. Chromium 통합 검증 완료. reports/M25-development.md, reports/M26-development.md.

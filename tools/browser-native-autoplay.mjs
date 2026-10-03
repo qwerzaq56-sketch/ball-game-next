@@ -14,7 +14,7 @@ const imagePrefix=output.replace(/\.json$/,'');
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
 const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
 const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
-const report={commit,workingTreeDirty,seed,policy:'built-in local-survival-v1; normal lives, no replenishment',startedAt:new Date(start).toISOString(),deadline:new Date(deadline).toISOString(),status:'RUNNING',timeline:[],errors};
+const report={commit,workingTreeDirty,seed,policy:'built-in autoplay; normal lives, no replenishment',startedAt:new Date(start).toISOString(),deadline:new Date(deadline).toISOString(),status:'RUNNING',timeline:[],errors};
 async function save(){await writeFile(`${output}.tmp`,JSON.stringify(report,null,2));await rename(`${output}.tmp`,output);}
 let lastProgress=0,lastTimeline=0,lastViewport=-1,lastDialogue=-1;
 try {
@@ -37,6 +37,7 @@ try {
    if(this.gameTime-s.lastCheck>=1){s.lastCheck=this.gameTime;for(const e of units){s.checks++;s.maxSize=Math.max(s.maxSize,e.size);for(const k of ['x','y','size','hp','maxHp','moveSpeed','facing'])if(!Number.isFinite(e[k]))s.violation=`nonfinite ${k} #${e.id}`;if(!(e.hp>0&&e.hp<=e.maxHp+1e-6))s.violation=`health #${e.id}`;if(e.companionGroup&&!this.allyLinks.groups.has(e.companionGroup))s.violation=`orphan #${e.id}`;if(e.x<0||e.x>this.balance.world.worldWidth||e.y<0||e.y>this.balance.world.worldHeight)s.violation=`world center #${e.id}`;}}
   };
  },seed);
+ report.policy=await page.evaluate(()=>`built-in ${window.__game.autoplay.policy}; normal lives, no replenishment`);
  while(Date.now()<deadline){
   if(errors.length)throw Error(errors.at(-1));
   const elapsed=(Date.now()-start)/1000;
@@ -47,7 +48,7 @@ try {
   const sample=await page.evaluate(()=>{
    const g=window.__game,p=g.player,s=window.__soak;
    if(g.paused&&!g.gameOver&&!document.getElementById('play-help').open)g.paused=false;
-   return {...s,gameSeconds:+g.gameTime.toFixed(2),size:+p.size.toFixed(2),score:p.score,lives:g.lives,gameOver:g.gameOver,autoplay:g.autoplay.reason,defeats:p.defeatSerial??0,liveAI:g.entities.filter(e=>e.alive&&e.behavior==='ai').length,groups:g.allyLinks.groups.size,joins:g.allyLinks.stats.joins,leaves:g.allyLinks.stats.leaves,specialFires:g.abilities.specialFires??g.abilities.events.filter(e=>e.type==='special-fire').length,era:g.era?{phase:g.era.phase.id,cycle:g.era.cycle,apocalypses:g.era.completedApocalypses,duels:g.era.duelStarts}:null,relics:g.relics?{items:g.relics.items.length,pickups:g.relics.pickups}:null,heapBytes:performance.memory?.usedJSHeapSize??null};
+   return {...s,gameSeconds:+g.gameTime.toFixed(2),size:+p.size.toFixed(2),score:p.score,lives:g.lives,gameOver:g.gameOver,autoplay:g.autoplay.reason,byPhase:g.runMetrics.byPhase,defeats:p.defeatSerial??0,liveAI:g.entities.filter(e=>e.alive&&e.behavior==='ai').length,groups:g.allyLinks.groups.size,joins:g.allyLinks.stats.joins,leaves:g.allyLinks.stats.leaves,specialFires:g.abilities.specialFires??g.abilities.events.filter(e=>e.type==='special-fire').length,era:g.era?{phase:g.era.phase.id,cycle:g.era.cycle,apocalypses:g.era.completedApocalypses,duels:g.era.duelStarts}:null,relics:g.relics?{items:g.relics.items.length,pickups:g.relics.pickups}:null,heapBytes:performance.memory?.usedJSHeapSize??null};
   });
   if(sample.violation)throw Error(sample.violation);
   report.latest={wallSeconds:+elapsed.toFixed(1),...sample};

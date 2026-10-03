@@ -1,0 +1,113 @@
+{
+  "commit": "8d71f21e2f7b984264379006a99faf86a26e0350",
+  "workingTreeDirty": false,
+  "seed": 7,
+  "policy": "built-in local-survival-v1; normal lives, no replenishment",
+  "startedAt": "2026-10-02T23:15:00.685Z",
+  "deadline": "2026-10-03T03:00:00.000Z",
+  "status": "INTERRUPTED_PROCESS",
+  "timeline": [
+    {
+      "wallSeconds": 1.1,
+      "frames": 1,
+      "checks": 0,
+      "maxApex": 0,
+      "maxGroups": 0,
+      "maxSize": 0,
+      "lastCheck": 0,
+      "violation": null,
+      "gameSeconds": 0.02,
+      "size": 20,
+      "score": 0,
+      "lives": 3,
+      "gameOver": false,
+      "autoplay": "\uba39\uc774 \ud0d0\uc0c9",
+      "defeats": 0,
+      "liveAI": 61,
+      "groups": 0,
+      "joins": 0,
+      "leaves": 0,
+      "specialFires": 0,
+      "era": {
+        "phase": "abundance",
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relics": {
+        "items": 1,
+        "pickups": 0
+      },
+      "heapBytes": 6988569
+    },
+    {
+      "wallSeconds": 601.3,
+      "frames": 35922,
+      "checks": 43767,
+      "maxApex": 3,
+      "maxGroups": 16,
+      "maxSize": 200.52575693709161,
+      "lastCheck": 599.0429999998631,
+      "violation": null,
+      "gameSeconds": 599.94,
+      "size": 163.47,
+      "score": 11042,
+      "lives": 3,
+      "gameOver": false,
+      "autoplay": "\uba39\uc774 \ud0d0\uc0c9",
+      "defeats": 0,
+      "liveAI": 56,
+      "groups": 8,
+      "joins": 784,
+      "leaves": 768,
+      "specialFires": 34,
+      "era": {
+        "phase": "abundance",
+        "cycle": 1,
+        "apocalypses": 1,
+        "duels": 0
+      },
+      "relics": {
+        "items": 0,
+        "pickups": 10
+      },
+      "heapBytes": 17444867
+    }
+  ],
+  "errors": [],
+  "latest": {
+    "wallSeconds": 1088.6,
+    "frames": 65103,
+    "checks": 71445,
+    "maxApex": 3,
+    "maxGroups": 16,
+    "maxSize": 254.01454606334252,
+    "lastCheck": 1086.6567999985668,
+    "violation": null,
+    "gameSeconds": 1086.96,
+    "size": 221.43,
+    "score": 21354,
+    "lives": 3,
+    "gameOver": false,
+    "autoplay": "\uc6d4\ub4dc \ud0d0\uc0c9",
+    "defeats": 0,
+    "liveAI": 57,
+    "groups": 7,
+    "joins": 1260,
+    "leaves": 1246,
+    "specialFires": 76,
+    "era": {
+      "phase": "abundance",
+      "cycle": 2,
+      "apocalypses": 2,
+      "duels": 0
+    },
+    "relics": {
+      "items": 0,
+      "pickups": 19
+    },
+    "heapBytes": 28329092
+  },
+  "interruptionObservedAt": "2026-10-02T23:56:58.187068+00:00",
+  "interruption": "Process absent and report stale; no recorded page errors; requested deadline completion not verified."
+}

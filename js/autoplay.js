@@ -2,8 +2,17 @@ import { boundCenter } from './worldBounds.js';
 import {canEatOrb,canAbsorb,isHostile,dist} from './collision.js';
 import {canStartAttack,canStartDodge} from './combat.js';
 export class Autoplay {
- constructor(game){this.game=game;this.enabled=false;this.timer=0;this.dodgeWait=0;this.action=null;this.reason='OFF';this.policy='local-survival-v1';}
- setEnabled(value){this.enabled=!!value;this.timer=0;this.action=null;this.reason=this.enabled?'탐색 준비':'OFF';if(value){const input=this.game.input;input.keys.clear();input.mouseDown=false;input.touchMove=null;input._specialQueued=false;input._dodgeQueued=false;}}
+ constructor(game){this.game=game;this.enabled=false;this.timer=0;this.dodgeWait=0;this.action=null;this.reason='OFF';this.policy='local-survival-v2';this.explorationPoint=null;this.explorationRecent=[];this.explorationIndex=0;}
+ setEnabled(value){this.enabled=!!value;this.timer=0;this.dodgeWait=0;this.action=null;this.explorationPoint=null;this.explorationRecent=[];this.explorationIndex=0;this.reason=this.enabled?'탐색 준비':'OFF';if(value){const input=this.game.input;input.keys.clear();input.mouseDown=false;input.touchMove=null;input._specialQueued=false;input._dodgeQueued=false;}}
+ explore(){
+  const g=this.game,p=g.player,held=this.explorationPoint;
+  if(held&&g.gameTime<held.expires&&dist(p,held)>40)return held;
+  const w=g.balance.world,angle=((g.seed>>>0)%360)*Math.PI/180+this.explorationIndex++*Math.PI*(3-Math.sqrt(5));
+  const points=Array.from({length:4},(_,i)=>({x:boundCenter(p.x+Math.cos(angle+i*Math.PI/2)*600,p.size,w.worldWidth),y:boundCenter(p.y+Math.sin(angle+i*Math.PI/2)*600,p.size,w.worldHeight)}));
+  const score=point=>dist(p,point)-this.explorationRecent.reduce((n,r)=>n+Math.max(0,350-dist(point,r)),0);
+  points.sort((a,b)=>score(b)-score(a));this.explorationRecent=[...this.explorationRecent,{x:p.x,y:p.y}].slice(-4);
+  this.explorationPoint={...points[0],expires:g.gameTime+12};return this.explorationPoint;
+ }
  update(dt){
   if(!this.enabled)return;const g=this.game,p=g.player;
   if(g.gameOver||!p.alive){this.action=null;this.reason='게임 종료';return;}
@@ -19,7 +28,7 @@ export class Autoplay {
    const relic=g.relics.desired(p,safe);
    const food=candidates.filter(e=>canEatOrb(p,e,g.balance)&&safe(e)).sort((a,b)=>b.growthValue/(dist(p,b)+60)-a.growthValue/(dist(p,a)+60)||a.id-b.id)[0];
    target=relic??food;this.reason=relic?'유물 수집':food?'먹이 탐색':'월드 탐색';
-   if(!target){const w=g.balance.world,angle=Math.floor(g.gameTime/6)*Math.PI/2;target={x:p.x+Math.cos(angle)*300,y:p.y+Math.sin(angle)*300};if(p.x<p.size/2+80||p.x>w.worldWidth-p.size/2-80)target.x=w.worldWidth/2;if(p.y<p.size/2+80||p.y>w.worldHeight-p.size/2-80)target.y=w.worldHeight/2;}
+   if(!target)target=this.explore();
    target=g.biomes.routePoint(p,target);
   }
   const w=g.balance.world;
