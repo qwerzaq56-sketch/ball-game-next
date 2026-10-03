@@ -116,10 +116,14 @@ export function spawnDeathOrbs(deadEntity, balance) {
   }
   const fraction=Math.min(1,Math.max(0,kr.retainedGrowthFraction??0));
   if(fraction>0||(kr.growthPerSize??0)>0){
-    const capital=Math.max(0,deadEntity.growth??0)+(kr.retainBodyCapital===false?0:growthFromSize(deadEntity.baseSize??deadEntity.size,balance.player.startingSize,balance.growth.growthToSizeRatio,balance.growth));
-    const direct=kr.baseReward*Math.pow(deadEntity.size/kr.referenceSize,kr.growthExponent)*kr.growthRewardMultiplier;
-    const current=orbs.reduce((sum,o)=>sum+o.growthValue,0),desired=Math.max(current,deadEntity.size*Math.max(0,kr.growthPerSize??0),capital*fraction-direct);
+    const current=orbs.reduce((sum,o)=>sum+o.growthValue,0),desired=Math.max(current,minimumDeathDropGrowth(deadEntity,balance));
     for(const orb of orbs){orb.growthValue*=desired/Math.max(1,current);orb.rewardSource=deadEntity.id;}
   }
   return orbs;
+}
+
+// A deterministic lower bound: actual random drops can exceed it. No RNG consumption.
+export function minimumDeathDropGrowth(dead,balance){
+ const kr=balance.killReward,fraction=Math.min(1,Math.max(0,kr.retainedGrowthFraction??0)),capital=Math.max(0,dead.growth??0)+(kr.retainBodyCapital===false?0:growthFromSize(dead.baseSize??dead.size,balance.player.startingSize,balance.growth.growthToSizeRatio,balance.growth)),direct=kr.baseReward*Math.pow(dead.size/kr.referenceSize,kr.growthExponent)*kr.growthRewardMultiplier;
+ return Math.max(0,dead.size*Math.max(0,kr.growthPerSize??0),capital*fraction-direct);
 }

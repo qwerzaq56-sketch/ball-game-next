@@ -1,3 +1,4 @@
+import {assessOpportunityChannels} from './opportunityChannels.js';
 import {dist,isHostile,canAbsorb,canEatOrb} from './collision.js';
 import {sizeFromGrowth} from './entity.js';
 import {attackDamageForSize,applyDefense} from './combat.js';
@@ -16,7 +17,7 @@ export function assessGameplay(game,actor=game.player){
  const damageRatio=Math.max(0,...threats.filter(t=>isHostile(p,t)).map(t=>applyDefense(attackDamageForSize(t.size,b),p.size,b)/p.maxHp));
  const sizeRatio=Math.max(0,...threats.map(t=>t.size/p.size));
  const severity=Math.min(1,Math.max(damageRatio*3,Math.max(0,sizeRatio-1)*.5,environment||fields.length?1:0));
- return {growthOpportunity:potentialSizeGain>=needed,potentialSizeGain,growthValue,growthNeeded:needed,crisis:threats.length>0||fields.length>0||!!environment,crisisSeverity:severity,riskDamageRatio:damageRatio,threatSizeRatio:sizeRatio,
+ return {opportunityChannels:assessOpportunityChannels(game,p,nearby,needed,growthValue,threats,fields,environment),growthOpportunity:potentialSizeGain>=needed,potentialSizeGain,growthValue,growthNeeded:needed,crisis:threats.length>0||fields.length>0||!!environment,crisisSeverity:severity,riskDamageRatio:damageRatio,threatSizeRatio:sizeRatio,
   purposeful:game.autoplay.enabled&&!game.gameOver,assessmentRange:range};
 }
 export function evaluationSummary(samples,settings={}){

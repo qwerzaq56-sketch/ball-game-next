@@ -1,0 +1,47 @@
+[
+  {
+    "band": "20\u201339",
+    "samples": 6,
+    "foodOpportunities": 50.0,
+    "absorptionOpportunities": 0.0,
+    "huntOpportunities": 0.0,
+    "anyOpportunities": 50.0,
+    "realizedPct": 100.0
+  },
+  {
+    "band": "40\u201379",
+    "samples": 31,
+    "foodOpportunities": 64.51612903225806,
+    "absorptionOpportunities": 3.225806451612903,
+    "huntOpportunities": 3.225806451612903,
+    "anyOpportunities": 64.51612903225806,
+    "realizedPct": 90.0
+  },
+  {
+    "band": "80\u2013159",
+    "samples": 71,
+    "foodOpportunities": 11.267605633802818,
+    "absorptionOpportunities": 7.042253521126761,
+    "huntOpportunities": 21.12676056338028,
+    "anyOpportunities": 38.028169014084504,
+    "realizedPct": 77.46478873239437
+  },
+  {
+    "band": "160\u2013399",
+    "samples": 204,
+    "foodOpportunities": 2.941176470588235,
+    "absorptionOpportunities": 3.9215686274509802,
+    "huntOpportunities": 7.8431372549019605,
+    "anyOpportunities": 11.76470588235294,
+    "realizedPct": 25.98039215686275
+  },
+  {
+    "band": "400+",
+    "samples": 51,
+    "foodOpportunities": 0.0,
+    "absorptionOpportunities": 0.0,
+    "huntOpportunities": 1.9607843137254901,
+    "anyOpportunities": 1.9607843137254901,
+    "realizedPct": 3.9215686274509802
+  }
+]
