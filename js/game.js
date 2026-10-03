@@ -897,7 +897,7 @@ export class Game {
       for(let i=0;i<6;i++){const a=i*Math.PI/3+this.gameTime*.25,x=e.x+Math.cos(a)*(r+17/z),y=e.y+Math.sin(a)*(r+17/z);ctx.beginPath();ctx.moveTo(x,y-4/z);ctx.lineTo(x+3/z,y);ctx.lineTo(x,y+4/z);ctx.lineTo(x-3/z,y);ctx.closePath();ctx.fillStyle='#fde68a';ctx.fill();}
       ctx.font=`bold ${16/z}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3/z;ctx.strokeStyle='#0f172a';ctx.strokeText('♛',e.x,e.y-r-74/z);ctx.fillStyle='#facc15';ctx.fillText('♛',e.x,e.y-r-74/z);ctx.restore();}
 
-    if(e===this.player&&e.attackHoldProgress>0){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+14/this.camera.zoom,-Math.PI/2,-Math.PI/2+Math.PI*2*e.attackHoldProgress);ctx.strokeStyle='#fff';ctx.lineWidth=4/this.camera.zoom;ctx.stroke();ctx.restore();}
+    if(e.attackHoldProgress>0){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+14/this.camera.zoom,-Math.PI/2,-Math.PI/2+Math.PI*2*e.attackHoldProgress);ctx.strokeStyle='#fff';ctx.lineWidth=4/this.camera.zoom;ctx.stroke();ctx.restore();}
 
     // dodge afterimages — each fades independently over dodge.effectLifetime, then is pruned
     // (see combat.js#updateDodge), so they never linger on screen after the dodge ends.
@@ -925,17 +925,18 @@ export class Game {
       }
     }
 
+    const minimumCharge=this.balance.attack.minChargeDistanceFraction??.03;
+    const chargePreview=e.currentChargeDistance*(minimumCharge+(1-minimumCharge)*(e.attackHoldProgress??0))/(minimumCharge+(1-minimumCharge)*(e.currentAttackCharge??.75));
     const aiming=e===this.player&&(this.touchAim?.kind==='attack'||this.input.mouseDown||e.autoChargeSeconds>0)&&e.attackUnlocked&&e.attackState==='READY';
     if(aiming||e.attackState==='TELEGRAPH'||e.attackState==='CHARGING'){
       const hitRadius=e.size/2;
       const direction=aiming?(this.touchAim?.angle??angleTo(e,this.autoplay.action?.aim??this.screenToWorld(this.input.mouseX,this.input.mouseY))):e.attackDir;
-      const remaining=aiming?attackChargeDistanceForSize(e.size,this.balance,e.apex)*((this.balance.attack.minChargeDistanceFraction??.03)+(1-(this.balance.attack.minChargeDistanceFraction??.03))*(e.attackHoldProgress??0)):e.attackState==='TELEGRAPH'?e.currentChargeDistance:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
+      const remaining=aiming?attackChargeDistanceForSize(e.size,this.balance,e.apex)*((this.balance.attack.minChargeDistanceFraction??.03)+(1-(this.balance.attack.minChargeDistanceFraction??.03))*(e.attackHoldProgress??0)):e.attackState==='TELEGRAPH'?chargePreview:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
       ctx.save();ctx.translate(e.x,e.y);ctx.rotate(direction);ctx.beginPath();ctx.moveTo(0,-hitRadius);ctx.lineTo(remaining,-hitRadius);ctx.arc(remaining,0,hitRadius,-Math.PI/2,Math.PI/2);ctx.lineTo(0,hitRadius);ctx.arc(0,0,hitRadius,Math.PI/2,Math.PI*1.5);ctx.closePath();ctx.fillStyle='rgba(255,255,255,.055)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1/this.camera.zoom;ctx.stroke();ctx.restore();
     }
     // telegraph indicator
     if (e.attackState === 'TELEGRAPH') {
-      const progress = e.attackTimer / e.currentTelegraphTime;
-      const reach = e.currentChargeDistance;
+      const reach = chargePreview;
       ctx.save();
       ctx.strokeStyle = 'rgba(255,255,255,0.85)';
       ctx.lineWidth = 3 / this.camera.zoom;
@@ -944,11 +945,6 @@ export class Game {
       ctx.lineTo(e.x + Math.cos(e.attackDir) * reach, e.y + Math.sin(e.attackDir) * reach);
       ctx.stroke();
 
-      ctx.beginPath();
-      ctx.strokeStyle = 'rgba(255,60,60,0.9)';
-      ctx.lineWidth = 4 / this.camera.zoom;
-      ctx.arc(e.x, e.y, r + 10, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2);
-      ctx.stroke();
       ctx.restore();
     }
 

@@ -142,7 +142,7 @@ export class UI {
     const player = game.player;
     if(this.guideRun!==game.apexHistory){this.guideRun=game.apexHistory;this.guideDismissed=false;}
     this.starterGuide.hidden=this.guideDismissed||game.gameTime>20||document.getElementById('player-setup').open;
-    document.getElementById('starter-guide-text').textContent=game.input.touchMode?'이동 패드 · 공격/회피 드래그→떼기 · 흡수 ON/OFF · E/R 스킬':'WASD 이동 · 클릭 충전→떼기 · Space 회피/소진 후 꾹 달리기 · E/R 스킬 · 흡수 토글 · ESC 일시정지';
+    document.getElementById('starter-guide-text').textContent=game.input.touchMode?'왼쪽 드래그 이동 · 오른쪽 드래그→떼기 공격 · 회피 버튼 · 흡수 ON/OFF · E/R 스킬':'WASD 이동 · 클릭 충전→떼기 · Space 회피/소진 후 꾹 달리기 · E/R 스킬 · 흡수 토글 · ESC 일시정지';
     this.absorbButton.textContent=game.input.absorbToggle?'흡수 ON':'흡수 OFF';this.absorbButton.setAttribute('aria-pressed',String(!!game.input.absorbToggle));this.absorbButton.disabled=game.paused||game.gameOver;
     document.getElementById('player-identity').textContent = player.displayName;
     document.getElementById('region-text').textContent=game.biomes.status(player);

@@ -82,10 +82,15 @@ export function canStartAttack(entity) {
   return true;
 }
 
-export function startAttack(entity, dirAngle, balance,charge=entity.behavior==='ai'?(balance.attack.aiChargeFraction??.75):1) {
+export function aiAttackCharge(entity,balance){
+ const target=entity.target;if(!target?.alive||!isHostile(entity,target))return balance.attack.aiChargeFraction??.75;
+ const d=delta(entity,target),gap=Math.max(0,Math.hypot(d.x,d.y)-(entity.size+target.size)/2),full=attackChargeDistanceForSize(entity.size,balance,entity.apex);
+ return Math.max(balance.attack.aiMinChargeFraction??.3,Math.min(1,(gap+target.size*.25)/Math.max(1,full)));
+}
+export function startAttack(entity, dirAngle, balance,charge=entity.behavior==='ai'?aiAttackCharge(entity,balance):1) {
   const level=Math.max(0,Math.min(1,Number.isFinite(charge)?charge:0)),minPower=balance.attack.minChargeDamageMultiplier??.35;
   entity.currentAttackPower=minPower+(1+(balance.attack.maxChargeDamageBonus??1)-minPower)*level;
-  entity.currentAttackCharge=level;
+  entity.currentAttackCharge=level;if(entity.behavior==='ai')entity.attackHoldProgress=0;
   entity.attackStack -= 1;
   entity.attackState = entity.behavior==='ai'?'TELEGRAPH':'CHARGING';
   entity.attackDir = dirAngle;
@@ -103,12 +108,14 @@ export function startAttack(entity, dirAngle, balance,charge=entity.behavior==='
 export function updateAttack(entity, dt, balance, hostiles, game) {
   const cfg = balance.attack;
 
+  if(entity.behavior==='ai'&&entity.attackState!=='TELEGRAPH')entity.attackHoldProgress=0;
   if (entity.hitFlash > 0) entity.hitFlash -= dt;
 
   switch (entity.attackState) {
     case 'TELEGRAPH': {
       entity.attackTimer += dt;
-      if (entity.attackTimer >= entity.currentTelegraphTime) {
+      if(entity.behavior==='ai')entity.attackHoldProgress=Math.min(entity.currentAttackCharge,entity.attackTimer/(cfg.manualChargeSeconds??.9));
+      if (entity.attackTimer + 1e-8 >= entity.currentTelegraphTime) {
         entity.attackState = 'CHARGING';
         entity.attackTimer = 0;
         if (game && entity === game.player) game.audio.attackCharge();

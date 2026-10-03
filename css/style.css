@@ -734,3 +734,6 @@ body.mobile-minimal #live-ranking[hidden]{display:none!important}
 @media(pointer:coarse){body.mobile-minimal #live-ranking:not(.minimal-open){width:120px;top:84px;right:max(10px,env(safe-area-inset-right))}#starter-guide{bottom:100px;max-width:45vw;font-size:10px}}
 
 #quick-sprint{touch-action:none;user-select:none}#quick-sprint[hidden]{display:none}
+
+@media(pointer:coarse){#touch-stick{display:none}#touch-stick.floating-active{display:block;pointer-events:none}}
+@media(pointer:coarse) and (orientation:landscape){#minimal-tools{left:max(12px,env(safe-area-inset-left));transform:none}}

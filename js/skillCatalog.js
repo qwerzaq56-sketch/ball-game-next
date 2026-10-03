@@ -2,7 +2,7 @@ import {skillOverrides} from './skillRules.js';
 // Stable candidate IDs: selections affect future casts; existing casts keep their snapshot.
 export const SKILL_CATALOG = {
  'cyan-shield':{color:'cyan',slot:'E',name:'서리 보호막',effect:'shield',windup:.25,cooldown:9,radius:240,shieldHpFraction:.15,shieldDuration:6},
- 'cyan-burst':{color:'cyan',slot:'R',name:'냉기 휘두르기 · 폭발',effect:'frost-burst',windup:.6,cooldown:12,radius:260,damage:.35,blastDelay:1.2,blastRadius:150,blastDamage:.35,fieldDuration:5,tickInterval:.5,fieldDamage:.6,freezeHitCount:3,freezeSeconds:1.2},
+ 'cyan-burst':{color:'cyan',slot:'R',name:'냉기 휘두르기 · 폭발',effect:'frost-burst',windup:.6,cooldown:12,radius:260,damage:.35,blastDelay:1.2,blastRadius:150,blastDamage:.35,fieldDuration:15,tickInterval:.5,fieldDamage:.6,freezeHitCount:3,freezeSeconds:1.2},
  'cyan-chill':{color:'cyan',slot:'E',name:'냉기 찌르기',effect:'chill',windup:.25,cooldown:7,radius:200,damage:.35,freezeSeconds:.35},
  'blue-ripple':{color:'blue',slot:'E',name:'파도 밀치기',effect:'ripple',windup:.3,cooldown:8,radius:240,damage:.4,pushDuration:.15,pushSpeed:400},
  'green-invite':{color:'green',slot:'E',name:'동행 초대',effect:'invite',windup:.3,cooldown:9,radius:350,acceptChance:.8,buffDuration:30,buffDamage:.05,buffDefense:.05,buffStackCap:5},

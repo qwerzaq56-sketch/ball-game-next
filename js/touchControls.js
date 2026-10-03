@@ -16,7 +16,7 @@ export class TouchControls {
     this.attack=document.getElementById('touch-attack');this.dodge=document.getElementById('touch-dodge');this.special=document.getElementById('touch-special');this.ultimate=document.getElementById('touch-ultimate');
     this.stick.addEventListener('pointerdown',e=>{
       if(e.pointerType==='mouse'||this.blocked()||[...this.pointers.values()].includes('move'))return;
-      e.preventDefault();this.stick.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,'move');this.move(e);
+      this.beginMove(e,this.stick);
     });
     this.stick.addEventListener('pointermove',e=>{if(this.pointers.get(e.pointerId)==='move'){e.preventDefault();this.move(e);}});
     for(const [button,kind] of [[this.attack,'attack'],[this.dodge,'dodge'],[this.special,'special'],[this.ultimate,'ultimate']]){
@@ -32,8 +32,12 @@ export class TouchControls {
     });
     window.addEventListener('pointerup',e=>{if(this.gestures.has(e.pointerId))this.aim(e);this.release(e.pointerId,true);});
     for(const event of ['pointercancel','lostpointercapture'])window.addEventListener(event,e=>this.release(e.pointerId));
+    canvas.addEventListener('pointermove',e=>{if(this.pointers.get(e.pointerId)==='move'){e.preventDefault();this.move(e);}});
     canvas.addEventListener('pointerdown',e=>{
-      if(e.pointerType!=='touch'||this.blocked()||!game.player.attackUnlocked||this.gestures.size)return;
+      if(e.pointerType!=='touch'||this.blocked())return;
+      const rect=canvas.getBoundingClientRect();
+      if(e.clientX<rect.left+rect.width/2){if(![...this.pointers.values()].includes('move'))this.beginMove(e,canvas);return;}
+      if(!game.player.attackUnlocked||this.gestures.size)return;
       e.preventDefault();canvas.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,'attack');
       this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,canvas:true,kind:"attack",started:game.gameTime});this.aim(e);
     });
@@ -44,8 +48,13 @@ export class TouchControls {
     this.lastHistory=game.apexHistory;this.wasPaused=game.paused;
   }
   blocked(){return this.game.paused||this.game.gameOver;}
+  beginMove(e,capture){
+    e.preventDefault();capture.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,'move');
+    this.moveOrigin={x:e.clientX,y:e.clientY};this.stick.classList.add('floating-active');
+    this.stick.style.left=`${e.clientX-this.stick.offsetWidth/2}px`;this.stick.style.top=`${e.clientY-this.stick.offsetHeight/2}px`;this.stick.style.bottom='auto';this.move(e);
+  }
   move(e){
-    const r=this.stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2;
+    const r=this.stick.getBoundingClientRect(),origin=this.moveOrigin??{x:r.left+r.width/2,y:r.top+r.height/2},dx=e.clientX-origin.x,dy=e.clientY-origin.y;
     const length=Math.hypot(dx,dy),radius=36,scale=Math.max(radius,length);
     this.input.touchMove=length<5?{x:0,y:0}:{x:dx/scale,y:dy/scale};
     this.knob.style.transform=`translate(${this.input.touchMove.x*radius}px,${this.input.touchMove.y*radius}px)`;
@@ -72,7 +81,7 @@ export class TouchControls {
       if(kind==='dodge'){this.input._dodgeAngle=gesture.angle;this.input._dodgeQueued=true;}
     }
     if(!this.gestures.size)this.game.touchAim=null;
-    if(kind==='move'){this.input.touchMove={x:0,y:0};this.knob.style.transform='';}
+    if(kind==='move'){this.input.touchMove={x:0,y:0};this.knob.style.transform='';this.moveOrigin=null;this.stick.classList.remove('floating-active');}
     if(kind==='attack'&&![...this.pointers.values()].includes('attack'))this.input.mouseDown=false;
   }
   clear(){

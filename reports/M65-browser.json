@@ -1,0 +1,15 @@
+{
+  "result": "PASS",
+  "held": {
+    "move": 1,
+    "aim": "attack",
+    "charge": 0.48340000000000033
+  },
+  "fired": {
+    "charge": 0.6296666666666672,
+    "state": "CHARGING",
+    "move": 1
+  },
+  "cancelCleared": true,
+  "errors": []
+}

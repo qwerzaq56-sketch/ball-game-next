@@ -58,7 +58,8 @@
     "attackRecoveryTime": 0.4,
     "minChargeDamageMultiplier": 0.35,
     "minChargeDistanceFraction": 0.03,
-    "aiChargeFraction": 0.75
+    "aiChargeFraction": 0.75,
+    "aiMinChargeFraction": 0.3
   },
   "sprint": {
     "unlockSize": 150,
