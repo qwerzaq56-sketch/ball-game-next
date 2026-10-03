@@ -20,7 +20,18 @@
     "frostTickHpFraction": 0.0125,
     "cyanFrostResistance": 0.65,
     "frostSizeResistancePerSize": 0.00025,
-    "frostSizeResistanceCap": 0.15
+    "frostSizeResistanceCap": 0.15,
+    "sandstormSpawnMin": 5,
+    "sandstormSpawnMax": 10,
+    "sandstormMaxCount": 3,
+    "sandstormDurationMin": 12,
+    "sandstormDurationMax": 20,
+    "sandstormRadiusMin": 160,
+    "sandstormRadiusMax": 260,
+    "sandstormSpeed": 45,
+    "sandstormTickHpFraction": 0.025,
+    "yellowSandstormResistance": 0.8,
+    "yellowSandstormDefenseBonus": 0.25
   },
   "player": {
     "startingSize": 20,
@@ -43,7 +54,10 @@
     "manualChargeSeconds": 0.9,
     "maxChargeDamageBonus": 1,
     "attackCooldown": 1.5,
-    "attackRecoveryTime": 0.4
+    "attackRecoveryTime": 0.4,
+    "minChargeDamageMultiplier": 0.35,
+    "minChargeDistanceFraction": 0.03,
+    "aiChargeFraction": 0.75
   },
   "dodge": {
     "dodgeDuration": 0.2,
@@ -84,9 +98,31 @@
     "maintainDistancePerSize": 0.5,
     "maxAbsorptionSpeed": 5,
     "pullForce": 1,
-    "healthCostFraction": 0.12,
     "healthCostProgressFraction": 0.25,
-    "healthFloorFraction": 0.01
+    "healthFloorFraction": 0.01,
+    "healthRatioCurve": [
+      {
+        "ratio": 0,
+        "hpFraction": -0.03
+      },
+      {
+        "ratio": 0.15,
+        "hpFraction": -0.03
+      },
+      {
+        "ratio": 0.5,
+        "hpFraction": 0.2
+      },
+      {
+        "ratio": 0.95,
+        "hpFraction": 0.75
+      },
+      {
+        "ratio": 1,
+        "hpFraction": 0.8
+      }
+    ],
+    "woundedCostFloor": 0.5
   },
   "combat": {
     "knockbackDuration": 0.15,
@@ -105,7 +141,7 @@
     "attackChargeDurationBase": 0,
     "attackChargeDurationPerSize": 0.004,
     "attackTelegraphTimeBase": 0,
-    "attackTelegraphTimePerSize": 0.004,
+    "attackTelegraphTimePerSize": 0,
     "baseDefense": 0,
     "defensePerSize": 0.5,
     "minimumDamage": 1,
@@ -258,7 +294,7 @@
     ]
   },
   "abilitySkills": {
-    "rangeReferenceSize": 350,
+    "rangeReferenceSize": 100,
     "unlockSize": 100,
     "territoryMultiplier": 1,
     "loadout": {

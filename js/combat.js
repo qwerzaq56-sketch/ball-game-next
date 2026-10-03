@@ -64,10 +64,10 @@ export function attackChargeDurationForSize(size, balance) {
 
 // v0.6 balance pass: Telegraph time used to be a flat constant (0.4s for every size) — now it
 // scales with Size exactly like Charge Duration, so a bigger ball also gives opponents more
-// visible warning before it commits, not just a longer wind-up once it's already charging.
+// Legacy tuning helper; basic attacks now use the charge hold as their only preparation.
 export function attackTelegraphTimeForSize(size, balance) {
   const c = balance.combatScaling;
-  return Math.max(0.05, c.attackTelegraphTimeBase + (Math.min(size,c.attackTimingSoftcapSize??Infinity)+Math.max(0,size-(c.attackTimingSoftcapSize??Infinity))*(c.attackTimingBeyondScale??1)) * (c.attackTimingSizeScale ?? 1) * c.attackTelegraphTimePerSize);
+  return Math.max(0, c.attackTelegraphTimeBase + (Math.min(size,c.attackTimingSoftcapSize??Infinity)+Math.max(0,size-(c.attackTimingSoftcapSize??Infinity))*(c.attackTimingBeyondScale??1)) * (c.attackTimingSizeScale ?? 1) * c.attackTelegraphTimePerSize);
 }
 
 // v0.6 spec §6: linear instead of v0.5's exponential curve — Base(100) + Size × Growth(0.8).
@@ -82,19 +82,21 @@ export function canStartAttack(entity) {
   return true;
 }
 
-export function startAttack(entity, dirAngle, balance,charge=0) {
-  entity.currentAttackPower=1+Math.max(0,Math.min(1,Number.isFinite(charge)?charge:0))*(balance.attack.maxChargeDamageBonus??1);
+export function startAttack(entity, dirAngle, balance,charge=entity.behavior==='ai'?(balance.attack.aiChargeFraction??.75):1) {
+  const level=Math.max(0,Math.min(1,Number.isFinite(charge)?charge:0)),minPower=balance.attack.minChargeDamageMultiplier??.35;
+  entity.currentAttackPower=minPower+(1+(balance.attack.maxChargeDamageBonus??1)-minPower)*level;
+  entity.currentAttackCharge=level;
   entity.attackStack -= 1;
-  entity.attackState = 'TELEGRAPH';
+  entity.attackState = entity.behavior==='ai'?'TELEGRAPH':'CHARGING';
   entity.attackDir = dirAngle;
   entity.attackTimer = 0;
   entity.attackHitSet.clear();
   entity.trail = [];
   const c = balance.combatScaling;
   entity.currentAttackRange = attackRangeForSize(entity.size, balance);
-  entity.currentChargeDistance = attackChargeDistanceForSize(entity.size,balance,entity.apex);
-  entity.currentChargeDuration = attackChargeDurationForSize(entity.size, balance);
-  entity.currentTelegraphTime = attackTelegraphTimeForSize(entity.size, balance);
+  entity.currentChargeDistance = attackChargeDistanceForSize(entity.size,balance,entity.apex)*((balance.attack.minChargeDistanceFraction??.03)+(1-(balance.attack.minChargeDistanceFraction??.03))*level);
+  entity.currentChargeDuration = Math.max(.08,attackChargeDurationForSize(entity.size, balance)*(.2+.8*level));
+  entity.currentTelegraphTime = entity.behavior==='ai'?(balance.attack.manualChargeSeconds??.9)*level:0;
   if (entity.behavior === 'ai') entity.aiAttackGateTimer = balance.ai.attackCooldown;
 }
 

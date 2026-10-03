@@ -8,7 +8,7 @@ import {absorptionGrowthFor,startAbsorption,updateAbsorptions} from '../js/absor
 import {resetRandom,random} from '../js/random.js';
 import {AFFINITY} from '../js/allyLinks.js';
 const actor=(g,x,color='blue',size=100)=>new AIEntity({x,y:4000,color,colorHex:'#39f',startSize:size,balance:g.balance});
-function setup(){const g=createGame(7);g.balance.abilitySkills.loadout.red={E:'red-vigor',R:'red-rally'};g.entities=[];g.biomes.enabled=false;return g;}
+function setup(){const g=createGame(7);g.balance.abilitySkills.rangeReferenceSize=150;g.balance.abilitySkills.loadout.red={E:'red-vigor',R:'red-rally'};g.entities=[];g.biomes.enabled=false;return g;}
 test('affinity is independent of combat personality and persists after role reassignment',()=>{
  const g=createGame(7);assert(g.entities.filter(e=>e.behavior==='ai').every(e=>Object.keys(AFFINITY).includes(e.companionAffinity)));const a=g.entities.find(e=>e.behavior==='ai'),trait=a.companionAffinity;g.ecology.update(g,2);assert.equal(a.companionAffinity,trait);
  assert(AFFINITY.social.join>AFFINITY.neutral.join&&AFFINITY.neutral.join>AFFINITY.independent.join);assert(AFFINITY.social.leave<AFFINITY.neutral.leave&&AFFINITY.neutral.leave<AFFINITY.independent.leave);

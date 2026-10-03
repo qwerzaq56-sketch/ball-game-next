@@ -29,12 +29,17 @@ export function resistanceTimeFor(target, balance) {
   return Math.max(0.05, cfg.baseResistanceTime + target.size * cfg.resistancePerSize);
 }
 
+export function absorptionHealthFraction(absorber,target,balance){
+ const points=balance.absorption.healthRatioCurve??[{ratio:0,hpFraction:-.03},{ratio:.15,hpFraction:-.03},{ratio:.5,hpFraction:.2},{ratio:.95,hpFraction:.75},{ratio:1,hpFraction:.8}],ratio=Math.max(0,Math.min(1,target.size/absorber.size));
+ let value=points.at(-1).hpFraction;for(let i=1;i<points.length;i++)if(ratio<=points[i].ratio){const a=points[i-1],b=points[i];value=a.hpFraction+(b.hpFraction-a.hpFraction)*(ratio-a.ratio)/(b.ratio-a.ratio);break;}
+ if(value>0){const floor=balance.absorption.woundedCostFloor??.5;value*=floor+(1-floor)*Math.max(0,Math.min(1,target.hp/target.maxHp));}return value;
+}
 export function startAbsorption(absorber, target, balance, game) {
   target.beingAbsorbedByRef = absorber;
   target.absorptionProgress = 0;
   target.absorptionRequired = resistanceTimeFor(target, balance);
   target.absorptionHealthPaid=0;
-  target.absorptionHealthCost=absorber.maxHp*(balance.absorption.healthCostFraction??.12)*Math.min(1,target.size/absorber.size)*Math.max(0,Math.min(1,target.hp/target.maxHp));
+  target.absorptionHealthCost=absorber.maxHp*absorptionHealthFraction(absorber,target,balance);
   if (game && (absorber === game.player || target === game.player)) game.audio.absorbStart();
 }
 
@@ -60,6 +65,10 @@ function completeAbsorption(absorber, target, game, balance) {
   const gained = growthRewardFor(target.behavior === 'orb' ? target.growthValue : absorptionGrowthFor(absorber,target,balance),absorber,balance);
   const beforeGrowth={...absorber};
   absorber.addGrowth(gained, balance);
+  // Absorption growth raises capacity; it does not erase the intended health risk.
+  absorber.hp=Math.max(absorber.maxHp*(balance.absorption.healthFloorFraction??.01),Math.min(beforeGrowth.hp,absorber.maxHp));
+  const recovery=Math.min(Math.max(0,-(target.absorptionHealthCost??0)),Math.max(0,absorber.maxHp-absorber.hp));absorber.hp+=recovery;target.absorptionHealthRecovered=recovery;
+  if(recovery>0)game.spawnFloatingText(absorber.x,absorber.y,`+${Math.round(recovery)} HP`,'#86efac');
   const burst=payAbsorptionHealth(absorber,target,(target.absorptionHealthCost??0)*(1-(balance.absorption.healthCostProgressFraction??.25)),balance);
   if(burst>0){game.spawnFloatingText(absorber.x,absorber.y,`−${Math.round(burst)} HP`,'#fb7185');if(absorber===game.player)game.audio.damage();}
   if(target.behavior!=='orb')game.balanceLog?.absorb({...beforeGrowth,maxHp:absorber.maxHp},target,gained);

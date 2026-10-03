@@ -19,6 +19,7 @@ export class UI {
     this.killsText = document.getElementById('kills-text');
     this.scoreText = document.getElementById('score-text');
     this.lifeText = document.getElementById('life-text');
+    this.starterGuide=document.getElementById('starter-guide');this.guideDismissed=false;document.getElementById('starter-guide-close').addEventListener('click',()=>{this.guideDismissed=true;this.starterGuide.hidden=true;});
     this.absorbButton=document.getElementById('quick-absorb');this.absorbButton.addEventListener('click',()=>{if(this.game&&!this.game.paused&&!this.game.gameOver)this.game.input.absorbToggle=!this.game.input.absorbToggle;});
     this.allyAbsorbText = document.getElementById('ally-absorb-text');
     this.attackPips = document.getElementById('attack-pips');
@@ -134,6 +135,9 @@ export class UI {
     this.ecologyUI.update(game);
     this.game = game; // debug-panel checkbox handlers read this
     const player = game.player;
+    if(this.guideRun!==game.apexHistory){this.guideRun=game.apexHistory;this.guideDismissed=false;}
+    this.starterGuide.hidden=this.guideDismissed||game.gameTime>20||document.getElementById('player-setup').open;
+    document.getElementById('starter-guide-text').textContent=game.input.touchMode?'이동 패드 · 공격/회피 드래그→떼기 · 흡수 ON/OFF · E/R 스킬':'WASD 이동 · 클릭 충전→떼기 · Space 회피 · E/R 스킬 · 흡수 토글 · ESC 일시정지';
     this.absorbButton.textContent=game.input.absorbToggle?'흡수 ON':'흡수 OFF';this.absorbButton.setAttribute('aria-pressed',String(!!game.input.absorbToggle));this.absorbButton.disabled=game.paused||game.gameOver;
     document.getElementById('player-identity').textContent = player.displayName;
     document.getElementById('region-text').textContent=game.biomes.status(player);
@@ -167,6 +171,7 @@ export class UI {
     this.allyAbsorbText.className = player.allyAbsorptionEnabled ? 'ally-on' : 'ally-off';
     // keep the debug-panel checkbox in sync (e.g. after a Full Reset, which always resets the
     // flag back to its default of ON — see player.js)
+    if(this.aiLabelCheckbox)this.aiLabelCheckbox.checked=game.showAILabels;
     if (this.allyAbsorbCheckbox) this.allyAbsorbCheckbox.checked = player.allyAbsorptionEnabled;
 
     this.renderPips(this.attackPips, player.attackStack, player.attackMaxStack);
@@ -349,7 +354,7 @@ export class UI {
     labelSpan.textContent = 'AI 상태·성격 라벨 (F3)';
     const labelBox = document.createElement('input');
     labelBox.type = 'checkbox';
-    labelBox.checked = true; // matches Game#showAILabels default
+    labelBox.checked = false; // matches Game#showAILabels default
     labelBox.addEventListener('change', () => {
       if (this.game) this.game.showAILabels = labelBox.checked;
     });

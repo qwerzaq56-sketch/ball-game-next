@@ -60,7 +60,7 @@ export class Game {
     resetEntityIds();
     this.gameTime = 0;
     this.touchAim=null;
-    this.showAILabels = true; // head-up state + personality labels over AI (debug aid, F3)
+    this.showAILabels = false; // head-up state + personality labels over AI (debug aid, F3)
     this.ecology = new Ecology(this.options.collect);
     this.apexHistory = new ApexHistory();
     this.abilities = new Abilities(this);
@@ -219,6 +219,7 @@ export class Game {
     this.buildGrid();
     this.allyLinks.update(dt);
     this.abilities.update(dt);
+    for(const e of this.entities)if(e.alive&&e.behavior==='ai'&&e.apex)this.abilities.considerAI(e);
     this.autoplay.update(dt);
     this.updatePlayer(dt);
 
@@ -325,7 +326,7 @@ export class Game {
     const releasedUltimate=inp._ultimateQueued;inp._ultimateQueued=false;
     const releasedAttack=inp._attackQueued;inp._attackQueued=null;
     const releasedDodgeAngle=inp._dodgeAngle;inp._dodgeAngle=null;
-    if(p.frozen>0){inp.attackChargeSeconds=0;p.attackHoldProgress=0;if(releasedDodgeAngle!=null)inp.consumeDodge();inp.consumeSpecial?.();return;}
+    if(p.frozen>0){p.autoChargeSeconds=0;inp.attackChargeSeconds=0;p.attackHoldProgress=0;if(releasedDodgeAngle!=null)inp.consumeDodge();inp.consumeSpecial?.();return;}
     updateAttack(p, dt, b, this.hostileTargetsFor(p), this);
     updateDodge(p, dt, b);
 
@@ -366,9 +367,13 @@ export class Game {
     const special=auto?auto.special:inp.consumeSpecial?.();if(auto)auto.special=false;
     if(special)this.abilities.start(p,aimAngle,mouseWorld,null,auto?(auto.skillSlot??(p.apex?'R':'E')):'E');
     if(releasedUltimate&&!auto)this.abilities.start(p,Number.isFinite(releasedUltimate.angle)?releasedUltimate.angle:aimAngle,releasedUltimate.point??mouseWorld,null,'R');
-    if ((auto?auto.attack:(releasedAttack!=null)) && p.attackUnlocked && canStartAttack(p)) {
-      startAttack(p, !auto&&releasedAttack!=null?(typeof releasedAttack==='number'?releasedAttack:releasedAttack.angle??aimAngle):aimAngle, b,!auto&&typeof releasedAttack==='object'?releasedAttack.charge??0:0);
-      this.audio.telegraph();
+    const autoLevel=b.attack.aiChargeFraction??.75;
+    if(auto&&auto.attack&&canStartAttack(p))p.autoChargeSeconds=(p.autoChargeSeconds??0)+dt;else p.autoChargeSeconds=0;
+    const autoReleased=!!auto&&p.autoChargeSeconds>=(b.attack.manualChargeSeconds??.9)*autoLevel;
+    if(auto)p.attackHoldProgress=Math.min(1,p.autoChargeSeconds/(b.attack.manualChargeSeconds??.9));
+    if ((auto?autoReleased:(releasedAttack!=null)) && p.attackUnlocked && canStartAttack(p)) {
+      startAttack(p, !auto&&releasedAttack!=null?(typeof releasedAttack==='number'?releasedAttack:releasedAttack.angle??aimAngle):aimAngle, b,auto?autoLevel:typeof releasedAttack==='object'?releasedAttack.charge??0:0);
+      p.autoChargeSeconds=0;this.audio.attackCharge();
     }
     const dodge=auto?auto.dodge:inp.consumeDodge();if(auto)auto.dodge=false;
     if (dodge && p.dodgeUnlocked && canStartDodge(p)) {
@@ -916,10 +921,10 @@ export class Game {
       }
     }
 
-    const aiming=e===this.player&&this.touchAim?.kind==='attack'&&e.attackUnlocked&&e.attackState==='READY';
+    const aiming=e===this.player&&(this.touchAim?.kind==='attack'||this.input.mouseDown||e.autoChargeSeconds>0)&&e.attackUnlocked&&e.attackState==='READY';
     if(aiming||e.attackState==='TELEGRAPH'||e.attackState==='CHARGING'){
-      const direction=aiming?this.touchAim.angle:e.attackDir;
-      const remaining=aiming?attackChargeDistanceForSize(e.size,this.balance,e.apex):e.attackState==='TELEGRAPH'?e.currentChargeDistance:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
+      const direction=aiming?(this.touchAim?.angle??angleTo(e,this.autoplay.action?.aim??this.screenToWorld(this.input.mouseX,this.input.mouseY))):e.attackDir;
+      const remaining=aiming?attackChargeDistanceForSize(e.size,this.balance,e.apex)*((this.balance.attack.minChargeDistanceFraction??.03)+(1-(this.balance.attack.minChargeDistanceFraction??.03))*(e.attackHoldProgress??0)):e.attackState==='TELEGRAPH'?e.currentChargeDistance:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
       ctx.save();ctx.translate(e.x,e.y);ctx.rotate(direction);ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(remaining,-r);ctx.arc(remaining,0,r,-Math.PI/2,Math.PI/2);ctx.lineTo(0,r);ctx.arc(0,0,r,Math.PI/2,Math.PI*1.5);ctx.closePath();ctx.fillStyle='rgba(255,255,255,.055)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1/this.camera.zoom;ctx.stroke();ctx.restore();
     }
     // telegraph indicator

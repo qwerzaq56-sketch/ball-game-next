@@ -8,7 +8,7 @@ import {spawnOrb} from './spawning.js';
 import {applyDamage} from './combat.js';
 export class Biomes {
  constructor(game){
-  this.game=game;this.enabled=game.balance.biomes?.enabled!==false;this.encounterTimer=45;this.damageTimer=0;this.encounters=0;
+  this.game=game;this.enabled=game.balance.biomes?.enabled!==false;this.encounterTimer=45;this.damageTimer=0;this.encounters=0;this.sandstorms=[];this.sandstormTimer=5;
   const w=game.balance.world,r=Math.min(w.worldWidth,w.worldHeight)*.22;
   this.regions=this.enabled?[
    {id:'forest',name:'숲',x:w.worldWidth*.22,y:w.worldHeight*.22,radius:r,color:'#205c3b',reward:1.25},
@@ -51,6 +51,17 @@ export class Biomes {
    if(Math.hypot(p.x-t*d.x,p.y-t*d.y)<=a.hotRadius+padding)return a;
   }return null;
  }
+ sandstormAt(e){return this.enabled?this.sandstorms.find(f=>dist(f,e)<=f.radius)??null:null;}
+ defenseBonus(e){return e.color==='yellow'&&this.sandstormAt(e)?(this.game.balance.biomes.yellowSandstormDefenseBonus??.25):0;}
+ updateSandstorms(dt){
+  const c=this.game.balance.biomes,w=this.game.balance.world;
+  for(const f of this.sandstorms){f.remaining-=dt;f.x=wrap(f.x+f.vx*dt,w.worldWidth);f.y=wrap(f.y+f.vy*dt,w.worldHeight);}
+  this.sandstorms=this.sandstorms.filter(f=>f.remaining>0);this.sandstormTimer-=dt;
+  if(this.sandstormTimer<=0){this.sandstormTimer=(c.sandstormSpawnMin??5)+random('world')*((c.sandstormSpawnMax??10)-(c.sandstormSpawnMin??5));
+   const desert=this.regions.find(r=>r.id==='desert');if(desert&&this.sandstorms.length<(c.sandstormMaxCount??3)){const point=this.sample(desert),angle=random('world')*Math.PI*2,radius=(c.sandstormRadiusMin??160)+random('world')*((c.sandstormRadiusMax??260)-(c.sandstormRadiusMin??160)),speed=c.sandstormSpeed??45;
+    this.sandstorms.push({...point,id:`sandstorm-${this.game.gameTime}`,kind:'sandstorm',name:'모래바람',_world:w,radius,hotRadius:radius,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,remaining:(c.sandstormDurationMin??12)+random('world')*((c.sandstormDurationMax??20)-(c.sandstormDurationMin??12))});}
+  }
+ }
  moveMultiplier(e){return this.enabled&&this.regionAt(e)?.id==='lake'?(e.color==='blue'?(this.game.balance.biomes.blueWaterMoveMultiplier??.9):(this.game.balance.biomes.waterMoveMultiplier??.65)):1;}
  frostResistance(e){const c=this.game.balance.biomes;return Math.min(.85,(e.color==='cyan'?(c.cyanFrostResistance??.65):0)+Math.min(c.frostSizeResistanceCap??.15,Math.max(0,e.size-40)*(c.frostSizeResistancePerSize??.00025)));}
  blizzard(){return this.enabled&&this.game.gameTime%24>=16;}
@@ -68,12 +79,12 @@ export class Biomes {
   ctx.save();ctx.imageSmoothingEnabled=true;ctx.drawImage(layer,0,0,g.canvas.width,g.canvas.height);ctx.fillStyle=fog;ctx.fillRect(0,0,g.canvas.width,g.canvas.height);ctx.restore();
  }
  sensingRange(e,base=this.game.balance.ai.detectionRange){return this.regionAt(e)?.id==='snow'&&this.blizzard()?base*.65:base;}
- hazards(){return [...this.rivers,...(this.game.era?.apocalypse?[this.game.era.apocalypse]:[])];}
- danger(e,held=false){return this.hazards().find(r=>r.hotRadius&&dist(e,r)<=r.hotRadius+e.size/2+(held?120:80))??null;}
+ hazards(){return [...this.rivers,...this.sandstorms,...(this.game.era?.apocalypse?[this.game.era.apocalypse]:[])];}
+ danger(e,held=false){return this.hazards().find(r=>(r.kind!=='sandstorm'||e.color!=='yellow')&&r.hotRadius&&dist(e,r)<=r.hotRadius+e.size/2+(held?120:80))??null;}
  update(dt){
   this.game.audio?.updateBlizzard?.(this.enabled&&this.blizzard()&&this.regionAt(this.game.player)?.id==='snow'&&this.game.player.alive&&!this.game.gameOver);
   if(!this.enabled)return;
-  const c=this.game.balance.biomes;
+  const c=this.game.balance.biomes;this.updateSandstorms(dt);
   for(const e of this.game.entities){if(!e.alive||e.behavior==='orb')continue;
    const cold=this.blizzard()&&this.regionAt(e)?.id==='snow',resistance=this.frostResistance(e);
    e.frostExposure=cold?(e.frostExposure??0)+dt*(1-resistance*.5):Math.max(0,(e.frostExposure??0)-dt*2);
@@ -90,6 +101,7 @@ export class Biomes {
   while(this.damageTimer>=.5-1e-8){this.damageTimer-=.5;
    for(const e of this.game.entities){if(!e.alive||e.behavior==='orb')continue;
     if(e.frostbiteRemaining>0)applyDamage(e,e.maxHp*(c.frostTickHpFraction??.0125),this.game,null,this.game.balance,{kind:'field',knockback:false,ignoreDefense:true,postDefenseMultiplier:1-this.frostResistance(e)});
+    if(this.sandstormAt(e)){const resistance=e.color==='yellow'?(c.yellowSandstormResistance??.8):0;applyDamage(e,e.maxHp*(c.sandstormTickHpFraction??.025),this.game,null,this.game.balance,{kind:'field',knockback:false,ignoreDefense:true,postDefenseMultiplier:(1-resistance)*terrainDamageMultiplier(e.size,this.game.balance)});}
     const hot=this.lavaAt(e);
     if(hot){const resistance=lavaResistance(e,this.game.balance),beforeRatio=e.damageHpRatio??0;applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false,postDefenseMultiplier:(1-resistance)*terrainDamageMultiplier(e.size,this.game.balance)});const log=this.game.lavaLog??=([]);const entry={time:this.game.gameTime,size:e.size,color:e.color,region:'volcano',resistance,hpRatio:(e.damageHpRatio??0)-beforeRatio};log.push(entry);this.game.balanceLog?.lava.push(entry);if(log.length>1000)log.shift();}
    }
@@ -109,7 +121,7 @@ export class Biomes {
  routePoint(e,target){
   if(!target)return target;
   const {x:dx,y:dy}=delta(e,target),length=dx*dx+dy*dy;if(!length)return target;
-  for(const r of this.hazards()){const safety=r.hotRadius+e.size/2+80;
+  for(const r of this.hazards()){if(r.kind==='sandstorm'&&e.color==='yellow')continue;const safety=r.hotRadius+e.size/2+80;
    const relative=delta(e,r),t=Math.max(0,Math.min(1,(relative.x*dx+relative.y*dy)/length));
    if(Math.hypot(dx*t-relative.x,dy*t-relative.y)>=safety||dist(e,r)>safety+220)continue;
    const angle=angleTo(r,e),side=e.environmentRoute?.region===r.id?e.environmentRoute.side:Math.sign(Math.sin(Math.atan2(dy,dx)-angle))||((e.id%2)?1:-1);
@@ -119,7 +131,7 @@ export class Biomes {
   }
   e.environmentRoute=null;return target;
  }
- status(e){const r=this.regionAt(e);if(!r)return '평원';return r.name+(e.frostbiteRemaining>0?' · 동상':'')+(r.id==='lake'?' · 물속':'')+(r.id==='snow'&&this.blizzard()?' · 눈보라 · 얼음꽃':this.lavaAt(e)?' · 용암 강 위험':'');}
+ status(e){const r=this.regionAt(e);if(!r)return '평원';return r.name+(this.sandstormAt(e)?e.color==='yellow'?' · 모래바람 · 방어 +25%':' · 모래바람':'')+(e.frostbiteRemaining>0?' · 동상':'')+(r.id==='lake'?' · 물속':'')+(r.id==='snow'&&this.blizzard()?' · 눈보라 · 얼음꽃':this.lavaAt(e)?' · 용암 강 위험':'');}
  draw(ctx,zoom){
   if(!this.enabled)return;const camera=this.game.renderCamera??this.game.camera;
   const halfW=this.game.canvas.width/zoom/2,halfH=this.game.canvas.height/zoom/2,time=this.game.gameTime;
@@ -143,6 +155,7 @@ export class Biomes {
    path();ctx.strokeStyle='#f97316';ctx.lineWidth=86;ctx.stroke();
    path();ctx.strokeStyle='#ffcc68';ctx.lineWidth=20;ctx.setLineDash([32,60]);ctx.lineDashOffset=-time*90;ctx.stroke();ctx.setLineDash([]);
   }
+  for(const f of this.sandstorms){ctx.save();ctx.beginPath();ctx.arc(f.x,f.y,f.radius,0,Math.PI*2);ctx.fillStyle='rgba(234,179,8,.14)';ctx.fill();ctx.strokeStyle='rgba(253,224,71,.65)';ctx.lineWidth=2/zoom;ctx.setLineDash([16/zoom,10/zoom]);ctx.stroke();ctx.setLineDash([]);for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(f.x,f.y,f.radius*(.35+i*.2),time*.8+i,time*.8+i+Math.PI*1.25);ctx.stroke();}ctx.font=`bold ${12/zoom}px system-ui`;ctx.fillStyle='#fde68a';ctx.textAlign='center';ctx.fillText(`모래바람 ${Math.ceil(f.remaining)}s`,f.x,f.y-f.radius-10/zoom);ctx.restore();}
   for(const r of this.labels){ctx.fillStyle='#e2e8f0';ctx.font=`bold ${Math.min(20/zoom,60)}px system-ui`;ctx.textAlign='center';ctx.fillText(r.name+(r.id==='snow'&&this.blizzard()?' · 눈보라':''),r.x,r.y);}
   ctx.restore();
  }

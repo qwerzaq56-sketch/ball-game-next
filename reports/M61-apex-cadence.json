@@ -1,0 +1,389 @@
+{
+  "scope": "Controlled 30-second stationary skill availability; target invulnerable, basic attacks disabled; not natural combat or balance measurement",
+  "rows": [
+    {
+      "color": "cyan",
+      "seconds": 30,
+      "starts": [
+        {
+          "time": 0,
+          "type": "special-start",
+          "id": 1862,
+          "color": "cyan",
+          "slot": "R",
+          "skill": "cyan-freeze",
+          "cast": 1
+        },
+        {
+          "time": 0.6000000000000001,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "cyan-chill",
+          "cast": 2
+        },
+        {
+          "time": 7.65,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "cyan-chill",
+          "cast": 3
+        },
+        {
+          "time": 10,
+          "type": "special-start",
+          "id": 1862,
+          "color": "cyan",
+          "slot": "R",
+          "skill": "cyan-freeze",
+          "cast": 4
+        },
+        {
+          "time": 14.700000000000001,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "cyan-chill",
+          "cast": 5
+        },
+        {
+          "time": 20,
+          "type": "special-start",
+          "id": 1862,
+          "color": "cyan",
+          "slot": "R",
+          "skill": "cyan-freeze",
+          "cast": 6
+        },
+        {
+          "time": 21.75,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "cyan-chill",
+          "cast": 7
+        },
+        {
+          "time": 28.8,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "cyan-chill",
+          "cast": 8
+        }
+      ],
+      "skills": [
+        {
+          "slot": "R",
+          "skill": "cyan-freeze",
+          "starts": 3,
+          "fires": 3,
+          "cooldown": 10
+        },
+        {
+          "slot": "E",
+          "skill": "cyan-chill",
+          "starts": 5,
+          "fires": 5,
+          "cooldown": 7
+        }
+      ]
+    },
+    {
+      "color": "blue",
+      "seconds": 30,
+      "starts": [
+        {
+          "time": 0,
+          "type": "special-start",
+          "id": 1862,
+          "color": "blue",
+          "slot": "R",
+          "skill": "blue-trident",
+          "cast": 1
+        },
+        {
+          "time": 0.6000000000000001,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "blue-ripple",
+          "cast": 2
+        },
+        {
+          "time": 8.65,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "blue-ripple",
+          "cast": 3
+        },
+        {
+          "time": 10,
+          "type": "special-start",
+          "id": 1862,
+          "color": "blue",
+          "slot": "R",
+          "skill": "blue-trident",
+          "cast": 4
+        },
+        {
+          "time": 16.7,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "blue-ripple",
+          "cast": 5
+        },
+        {
+          "time": 20,
+          "type": "special-start",
+          "id": 1862,
+          "color": "blue",
+          "slot": "R",
+          "skill": "blue-trident",
+          "cast": 6
+        },
+        {
+          "time": 24.75,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "blue-ripple",
+          "cast": 7
+        }
+      ],
+      "skills": [
+        {
+          "slot": "R",
+          "skill": "blue-trident",
+          "starts": 3,
+          "fires": 3,
+          "cooldown": 10
+        },
+        {
+          "slot": "E",
+          "skill": "blue-ripple",
+          "starts": 4,
+          "fires": 4,
+          "cooldown": 8
+        }
+      ]
+    },
+    {
+      "color": "green",
+      "seconds": 30,
+      "starts": [
+        {
+          "time": 0,
+          "type": "special-start",
+          "id": 1862,
+          "color": "green",
+          "slot": "R",
+          "skill": "green-summon",
+          "cast": 1
+        },
+        {
+          "time": 0.5,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "green-invite",
+          "cast": 2
+        },
+        {
+          "time": 9.55,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "green-invite",
+          "cast": 3
+        },
+        {
+          "time": 18.6,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "green-invite",
+          "cast": 4
+        },
+        {
+          "time": 27.650000000000002,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "green-invite",
+          "cast": 5
+        }
+      ],
+      "skills": [
+        {
+          "slot": "R",
+          "skill": "green-summon",
+          "starts": 1,
+          "fires": 1,
+          "cooldown": 18
+        },
+        {
+          "slot": "E",
+          "skill": "green-invite",
+          "starts": 4,
+          "fires": 4,
+          "cooldown": 9
+        }
+      ]
+    },
+    {
+      "color": "red",
+      "seconds": 30,
+      "starts": [
+        {
+          "time": 0,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "R",
+          "skill": "red-muster",
+          "cast": 1
+        },
+        {
+          "time": 0.6000000000000001,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "red-embers",
+          "cast": 2
+        },
+        {
+          "time": 9.65,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "red-embers",
+          "cast": 3
+        },
+        {
+          "time": 16,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "R",
+          "skill": "red-muster",
+          "cast": 4
+        },
+        {
+          "time": 18.7,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "red-embers",
+          "cast": 5
+        },
+        {
+          "time": 27.75,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "red-embers",
+          "cast": 6
+        }
+      ],
+      "skills": [
+        {
+          "slot": "R",
+          "skill": "red-muster",
+          "starts": 2,
+          "fires": 2,
+          "cooldown": 16
+        },
+        {
+          "slot": "E",
+          "skill": "red-embers",
+          "starts": 4,
+          "fires": 4,
+          "cooldown": 9
+        }
+      ]
+    },
+    {
+      "color": "yellow",
+      "seconds": 30,
+      "starts": [
+        {
+          "time": 0,
+          "type": "special-start",
+          "id": 1862,
+          "color": "yellow",
+          "slot": "R",
+          "skill": "yellow-storm",
+          "cast": 1
+        },
+        {
+          "time": 0.8,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "yellow-dust",
+          "cast": 2
+        },
+        {
+          "time": 9.850000000000001,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "yellow-dust",
+          "cast": 3
+        },
+        {
+          "time": 14,
+          "type": "special-start",
+          "id": 1862,
+          "color": "yellow",
+          "slot": "R",
+          "skill": "yellow-storm",
+          "cast": 4
+        },
+        {
+          "time": 18.900000000000002,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "yellow-dust",
+          "cast": 5
+        },
+        {
+          "time": 27.950000000000003,
+          "type": "special-start",
+          "id": 1862,
+          "slot": "E",
+          "skill": "yellow-dust",
+          "cast": 6
+        },
+        {
+          "time": 28.25,
+          "type": "special-start",
+          "id": 1862,
+          "color": "yellow",
+          "slot": "R",
+          "skill": "yellow-storm",
+          "cast": 7
+        }
+      ],
+      "skills": [
+        {
+          "slot": "R",
+          "skill": "yellow-storm",
+          "starts": 3,
+          "fires": 3,
+          "cooldown": 14
+        },
+        {
+          "slot": "E",
+          "skill": "yellow-dust",
+          "starts": 4,
+          "fires": 4,
+          "cooldown": 9
+        }
+      ]
+    }
+  ]
+}

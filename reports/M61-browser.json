@@ -1,0 +1,30 @@
+{
+  "result": "PASS",
+  "debugDefaultOff": true,
+  "F3Toggle": true,
+  "guide": true,
+  "rankingDefault": "size",
+  "minimal": {
+    "visible": true,
+    "background": "rgba(0, 0, 0, 0)",
+    "nameVisible": true,
+    "headingHidden": true
+  },
+  "tap": {
+    "windup": 0,
+    "distance": 18,
+    "power": 0.35
+  },
+  "full": {
+    "windup": 0,
+    "distance": 600,
+    "power": 2
+  },
+  "weather": {
+    "storms": 1,
+    "defense": 1.25,
+    "region": "desert"
+  },
+  "mobileMinimalRank": true,
+  "errors": []
+}

@@ -20,7 +20,7 @@ export function selectedSkill(balance,color,slot){const selected=balance.ability
 export function apexTerritoryRadius(e,balance){return 900*Math.sqrt(Math.max(100,e.size)/100)*(balance.abilitySkills?.territoryMultiplier??1);}
 
 export function scaledSkill(balance,e,slot){
- const cfg=selectedSkill(balance,e.color,slot),scale=Math.max(1,e.size/(balance.abilitySkills?.rangeReferenceSize??350));
+ const cfg=selectedSkill(balance,e.color,slot),scale=Math.max(.6,e.size/(balance.abilitySkills?.rangeReferenceSize??100));
  for(const key of ['radius','length','width','castRange','buffRadius','commandRadius'])if(Number.isFinite(cfg[key]))cfg[key]*=scale;
  if(cfg.effect==='embers')cfg.radius=Math.max(cfg.radius,e.size/2+100);
  if(cfg.effect==='muster')cfg.radius=apexTerritoryRadius(e,balance);

@@ -211,7 +211,7 @@ export class Abilities {
  rallyPower(e,key,fallback){return Math.max(0,...[...(e.rallyBuffs?.values()??[])].filter(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex&&!isHostile(e,r.owner)).map(r=>r[key]??fallback));}
  speedMultiplier(e){return Math.max(1,this.rallyPower(e,'buffSpeed',1.25),(e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.speed??1.12):1);}
  invitePower(e,key){return (e.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime).reduce((sum,b)=>sum+(b[key]??0),0);}
- defenseMultiplier(e){return 1+this.invitePower(e,'defense');}
+ defenseMultiplier(e){return 1+this.invitePower(e,'defense')+(this.game.biomes?.defenseBonus(e)??0);}
  damageMultiplier(e){return 1+this.invitePower(e,'damage')+((e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.damage??.15):0)+this.rallyPower(e,'buffDamage',.3)+(this.game.relics?.damageBonus(e)??0)+(e.morale?.size?Math.max(...[...e.morale.keys()].map(id=>e.moralePower?.get(id)??.15)):0)+(this.game.allyLinks?.bonus(e)??0);}
  commandDecision(e){
   const c=e.command;if(!c)return false;
@@ -258,19 +258,24 @@ export class Abilities {
   return true;
  }
  considerAI(e){
-  let slot=this.canCast(e,'R')?'R':'E';const cfg=this.skill(e,slot);
-  if(!this.canCast(e,slot)||e.recovering||e.state==='flee'||e.beingAbsorbedByRef)return false;
-  const nearby=this.game.getNearbyEntities(e,Math.max(320,cfg.buffRadius??cfg.radius??350)).filter(t=>t.alive);
-  if(cfg.effect==='muster'&&nearby.some(t=>t!==e&&!isHostile(e,t)&&t.color===e.color&&dist(e,t)<=cfg.radius))return this.start(e,e.facing,null,null,slot);
-  const enemies=nearby.filter(t=>isHostile(e,t)&&dist(e,t)<=this.game.biomes.sensingRange(e,320));
-  const target=enemies.sort((a,b)=>dist(e,a)-dist(e,b))[0];if(!target){if(e.color==='green'&&slot==='E'&&e.companionAffinity!=='independent'&&nearby.some(t=>t!==e&&t.color===e.color&&!isHostile(e,t)&&!t.companionGroup))return this.start(e,e.facing,null,null,slot);return false;}
-  const dir=angleTo(e,target);
-  if(slot==='E'){const cfg=this.skill(e,slot);if(cfg.effect==='embers'&&dist(e,target)>cfg.radius)return false;if(['chill','ripple'].includes(cfg.effect)&&!inCone(e,target,dir,cfg.radius))return false;if(canStartAttack(e)&&e.color!=='green')return false;if(e.color==='green'&&cfg.effect!=='invite'&&!nearby.some(t=>t!==e&&t.color===e.color))return false;return this.start(e,dir,null,target,slot);}
-  if(e.color==='cyan'&&!inCone(e,target,dir,cfg.radius))return false;
-  if(e.color==='blue'&&!inWave(e,target,dir,cfg.length,cfg.width))return false;
-  if(e.color==='green'&&!canStartAttack(e)&&!nearby.some(t=>t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=cfg.radius&&canStartAttack(t)))return false;
-  if(e.color==='red'&&!nearby.some(t=>t!==e&&t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=(cfg.buffRadius??450)&&t.attackUnlocked&&t.hp/t.maxHp>.4))return false;
-  return this.start(e,dir,{x:target.x,y:target.y},target,slot);
+  if(e.beingAbsorbedByRef||!e.apex&&(e.recovering||e.state==='flee'))return false;
+  for(const slot of ['R','E']){
+   if(!this.canCast(e,slot))continue;const cfg=this.skill(e,slot),range=Math.max(320,cfg.radius??0,cfg.length??0,cfg.castRange??0,cfg.buffRadius??0),nearby=this.game.getNearbyEntities(e,range).filter(t=>t.alive);
+   const allies=nearby.filter(t=>!isHostile(e,t)&&t.color===e.color&&dist(e,t)<=range);
+   if(cfg.effect==='summon'){if(this.units().filter(t=>t.summoned?.owner===e).length<(cfg.summonCount??2))return this.start(e,e.facing,null,null,slot);continue;}
+   if(cfg.effect==='muster'||cfg.effect==='invite'||cfg.effect==='vigor'||cfg.effect==='dust')return this.start(e,e.facing,null,null,slot);
+   const target=nearby.filter(t=>isHostile(e,t)&&dist(e,t)<=range).sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id).find(t=>{
+    const dir=angleTo(e,t);if(['chill','ripple'].includes(cfg.effect)||slot==='R'&&e.color==='cyan')return inCone(e,t,dir,cfg.radius);
+    if(e.color==='blue'&&slot==='R')return inWave(e,t,dir,cfg.length,cfg.width);
+    if(cfg.effect==='embers')return dist(e,t)<=cfg.radius;
+    return true;
+   });
+   if(!target)continue;const dir=angleTo(e,target);
+   if(!e.apex&&slot==='E'&&canStartAttack(e)&&e.color!=='green')continue;
+   if(e.color==='red'&&slot==='R'&&!allies.some(t=>t!==e&&t.attackUnlocked))continue;
+   return this.start(e,dir,{x:target.x,y:target.y},target,slot);
+  }
+  return false;
  }
  draw(ctx,zoom){
   const shape=(e,dir,point)=>{
