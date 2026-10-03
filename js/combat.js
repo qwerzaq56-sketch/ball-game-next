@@ -29,14 +29,18 @@ export function attackDamageForSize(size, balance) {
   return Math.max(1, c.baseAttackDamage + size * c.attackDamagePerSize);
 }
 
+export function attackDamageForEntity(e,balance){
+ return attackDamageForSize(e.size,balance)+(e.summoned?.owner?.alive?attackDamageForSize(e.summoned.owner.size,balance)*(e.summoned.attackInheritance??.5):0);
+}
+
 export function defenseForSize(size, balance) {
   const c = balance.combatScaling;
   return Math.max(0, c.baseDefense + size * c.defensePerSize);
 }
 
-export function applyDefense(rawDamage, targetSize, balance) {
+export function applyDefense(rawDamage, targetSize, balance, multiplier=1) {
   const c = balance.combatScaling;
-  return Math.max(c.minimumDamage, rawDamage - defenseForSize(targetSize, balance));
+  return Math.max(c.minimumDamage, rawDamage - defenseForSize(targetSize, balance)*multiplier);
 }
 
 export function attackRangeForSize(size, balance) {
@@ -122,7 +126,7 @@ export function updateAttack(entity, dt, balance, hostiles, game) {
       if (entity.trail.length > 8) entity.trail.shift();
 
       const dx=entity.x-previous.x,dy=entity.y-previous.y,length=dx*dx+dy*dy;
-      const rawDamage = attackDamageForSize(entity.size, balance) * (game?.abilities?.damageMultiplier(entity) ?? 1);
+      const rawDamage = attackDamageForEntity(entity, balance) * (game?.abilities?.damageMultiplier(entity) ?? 1);
       for (const target of hostiles) {
         if (!target.alive || entity.attackHitSet.has(target.id)) continue;
         const relative=delta(previous,target,entity._world),t=length?Math.max(0,Math.min(1,(relative.x*dx+relative.y*dy)/length)):0;
@@ -189,7 +193,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   if ((attacker && (attacker.color===target.color||attacker.companionGroup&&attacker.companionGroup===target.companionGroup)) || target.invincible || !target.alive) return false;
   if(options.kind!=='field' && game?.abilities?.miss(target)){game.spawnFloatingText(target.x,target.y-target.size/2,"MISS","#eab308");return false;}
   const bal = balance || (game && game.balance);
-  const defended = bal ? applyDefense(rawDamage, target.size, bal) : rawDamage;
+  const defended = bal ? applyDefense(rawDamage, target.size, bal,game?.abilities?.defenseMultiplier(target)??1) : rawDamage;
   const dmg = Math.max(bal?.combatScaling?.minimumDamage??1,defended*Math.max(0,Math.min(1,options.postDefenseMultiplier??1)));
   const cfg = game ? game.balance.combat : null;
 
@@ -209,6 +213,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
     target.retaliateTimer = RETALIATION_MEMORY;
   }
 
+  if(attacker&&options.kind!=='field'&&target.companionGroup){const group=game?.allyLinks?.groups.get(target.companionGroup);if(group){group.aggressor=attacker;group.aggressorUntil=game.gameTime+5;}}
   if (attacker && options.knockback!==false) applyKnockback(target, attacker, game);
   if (target.beingAbsorbedByRef) cancelAbsorption(target); // a hit breaks an absorption connection
 

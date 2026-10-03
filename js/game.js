@@ -382,6 +382,7 @@ export class Game {
     for (const eater of this.entities) {
       if (!eater.alive) continue;
       if (eater.behavior !== 'player' && eater.behavior !== 'ai') continue;
+      if(eater.summoned)continue;
       if (eater.beingAbsorbedByRef) continue; // can't eat while being absorbed yourself
 
       const maintainDistance = maintainDistanceFor(eater, b);

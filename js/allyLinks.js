@@ -1,4 +1,4 @@
-import {canStartAttack,startAttack} from './combat.js';
+import {canStartAttack,startAttack,attackChargeDistanceForSize,dodgeDistanceForSize} from './combat.js';
 import {attackReach} from './abilities.js';
 import {delta,angleTo,near} from './topology.js';
 import {worldView,segmentInView} from './renderVisibility.js';
@@ -14,7 +14,8 @@ const affinity=e=>AFFINITY[e.companionAffinity]??AFFINITY.neutral;
 const unit=e=>e.alive&&(e.behavior==='ai'||e.behavior==='player');
 export class AllyLinks {
  constructor(game){this.game=game;this.edges=new Map();this.groups=new Map();this.nextGroup=1;this.timer=0;this.events=[];this.stats={joins:0,leaves:0};this.truceUntil=0;this.truceCycle=-1;}
- connected(a,b){return a!==b&&unit(a)&&unit(b)&&(a.color===b.color||a.companionGroup&&a.companionGroup===b.companionGroup)&&dist(a,b)-(a.size+b.size)/2<=(this.edges.has(key(a,b))?ALLY_RULES.release:ALLY_RULES.enter);}
+ tether(group){const lead=group.leader;return Math.max(ALLY_RULES.release,2*Math.max(attackChargeDistanceForSize(lead.size,this.game.balance,lead.apex),dodgeDistanceForSize(lead.size,this.game.balance)));}
+ connected(a,b){return a!==b&&unit(a)&&unit(b)&&(a.color===b.color||a.companionGroup&&a.companionGroup===b.companionGroup)&&dist(a,b)-(a.size+b.size)/2<=(a.companionGroup&&a.companionGroup===b.companionGroup&&this.groups.has(a.companionGroup)?this.tether(this.groups.get(a.companionGroup)):(this.edges.has(key(a,b))?ALLY_RULES.release:ALLY_RULES.enter));}
  neighbors(e){return this.game.entities.filter(t=>this.connected(e,t));}
  bonus(e){return Math.min(ALLY_RULES.bonusCap,this.neighbors(e).filter(t=>t.color===e.color).length)*ALLY_RULES.bonus;}
  refresh(){
@@ -51,10 +52,14 @@ export class AllyLinks {
   const g=this.groups.get(e.companionGroup);if(!g)return false;e.state='companion';e.target=null;
   if(this.game.biomes.danger(e,!!e.environmentThreat)||e.beingAbsorbedByRef||e.escapeAbsorber||this.game.abilities.fields.some(f=>isHostile(e,f.owner)&&dist(e,f)<(f.radius??360)+60))return false;
   const kind=this.personality(g);
-  const allies=[...g.members].filter(m=>unit(m)&&dist(e,m)<320);
+  const allies=[...g.members].filter(m=>unit(m)&&dist(e,m)<320+(e.size+m.size)/2);
   const power=Math.sqrt(allies.reduce((n,m)=>n+m.size*m.size*(m.hp/m.maxHp),0));
-  const targets=this.game.getNearbyEntities(e,320).filter(t=>unit(t)&&isHostile(e,t)&&dist(e,t)<320).sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id);
-  const target=targets.find(t=>t.size<=power*(kind==='challenge'?1.25:kind==='opportunity'?1:.7)&&e.hp/e.maxHp>.3&&(!e.beingAbsorbedByRef));
+  const range=Math.max(320,g.leader.size+this.tether(g)/2),targets=this.game.getNearbyEntities(e,range).filter(t=>unit(t)&&isHostile(e,t)&&dist(e,t)<range&&dist(g.leader,t)<this.tether(g)+(g.leader.size+t.size)/2).sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id);
+  const active=targets.find(t=>['TELEGRAPH','CHARGING'].includes(t.attackState)&&[...g.members].some(m=>unit(m)&&dist(t,m)<=attackReach(t,this.game.balance)+(t.size+m.size)/2+120&&Math.abs(Math.atan2(Math.sin(angleTo(t,m)-t.attackDir),Math.cos(angleTo(t,m)-t.attackDir)))<Math.PI/3));
+  if(active){g.aggressor=active;g.aggressorUntil=this.game.gameTime+5;}
+  const defense=targets.includes(g.aggressor)&&g.aggressorUntil>this.game.gameTime?g.aggressor:null;
+  const ordered=defense?[defense,...targets.filter(t=>t!==defense)]:targets;
+  const target=ordered.find(t=>t.size<=power*(t===defense?1.5:kind==='challenge'?1.35:kind==='opportunity'?1.15:.7)&&e.hp/e.maxHp>.3&&(!e.beingAbsorbedByRef));
   if(!target)return false;e.companionThreat=null;e.state='chase_fight';e.target=target;
   const angle=angleTo(e,target);e.facing=angle;
   this.game.abilities.considerAI(e);
@@ -76,7 +81,7 @@ export class AllyLinks {
   if(group&&group.members.size>=ALLY_RULES.maxGroup)return false;
   if(!group){group={id:this.nextGroup++,color:owner.color,leader:owner,members:new Set([owner])};this.groups.set(group.id,group);this.enter(owner,group);}
   if(mixed)group.truceUntil=this.truceUntil;
-  group.members.add(target);this.enter(target,group);target.recruitedUntil=this.game.gameTime+5;group.leader=owner;this.personality(group);return true;
+  group.members.add(target);this.enter(target,group);target.recruitedUntil=this.game.gameTime+20;if(owner.behavior==='player'||!group.leader?.alive)group.leader=owner;this.personality(group);return true;
  }
  join(a,b){
   if(a.companionGroup||!this.connected(a,b)||a.beingAbsorbedByRef||b.beingAbsorbedByRef)return false;
@@ -109,7 +114,7 @@ export class AllyLinks {
   const candidates=this.game.entities.filter(unit).sort((a,b)=>a.id-b.id);
   for(const e of candidates){
    if(e.companionCooldown>0)continue;
-   if(e.companionGroup){if(random('ai')<affinity(e).leave)this.leave(e);continue;}
+   if(e.companionGroup){if(e.behavior==='ai'&&!e.summoned&&!(e.recruitedUntil>this.game.gameTime)&&e.attackState==='READY'&&e.dodgeState!=='DODGING'&&e.state!=='chase_fight'&&random('ai')<affinity(e).leave*.35)this.leave(e);continue;}
    if(e.behavior!=='ai'||e.frozen>0||e.beingAbsorbedByRef||e.recovering||e.attackState!=='READY'||e.dodgeState==='DODGING')continue;
    const neighbor=(this.truceUntil>this.game.gameTime?candidates.filter(n=>n!==e&&dist(e,n)<=280):this.neighbors(e)).filter(n=>!n.beingAbsorbedByRef&&!(n.companionCooldown>0)&&!(n.frozen>0)&&!n.recovering&&n.dodgeState!=='DODGING'&&n.attackState==='READY'&&!n.specialCast&&(!n.companionGroup||this.groups.get(n.companionGroup)?.members.size<ALLY_RULES.maxGroup))
     .sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id)[0];

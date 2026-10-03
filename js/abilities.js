@@ -111,7 +111,15 @@ export class Abilities {
   this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,point:{x:e.x,y:e.y},remaining:.75,normal:true,skill:cfg,size:e.size});
   this.log('special-fire',e,{slot:'E',skill:cfg.id,cast:cast.id});
   if(cfg.effect==='invite'){
-   for(const t of units.filter(t=>t!==e&&t.color===e.color&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b)))if(this.game.allyLinks.recruit(e,t))this.metrics.count(e,cast,'recruits');
+   for(const t of units.filter(t=>t!==e&&!t.companionGroup&&t.color===e.color&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b))) {
+    const group=this.game.allyLinks.groups.get(e.companionGroup);if(group?.members.size>=6)break;
+    if(random('ai')<(cfg.acceptChance??.8)&&this.game.allyLinks.recruit(e,t))this.metrics.count(e,cast,'recruits');
+   }
+   const group=this.game.allyLinks.groups.get(e.companionGroup),recipients=group?[...group.members]:[e];
+   for(const t of recipients)if(t.alive){
+    t.inviteBuffs=(t.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime);t.inviteBuffs.push({expires:this.game.gameTime+(cfg.buffDuration??30),damage:cfg.buffDamage??.05,defense:cfg.buffDefense??.05});
+    t.inviteBuffs=t.inviteBuffs.slice(-Math.max(1,Math.floor(cfg.buffStackCap??5)));t.recruitedUntil=Math.max(t.recruitedUntil??0,this.game.gameTime+20);this.metrics.count(e,cast,'buffs');
+   }
   }else if(cfg.effect==='vigor'){
    for(const t of units)if(t.color===e.color&&dist(e,t)<=cfg.radius){t.vigorUntil=this.game.gameTime+(cfg.buffDuration??4);t.vigorEffect={damage:cfg.buffDamage??.15,speed:cfg.buffSpeed??1.12};this.metrics.count(e,cast,'buffs');}
   }else if(cfg.effect==='dust'){e.dustUntil=this.game.gameTime+(cfg.buffDuration??3);e.dustChance=cfg.missChance??.15;}
@@ -126,8 +134,9 @@ export class Abilities {
   const room=Math.max(0,Math.min((cfg.summonCount??2)-existing.length,6-(group?.members.size??1)));
   for(let i=0;i<room;i++){
    const dir=e.facing+(i?1:-1)*Math.PI/2,d=e.size/2+55,w=g.balance.world;
-   const t=new AIEntity({balance:g.balance,color:e.color,colorHex:e.colorHex,x:boundCenter(e.x+Math.cos(dir)*d,0,w.worldWidth,w.wrap),y:boundCenter(e.y+Math.sin(dir)*d,0,w.worldHeight,w.wrap),startSize:Math.min(cfg.summonMaxSize??80,Math.max(cfg.summonMinSize??40,e.size*(cfg.summonSizeFraction??.3)))});
-   t.growth=0;t.summoned={owner:e,expires:g.gameTime+(cfg.summonDuration??15)};t.displayName='숲의 동행';t.companionAffinity='social';t._recomputeStacks(g.balance,true);g.entities.push(t);g.ecology.initializeUnit(g,t);g.allyLinks.recruit(e,t);this.metrics.count(e,cast,'summons');this.log('summon',e,{target:t.id,expires:t.summoned.expires});
+   const size=e.size*Math.min(.2,cfg.summonSizeCapFraction??.2,Math.max(.01,(cfg.summonSizeFraction??.16)*(1+(random('ai')*2-1)*(cfg.summonSizeVariation??.2))));
+   const t=new AIEntity({balance:g.balance,color:e.color,colorHex:e.colorHex,x:boundCenter(e.x+Math.cos(dir)*d,0,w.worldWidth,w.wrap),y:boundCenter(e.y+Math.sin(dir)*d,0,w.worldHeight,w.wrap),startSize:size});
+   t.growth=0;t.summoned={owner:e,attackInheritance:cfg.summonAttackInheritance??.5,expires:g.gameTime+(cfg.summonDuration??15)};t.displayName='숲의 동행';t.companionAffinity='social';t._recomputeStacks(g.balance,true);t.attackMaxStack=Math.max(1,t.attackMaxStack);t.attackStack=t.attackMaxStack;t.attackUnlocked=true;t.dodgeMaxStack=Math.max(1,t.dodgeMaxStack);t.dodgeStack=t.dodgeMaxStack;t.dodgeUnlocked=true;g.entities.push(t);g.ecology.initializeUnit(g,t);t.personality='growth';g.allyLinks.recruit(e,t);this.metrics.count(e,cast,'summons');this.log('summon',e,{target:t.id,expires:t.summoned.expires});
   }
  }
  update(dt){
@@ -140,6 +149,7 @@ export class Abilities {
     if(e.summoned&&(e.summoned.expires<=this.game.gameTime||!e.summoned.owner.alive||!e.summoned.owner.apex)){e.alive=false;this.game.allyLinks.leave(e,'summon-expiry');this.game.relics.release(e);this.game.ecology.release(e,this.game.gameTime,'summon-expiry');this.release(e);}
     if(!e.alive){this.release(e);e._specialApex=false;}
     else if(!e.apex&&e._specialApex){this.loseApex(e);}
+    e.inviteBuffs=(e.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime);
     e.normalSkillCooldown=Math.max(0,(e.normalSkillCooldown??0)-dt);
     e.specialCooldown=Math.max(0,(e.specialCooldown??0)-dt);
     if(e.alive&&e.apex&&!e._specialApex){e.specialCooldown=Math.max(e.specialCooldown??0,5);e._specialApex=true;}e.commandLock=Math.max(0,(e.commandLock??0)-dt);
@@ -173,7 +183,9 @@ export class Abilities {
  rallyActive(e){return [...(e.rallyBuffs?.values()??[])].some(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex);}
  rallyPower(e,key,fallback){return Math.max(0,...[...(e.rallyBuffs?.values()??[])].filter(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex).map(r=>r[key]??fallback));}
  speedMultiplier(e){return Math.max(1,this.rallyPower(e,'buffSpeed',1.25),(e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.speed??1.12):1);}
- damageMultiplier(e){return 1+((e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.damage??.15):0)+this.rallyPower(e,'buffDamage',.3)+(this.game.relics?.damageBonus(e)??0)+(e.morale?.size?Math.max(...[...e.morale.keys()].map(id=>e.moralePower?.get(id)??.15)):0)+(this.game.allyLinks?.bonus(e)??0);}
+ invitePower(e,key){return (e.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime).reduce((sum,b)=>sum+(b[key]??0),0);}
+ defenseMultiplier(e){return 1+this.invitePower(e,'defense');}
+ damageMultiplier(e){return 1+this.invitePower(e,'damage')+((e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.damage??.15):0)+this.rallyPower(e,'buffDamage',.3)+(this.game.relics?.damageBonus(e)??0)+(e.morale?.size?Math.max(...[...e.morale.keys()].map(id=>e.moralePower?.get(id)??.15)):0)+(this.game.allyLinks?.bonus(e)??0);}
  commandDecision(e){
   const c=e.command;if(!c)return false;
   if(e.recovering||e.hp/e.maxHp<=.3||e.beingAbsorbedByRef){this.endCommand(e,'survival');return false;}
@@ -201,7 +213,7 @@ export class Abilities {
  absorptionAllowed(e,t){return e.command?.kind!=='devour'||(t!==e.command.owner&&!t.apex&&e.command.choices.get(t.id)===true);}
  canAffect(e,target,slot='R'){
   if(!this.canCast(e,slot))return false;const cfg=this.skill(e,slot),group=this.game.allyLinks.groups.get(e.companionGroup),room=6-(group?.members.size??1);
-  if(cfg.effect==='invite')return room>0&&this.units().some(t=>t!==e&&t.color===e.color&&!t.companionGroup&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3&&dist(e,t)<=cfg.radius);
+  if(cfg.effect==='invite')return this.invitePower(e,'damage')<.15||room>0&&this.units().some(t=>t!==e&&t.color===e.color&&!t.companionGroup&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3&&dist(e,t)<=cfg.radius);
   if(!target?.alive||!isHostile(e,target))return false;const dir=angleTo(e,target);
   if(['chill','ripple'].includes(cfg.effect)||slot==='R'&&e.color==='cyan')return inCone(e,target,dir,cfg.radius);
   if(slot==='R'&&e.color==='blue')return inWave(e,target,dir,cfg.length,cfg.width);
@@ -216,7 +228,7 @@ export class Abilities {
   const enemies=nearby.filter(t=>isHostile(e,t)&&dist(e,t)<=this.game.biomes.sensingRange(e,320));
   const target=enemies.sort((a,b)=>dist(e,a)-dist(e,b))[0];if(!target){if(e.color==='green'&&slot==='E'&&e.companionAffinity!=='independent'&&nearby.some(t=>t!==e&&t.color===e.color&&!t.companionGroup))return this.start(e,e.facing,null,null,slot);return false;}
   const dir=angleTo(e,target);
-  if(slot==='E'){const cfg=this.skill(e,slot);if(['chill','ripple'].includes(cfg.effect)&&!inCone(e,target,dir,cfg.radius))return false;if(canStartAttack(e)&&e.color!=='green')return false;if(e.color==='green'&&!nearby.some(t=>t!==e&&t.color===e.color))return false;return this.start(e,dir,null,target,slot);}
+  if(slot==='E'){const cfg=this.skill(e,slot);if(['chill','ripple'].includes(cfg.effect)&&!inCone(e,target,dir,cfg.radius))return false;if(canStartAttack(e)&&e.color!=='green')return false;if(e.color==='green'&&cfg.effect!=='invite'&&!nearby.some(t=>t!==e&&t.color===e.color))return false;return this.start(e,dir,null,target,slot);}
   if(e.color==='cyan'&&!inCone(e,target,dir,cfg.radius))return false;
   if(e.color==='blue'&&!inWave(e,target,dir,cfg.length,cfg.width))return false;
   if(e.color==='green'&&!canStartAttack(e)&&!nearby.some(t=>t.color===e.color&&dist(e,t)<=cfg.radius&&canStartAttack(t)))return false;

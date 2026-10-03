@@ -52,8 +52,8 @@ export class AIEntity extends Entity {
   // Size-driven stack capacity, identical rule to Player (spec v0.5 §9, §25) — AI gets no banner,
   // and a capacity increase grants the bonus charge(s) immediately full (see player.js).
   _recomputeStacks(balance) {
-    const newAttackMax = computeMaxStack(this.size, balance.skills.attackStackThresholds);
-    const newDodgeMax = computeMaxStack(this.size, balance.skills.dodgeStackThresholds);
+    const newAttackMax = Math.max(this.summoned?1:0,computeMaxStack(this.size, balance.skills.attackStackThresholds));
+    const newDodgeMax = Math.max(this.summoned?1:0,computeMaxStack(this.size, balance.skills.dodgeStackThresholds));
     this.attackStack = Math.min(newAttackMax,Math.max(0,this.attackStack + newAttackMax - this.attackMaxStack));
     this.attackMaxStack = newAttackMax;
     this.attackUnlocked = newAttackMax > 0;

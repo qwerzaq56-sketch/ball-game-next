@@ -13,7 +13,7 @@ test('nearby allied strength permits stronger opponents but solitary and cautiou
  const {g,unit}=setup(),a=unit(4000),b=unit(4050),enemy=unit(4180,'red',160);a.personality=b.personality='growth';g.entities=[a,b,enemy];g.buildGrid();g.allyLinks.refresh();g.allyLinks.join(b,a);
  assert(g.allyLinks.combat(a));assert.equal(a.target,enemy);assert.equal(a.attackState,'TELEGRAPH');
  a.attackState='READY';a.personality=b.personality='cautious';assert.equal(g.allyLinks.combat(a),false);g.allyLinks.move(a,0);assert.equal(a.state,'flee');
- a.personality=b.personality='growth';b.x=4400;assert.equal(g.allyLinks.combat(a),false);
+ a.personality=b.personality='growth';b.x=4500;assert.equal(g.allyLinks.combat(a),false);
 });
 test('companions react with dodge and do not cancel committed attacks to form up',()=>{
  const {g,unit}=setup(),a=unit(4000),b=unit(4050),enemy=unit(4100,'red',100);g.entities=[a,b,enemy];g.buildGrid();g.allyLinks.refresh();g.allyLinks.join(b,a);

@@ -1,0 +1,50 @@
+{
+  "scope": "controlled stationary size600 attacker vs size500 player + two summons; 10s; not global encounter frequency",
+  "rows": [
+    {
+      "seed": 7,
+      "seconds": 10,
+      "sizes": [
+        64.26993296295406,
+        66.41688131541014
+      ],
+      "attackStarts": [
+        2,
+        2
+      ],
+      "enemyHpLost": 253.51099141238956,
+      "groupedFraction": 1,
+      "focusFraction": 0.435
+    },
+    {
+      "seed": 23,
+      "seconds": 10,
+      "sizes": [
+        71.29093103110792,
+        77.64852501451969
+      ],
+      "attackStarts": [
+        2,
+        2
+      ],
+      "enemyHpLost": 293.6668033003807,
+      "groupedFraction": 1,
+      "focusFraction": 0.3616666666666667
+    },
+    {
+      "seed": 701,
+      "seconds": 10,
+      "sizes": [
+        66.58485312014818,
+        75.34394358843566
+      ],
+      "attackStarts": [
+        2,
+        2
+      ],
+      "enemyHpLost": 278.2433527588728,
+      "groupedFraction": 1,
+      "focusFraction": 0.36
+    }
+  ]
+}

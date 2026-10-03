@@ -1,7 +1,7 @@
 import {dist,isHostile,canAbsorb} from './collision.js';
 import {sizeFromGrowth,growthRewardFor} from './entity.js';
 import {absorptionGrowthFor} from './absorption.js';
-import {attackDamageForSize,applyDefense,attackChargeDurationForSize,attackTelegraphTimeForSize} from './combat.js';
+import {attackDamageForEntity,applyDefense,attackChargeDurationForSize,attackTelegraphTimeForSize} from './combat.js';
 import {minimumDeathDropGrowth} from './spawning.js';
 // Potential rewards assume successful interaction and full collection, never probability.
 export function assessOpportunityChannels(game,p,nearby,needed,foodGrowth,threats,fields,environment){
@@ -12,7 +12,7 @@ export function assessOpportunityChannels(game,p,nearby,needed,foodGrowth,threat
   if(t.behavior==='orb'||t.summoned)continue;
   if(canAbsorb(p,t)&&safe(t,null)){const amount=gain(absorptionGrowthFor(p,t,b));absorptionTargets++;absorptionGain=Math.max(absorptionGain,amount);}
   if(isHostile(p,t)&&p.attackUnlocked&&p.hp/p.maxHp>=.6&&t.size<=p.size*.9&&safe(t,t)){
-   const kr=b.killReward,direct=kr.baseReward*Math.pow(t.size/kr.referenceSize,kr.growthExponent)*kr.growthRewardMultiplier,reward=direct+minimumDeathDropGrowth(t,b)*(game.relics?.growthMultiplier(p)??1),amount=gain(reward),damage=applyDefense(attackDamageForSize(p.size,b)*(game.abilities?.damageMultiplier(p)??1),t.size,b),hits=Math.ceil(t.hp/Math.max(1,damage)),cycle=Math.max(p.behavior==='player'?b.attack.attackCooldown:b.ai.attackCooldown,attackChargeDurationForSize(p.size,b)+attackTelegraphTimeForSize(p.size,b)+b.attack.attackRecoveryTime);
+   const kr=b.killReward,direct=kr.baseReward*Math.pow(t.size/kr.referenceSize,kr.growthExponent)*kr.growthRewardMultiplier,reward=direct+minimumDeathDropGrowth(t,b)*(game.relics?.growthMultiplier(p)??1),amount=gain(reward),damage=applyDefense(attackDamageForEntity(p,b)*(game.abilities?.damageMultiplier(p)??1),t.size,b,game.abilities?.defenseMultiplier(t)??1),hits=Math.ceil(t.hp/Math.max(1,damage)),cycle=Math.max(p.behavior==='player'?b.attack.attackCooldown:b.ai.attackCooldown,attackChargeDurationForSize(p.size,b)+attackTelegraphTimeForSize(p.size,b)+b.attack.attackRecoveryTime);
    huntTargets++;if(amount>huntGain){huntGain=amount;huntEstimatedSeconds=hits*cycle;}
   }
  }

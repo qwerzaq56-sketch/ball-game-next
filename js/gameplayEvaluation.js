@@ -1,7 +1,7 @@
 import {assessOpportunityChannels} from './opportunityChannels.js';
 import {dist,isHostile,canAbsorb,canEatOrb} from './collision.js';
 import {sizeFromGrowth,growthRewardFor} from './entity.js';
-import {attackDamageForSize,applyDefense} from './combat.js';
+import {attackDamageForEntity,applyDefense} from './combat.js';
 // Read-only local opportunity assessment. No spawn/AI decisions or random calls.
 export function assessGameplay(game,actor=game.player){
  const p=actor,b=game.balance,c=b.evaluation??{},range=actor===game.player?Math.min(b.ai.detectionRange,game.biomes.playerSightRadius()):game.biomes.sensingRange(actor);
@@ -14,7 +14,7 @@ export function assessGameplay(game,actor=game.player){
  let potentialSizeGain=0,growthValue=0;
  for(const center of food){const value=food.reduce((sum,e)=>sum+(dist(center,e)<=cluster?e.growthValue:0),0);const gain=sizeFromGrowth(p.growth+growthRewardFor(value,p,b),p.baseSize,b.growth.growthToSizeRatio,b.growth)-p.size;if(gain>potentialSizeGain){potentialSizeGain=gain;growthValue=value;}}
  const needed=Math.max(0,Number.isFinite(Number(c.minimumSizeGain))?Number(c.minimumSizeGain):.5,p.size*(Number.isFinite(Number(c.minimumGrowthRatio))?Math.max(0,Number(c.minimumGrowthRatio)):.01));
- const damageRatio=Math.max(0,...threats.filter(t=>isHostile(p,t)).map(t=>applyDefense(attackDamageForSize(t.size,b),p.size,b)/p.maxHp));
+ const damageRatio=Math.max(0,...threats.filter(t=>isHostile(p,t)).map(t=>applyDefense(attackDamageForEntity(t,b)*(game.abilities?.damageMultiplier(t)??1),p.size,b,game.abilities?.defenseMultiplier(p)??1)/p.maxHp));
  const sizeRatio=Math.max(0,...threats.map(t=>t.size/p.size));
  const severity=Math.min(1,Math.max(damageRatio*3,Math.max(0,sizeRatio-1)*.5,environment||fields.length?1:0));
  return {opportunityChannels:assessOpportunityChannels(game,p,nearby,needed,growthValue,threats,fields,environment),growthOpportunity:potentialSizeGain>=needed,potentialSizeGain,growthValue,growthNeeded:needed,crisis:threats.length>0||fields.length>0||!!environment,crisisSeverity:severity,riskDamageRatio:damageRatio,threatSizeRatio:sizeRatio,

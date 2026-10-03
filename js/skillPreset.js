@@ -5,7 +5,7 @@ export const PRESET_STORAGE_KEY='ball-next-skill-preset-v1';
 const colors=Object.keys(DEFAULT_SKILLS),object=value=>value&&typeof value==='object'&&!Array.isArray(value);
 
 export function defaultSkillPreset(){return {format:'ball-next-skills-preset-v1',settings:{unlockSize:100,territoryMultiplier:1,attackTimingSizeScale:200/350},loadout:structuredClone(DEFAULT_SKILLS),overrides:{}};}
-function number(value,rule,name){if(typeof value!=='number'||!Number.isFinite(value)||value<rule.min||value>rule.max||name==='summonCount'&&!Number.isInteger(value))throw Error(`${name}: ${rule.min}~${rule.max} 범위의 숫자가 필요합니다.`);return value;}
+function number(value,rule,name){if(typeof value!=='number'||!Number.isFinite(value)||value<rule.min||value>rule.max||['summonCount','buffStackCap'].includes(name)&&!Number.isInteger(value))throw Error(`${name}: ${rule.min}~${rule.max} 범위의 숫자가 필요합니다.`);return value;}
 export function normalizeSkillPreset(input){
  if(!object(input)||input.format!=='ball-next-skills-preset-v1')throw Error('스킬 프리셋 v1 JSON이 필요합니다.');
  for(const key of Object.keys(input))if(!['format','settings','loadout','overrides'].includes(key))throw Error(`알 수 없는 항목: ${key}`);

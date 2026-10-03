@@ -28,12 +28,12 @@ test('followers form up without combat and group dissolves when separated or dea
  a.x=3000;g.allyLinks.refresh();assert.equal(b.companionGroup,null);assert.equal(g.allyLinks.groups.size,0);
  a.x=1000;b.x=1100;a.companionCooldown=0;b.companionCooldown=0;g.allyLinks.refresh();g.allyLinks.join(b,a);a.alive=false;g.allyLinks.refresh();assert.equal(b.companionGroup,null);
 });
-test('player is the formation leader and formation entry/exit can occur probabilistically',()=>{
+test('player leads formations and leaves by choice while AI entry remains probabilistic',()=>{
  const {g,a}=fixture();a.companionAffinity='neutral';g.player.x=a.x;g.player.y=a.y;g.entities=[g.player,a];
  let joinSeed;for(let s=0;s<100;s++){resetRandom(s);if(random('ai')<.18){joinSeed=s;break;}}
  resetRandom(joinSeed);g.allyLinks.update(0);assert(g.player.companionGroup);assert.equal(g.allyLinks.groups.get(a.companionGroup).leader,g.player);
  let leaveSeed;for(let s=0;s<100;s++){resetRandom(s);if(random('ai')<.08){leaveSeed=s;break;}}
- resetRandom(leaveSeed);g.allyLinks.timer=0;g.player.companionCooldown=0;a.companionCooldown=0;g.allyLinks.update(0);assert.equal(g.player.companionGroup,null);
+ resetRandom(leaveSeed);g.allyLinks.timer=0;g.player.companionCooldown=0;a.companionCooldown=3;g.allyLinks.update(0);assert(g.player.companionGroup);g.allyLinks.leave(g.player,'player-choice');assert.equal(g.player.companionGroup,null);
 });
 test('edge drawing and refresh consume no random numbers; reset clears links and groups',()=>{
  const {g,a,b}=fixture();g.allyLinks.refresh();g.allyLinks.join(a,b);resetRandom(9);const expected=random('ai');resetRandom(9);

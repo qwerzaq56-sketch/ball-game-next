@@ -1,0 +1,44 @@
+{
+  "scope": "controlled neutral/opportunity formation of three size100 members hunting size190 target, stationary target, no skills; not global encounter rate",
+  "rows": [
+    {
+      "seed": 7,
+      "seconds": 10,
+      "alliedSize": 100,
+      "enemySize": 190,
+      "attackStarts": [
+        6,
+        6,
+        6
+      ],
+      "groupedFraction": 1,
+      "enemyHpLost": 468
+    },
+    {
+      "seed": 23,
+      "seconds": 10,
+      "alliedSize": 100,
+      "enemySize": 190,
+      "attackStarts": [
+        2,
+        2,
+        2
+      ],
+      "groupedFraction": 1,
+      "enemyHpLost": 156
+    },
+    {
+      "seed": 701,
+      "seconds": 10,
+      "alliedSize": 100,
+      "enemySize": 190,
+      "attackStarts": [
+        2,
+        2,
+        2
+      ],
+      "groupedFraction": 1,
+      "enemyHpLost": 156
+    }
+  ]
+}
