@@ -221,7 +221,7 @@ export class Game {
     this.relics.update(dt);
 
     this.buildGrid();
-    this.biomeObjects.update();
+    this.biomeObjects.update(dt);
     this.allyLinks.update(dt);
     this.abilities.update(dt);
     for(const e of this.entities)if(e.alive&&e.behavior==='ai'&&e.apex)this.abilities.considerAI(e);
@@ -415,6 +415,7 @@ export class Game {
           if (!canEatOrb(eater, target, b)) continue;
           if (!circlesOverlap(eater, target)) continue;
           target.alive = false;
+          if(target.healFraction){const healed=Math.min(eater.maxHp-eater.hp,eater.maxHp*target.healFraction);eater.hp+=healed;this.spawnFloatingText(eater.x,eater.y,`회복 +${Math.round(healed)}`,'#f9a8d4');this.spawnGrowthParticles(target.x,target.y,'#f472b6');if(eater===this.player)this.audio.growth();continue;}
           const received=growthRewardFor(target.growthValue*this.relics.growthMultiplier(eater),eater,b);
           this.balanceLog?.pickup(target,eater,received);
           eater.addGrowth(received, b);
@@ -554,6 +555,7 @@ export class Game {
   // Growth carry over unchanged into the respawn, and only running out of Lives triggers Game
   // Over (spec: "부활할 때 Size는 감소하지 않는다").
   onEntityDeath(entity, attacker) {
+    Object.assign(entity,{windStoneStacks:0,obsidianStacks:0,obsidianShieldHp:0,obsidianShieldUntil:0,companionCharmUntil:0,objectSpeedUntil:0,objectFrostUntil:0});
     this.relics.release(entity);
     this.abilities.release(entity);
     this.ecology.release(entity, this.gameTime, "death");
@@ -771,9 +773,9 @@ export class Game {
       this.renderCamera={...this.camera,x:this.camera.x-ox,y:this.camera.y-oy};
       if(layer===0){
       this.drawGrid(ctx);
-      this.biomes.draw(ctx,this.camera.zoom);this.biomeObjects.draw(ctx,this.camera.zoom);
+      this.biomes.draw(ctx,this.camera.zoom);
       }else{
-      this.era.draw(ctx,this.camera.zoom);
+      this.biomeObjects.draw(ctx,this.camera.zoom);this.era.draw(ctx,this.camera.zoom);
       this.relics.draw(ctx,this.camera.zoom);
       this.drawTerritories(ctx);
       if(!this.balance.world.wrap)this.drawWorldBorder(ctx);
@@ -965,6 +967,7 @@ export class Game {
       ctx.restore();
     }
 
+    if(e.healFraction){ctx.save();ctx.strokeStyle='#ffffff';ctx.lineWidth=2/this.camera.zoom;ctx.beginPath();ctx.moveTo(e.x-5/this.camera.zoom,e.y);ctx.lineTo(e.x+5/this.camera.zoom,e.y);ctx.moveTo(e.x,e.y-5/this.camera.zoom);ctx.lineTo(e.x,e.y+5/this.camera.zoom);ctx.stroke();ctx.restore();}
     if(e.regionReward==='snow'&&e.behavior==='orb'){ctx.save();ctx.strokeStyle='#e0f2fe';ctx.lineWidth=1/this.camera.zoom;ctx.beginPath();for(let i=0;i<6;i++){const angle=i*Math.PI/3;ctx.moveTo(e.x,e.y);ctx.lineTo(e.x+Math.cos(angle)*(r+5),e.y+Math.sin(angle)*(r+5));}ctx.stroke();ctx.restore();}
     if(e.attackState==='CHARGING'){ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.strokeStyle='#ffffff';ctx.lineWidth=4/this.camera.zoom;ctx.stroke();}
     // shadow
@@ -985,6 +988,9 @@ export class Game {
     // Canvas save/restore does not restore the current path. Stroke the body before
     // decorative helpers replace it with their marks, pulse circles or arrow triangles.
     if((e.hitVisualUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+3/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle=e.hitVisualShield?'#a5f3fc':'#ffffff';ctx.globalAlpha=Math.min(1,(e.hitVisualUntil-this.gameTime)/.18);ctx.lineWidth=4/this.camera.zoom;ctx.stroke();ctx.restore();}
+    if((e.obsidianShieldHp??0)>0&&(e.obsidianShieldUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+13/this.camera.zoom,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,e.obsidianShieldHp/e.obsidianShieldMax));ctx.strokeStyle='#c4b5fd';ctx.lineWidth=5/this.camera.zoom;ctx.stroke();ctx.restore();}
+    if((e.windStoneStacks??0)>0||(e.obsidianStacks??0)>0){ctx.save();ctx.fillStyle='#c4b5fd';ctx.font=`bold ${11/this.camera.zoom}px system-ui`;ctx.textAlign='center';ctx.fillText(`바람 ${e.windStoneStacks??0} · 흑요석 ${e.obsidianStacks??0}`,e.x,e.y+r+16/this.camera.zoom);ctx.restore();}
+    if((e.companionCharmUntil??0)>this.gameTime){ctx.save();const shell=e.companionDecoration==='shell';ctx.strokeStyle=shell?'#fef3c7':'#f9a8d4';ctx.lineWidth=2/this.camera.zoom;for(let i=0;i<5;i++){const a=i*Math.PI*2/5,x=e.x+Math.cos(a)*(r+9/this.camera.zoom),y=e.y+Math.sin(a)*(r+9/this.camera.zoom);ctx.beginPath();if(shell){ctx.arc(x,y,6/this.camera.zoom,Math.PI,Math.PI*2);ctx.lineTo(x,y+3/this.camera.zoom);ctx.closePath();for(let j=-1;j<=1;j++){ctx.moveTo(x,y+3/this.camera.zoom);ctx.lineTo(x+j*4/this.camera.zoom,y-4/this.camera.zoom);}}else{for(let j=0;j<5;j++){const aa=j*Math.PI*2/5;ctx.moveTo(x+Math.cos(aa)*3/this.camera.zoom+2/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom);ctx.arc(x+Math.cos(aa)*3/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom,2/this.camera.zoom,0,Math.PI*2);}}ctx.stroke();}ctx.restore();}
     if((e.shieldHp??0)>0){ctx.beginPath();ctx.arc(e.x,e.y,r+7/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#a5f3fc';ctx.lineWidth=3/this.camera.zoom;ctx.stroke();}
     if(this.abilities.frostMarks.some(m=>m.target===e)){ctx.beginPath();ctx.arc(e.x,e.y,r+12/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#67e8f9';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([5/this.camera.zoom,4/this.camera.zoom]);ctx.stroke();ctx.setLineDash([]);}
     if((e.frostbiteRemaining??0)>0||(this.biomes.enabled&&this.biomes.regionAt(e)?.id==='lake')){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.fillStyle=(e.frostbiteRemaining??0)>0?'rgba(185,225,255,.42)':'rgba(25,110,230,.30)';ctx.fill();ctx.restore();}

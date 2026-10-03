@@ -212,7 +212,8 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   const bal = balance || (game && game.balance);
   const defended = bal && !options.ignoreDefense ? applyDefense(rawDamage, target.size, bal,game?.abilities?.defenseMultiplier(target)??1) : rawDamage;
   let dmg = Math.max(bal?.combatScaling?.minimumDamage??1,defended*Math.max(0,Math.min(1,options.postDefenseMultiplier??1)));
-  const shield=Math.min(dmg,Math.max(0,target.shieldHp??0));target.shieldHp=Math.max(0,(target.shieldHp??0)-shield);dmg-=shield;
+  let shield=Math.min(dmg,Math.max(0,target.shieldHp??0));target.shieldHp=Math.max(0,(target.shieldHp??0)-shield);dmg-=shield;
+  if((target.obsidianShieldUntil??0)>(game?.gameTime??Infinity)){const blocked=Math.min(dmg,Math.max(0,target.obsidianShieldHp??0));target.obsidianShieldHp-=blocked;dmg-=blocked;shield+=blocked;}
   if(shield>0){target.shieldDamageAbsorbed=(target.shieldDamageAbsorbed??0)+shield;target.regenTimer=0;}
   if(dmg<=0){target.hitFlash=.08;game?.spawnHitImpact?.(target,attacker,shield,{shield:true,field:options.kind==='field'});return true;}
   const cfg = game ? game.balance.combat : null;

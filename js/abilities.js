@@ -174,6 +174,7 @@ export class Abilities {
   for(const unit of units)for(const [id,r] of unit.rallyBuffs??[])if(!this.rallies.includes(r)||isHostile(unit,r.owner))unit.rallyBuffs.delete(id);
   for(const e of this.game.entities){
     e.dustInvulnerableRemaining=Math.max(0,(e.dustInvulnerableRemaining??0)-dt);
+    if(!e.alive||(e.obsidianShieldUntil??0)<=this.game.gameTime)e.obsidianShieldHp=0;
     e.shieldRemaining=Math.max(0,(e.shieldRemaining??0)-dt);if(!e.shieldRemaining||!e.alive)e.shieldHp=0;
     if(e.summoned)e.summoned.absorbable=this.game.gameTime>=e.summoned.absorbableAt;
     if(!e.alive){this.release(e);e._specialApex=false;}
@@ -232,8 +233,9 @@ export class Abilities {
  rallyPower(e,key,fallback){return Math.max(0,...[...(e.rallyBuffs?.values()??[])].filter(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex&&!isHostile(e,r.owner)).map(r=>r[key]??fallback));}
  speedMultiplier(e){return Math.max(1,(e.objectSpeedUntil??0)>this.game.gameTime?(e.objectSpeedMultiplier??1):1,this.rallyPower(e,'buffSpeed',1.25),(e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.speed??1.12):1);}
  invitePower(e,key){return (e.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime).reduce((sum,b)=>sum+(b[key]??0),0);}
- defenseMultiplier(e){return 1+this.invitePower(e,'defense')+(this.game.biomes?.defenseBonus(e)??0);}
- damageMultiplier(e){return 1+this.invitePower(e,'damage')+((e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.damage??.15):0)+this.rallyPower(e,'buffDamage',.3)+(this.game.relics?.damageBonus(e)??0)+(e.morale?.size?Math.max(...[...e.morale.keys()].map(id=>e.moralePower?.get(id)??.15)):0)+(this.game.allyLinks?.bonus(e)??0);}
+ obsidianBonus(e){return (e.obsidianShieldHp??0)>0&&(e.obsidianShieldUntil??0)>this.game.gameTime?(e.obsidianPower??0):0;}
+ defenseMultiplier(e){return 1+this.obsidianBonus(e)+this.invitePower(e,'defense')+(this.game.biomes?.defenseBonus(e)??0);}
+ damageMultiplier(e){return 1+this.obsidianBonus(e)+this.invitePower(e,'damage')+((e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.damage??.15):0)+this.rallyPower(e,'buffDamage',.3)+(this.game.relics?.damageBonus(e)??0)+(e.morale?.size?Math.max(...[...e.morale.keys()].map(id=>e.moralePower?.get(id)??.15)):0)+(this.game.allyLinks?.bonus(e)??0);}
  commandDecision(e){
   const c=e.command;if(!c)return false;
   if(e.recovering||e.hp/e.maxHp<=.3||e.beingAbsorbedByRef){this.endCommand(e,'survival');return false;}
