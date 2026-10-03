@@ -28,7 +28,8 @@ export function computeMaxStack(size, thresholds) {
 }
 
 export class Entity {
-  constructor({ x, y, size, color, colorHex, growthValue = 0, moveSpeed = 80, behavior = 'orb', hp = null, maxHp = null }) {
+  constructor({ x, y, size, color, colorHex, growthValue = 0, moveSpeed = 80, behavior = 'orb', hp = null, maxHp = null, world = null }) {
+    Object.defineProperty(this,'_world',{value:world,writable:true});
     this.id = nextId++;
     this.x = x;
     this.y = y;

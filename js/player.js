@@ -7,6 +7,7 @@ export class Player extends Entity {
     const selected = normalizeProfile(profile, balance.colors);
     const colorDef = balance.colors.find(c => c.id === selected.color);
     super({
+      world:balance.world,
       x: balance.world.worldWidth / 2,
       y: balance.world.worldHeight / 2,
       size: b.startingSize,

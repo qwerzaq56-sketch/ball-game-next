@@ -1,3 +1,5 @@
+import {delta,angleTo} from './topology.js';
+import {dist} from './collision.js';
 import { boundCenter } from './worldBounds.js';
 import {random} from './random.js';
 import {spawnOrb} from './spawning.js';
@@ -13,16 +15,16 @@ export class Biomes {
    {id:'volcano',name:'화산',x:w.worldWidth*.78,y:w.worldHeight*.78,radius:r,color:'#79352b',reward:2,hotRadius:r*.37}
   ]:[];
  }
- regionAt(e){return this.regions.find(r=>Math.hypot(e.x-r.x,e.y-r.y)<=r.radius)??null;}
+ regionAt(e){return this.regions.find(r=>dist(e,r)<=r.radius)??null;}
  blizzard(){return this.enabled&&this.game.gameTime%24>=16;}
  sensingRange(e,base=this.game.balance.ai.detectionRange){return this.regionAt(e)?.id==='snow'&&this.blizzard()?base*.65:base;}
  hazards(){return [...this.regions.filter(r=>r.hotRadius),...(this.game.era?.apocalypse?[this.game.era.apocalypse]:[])];}
- danger(e,held=false){return this.hazards().find(r=>r.hotRadius&&Math.hypot(e.x-r.x,e.y-r.y)<=r.hotRadius+e.size/2+(held?120:80))??null;}
+ danger(e,held=false){return this.hazards().find(r=>r.hotRadius&&dist(e,r)<=r.hotRadius+e.size/2+(held?120:80))??null;}
  update(dt){
   if(!this.enabled)return;this.damageTimer+=dt;this.encounterTimer-=dt;
   while(this.damageTimer>=.5-1e-8){this.damageTimer-=.5;
    for(const e of this.game.entities){if(!e.alive||e.behavior==='orb')continue;
-    const hot=this.regions.find(r=>r.hotRadius&&Math.hypot(e.x-r.x,e.y-r.y)<r.hotRadius);
+    const hot=this.regions.find(r=>r.hotRadius&&dist(e,r)<r.hotRadius);
     if(hot)applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false});
    }
   }
@@ -40,18 +42,18 @@ export class Biomes {
  }
  routePoint(e,target){
   if(!target)return target;
-  const dx=target.x-e.x,dy=target.y-e.y,length=dx*dx+dy*dy;if(!length)return target;
+  const {x:dx,y:dy}=delta(e,target),length=dx*dx+dy*dy;if(!length)return target;
   for(const r of this.hazards()){const safety=r.hotRadius+e.size/2+80;
-   const t=Math.max(0,Math.min(1,((r.x-e.x)*dx+(r.y-e.y)*dy)/length));
-   if(Math.hypot(e.x+dx*t-r.x,e.y+dy*t-r.y)>=safety||Math.hypot(e.x-r.x,e.y-r.y)>safety+220)continue;
-   const angle=Math.atan2(e.y-r.y,e.x-r.x),side=e.environmentRoute?.region===r.id?e.environmentRoute.side:Math.sign(Math.sin(Math.atan2(dy,dx)-angle))||((e.id%2)?1:-1);
+   const relative=delta(e,r),t=Math.max(0,Math.min(1,(relative.x*dx+relative.y*dy)/length));
+   if(Math.hypot(dx*t-relative.x,dy*t-relative.y)>=safety||dist(e,r)>safety+220)continue;
+   const angle=angleTo(r,e),side=e.environmentRoute?.region===r.id?e.environmentRoute.side:Math.sign(Math.sin(Math.atan2(dy,dx)-angle))||((e.id%2)?1:-1);
    e.environmentRoute={region:r.id,side};const turn=angle+side*Math.PI/3,distance=safety+140;
    const w=this.game.balance.world;
-   return {x:boundCenter(r.x+Math.cos(turn)*distance,e.size,w.worldWidth),y:boundCenter(r.y+Math.sin(turn)*distance,e.size,w.worldHeight),alive:true};
+   return {x:boundCenter(r.x+Math.cos(turn)*distance,e.size,w.worldWidth,w.wrap),y:boundCenter(r.y+Math.sin(turn)*distance,e.size,w.worldHeight,w.wrap),alive:true};
   }
   e.environmentRoute=null;return target;
  }
- status(e){const r=this.regionAt(e);if(!r)return '평원';return r.name+(r.id==='snow'&&this.blizzard()?' · 눈보라':r.hotRadius&&Math.hypot(e.x-r.x,e.y-r.y)<r.hotRadius?' · 마그마 위험':'');}
+ status(e){const r=this.regionAt(e);if(!r)return '평원';return r.name+(r.id==='snow'&&this.blizzard()?' · 눈보라':r.hotRadius&&dist(e,r)<r.hotRadius?' · 마그마 위험':'');}
  draw(ctx,zoom){
   if(!this.enabled)return;ctx.save();ctx.beginPath();ctx.rect(0,0,this.game.balance.world.worldWidth,this.game.balance.world.worldHeight);ctx.clip();
   for(const r of this.regions){ctx.beginPath();ctx.arc(r.x,r.y,r.radius,0,Math.PI*2);ctx.fillStyle=r.color+'55';ctx.fill();ctx.strokeStyle=r.color;ctx.lineWidth=2/zoom;ctx.stroke();

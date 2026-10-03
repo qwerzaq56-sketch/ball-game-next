@@ -100,7 +100,7 @@ export class AIInspector {
     const w = this.game.screenToWorld(ev.clientX - rect.left, ev.clientY - rect.top);
     let best = null, bd = Infinity;
     for (const e of this.ais()) {
-      const d = Math.hypot(e.x - w.x, e.y - w.y);
+      const d = dist(e,w);
       if (d <= e.size / 2 + 12 / this.game.camera.zoom && d < bd) { best = e; bd = d; }
     }
     this.selectedId = best ? best.id : null;

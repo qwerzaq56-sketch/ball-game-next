@@ -1,3 +1,5 @@
+import {dist} from './collision.js';
+import {delta} from './topology.js';
 // Absorption system for same-color Player/AI hierarchy.
 //
 // v0.5 rework (spec §10-14): absorption no longer requires the two balls to physically overlap.
@@ -80,7 +82,7 @@ export function updateAbsorptions(game, dt, balance) {
     }
 
     const maintainDistance = maintainDistanceFor(absorber, balance);
-    const d = Math.hypot(target.x - absorber.x, target.y - absorber.y);
+    const d = dist(absorber,target);
     if (d > maintainDistance) {
       cancelAbsorption(target);
       continue;
@@ -91,8 +93,7 @@ export function updateAbsorptions(game, dt, balance) {
 
     if (proximity > 0) {
       const pull = 1 - Math.pow(1 - cfg.pullForce * proximity, dt);
-      target.x += (absorber.x - target.x) * pull;
-      target.y += (absorber.y - target.y) * pull;
+      const toward=delta(target,absorber);target.x += toward.x*pull;target.y += toward.y*pull;
     }
 
     if (target.absorptionProgress >= target.absorptionRequired) {

@@ -1,3 +1,4 @@
+import {delta,angleTo} from './topology.js';
 import { boundCenter } from './worldBounds.js';
 import { attackDamageForSize, applyDamage, canStartAttack } from './combat.js';
 import { cancelAbsorption } from './absorption.js';
@@ -14,10 +15,10 @@ export function blueWaveDirections(dir) {
 }
 export function attackReach(e,b){return Math.max(20,b.combatScaling.baseAttackRange*Math.pow(e.size/b.combatScaling.referenceSize,b.combatScaling.attackRangeGrowthExponent))*(e.apex?.7:1);}
 export function inCone(origin,target,dir,radius,angle=Math.PI*2/3){
-  const d=dist(origin,target);return d<=radius && Math.abs(Math.atan2(Math.sin(Math.atan2(target.y-origin.y,target.x-origin.x)-dir),Math.cos(Math.atan2(target.y-origin.y,target.x-origin.x)-dir)))<=angle/2;
+  const d=dist(origin,target);return d<=radius && Math.abs(Math.atan2(Math.sin(angleTo(origin,target)-dir),Math.cos(angleTo(origin,target)-dir)))<=angle/2;
 }
 export function inWave(origin,target,dir,length=400,width=180){
- const x=target.x-origin.x,y=target.y-origin.y;const along=x*Math.cos(dir)+y*Math.sin(dir),across=-x*Math.sin(dir)+y*Math.cos(dir);
+ const {x,y}=delta(origin,target);const along=x*Math.cos(dir)+y*Math.sin(dir),across=-x*Math.sin(dir)+y*Math.cos(dir);
  return along>=0&&along<=length&&Math.abs(across)<=width/2;
 }
 function angleDelta(a,b){return Math.abs(Math.atan2(Math.sin(a-b),Math.cos(a-b)));}
@@ -32,15 +33,15 @@ export class Abilities {
    for(const e of this.game.entities){if(e.command?.owner===owner)this.endCommand(e,'owner-loss');e.morale?.delete(owner.id);}
  }
  endCommand(e,reason){if(!e.command)return;this.log('command-end',e,{kind:e.command.kind,reason});e.command=null;e.commandLock=3;e.target=null;e.state='search';e.decisionTimer=0;}
- redTarget(owner,dir){return this.units().filter(e=>isHostile(owner,e)&&dist(owner,e)<=500).sort((a,b)=>angleDelta(Math.atan2(a.y-owner.y,a.x-owner.x),dir)-angleDelta(Math.atan2(b.y-owner.y,b.x-owner.x),dir)||dist(owner,a)-dist(owner,b)||a.id-b.id)[0];}
+ redTarget(owner,dir){return this.units().filter(e=>isHostile(owner,e)&&dist(owner,e)<=500).sort((a,b)=>angleDelta(angleTo(owner,a),dir)-angleDelta(angleTo(owner,b),dir)||dist(owner,a)-dist(owner,b)||a.id-b.id)[0];}
  canCast(e){return this.enabled&&!e.companionGroup&&e.alive&&e.apex&&(e.specialCooldown??0)<=0&&!e.specialCast&&!(e.frozen>0)&&e.attackState==='READY'&&e.dodgeState!=='DODGING';}
  start(e,dir,point,seenTarget){
   if(!this.canCast(e)||!ABILITIES[e.color])return false;
   const target=e.color==='red'?(seenTarget??this.redTarget(e,dir)):null;if(e.color==='red'&&!target)return false;
   const cfg=ABILITIES[e.color],w=this.game.balance.world;
   let p=point??{x:e.x+Math.cos(dir)*350,y:e.y+Math.sin(dir)*350};const d=dist(e,p);
-  if(d>350)p={x:e.x+(p.x-e.x)*350/d,y:e.y+(p.y-e.y)*350/d};
-  p={x:Math.max(0,Math.min(w.worldWidth,p.x)),y:Math.max(0,Math.min(w.worldHeight,p.y))};
+  if(d>350){const toward=delta(e,p);p={x:e.x+toward.x*350/d,y:e.y+toward.y*350/d};}
+  p={x:boundCenter(p.x,0,w.worldWidth,w.wrap),y:boundCenter(p.y,0,w.worldHeight,w.wrap)};
   const directions=e.color==='blue'?blueWaveDirections(dir):null;
   e.specialCooldown=cfg.cooldown;e.specialCast={directions,id:++this.castId,time:0,dir,point:p,target,targetPoint:target?{x:target.x,y:target.y}:null};
   this.log('special-start',e,{color:e.color,cast:e.specialCast.id});return true;
@@ -85,7 +86,7 @@ export class Abilities {
     e.freezeImmune=Math.max(0,(e.freezeImmune??0)-dt);e.waveImmune=Math.max(0,(e.waveImmune??0)-dt);
     if(e.frozen>0){e.frozen=Math.max(0,e.frozen-dt);if(!e.frozen)e.freezeImmune=2;}
     if(e.wavePush){const p=e.wavePush,used=Math.min(dt,p.remaining);e.x+=p.vx*used;e.y+=p.vy*used;p.remaining-=used;
-      e.x=boundCenter(e.x,e.size,w.worldWidth);e.y=boundCenter(e.y,e.size,w.worldHeight);
+      e.x=boundCenter(e.x,e.size,w.worldWidth,w.wrap);e.y=boundCenter(e.y,e.size,w.worldHeight,w.wrap);
       if(p.remaining<=1e-8){e.wavePush=null;e.waveImmune=1;}}
     if(e.morale)for(const [id,time]of e.morale){if(time<=dt)e.morale.delete(id);else e.morale.set(id,time-dt);}
     if(e.command){e.command.remaining-=dt;if(e.command.remaining<=0||!e.command.owner.alive||!e.command.owner.apex)this.endCommand(e,'expiry-or-owner');}
@@ -95,7 +96,7 @@ export class Abilities {
     // Swept advancing strip avoids tunneling across frame boundaries.
     for(const t of units){if(!t.alive||!isHostile(wave.owner,t)||wave.hit.has(t.id))continue;
       if(!inWave(wave,t,wave.dir,wave.time/.5*400,180))continue;
-      const along=(t.x-wave.x)*Math.cos(wave.dir)+(t.y-wave.y)*Math.sin(wave.dir);
+      const relative=delta(wave,t),along=relative.x*Math.cos(wave.dir)+relative.y*Math.sin(wave.dir);
       if(along<previous/.5*400-1e-8)continue;
       wave.hit.add(t.id);if(this.damage(wave.owner,t,.5)&&t.alive&&!t.wavePush&&!(t.waveImmune>0))t.wavePush={remaining:.2,vx:Math.cos(wave.dir)*600,vy:Math.sin(wave.dir)*600};
     }
@@ -137,7 +138,7 @@ export class Abilities {
   const nearby=this.game.getNearbyEntities(e,Math.max(320,e.color==='red'?450:350)).filter(t=>t.alive);
   const enemies=nearby.filter(t=>isHostile(e,t)&&dist(e,t)<=this.game.biomes.sensingRange(e,320));
   const target=enemies.sort((a,b)=>dist(e,a)-dist(e,b))[0];if(!target)return false;
-  const dir=Math.atan2(target.y-e.y,target.x-e.x);
+  const dir=angleTo(e,target);
   if(e.color==='cyan'&&!inCone(e,target,dir,260))return false;
   if(e.color==='blue'&&!inWave(e,target,dir))return false;
   if(e.color==='green'&&!canStartAttack(e)&&!nearby.some(t=>t.color===e.color&&dist(e,t)<=350&&canStartAttack(t)))return false;

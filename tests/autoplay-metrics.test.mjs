@@ -46,6 +46,6 @@ test('autoplay explores new space instead of repeating the same empty-world squa
  assert(cells.size>=12,'six-second samples cover fresh map cells');assert(Math.hypot(p.x-start.x,p.y-start.y)>500,'does not return to the same starting square');assert(g.autoplay.explorationRecent.length<=4);assert.equal(g.lives,3);
 });
 test('autoplay destinations persist without extra RNG and respect oversized rectangular bounds',()=>{
- const g=createGame(7),p=g.player;g.balance.world.worldWidth=500;g.balance.world.worldHeight=1000;p.size=600;p.x=250;p.y=500;g.autoplay.setEnabled(true);resetRandom(31);const expected=random('ai');resetRandom(31);const target=g.autoplay.explore();assert.equal(random('ai'),expected);assert.equal(target.x,250);assert(target.y>=300&&target.y<=700);assert.equal(g.autoplay.explore(),target);
+ const g=createGame(7),p=g.player;g.balance.world.wrap=false;g.balance.world.worldWidth=500;g.balance.world.worldHeight=1000;p.size=600;p.x=250;p.y=500;g.autoplay.setEnabled(true);resetRandom(31);const expected=random('ai');resetRandom(31);const target=g.autoplay.explore();assert.equal(random('ai'),expected);assert.equal(target.x,250);assert(target.y>=300&&target.y<=700);assert.equal(g.autoplay.explore(),target);
  g.autoplay.dodgeWait=.8;g.autoplay.setEnabled(false);assert.equal(g.autoplay.explorationPoint,null);assert.equal(g.autoplay.explorationRecent.length,0);assert.equal(g.autoplay.dodgeWait,0);
 });

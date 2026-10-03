@@ -1,3 +1,5 @@
+import {near} from './topology.js';
+import {dist} from './collision.js';
 import {applyDamage} from './combat.js';
 import {spawnOrb} from './spawning.js';
 import {random} from './random.js';
@@ -19,7 +21,7 @@ export class Era {
   const field=this.apocalypse;if(!field)return;
   field.active=time>=field.activeAt;
   const used=Math.max(0,Math.min(time,field.ends)-Math.max(time-dt,field.activeAt));
-  this.apocalypseTick+=used;while(this.apocalypseTick>=.5-1e-8){this.apocalypseTick-=.5;for(const e of this.game.entities)if(e.alive&&e.behavior!=='orb'&&Math.hypot(e.x-field.x,e.y-field.y)<field.radius)applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false});}
+  this.apocalypseTick+=used;while(this.apocalypseTick>=.5-1e-8){this.apocalypseTick-=.5;for(const e of this.game.entities)if(e.alive&&e.behavior!=='orb'&&dist(e,field)<field.radius)applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false});}
   if(time>=field.ends){this.reward(field);this.completedApocalypses++;this.log({type:'apocalypse-end',cycle:this.cycle});this.apocalypse=null;}
  }
  reward(field){
@@ -53,6 +55,6 @@ export class Era {
   }ctx.restore();
   const field=this.apocalypse;if(field){ctx.save();ctx.beginPath();ctx.arc(field.x,field.y,field.radius,0,Math.PI*2);ctx.fillStyle=field.active?'rgba(220,38,38,.3)':'rgba(245,158,11,.13)';ctx.fill();ctx.strokeStyle=field.active?'#ef4444':'#fbbf24';ctx.lineWidth=3/zoom;ctx.setLineDash(field.active?[]:[10/zoom,6/zoom]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#fde68a';ctx.font=`bold ${16/zoom}px system-ui`;ctx.textAlign='center';ctx.fillText(field.active?'파멸 · 위험':`파멸 전조 · ${Math.max(0,Math.ceil(field.activeAt-this.game.gameTime))}s`,field.x,field.y-field.radius-15/zoom);ctx.restore();}
   if(!this.game.showAILabels)return;ctx.save();ctx.strokeStyle='rgba(251,191,36,.75)';ctx.lineWidth=1.5/zoom;ctx.setLineDash([6/zoom,5/zoom]);
-  for(const d of this.duels.values()){const a=this.game.entities.find(e=>e.id===d.challengerId),b=this.game.entities.find(e=>e.id===d.targetId);if(!a||!b)continue;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}ctx.restore();
+  for(const d of this.duels.values()){const a=this.game.entities.find(e=>e.id===d.challengerId),b=this.game.entities.find(e=>e.id===d.targetId);if(!a||!b)continue;ctx.beginPath();ctx.moveTo(a.x,a.y);const image=near(a,b);ctx.lineTo(image.x,image.y);ctx.stroke();}ctx.restore();
  }
 }

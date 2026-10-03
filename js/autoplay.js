@@ -1,3 +1,4 @@
+import {delta} from './topology.js';
 import { boundCenter } from './worldBounds.js';
 import {canEatOrb,canAbsorb,isHostile,dist} from './collision.js';
 import {canStartAttack,canStartDodge} from './combat.js';
@@ -8,7 +9,7 @@ export class Autoplay {
   const g=this.game,p=g.player,held=this.explorationPoint;
   if(held&&g.gameTime<held.expires&&dist(p,held)>40)return held;
   const w=g.balance.world,angle=((g.seed>>>0)%360)*Math.PI/180+this.explorationIndex++*Math.PI*(3-Math.sqrt(5));
-  const points=Array.from({length:4},(_,i)=>({x:boundCenter(p.x+Math.cos(angle+i*Math.PI/2)*600,p.size,w.worldWidth),y:boundCenter(p.y+Math.sin(angle+i*Math.PI/2)*600,p.size,w.worldHeight)}));
+  const points=Array.from({length:4},(_,i)=>({x:boundCenter(p.x+Math.cos(angle+i*Math.PI/2)*600,p.size,w.worldWidth,w.wrap),y:boundCenter(p.y+Math.sin(angle+i*Math.PI/2)*600,p.size,w.worldHeight,w.wrap)}));
   const score=point=>dist(p,point)-this.explorationRecent.reduce((n,r)=>n+Math.max(0,350-dist(point,r)),0);
   points.sort((a,b)=>score(b)-score(a));this.explorationRecent=[...this.explorationRecent,{x:p.x,y:p.y}].slice(-4);
   this.explorationPoint={...points[0],expires:g.gameTime+12};return this.explorationPoint;
@@ -22,7 +23,7 @@ export class Autoplay {
   const sand=g.abilities.fields.find(f=>f.owner.alive&&f.owner.apex&&f.owner.color!==p.color&&dist(p,f)<420);
   const environment=g.biomes.danger(p);const danger=p.beingAbsorbedByRef??environment??sand??threats.sort((a,b)=>dist(p,a)-dist(p,b)||a.id-b.id)[0];
   let target,escape=!!danger;
-  if(danger){target={x:p.x+(p.x-danger.x),y:p.y+(p.y-danger.y)};if(target.x===p.x&&target.y===p.y)target.x+=100;this.reason=`도주 · ${environment?.name??(sand?'모래바람':'위협')}`;}
+  if(danger){const away=delta(danger,p);target={x:p.x+away.x,y:p.y+away.y};if(target.x===p.x&&target.y===p.y)target.x+=100;this.reason=`도주 · ${environment?.name??(sand?'모래바람':'위협')}`;}
   else {
    const safe=e=>threats.every(t=>dist(e,t)>180)&&!g.biomes.danger(e);
    const relic=g.relics.desired(p,safe);
@@ -32,8 +33,8 @@ export class Autoplay {
    target=g.biomes.routePoint(p,target);
   }
   const w=g.balance.world;
-  target={x:boundCenter(target.x,p.size,w.worldWidth),y:boundCenter(target.y,p.size,w.worldHeight)};
-  const dx=target.x-p.x,dy=target.y-p.y,length=Math.hypot(dx,dy),enemy=candidates.filter(e=>isHostile(p,e)&&dist(p,e)<=350).sort((a,b)=>dist(p,a)-dist(p,b)||a.id-b.id)[0];
+  target={x:boundCenter(target.x,p.size,w.worldWidth,w.wrap),y:boundCenter(target.y,p.size,w.worldHeight,w.wrap)};
+  const {x:dx,y:dy}=delta(p,target),length=Math.hypot(dx,dy),enemy=candidates.filter(e=>isHostile(p,e)&&dist(p,e)<=350).sort((a,b)=>dist(p,a)-dist(p,b)||a.id-b.id)[0];
   const dodge=escape&&this.dodgeWait<=0&&canStartDodge(p);if(dodge)this.dodgeWait=.8;
   this.action={move:length>8?{x:dx/length,y:dy/length}:{x:0,y:0},aim:enemy??target,attack:!escape&&p.hp/p.maxHp>.3&&!!enemy&&canStartAttack(p),dodge,special:!escape&&!!enemy&&g.abilities.canCast(p)};
  }

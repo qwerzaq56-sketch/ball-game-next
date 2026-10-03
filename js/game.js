@@ -1,3 +1,4 @@
+import {delta,angleTo,near,wrap} from './topology.js';
 import {worldView,boxInView,segmentInView} from './renderVisibility.js';
 import { clampEntity } from './worldBounds.js';
 import { Autoplay } from './autoplay.js';
@@ -117,14 +118,12 @@ export class Game {
   // on top of the player — used both at world init and by the ongoing enemy spawn loop).
   pickSafeSpawnPos(safeRadius) {
     const b = this.balance;
-    const px = this.player.x;
-    const py = this.player.y;
     for (let attempt = 0; attempt < 10; attempt++) {
       const candidate = {
         x: random('world') * b.world.worldWidth,
         y: random('world') * b.world.worldHeight,
       };
-      if (Math.hypot(candidate.x - px, candidate.y - py) >= safeRadius) return candidate;
+      if (dist(this.player,candidate) >= safeRadius) return candidate;
     }
     return null;
   }
@@ -143,6 +142,8 @@ export class Game {
       if(dist(point,p)>dist(best,p))best=point;
       if(dist(point,p)>=required){newborn.x=point.x;newborn.y=point.y;return newborn;}
     }
+    const far=world.wrap?{x:wrap(p.x+world.worldWidth/2,world.worldWidth),y:wrap(p.y+world.worldHeight/2,world.worldHeight)}:null;
+    if(far&&dist(far,p)>dist(best,p))best=far;
     for(const x of [0,world.worldWidth])for(const y of [0,world.worldHeight]){
       const point=clampEntity({x,y,size:newborn.size},world);
       if(dist(point,p)>dist(best,p))best=point;
@@ -171,6 +172,10 @@ export class Game {
 
   getNearbyEntities(entity, range) {
     const result = [];
+    const w=this.balance.world;
+    if(w.wrap&&(entity.x-range<0||entity.y-range<0||entity.x+range>w.worldWidth||entity.y+range>w.worldHeight))return this.entities.filter(e=>{
+      if(!e.alive||e===entity)return false;const d=delta(entity,e,w);return Math.abs(d.x)<=range+CELL_SIZE&&Math.abs(d.y)<=range+CELL_SIZE;
+    });
     const minCx = Math.floor((entity.x - range) / CELL_SIZE);
     const maxCx = Math.floor((entity.x + range) / CELL_SIZE);
     const minCy = Math.floor((entity.y - range) / CELL_SIZE);
@@ -323,7 +328,7 @@ export class Game {
 
     const auto=this.autoplay.enabled?this.autoplay.action:null;
     const mouseWorld = auto?.aim??this.screenToWorld(inp.mouseX, inp.mouseY);
-    const aimAngle = Math.atan2(mouseWorld.y - p.y, mouseWorld.x - p.x);
+    const aimAngle = angleTo(p,mouseWorld);
 
     let dx = 0;
     let dy = 0;
@@ -425,7 +430,7 @@ export class Game {
         const minDist = a.size / 2 + b.size / 2;
         if (d >= minDist) continue;
 
-        const angle = d > 0.001 ? Math.atan2(a.y - b.y, a.x - b.x) : random('physics') * Math.PI * 2;
+        const angle = d > 0.001 ? angleTo(b,a) : random('physics') * Math.PI * 2;
         const overlap = minDist - d;
         const totalSize = a.size + b.size;
         a.x += Math.cos(angle) * overlap * (b.size / totalSize);
@@ -441,7 +446,7 @@ export class Game {
     for (const e of this.entities) {
       if (!e.alive) continue;
       const r = e.size / 2;
-      if(e.behavior==='ai'&&e.state==='search'&&(e.x<r||e.y<r||e.x>w.worldWidth-r||e.y>w.worldHeight-r)){e.wanderTimer=0;e.explorationPoint=null;}
+      if(!w.wrap&&e.behavior==='ai'&&e.state==='search'&&(e.x<r||e.y<r||e.x>w.worldWidth-r||e.y>w.worldHeight-r)){e.wanderTimer=0;e.explorationPoint=null;}
       clampEntity(e,w);
     }
   }
@@ -460,8 +465,9 @@ export class Game {
 
     const lerp = 1 - Math.pow(0.001, dt);
     this.camera.zoom += (targetZoom - this.camera.zoom) * lerp;
-    this.camera.x += (p.x - this.camera.x) * lerp;
-    this.camera.y += (p.y - this.camera.y) * lerp;
+    const toward=delta(this.camera,p,w);
+    this.camera.x += toward.x*lerp;this.camera.y += toward.y*lerp;
+    if(w.wrap){this.camera.x=wrap(this.camera.x,w.worldWidth);this.camera.y=wrap(this.camera.y,w.worldHeight);return;}
 
     const halfViewW = this.canvas.width / 2 / this.camera.zoom;
     const halfViewH = this.canvas.height / 2 / this.camera.zoom;
@@ -648,6 +654,7 @@ export class Game {
     for (const t of this.floatingTexts) {
       t.life -= dt;
       t.y -= 28 * dt;
+      if(this.balance.world.wrap){t.x=wrap(t.x,this.balance.world.worldWidth);t.y=wrap(t.y,this.balance.world.worldHeight);}
     }
     this.floatingTexts = this.floatingTexts.filter((t) => t.life > 0);
   }
@@ -671,6 +678,7 @@ export class Game {
       p.vx *= 0.92;
       p.vy *= 0.92;
     }
+    if(this.balance.world.wrap)for(const p of this.particles){p.x=wrap(p.x,this.balance.world.worldWidth);p.y=wrap(p.y,this.balance.world.worldHeight);}
     this.particles = this.particles.filter((p) => p.life > 0);
   }
 
@@ -685,8 +693,8 @@ export class Game {
 
   worldToScreen(wx, wy) {
     return {
-      x: (wx - this.camera.x) * this.camera.zoom + this.canvas.width / 2,
-      y: (wy - this.camera.y) * this.camera.zoom + this.canvas.height / 2,
+      x: delta(this.camera,{x:wx,y:wy},this.balance.world).x*this.camera.zoom+this.canvas.width/2,
+      y: delta(this.camera,{x:wx,y:wy},this.balance.world).y*this.camera.zoom+this.canvas.height/2,
     };
   }
 
@@ -703,20 +711,31 @@ export class Game {
     ctx.scale(this.camera.zoom, this.camera.zoom);
     ctx.translate(-this.camera.x, -this.camera.y);
 
-    this.drawGrid(ctx);
-    this.biomes.draw(ctx,this.camera.zoom);
-    this.era.draw(ctx,this.camera.zoom);
-    this.relics.draw(ctx,this.camera.zoom);
-    this.drawTerritories(ctx);
-    this.drawWorldBorder(ctx);
-    this.abilities.draw(ctx,this.camera.zoom);
-    if(this.showAllyLinks!==false)this.allyLinks.draw(ctx,this.camera.zoom);
-    this.drawAbsorptionLinks(ctx);
-    this.drawEntities(ctx);
-    this.drawParticles(ctx);
-    this.drawFloatingTexts(ctx);
-    this.drawTouchAim(ctx);
+    const w=this.balance.world,view=worldView(this.canvas,this.camera);
+    let margin=650;for(const e of this.entities)if(e.alive)margin=Math.max(margin,e.size/2+120);
+    const minX=w.wrap?Math.floor((view.left-margin)/w.worldWidth):0,maxX=w.wrap?Math.floor((view.right+margin)/w.worldWidth):0;
+    const minY=w.wrap?Math.floor((view.top-margin)/w.worldHeight):0,maxY=w.wrap?Math.floor((view.bottom+margin)/w.worldHeight):0;
+    for(let x=minX;x<=maxX;x++)for(let y=minY;y<=maxY;y++){
+      const ox=x*w.worldWidth,oy=y*w.worldHeight;
+      ctx.save();ctx.translate(ox,oy);ctx.beginPath();ctx.rect(0,0,w.worldWidth,w.worldHeight);
+      this.renderCamera={...this.camera,x:this.camera.x-ox,y:this.camera.y-oy};
+      this.drawGrid(ctx);
+      this.biomes.draw(ctx,this.camera.zoom);
+      this.era.draw(ctx,this.camera.zoom);
+      this.relics.draw(ctx,this.camera.zoom);
+      this.drawTerritories(ctx);
+      if(!this.balance.world.wrap)this.drawWorldBorder(ctx);
+      this.abilities.draw(ctx,this.camera.zoom);
+      if(this.showAllyLinks!==false)this.allyLinks.draw(ctx,this.camera.zoom);
+      this.drawAbsorptionLinks(ctx);
+      this.drawEntities(ctx);
+      this.drawParticles(ctx);
+      this.drawFloatingTexts(ctx);
+      this.drawTouchAim(ctx);
 
+      ctx.restore();
+    }
+    this.renderCamera=null;
     ctx.restore();
     this.drawNames(ctx);
   }
@@ -736,7 +755,7 @@ export class Game {
     const ctxFont = "bold 12px system-ui, sans-serif";
     ctx.save(); ctx.font = ctxFont; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
     const candidates = scoreRanking(this.entities, this.ecology.scoreOrder).slice(0,20)
-      .filter(e => this.isRoughlyVisible(e)).map(e => {
+      .filter(e => this.isRoughlyVisible(this.balance.world.wrap?near(this.camera,e,this.balance.world):e)).map(e => {
         const point = this.worldToScreen(e.x, e.y-e.size/2);
         const text = `${e.apex ? "★ " : ""}${e.displayName}`;
         return {id:e.id, text, color:e.colorHex, x:point.x, y:point.y-(this.showAILabels ? 50 : 18), textWidth:ctx.measureText(text).width};
@@ -750,7 +769,7 @@ export class Game {
   }
 
   drawTerritories(ctx) {
-    ctx.save();ctx.beginPath();ctx.rect(0,0,this.balance.world.worldWidth,this.balance.world.worldHeight);ctx.clip();
+    ctx.save();ctx.beginPath();ctx.rect(0,0,this.balance.world.worldWidth,this.balance.world.worldHeight);if(!this.balance.world.wrap)ctx.clip();
     for(const e of this.entities){if(!e.alive||!e.apex)continue;
       ctx.beginPath();ctx.arc(e.x,e.y,600,0,Math.PI*2);
       ctx.fillStyle=this.withAlpha(e.colorHex,.025);ctx.fill();
@@ -785,14 +804,14 @@ export class Game {
   // v0.5 spec §13-14: the connection line's strength now also reflects distance — thin and
   // faint near the edge of maintainDistance, strong and pulsing once the balls are touching.
   drawAbsorptionLinks(ctx) {
-    const view=worldView(this.canvas,this.camera);
+    const view=worldView(this.canvas,this.renderCamera??this.camera);
     for (const target of this.entities) {
       if (!target.alive || !target.beingAbsorbedByRef) continue;
-      const absorber = target.beingAbsorbedByRef;
-      if(!segmentInView(view,target,absorber,6/this.camera.zoom))continue;
+      const absorber = target.beingAbsorbedByRef,image=near(target,absorber);
+      if(!segmentInView(view,target,image,6/this.camera.zoom))continue;
       const t = target.absorptionRequired > 0 ? Math.min(1, target.absorptionProgress / target.absorptionRequired) : 1;
       const maintainDistance = maintainDistanceFor(absorber, this.balance);
-      const d = Math.hypot(target.x - absorber.x, target.y - absorber.y);
+      const d = dist(target,absorber);
       const proximity = 1 - Math.min(1, d / maintainDistance);
 
       ctx.save();
@@ -800,7 +819,7 @@ export class Game {
       ctx.lineWidth = (1 + proximity * 3 + t * 1.5) / this.camera.zoom;
       ctx.beginPath();
       ctx.moveTo(target.x, target.y);
-      ctx.lineTo(absorber.x, absorber.y);
+      ctx.lineTo(image.x, image.y);
       ctx.stroke();
       ctx.restore();
     }
@@ -816,9 +835,10 @@ export class Game {
   }
 
   isRoughlyVisible(e) {
+    const camera=this.renderCamera??this.camera;
     const halfW = this.canvas.width / 2 / this.camera.zoom + Math.max(100,e.size/2+20);
     const halfH = this.canvas.height / 2 / this.camera.zoom + Math.max(100,e.size/2+20);
-    return Math.abs(e.x - this.camera.x) < halfW && Math.abs(e.y - this.camera.y) < halfH;
+    return Math.abs(e.x-camera.x)<halfW&&Math.abs(e.y-camera.y)<halfH;
   }
 
   drawEntity(ctx, e) {
@@ -833,7 +853,8 @@ export class Game {
     // (see combat.js#updateDodge), so they never linger on screen after the dodge ends.
     if (e.dodgeTrail.length) {
       const lifetime = this.balance.dodge.effectLifetime;
-      for (const t of e.dodgeTrail) {
+      for (const stored of e.dodgeTrail) {
+        const t=this.balance.world.wrap?near(e,stored):stored;
         const alpha = Math.max(0, t.life / lifetime) * 0.3;
         ctx.beginPath();
         ctx.fillStyle = this.withAlpha(e.colorHex, alpha);
@@ -845,7 +866,7 @@ export class Game {
     // charge afterimages
     if (e.attackState === 'CHARGING' && e.trail.length) {
       for (let i = 0; i < e.trail.length; i++) {
-        const t = e.trail[i];
+        const t = this.balance.world.wrap?near(e,e.trail[i]):e.trail[i];
         const alpha = ((i + 1) / e.trail.length) * 0.3;
         ctx.beginPath();
         ctx.fillStyle = this.withAlpha('#ffffff', alpha);
@@ -960,7 +981,7 @@ export class Game {
   }
 
   drawParticles(ctx) {
-    const view=worldView(this.canvas,this.camera);
+    const view=worldView(this.canvas,this.renderCamera??this.camera);
     for (const p of this.particles) {
       const extent=p.type==='ring'?p.size*4+2:p.size;
       if(!boxInView(view,p.x-extent,p.y-extent,p.x+extent,p.y+extent))continue;

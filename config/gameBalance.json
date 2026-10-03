@@ -85,6 +85,7 @@
     "lowHealthAttackChance": 0.15
   },
   "world": {
+    "wrap": true,
     "worldWidth": 5000,
     "worldHeight": 5000,
     "minOrbSize": 8,

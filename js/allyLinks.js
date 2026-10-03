@@ -1,3 +1,4 @@
+import {delta,angleTo,near} from './topology.js';
 import {worldView,segmentInView} from './renderVisibility.js';
 import { boundCenter } from './worldBounds.js';
 import {dist,isHostile,canAbsorb} from './collision.js';
@@ -18,7 +19,7 @@ export class AllyLinks {
   const next=new Map();
   for(const a of units){const r=a.size/2+radii.get(a.color)+ALLY_RULES.release;
    const minX=Math.floor((a.x-r)/cell),maxX=Math.floor((a.x+r)/cell),minY=Math.floor((a.y-r)/cell),maxY=Math.floor((a.y+r)/cell);
-   if((maxX-minX+1)*(maxY-minY+1)>64){for(const b of byColor.get(a.color))if(a.id<b.id&&this.connected(a,b))next.set(key(a,b),[a,b]);continue;}
+   if((maxX-minX+1)*(maxY-minY+1)>64||this.game.balance.world.wrap&&(a.x-r<0||a.y-r<0||a.x+r>this.game.balance.world.worldWidth||a.y+r>this.game.balance.world.worldHeight)){for(const b of byColor.get(a.color))if(a.id<b.id&&this.connected(a,b))next.set(key(a,b),[a,b]);continue;}
    for(let x=minX;x<=maxX;x++)for(let y=minY;y<=maxY;y++){
     for(const b of grid.get(`${x}:${y}`)??[])if(a.id<b.id&&this.connected(a,b))next.set(key(a,b),[a,b]);
    }
@@ -76,7 +77,7 @@ export class AllyLinks {
   const group=this.groups.get(e.companionGroup);if(!group)return false;
   e.companionVelocity={x:0,y:0};
   const environment=this.game.biomes.danger(e,!!e.environmentThreat);e.environmentThreat=environment;
-  if(environment){const angle=Math.atan2(e.y-environment.y,e.x-environment.x);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*e.moveSpeed*1.3*dt;e.y+=Math.sin(angle)*e.moveSpeed*1.3*dt;return true;}
+  if(environment){const angle=angleTo(environment,e);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*e.moveSpeed*1.3*dt;e.y+=Math.sin(angle)*e.moveSpeed*1.3*dt;return true;}
   // Survival escape takes priority, but never starts an attack or a cast.
   if(e.beingAbsorbedByRef)e.escapeAbsorber=e.beingAbsorbedByRef;
   if(!e.beingAbsorbedByRef&&e.escapeAbsorber&&(!unit(e.escapeAbsorber)||!canAbsorb(e.escapeAbsorber,e)||dist(e,e.escapeAbsorber)>maintainDistanceFor(e.escapeAbsorber,this.game.balance)+80))e.escapeAbsorber=null;
@@ -90,30 +91,31 @@ export class AllyLinks {
    .filter(t=>unit(t)&&isHostile(e,t)&&t.size>=e.size*1.2&&dist(e,t)<=ALLY_RULES.threatEnter)
    .sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id)[0];
   e.companionThreat=threat??null;
-  if(threat){const angle=Math.atan2(e.y-threat.y,e.x-threat.x);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*e.moveSpeed*1.3*dt;e.y+=Math.sin(angle)*e.moveSpeed*1.3*dt;return true;}
+  if(threat){const angle=angleTo(threat,e);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*e.moveSpeed*1.3*dt;e.y+=Math.sin(angle)*e.moveSpeed*1.3*dt;return true;}
   e.state='companion';
   if(group.leader===e){e.wanderTimer-=dt;if(e.wanderTimer<=0){e.wanderAngle=random('ai')*Math.PI*2;e.wanderTimer=3;}const w=this.game.balance.world,pad=e.size/2+60;
-   if((e.x<pad&&Math.cos(e.wanderAngle)<0)||(e.x>w.worldWidth-pad&&Math.cos(e.wanderAngle)>0))e.wanderAngle=Math.PI-e.wanderAngle;
-   if((e.y<pad&&Math.sin(e.wanderAngle)<0)||(e.y>w.worldHeight-pad&&Math.sin(e.wanderAngle)>0))e.wanderAngle=-e.wanderAngle;
-   const route=this.game.biomes.routePoint(e,{x:e.x+Math.cos(e.wanderAngle)*300,y:e.y+Math.sin(e.wanderAngle)*300});e.facing=Math.atan2(route.y-e.y,route.x-e.x);e.companionVelocity={x:Math.cos(e.facing)*e.moveSpeed*ALLY_RULES.leaderPace,y:Math.sin(e.facing)*e.moveSpeed*ALLY_RULES.leaderPace};e.x+=e.companionVelocity.x*dt;e.y+=e.companionVelocity.y*dt;return true;}
+   if(!w.wrap&&((e.x<pad&&Math.cos(e.wanderAngle)<0)||(e.x>w.worldWidth-pad&&Math.cos(e.wanderAngle)>0)))e.wanderAngle=Math.PI-e.wanderAngle;
+   if(!w.wrap&&((e.y<pad&&Math.sin(e.wanderAngle)<0)||(e.y>w.worldHeight-pad&&Math.sin(e.wanderAngle)>0)))e.wanderAngle=-e.wanderAngle;
+   const route=this.game.biomes.routePoint(e,{x:e.x+Math.cos(e.wanderAngle)*300,y:e.y+Math.sin(e.wanderAngle)*300});e.facing=angleTo(e,route);e.companionVelocity={x:Math.cos(e.facing)*e.moveSpeed*ALLY_RULES.leaderPace,y:Math.sin(e.facing)*e.moveSpeed*ALLY_RULES.leaderPace};e.x+=e.companionVelocity.x*dt;e.y+=e.companionVelocity.y*dt;return true;}
   const members=[...group.members].filter(m=>m!==group.leader).sort((a,b)=>a.id-b.id),i=members.indexOf(e);
   const lead=group.leader,back=lead.facing+Math.PI;
   const gap=(lead.size+e.size)/2+35,side=(i%2?1:-1)*(25+Math.floor(i/2)*30);
   const w=this.game.balance.world;
-  const point={x:boundCenter(lead.x+Math.cos(back)*gap-Math.sin(back)*side,e.size,w.worldWidth),y:boundCenter(lead.y+Math.sin(back)*gap+Math.cos(back)*side,e.size,w.worldHeight)};
+  const point={x:boundCenter(lead.x+Math.cos(back)*gap-Math.sin(back)*side,e.size,w.worldWidth,w.wrap),y:boundCenter(lead.y+Math.sin(back)*gap+Math.cos(back)*side,e.size,w.worldHeight,w.wrap)};
   const route=this.game.biomes.routePoint(e,point),d=dist(e,route);
   const free=ALLY_RULES.freeRadius+Math.min(40,e.size*.1);
   const spring=d>free?(d-free)*(1-Math.exp(-ALLY_RULES.spring*dt))/Math.max(dt,1e-8):0;
   const velocity=lead.companionVelocity??{x:0,y:0};
-  let vx=velocity.x+(d>0?(route.x-e.x)/d*spring:0),vy=velocity.y+(d>0?(route.y-e.y)/d*spring:0);
+  const toward=delta(e,route);let vx=velocity.x+(d>0?toward.x/d*spring:0),vy=velocity.y+(d>0?toward.y/d*spring:0);
   const speed=Math.hypot(vx,vy),cap=e.moveSpeed*ALLY_RULES.catchup;
   if(speed>cap){vx*=cap/speed;vy*=cap/speed;}
   e.companionVelocity={x:vx,y:vy};if(speed>1)e.facing=Math.atan2(vy,vx);
   e.x+=vx*dt;e.y+=vy*dt;return true;
  }
- draw(ctx,zoom){const view=worldView(this.game.canvas,this.game.camera);ctx.save();ctx.lineWidth=2/zoom;for(const [a,b]of this.edges.values()){
-  if(!segmentInView(view,a,b,2/zoom)||!this.connected(a,b))continue;const d=dist(a,b);if(d<1||d<=(a.size+b.size)/2)continue;
-  const dx=(b.x-a.x)/d,dy=(b.y-a.y)/d;ctx.beginPath();ctx.moveTo(a.x+dx*a.size/2,a.y+dy*a.size/2);ctx.lineTo(b.x-dx*b.size/2,b.y-dy*b.size/2);
+ draw(ctx,zoom){const view=worldView(this.game.canvas,this.game.renderCamera??this.game.camera);ctx.save();ctx.lineWidth=2/zoom;for(const [a,b]of this.edges.values()){
+  const image=near(a,b);
+  if(!segmentInView(view,a,image,2/zoom)||!this.connected(a,b))continue;const d=dist(a,b);if(d<1||d<=(a.size+b.size)/2)continue;
+  const toward=delta(a,b),dx=toward.x/d,dy=toward.y/d;ctx.beginPath();ctx.moveTo(a.x+dx*a.size/2,a.y+dy*a.size/2);ctx.lineTo(image.x-dx*b.size/2,image.y-dy*b.size/2);
   ctx.strokeStyle=this.game.withAlpha(a.colorHex,a.companionGroup && a.companionGroup===b.companionGroup ? .7 : .3);ctx.stroke();
  }ctx.restore();}
 }

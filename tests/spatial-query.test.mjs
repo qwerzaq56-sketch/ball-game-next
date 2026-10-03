@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame} from '../tools/headless.mjs';
 test('large queries preserve numeric x/y cell order and insertion order within cells',()=>{
- const g=createGame(1),make=(id,x,y)=>({id,x,y,alive:true});
+ const g=createGame(1),make=(id,x,y)=>({id,x,y,alive:true});g.balance.world.wrap=false;
  const a=make(1,440,0),b=make(2,-221,440),c=make(3,-440,-10),d=make(4,0,441);g.entities=[a,b,c,d];g.buildGrid();
  assert.deepEqual(g.getNearbyEntities({x:0,y:0},2200).map(e=>e.id),[3,2,4,1]);
  assert.deepEqual(g.getNearbyEntities(c,2200).map(e=>e.id),[2,4,1]);

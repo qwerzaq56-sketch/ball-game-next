@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame} from '../tools/headless.mjs';
 test('oversized bodies keep their size and center in each constrained dimension',()=>{
- const g=createGame(7);g.balance.world.worldWidth=500;g.balance.world.worldHeight=1000;g.entities=[g.player];g.player.size=600;g.player.x=-900;g.player.y=1200;g.clampAllToWorld();assert.equal(g.player.x,250);assert.equal(g.player.y,700);assert.equal(g.player.size,600);
+ const g=createGame(7);g.balance.world.wrap=false;g.balance.world.worldWidth=500;g.balance.world.worldHeight=1000;g.entities=[g.player];g.player.size=600;g.player.x=-900;g.player.y=1200;g.clampAllToWorld();assert.equal(g.player.x,250);assert.equal(g.player.y,700);assert.equal(g.player.size,600);
  g.player.size=1200;g.clampAllToWorld();assert.equal(g.player.x,250);assert.equal(g.player.y,500);
  g.player.size=20;g.player.x=-100;g.player.y=2000;g.clampAllToWorld();assert.equal(g.player.x,10);assert.equal(g.player.y,990);
 });
@@ -12,7 +12,7 @@ test('enemy births account for growing bodies and terminate on maps without safe
  g.balance.world.worldWidth=30;g.balance.world.worldHeight=30;g.player.x=g.player.y=15;const trapped=g.createSafeEnemy(g.balance.colors[0]);assert(trapped.x>=0&&trapped.x<=30&&trapped.y>=0&&trapped.y<=30);assert(trapped.size>0);
 });
 test('wave displacement and remembered exploration obey oversized rectangular bounds',async()=>{
- const {explorationDestination}=await import('../js/exploration.js');const g=createGame(7);g.balance.world.worldWidth=500;g.balance.world.worldHeight=1000;
+ const {explorationDestination}=await import('../js/exploration.js');const g=createGame(7);g.balance.world.wrap=false;g.balance.world.worldWidth=500;g.balance.world.worldHeight=1000;
  const a=g.entities.find(e=>e.behavior==='ai');g.entities=[a];a.size=600;a.x=250;a.y=500;a.wavePush={remaining:.2,vx:10000,vy:10000};g.abilities.update(.1);assert.equal(a.x,250);assert.equal(a.y,700);
  a.explorationPoint=null;const point=explorationDestination(a,g);assert.equal(point.x,250);assert(point.y>=300&&point.y<=700);
 });

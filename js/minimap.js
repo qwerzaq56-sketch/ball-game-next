@@ -1,3 +1,4 @@
+import {delta,wrappedIntervals} from './topology.js';
 import {overlaps} from './presentation.js';
 
 export class Minimap {
@@ -7,7 +8,7 @@ export class Minimap {
       const game=ui.game;if(!game||!ui.inspector?.visible)return;
       const r=this.canvas.getBoundingClientRect(),w=game.balance.world;
       const x=(e.clientX-r.left)/r.width*w.worldWidth,y=(e.clientY-r.top)/r.height*w.worldHeight;
-      const candidates=game.entities.filter(t=>t.alive&&t.behavior==='ai').map(t=>({t,d:Math.hypot((t.x-x)/w.worldWidth*r.width,(t.y-y)/w.worldHeight*r.height)})).filter(v=>v.d<=7).sort((a,b)=>a.d-b.d||a.t.id-b.t.id);
+      const candidates=game.entities.filter(t=>t.alive&&t.behavior==='ai').map(t=>({t,d:Math.hypot(delta({x,y},t,w).x/w.worldWidth*r.width,delta({x,y},t,w).y/w.worldHeight*r.height)})).filter(v=>v.d<=7).sort((a,b)=>a.d-b.d||a.t.id-b.t.id);
       if(candidates.length)ui.inspector.select(candidates[0].t.id);
     });
   }
@@ -34,6 +35,8 @@ export class Minimap {
       if(e===game.player){ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(e.facing)*7,y+Math.sin(e.facing)*7);ctx.stroke();}
     }
     const a=game.screenToWorld(0,0),b=game.screenToWorld(game.canvas.width,game.canvas.height);
-    ctx.strokeStyle='rgba(226,232,240,.55)';ctx.lineWidth=1;ctx.strokeRect(Math.max(0,a.x*scaleX),Math.max(0,a.y*scaleY),Math.min(w.worldWidth,b.x)*scaleX-Math.max(0,a.x*scaleX),Math.min(w.worldHeight,b.y)*scaleY-Math.max(0,a.y*scaleY));
+    ctx.strokeStyle='rgba(226,232,240,.55)';ctx.lineWidth=1;
+    if(w.wrap){for(const [left,right]of wrappedIntervals(a.x,b.x,w.worldWidth))for(const [top,bottom]of wrappedIntervals(a.y,b.y,w.worldHeight))ctx.strokeRect(left*scaleX,top*scaleY,(right-left)*scaleX,(bottom-top)*scaleY);}
+    else ctx.strokeRect(Math.max(0,a.x*scaleX),Math.max(0,a.y*scaleY),Math.min(w.worldWidth,b.x)*scaleX-Math.max(0,a.x*scaleX),Math.min(w.worldHeight,b.y)*scaleY-Math.max(0,a.y*scaleY));
   }
 }

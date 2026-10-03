@@ -22,6 +22,7 @@ export function spawnOrb(balance, pos = null) {
   const { x, y } = pos || randomWorldPos(balance);
   const growthValue = Math.round(5 + (size - balance.world.minOrbSize) * 2);
   return new Entity({
+    world:balance.world,
     x,
     y,
     size,

@@ -1,3 +1,4 @@
+import {angleTo,wrap} from './topology.js';
 import { explorationDestination } from './exploration.js';
 import { attackReach } from './abilities.js';
 import { assignPersonality } from './ecology.js';
@@ -15,6 +16,7 @@ export class AIEntity extends Entity {
   constructor({ x, y, color, colorHex, balance, startSize }) {
     if (startSize === undefined) startSize = balance.world.minOrbSize * 2.2 + random('ai') * 10;
     super({
+      world:balance.world,
       x,
       y,
       size: startSize,
@@ -234,11 +236,12 @@ export function decideAI(ai, game, balance) {
       const gap=balance.absorption.baseMaintainDistance+owner.size*balance.absorption.maintainDistancePerSize+80;
       if(ai.relationship==='subordinate'&&gap>600){ai.state='search';ai.target=null;return;}
       const d=dist(ai,owner), desired=ai.relationship==='subordinate'?Math.max(450,gap):450;
-      const angle=d>0?Math.atan2(ai.y-owner.y,ai.x-owner.x):ai.facing;
+      const angle=d>0?angleTo(owner,ai):ai.facing;
       const radius=Math.min(600,Math.max(desired,525));
       const point={x:owner.x+Math.cos(angle)*radius,y:owner.y+Math.sin(angle)*radius,alive:true};
       const w=balance.world;
-      if(point.x>=0&&point.y>=0&&point.x<=w.worldWidth&&point.y<=w.worldHeight){
+      if(w.wrap){point.x=wrap(point.x,w.worldWidth);point.y=wrap(point.y,w.worldHeight);}
+      if(w.wrap||point.x>=0&&point.y>=0&&point.x<=w.worldWidth&&point.y<=w.worldHeight){
         ai.state='relationship';ai.target=point;ai.relationshipOwner=owner;return;
       }
     }
@@ -258,7 +261,7 @@ function reactToThreats(ai, game, balance) {
     if ((other.attackState === 'TELEGRAPH' || other.specialCast) && isHostile(ai, other)) {
       const d = dist(ai, other);
       if (d < range && random('ai') < 0.5) {
-        const away = Math.atan2(ai.y - other.y, ai.x - other.x);
+        const away = angleTo(other,ai);
         if(ai.color==='blue'){ai.counterattacker=other;ai.counterTimer=1;}
         startDodge(ai, away, balance);
         return;
@@ -272,27 +275,27 @@ function moveAI(ai, dt, balance,game) {
   let speed = ai.moveSpeed;
 
   if (ai.state === 'flee' && ai.target) {
-    targetAngle = Math.atan2(ai.y - ai.target.y, ai.x - ai.target.x);
+    targetAngle = angleTo(ai.target,ai);
     // v0.3: fleeing a low-HP threat gets a burst of speed, but fleeing an absorption grab
     // (spec §1) does not — you're still partly held, so the absorber gets a fair chance.
     speed *= ai.beingAbsorbedByRef ? 1.0 : 1.3;
-  } else if((ai.state==='command_move'||ai.state==='war_move')&&ai.target){targetAngle=Math.atan2(ai.target.y-ai.y,ai.target.x-ai.x);if(ai.state==='war_move')speed=Math.min(speed*.75,dist(ai,ai.target)/Math.max(dt,1e-8));
+  } else if((ai.state==='command_move'||ai.state==='war_move')&&ai.target){targetAngle=angleTo(ai,ai.target);if(ai.state==='war_move')speed=Math.min(speed*.75,dist(ai,ai.target)/Math.max(dt,1e-8));
   } else if(ai.state==='relationship'&&ai.target){
-    targetAngle=Math.atan2(ai.target.y-ai.y,ai.target.x-ai.x);speed*=.55;
+    targetAngle=angleTo(ai,ai.target);speed*=.55;
     speed=Math.min(speed,dist(ai,ai.target)/Math.max(dt,1e-8));
   } else if (ai.state === 'chase_eat' && ai.target && ai.target.alive) {
     // actual eating/absorption is resolved centrally in Game.resolveConsumption()
-    targetAngle = Math.atan2(ai.target.y - ai.y, ai.target.x - ai.x);
+    targetAngle = angleTo(ai,ai.target);
   } else if (ai.state === 'chase_fight' && ai.target && ai.target.alive) {
     const d = dist(ai, ai.target);
-    targetAngle = Math.atan2(ai.target.y - ai.y, ai.target.x - ai.x);
+    targetAngle = angleTo(ai,ai.target);
     if (d <= attackReach(ai, balance) && canStartAttack(ai)) {
       startAttack(ai, targetAngle, balance);
       return;
     }
   } else {
     const destination=game&&explorationDestination(ai,game);
-    if(destination){targetAngle=Math.atan2(destination.y-ai.y,destination.x-ai.x);speed*=0.55*(ai.color==='cyan'?.7:1);}
+    if(destination){targetAngle=angleTo(ai,destination);speed*=0.55*(ai.color==='cyan'?.7:1);}
     else {
     ai.wanderTimer -= dt;
     if (ai.wanderTimer <= 0) {
@@ -305,7 +308,7 @@ function moveAI(ai, dt, balance,game) {
   }
 
   if (targetAngle !== null) {
-    if(game&&!ai.environmentThreat){const point=game.biomes.routePoint(ai,{x:ai.x+Math.cos(targetAngle)*300,y:ai.y+Math.sin(targetAngle)*300});targetAngle=Math.atan2(point.y-ai.y,point.x-ai.x);}
+    if(game&&!ai.environmentThreat){const point=game.biomes.routePoint(ai,{x:ai.x+Math.cos(targetAngle)*300,y:ai.y+Math.sin(targetAngle)*300});targetAngle=angleTo(ai,point);}
     ai.facing = targetAngle;
     ai.x += Math.cos(targetAngle) * speed * dt;
     ai.y += Math.sin(targetAngle) * speed * dt;

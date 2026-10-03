@@ -1,0 +1,223 @@
+{
+  "result": "PASS",
+  "results": [
+    {
+      "seed": 7,
+      "fps": 60,
+      "policy": "local-survival-v2",
+      "lifePolicy": "ordinary lives; no replenishment",
+      "requestedSeconds": 120,
+      "actualSeconds": 120,
+      "stop": "duration",
+      "frames": 7200,
+      "unitChecks": 9221,
+      "maxApex": 0,
+      "maxGroups": 12,
+      "maxSize": 93.09698281731319,
+      "player": {
+        "size": 55.95552808679077,
+        "score": 505,
+        "lives": 3,
+        "defeats": 0,
+        "firstApexSeconds": null
+      },
+      "era": {
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relicPickupsAllUnits": 2,
+      "apex": {
+        "current": [],
+        "recent": [],
+        "completed": [],
+        "gains": 0,
+        "losses": 0,
+        "secondsByCount": {
+          "absent": 119.99999999999447,
+          "solo": 0,
+          "coexist": 0
+        },
+        "longestTenure": 0,
+        "longestSolo": 0
+      },
+      "historySizes": {
+        "abilities": 0,
+        "ecology": 0,
+        "era": 0,
+        "ally": 100,
+        "samples": 120
+      }
+    },
+    {
+      "seed": 11,
+      "fps": 60,
+      "policy": "local-survival-v2",
+      "lifePolicy": "ordinary lives; no replenishment",
+      "requestedSeconds": 120,
+      "actualSeconds": 120,
+      "stop": "duration",
+      "frames": 7200,
+      "unitChecks": 9050,
+      "maxApex": 0,
+      "maxGroups": 12,
+      "maxSize": 93.26331282593841,
+      "player": {
+        "size": 66.75264180751503,
+        "score": 954,
+        "lives": 3,
+        "defeats": 0,
+        "firstApexSeconds": null
+      },
+      "era": {
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relicPickupsAllUnits": 2,
+      "apex": {
+        "current": [],
+        "recent": [],
+        "completed": [],
+        "gains": 0,
+        "losses": 0,
+        "secondsByCount": {
+          "absent": 119.99999999999447,
+          "solo": 0,
+          "coexist": 0
+        },
+        "longestTenure": 0,
+        "longestSolo": 0
+      },
+      "historySizes": {
+        "abilities": 0,
+        "ecology": 0,
+        "era": 0,
+        "ally": 100,
+        "samples": 120
+      }
+    },
+    {
+      "seed": 23,
+      "fps": 60,
+      "policy": "local-survival-v2",
+      "lifePolicy": "ordinary lives; no replenishment",
+      "requestedSeconds": 120,
+      "actualSeconds": 120,
+      "stop": "duration",
+      "frames": 7200,
+      "unitChecks": 8920,
+      "maxApex": 3,
+      "maxGroups": 12,
+      "maxSize": 107.7094573286335,
+      "player": {
+        "size": 74.0620761389533,
+        "score": 1342,
+        "lives": 3,
+        "defeats": 0,
+        "firstApexSeconds": null
+      },
+      "era": {
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relicPickupsAllUnits": 2,
+      "apex": {
+        "current": [
+          {
+            "id": 480,
+            "name": "달빛 고래 480",
+            "color": "#22C55E",
+            "since": 88.01666666666296,
+            "seconds": 31.983333333331515
+          },
+          {
+            "id": 1010,
+            "name": "별빛 표범 1010",
+            "color": "#EF4444",
+            "since": 88.01666666666296,
+            "seconds": 31.983333333331515
+          },
+          {
+            "id": 1251,
+            "name": "안개 사슴 1251",
+            "color": "#EF4444",
+            "since": 116.01666666666137,
+            "seconds": 3.983333333333107
+          }
+        ],
+        "recent": [
+          {
+            "id": 1251,
+            "name": "안개 사슴 1251",
+            "color": "#EF4444",
+            "since": 116.01666666666137,
+            "type": "gain",
+            "time": 116.01666666666137
+          },
+          {
+            "id": 840,
+            "name": "그늘 사슴 840",
+            "color": "#22C55E",
+            "since": 96.0166666666625,
+            "endedAt": 116.01666666666137,
+            "seconds": 19.999999999998863,
+            "type": "loss",
+            "time": 116.01666666666137
+          },
+          {
+            "id": 840,
+            "name": "그늘 사슴 840",
+            "color": "#22C55E",
+            "since": 96.0166666666625,
+            "type": "gain",
+            "time": 96.0166666666625
+          },
+          {
+            "id": 1010,
+            "name": "별빛 표범 1010",
+            "color": "#EF4444",
+            "since": 88.01666666666296,
+            "type": "gain",
+            "time": 88.01666666666296
+          },
+          {
+            "id": 480,
+            "name": "달빛 고래 480",
+            "color": "#22C55E",
+            "since": 88.01666666666296,
+            "type": "gain",
+            "time": 88.01666666666296
+          }
+        ],
+        "completed": [
+          {
+            "id": 840,
+            "name": "그늘 사슴 840",
+            "color": "#22C55E",
+            "since": 96.0166666666625,
+            "endedAt": 116.01666666666137,
+            "seconds": 19.999999999998863
+          }
+        ],
+        "gains": 4,
+        "losses": 1,
+        "secondsByCount": {
+          "absent": 87.99999999999629,
+          "solo": 0,
+          "coexist": 31.999999999999464
+        },
+        "longestTenure": 31.983333333331515,
+        "longestSolo": 0
+      },
+      "historySizes": {
+        "abilities": 14,
+        "ecology": 5,
+        "era": 0,
+        "ally": 100,
+        "samples": 120
+      }
+    }
+  ]
+}

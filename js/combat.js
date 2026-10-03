@@ -1,3 +1,5 @@
+import {dist} from './collision.js';
+import {angleTo} from './topology.js';
 // Shared attack (telegraph -> charge -> recovery) and dodge (instant -> invincible burst)
 // state machines. Both Player and AI entities use the exact same functions so the two
 // systems behave identically wherever they can.
@@ -117,7 +119,7 @@ export function updateAttack(entity, dt, balance, hostiles, game) {
       const rawDamage = attackDamageForSize(entity.size, balance) * (game?.abilities?.damageMultiplier(entity) ?? 1);
       for (const target of hostiles) {
         if (!target.alive || entity.attackHitSet.has(target.id)) continue;
-        const d = Math.hypot(target.x - entity.x, target.y - entity.y);
+        const d = dist(entity,target);
         if (d <= entity.size / 2 + target.size / 2 + hitPadding) {
           applyDamage(target, rawDamage, game, entity, balance);
           entity.attackHitSet.add(target.id);
@@ -216,7 +218,7 @@ function applyKnockback(target, attacker, game) {
   if (!game) return;
   const cfg = game.balance.combat;
   const cs = game.balance.combatScaling;
-  const dir = Math.atan2(target.y - attacker.y, target.x - attacker.x);
+  const dir = angleTo(attacker,target);
   const speed = (cs.knockbackForce * cfg.knockbackResistance) / Math.max(0.2, target.size / cs.referenceSize);
   target.kx = Math.cos(dir) * speed;
   target.ky = Math.sin(dir) * speed;

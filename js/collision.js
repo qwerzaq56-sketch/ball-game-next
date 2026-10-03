@@ -1,3 +1,4 @@
+import {delta} from './topology.js';
 // Distance / eating / hostility / absorption-eligibility predicates.
 //
 // v0.2 splits "consuming something smaller" into two distinct rules:
@@ -7,7 +8,7 @@
 // Different-color Player/AI entities are never consumable — only combat (attack) can remove them.
 
 export function dist(a, b) {
-  return Math.hypot(a.x - b.x, a.y - b.y);
+  const d=delta(a,b);return Math.hypot(d.x,d.y);
 }
 
 export function circlesOverlap(a, b) {

@@ -68,7 +68,7 @@ test('sand escape holds to 420 after entering at 360; joining removes maintained
 });
 
 test('leaders steer back from borders and command skills skip peaceful companions',()=>{
- const {g,a,b}=fixture();g.entities=[a,b];g.allyLinks.refresh();g.allyLinks.join(a,b);
+ const {g,a,b}=fixture();g.balance.world.wrap=false;g.entities=[a,b];g.allyLinks.refresh();g.allyLinks.join(a,b);
  const leader=g.allyLinks.groups.get(a.companionGroup).leader;leader.x=leader.size/2;leader.wanderAngle=Math.PI;leader.wanderTimer=2;
  g.allyLinks.move(leader,.1);assert(leader.x>leader.size/2);
  const owner={...g.player,size:200,color:a.color};g.abilities.command(owner,'harvest',6,500,{id:1});assert.equal(a.command,undefined);assert.equal(b.command,undefined);
