@@ -1,0 +1,23 @@
+{
+  "result": "PASS",
+  "held": {
+    "move": 1,
+    "aim": "attack",
+    "charge": 0.4832000000000002
+  },
+  "fired": {
+    "charge": 0.6666666666666669,
+    "state": "CHARGING",
+    "move": 1
+  },
+  "cancelCleared": true,
+  "errors": [],
+  "joystickWidth": 144,
+  "mapHeadingDraggable": true,
+  "canvasCoverage": {
+    "x": 0,
+    "y": 0,
+    "width": 844,
+    "height": 390
+  }
+}

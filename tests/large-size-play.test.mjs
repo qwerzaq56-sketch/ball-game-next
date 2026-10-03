@@ -7,7 +7,7 @@ import {growthRewardFor} from '../js/entity.js';
 test('all E/R geometry scales above size 350 while small skills retain their geometry',()=>{
  const g=createGame(7);for(const color of g.balance.colors.map(c=>c.id))for(const slot of ['E','R']){
   const a=scaledSkill(g.balance,{color,size:350},slot),b=scaledSkill(g.balance,{color,size:1400},slot);
-  for(const key of ['radius','length','width','castRange','buffRadius','commandRadius'])if(a[key]){if(a.effect==='embers'&&key==='radius'){assert(b[key]>=a[key]);assert(b[key]>1400/2);}else if(a.effect==='muster'&&key==='radius')assert.equal(b[key],a[key]*2);else if(color==='green'&&slot==='E'&&key==='radius')assert(b[key]>=a[key]);else assert.equal(b[key],a[key]*4);};
+  for(const key of ['radius','length','width','castRange','buffRadius','commandRadius'])if(a[key]){if(a.effect==='embers'&&key==='radius'){assert(b[key]>=a[key]);assert(b[key]>1400/2);}else if(a.effect==='muster'&&key==='radius')assert.equal(b[key],a[key]*4);else if(color==='green'&&slot==='E'&&key==='radius')assert(b[key]>=a[key]);else assert.equal(b[key],a[key]*4);};
   assert.equal(b.cooldown,a.cooldown);assert.equal(b.damage,a.damage);
  }
 });

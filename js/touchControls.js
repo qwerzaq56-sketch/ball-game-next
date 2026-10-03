@@ -50,12 +50,15 @@ export class TouchControls {
   blocked(){return this.game.paused||this.game.gameOver;}
   beginMove(e,capture){
     e.preventDefault();capture.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,'move');
-    this.moveOrigin={x:e.clientX,y:e.clientY};this.stick.classList.add('floating-active');
-    this.stick.style.left=`${e.clientX-this.stick.offsetWidth/2}px`;this.stick.style.top=`${e.clientY-this.stick.offsetHeight/2}px`;this.stick.style.bottom='auto';this.move(e);
+    this.stick.classList.add('floating-active');
+    const radius=this.stick.offsetWidth/2,rect=this.canvas.getBoundingClientRect();
+    this.moveOrigin={x:e.clientX,y:e.clientY};
+    const center={x:Math.max(rect.left+radius+8,Math.min(e.clientX,rect.left+rect.width/2-radius)),y:Math.max(rect.top+radius+8,Math.min(e.clientY,rect.bottom-radius-52))};
+    this.stick.style.left=`${center.x-this.stick.offsetWidth/2}px`;this.stick.style.top=`${center.y-this.stick.offsetHeight/2}px`;this.stick.style.bottom='auto';this.move(e);
   }
   move(e){
     const r=this.stick.getBoundingClientRect(),origin=this.moveOrigin??{x:r.left+r.width/2,y:r.top+r.height/2},dx=e.clientX-origin.x,dy=e.clientY-origin.y;
-    const length=Math.hypot(dx,dy),radius=36,scale=Math.max(radius,length);
+    const length=Math.hypot(dx,dy),radius=48,scale=Math.max(radius,length);
     this.input.touchMove=length<5?{x:0,y:0}:{x:dx/scale,y:dy/scale};
     this.knob.style.transform=`translate(${this.input.touchMove.x*radius}px,${this.input.touchMove.y*radius}px)`;
   }

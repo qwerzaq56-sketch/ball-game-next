@@ -311,6 +311,7 @@
     "rangeReferenceSize": 100,
     "unlockSize": 100,
     "territoryMultiplier": 1,
+    "redTerritoryRadiusMultiplier": 0.6,
     "loadout": {
       "cyan": {
         "E": "cyan-shield",
