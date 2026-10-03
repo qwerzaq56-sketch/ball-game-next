@@ -32,14 +32,16 @@ async function loadBalance() {
 }
 
 function resizeCanvas(canvas) {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  const rect=canvas.getBoundingClientRect();
+  canvas.width = Math.round(rect.width);
+  canvas.height = Math.round(rect.height);
 }
 
 async function main() {
   const canvas = document.getElementById('game-canvas');
   resizeCanvas(canvas);
   window.addEventListener('resize', () => resizeCanvas(canvas));
+  window.visualViewport?.addEventListener('resize',()=>resizeCanvas(canvas));
 
   let balance;
   try {

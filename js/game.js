@@ -56,6 +56,7 @@ export class Game {
     resetRandom(this.seed);
     resetEntityIds();
     this.gameTime = 0;
+    this.touchAim=null;
     this.showAILabels = true; // head-up state + personality labels over AI (debug aid, F3)
     this.ecology = new Ecology(this.options.collect);
     this.apexHistory = new ApexHistory();
@@ -712,9 +713,20 @@ export class Game {
     this.drawEntities(ctx);
     this.drawParticles(ctx);
     this.drawFloatingTexts(ctx);
+    this.drawTouchAim(ctx);
 
     ctx.restore();
     this.drawNames(ctx);
+  }
+
+  drawTouchAim(ctx) {
+    if(!this.touchAim||!this.player.alive||this.paused||this.gameOver)return;
+    const p=this.player,z=this.camera.zoom,length=p.size/2+28/z,head=8/z;
+    ctx.save();ctx.translate(p.x,p.y);ctx.rotate(this.touchAim.angle);
+    ctx.strokeStyle='#ffffff';ctx.lineWidth=2/z;ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(length,0);
+    ctx.moveTo(length-head,-head*.65);ctx.lineTo(length,0);ctx.lineTo(length-head,head*.65);
+    ctx.stroke();ctx.restore();
   }
 
   drawNames(ctx) {
@@ -877,7 +889,7 @@ export class Game {
     // decorative helpers replace it with their marks, pulse circles or arrow triangles.
     drawSpeciesMark(ctx,e,this.camera.zoom);
     drawGrowthPulse(ctx,e,this.camera.zoom);
-    drawPlayerDirection(ctx,e,this.camera.zoom);
+    if(e!==this.player||!this.touchAim)drawPlayerDirection(ctx,e,this.camera.zoom);
 
     if (beingAbsorbed) {
       // absorption progress ring, pulsing as it nears completion

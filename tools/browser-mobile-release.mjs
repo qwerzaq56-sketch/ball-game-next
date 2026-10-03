@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {writeFileSync} from 'node:fs';
 const {chromium}=createRequire(import.meta.url)('playwright');
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
+const prefix=process.env.BROWSER_MOBILE_RELEASE_PREFIX??'/tmp/mobile-release';
 const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
 const center=async s=>{const r=await page.locator(s).boundingBox();return{x:r.x+r.width/2,y:r.y+r.height/2};};
@@ -14,7 +15,7 @@ try{
  assert.equal(await page.locator('body').evaluate(e=>e.classList.contains('mobile-minimal')),true);
  assert.equal(await page.locator('#live-ranking').isVisible(),false);assert(await page.locator('#pause-btn').isVisible());
  const minimal=await page.locator('#hud').boundingBox();assert(minimal.height<100);
- await page.screenshot({path:'reports/M31-mobile-minimal.png'});
+ await page.screenshot({path:`${prefix}-mobile-minimal.png`});
  await page.locator('#mobile-ui-toggle').click();assert(await page.locator('#live-ranking').isVisible());
  await page.locator('#mobile-ui-toggle').click();
  const stick=await center('#touch-stick'),attack=await center('#touch-attack');
@@ -23,7 +24,7 @@ try{
  await touch('touchStart',[point(1,{x:stick.x+30,y:stick.y}),point(2,attack)]);
  await touch('touchMove',[point(1,{x:stick.x+30,y:stick.y}),point(2,{x:attack.x,y:attack.y-50})]);await page.waitForTimeout(300);
  assert.equal(await page.evaluate(()=>window.__game.player.attackStack),3);assert.equal(await page.evaluate(()=>window.__game.input.mouseDown),false);
- assert((await page.evaluate(()=>window.__game.player.x))>x);assert(await page.locator('#touch-aim-preview').isVisible());
+ assert((await page.evaluate(()=>window.__game.player.x))>x);assert(await page.evaluate(()=>!!window.__game.touchAim));
  await touch('touchEnd',[point(2,{x:attack.x,y:attack.y-50})]);await page.waitForTimeout(70);
  assert.equal(await page.evaluate(()=>window.__game.player.attackStack),2);
  assert(Math.abs((await page.evaluate(()=>window.__game.player.attackDir))+Math.PI/2)<.02);
@@ -40,10 +41,10 @@ try{
  await prepare();await page.waitForTimeout(100);
  await touch('touchStart',[point(40,{x:160,y:350})]);await touch('touchEnd',[]);await page.waitForTimeout(80);assert.equal(await page.evaluate(()=>window.__game.player.attackStack),3);
  await touch('touchStart',[point(5,attack)]);await touch('touchMove',[point(5,{x:attack.x-40,y:attack.y})]);await touch('touchCancel',[]);await page.waitForTimeout(100);
- assert.equal(await page.evaluate(()=>window.__game.player.attackStack),3);assert.equal(await page.locator('#touch-aim-preview').isVisible(),false);
+ assert.equal(await page.evaluate(()=>window.__game.player.attackStack),3);assert.equal(await page.evaluate(()=>window.__game.touchAim),null);
  await touch('touchStart',[point(6,attack)]);await page.locator('#pause-btn').click();await touch('touchEnd',[]);await page.locator('#pause-btn').click();await page.waitForTimeout(100);assert.equal(await page.evaluate(()=>window.__game.player.attackStack),3);
  await touch('touchStart',[point(7,attack)]);await page.setViewportSize({width:844,height:390});await touch('touchEnd',[]);await page.waitForTimeout(100);assert.equal(await page.evaluate(()=>window.__game.player.attackStack),3);
- assert((await page.locator('#hud').boundingBox()).height<100);await page.screenshot({path:'reports/M31-mobile-landscape.png'});
+ assert((await page.locator('#hud').boundingBox()).height<100);await page.screenshot({path:`${prefix}-mobile-landscape.png`});
  await page.reload();await page.waitForFunction(()=>window.__game);assert.equal(await page.locator('body').evaluate(e=>e.classList.contains('mobile-minimal')),true);
- assert.deepEqual(errors,[]);const result={status:'PASS',genuineTouch:true,minimalUI:true,persisted:true,multitouchMovement:true,attackOnRelease:true,dodgeOnRelease:true,canvasAttackOnRelease:true,singleAttack:true,cancelPauseResizeNoFire:true,screenTapNoAttack:true,errors};writeFileSync('reports/M31-mobile-release.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));
+ assert.deepEqual(errors,[]);const result={status:'PASS',genuineTouch:true,minimalUI:true,persisted:true,multitouchMovement:true,attackOnRelease:true,dodgeOnRelease:true,canvasAttackOnRelease:true,singleAttack:true,cancelPauseResizeNoFire:true,screenTapNoAttack:true,errors};writeFileSync(`${prefix}-mobile-release.json`,JSON.stringify(result,null,2));console.log(JSON.stringify(result));
 }finally{await browser.close();}

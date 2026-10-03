@@ -3,7 +3,6 @@ import {canStartDodge} from './combat.js';
 export class TouchControls {
   constructor(game,input,canvas) {
     this.game=game;this.input=input;this.canvas=canvas;this.pointers=new Map();this.gestures=new Map();
-    this.preview=document.createElement('div');this.preview.id='touch-aim-preview';document.body.append(this.preview);
     const toggle=document.getElementById('mobile-ui-toggle');
     let minimal=true;try{minimal=localStorage.getItem('ball-mobile-minimal')!=='false';}catch{}
     const apply=()=>{document.body.classList.toggle('mobile-minimal',minimal);toggle.textContent=minimal?'전체 UI':'최소 UI';toggle.setAttribute('aria-pressed',String(minimal));};
@@ -36,6 +35,7 @@ export class TouchControls {
     });
     window.addEventListener('blur',()=>this.clear());
     window.addEventListener('resize',()=>this.clear());
+    window.visualViewport?.addEventListener('resize',()=>this.clear());
     document.addEventListener('visibilitychange',()=>{if(document.hidden)this.clear();});
     this.lastHistory=game.apexHistory;this.wasPaused=game.paused;
   }
@@ -55,8 +55,7 @@ export class TouchControls {
   showAim(angle){
     const p=this.game.worldToScreen(this.game.player.x,this.game.player.y);
     this.input.mouseX=p.x+Math.cos(angle)*180;this.input.mouseY=p.y+Math.sin(angle)*180;
-    this.preview.style.cssText=`display:block;left:${p.x}px;top:${p.y}px;transform:rotate(${angle}rad);`;
-    this.preview.dataset.kind=[...this.pointers.values()].find(kind=>kind==='attack'||kind==='dodge');
+    this.game.touchAim={angle};
   }
   release(id,fire=false){
     const kind=this.pointers.get(id);if(!kind)return;this.pointers.delete(id);
@@ -65,7 +64,7 @@ export class TouchControls {
       if(kind==='attack')this.input._attackQueued=gesture.angle;
       if(kind==='dodge'){this.input._dodgeAngle=gesture.angle;this.input._dodgeQueued=true;}
     }
-    if(!this.gestures.size)this.preview.style.display='none';
+    if(!this.gestures.size)this.game.touchAim=null;
     if(kind==='move'){this.input.touchMove={x:0,y:0};this.knob.style.transform='';}
     if(kind==='attack'&&![...this.pointers.values()].includes('attack'))this.input.mouseDown=false;
   }
