@@ -167,6 +167,7 @@ export function decideAI(ai, game, balance) {
   ai.fleeField=danger;
   if(danger){game.abilities.endCommand(ai,'sand-danger');ai.state='flee';ai.target={x:danger.x,y:danger.y,alive:true};return;}
 
+  if(ai.command?.kind==='muster'&&game.abilities.commandDecision(ai))return;
   ai.recovering=hp<=.3 || (ai.recovering && hp<.6);
   if(ai.challengeTarget && (ai.role!=='predator'||ai.apex||hp<=.4 || !ai.challengeTarget.alive || !ai.challengeTarget.apex ||
     ai.challengeTarget.hp/ai.challengeTarget.maxHp>.4 || dist(ai,ai.challengeTarget)>cfg.detectionRange))ai.challengeTarget=null;
@@ -297,7 +298,7 @@ function reactToThreats(ai, game, balance) {
 
 function moveAI(ai, dt, balance,game) {
   let targetAngle = null;
-  let speed = ai.moveSpeed*(game?.abilities.speedMultiplier(ai)??1);
+  let speed = ai.moveSpeed*(game?.abilities.speedMultiplier(ai)??1)*(game?.biomes.moveMultiplier(ai)??1);
 
   if(ai.state==='flee'&&ai.guardMode&&ai.target){
     const gap=dist(ai,ai.target)-(ai.size+ai.target.size)/2;
@@ -308,7 +309,7 @@ function moveAI(ai, dt, balance,game) {
     // v0.3: fleeing a low-HP threat gets a burst of speed, but fleeing an absorption grab
     // (spec §1) does not — you're still partly held, so the absorber gets a fair chance.
     speed *= ai.beingAbsorbedByRef ? 1.0 : 1.3;
-  } else if((ai.state==='command_move'||ai.state==='war_move')&&ai.target){targetAngle=angleTo(ai,ai.target);if(ai.state==='war_move')speed=Math.min(speed*.75,dist(ai,ai.target)/Math.max(dt,1e-8));
+  } else if((ai.state==='command_move'||ai.state==='war_move')&&ai.target){targetAngle=angleTo(ai,ai.target);speed=Math.min(speed*(ai.state==='war_move'?.75:1),dist(ai,ai.target)/Math.max(dt,1e-8));
   } else if(ai.state==='relationship'&&ai.target){
     targetAngle=angleTo(ai,ai.target);speed*=.55;
     speed=Math.min(speed,dist(ai,ai.target)/Math.max(dt,1e-8));

@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "desktopAbsorbToggle": true,
+  "mobileAbsorbToggle": true,
+  "red": {
+    "embers": 1,
+    "musters": 1,
+    "recipients": 8,
+    "defaultE": "red-embers",
+    "defaultR": "red-muster"
+  },
+  "weather": {
+    "outside": true,
+    "event": true,
+    "sight": true
+  },
+  "errors": []
+}

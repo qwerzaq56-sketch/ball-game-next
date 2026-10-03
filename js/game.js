@@ -319,7 +319,7 @@ export class Game {
     const p = this.player;
     const inp = this.input;
     p.companionVelocity={x:0,y:0};
-    p.allyAbsorptionEnabled=this.autoplay.enabled||!!inp.absorbHeld||!!(inp.touchMode&&inp.absorbToggle);
+    p.allyAbsorptionEnabled=this.autoplay.enabled||!!inp.absorbHeld||!!inp.absorbToggle;
     if(p.allyAbsorptionEnabled&&p.companionGroup)this.allyLinks.leave(p,'absorption-enabled');
 
     const releasedUltimate=inp._ultimateQueued;inp._ultimateQueued=false;
@@ -348,7 +348,7 @@ export class Game {
     dx+=inp.touchMove?.x??0;dy+=inp.touchMove?.y??0;
     }
 
-    const moveSpeed=p.moveSpeed*this.abilities.speedMultiplier(p);
+    const moveSpeed=p.moveSpeed*this.abilities.speedMultiplier(p)*this.biomes.moveMultiplier(p);
     const moving = dx !== 0 || dy !== 0;
     const moveAngle = moving ? Math.atan2(dy, dx) : p.facing;
 
@@ -770,7 +770,7 @@ export class Game {
   drawTouchAim(ctx) {
     if(!this.touchAim||!this.player.alive||this.paused||this.gameOver)return;
     const p=this.player,z=this.camera.zoom,length=p.size/2+28/z,head=8/z;
-    if(this.touchAim.kind==='ultimate'&&this.touchAim.point&&['red','yellow'].includes(p.color)){const point=near(p,this.touchAim.point,this.balance.world),cfg=this.abilities.skill(p,'R');ctx.save();ctx.beginPath();ctx.arc(point.x,point.y,cfg.radius,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.04)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=1.5/z;ctx.setLineDash([6/z,4/z]);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(point.x-6/z,point.y);ctx.lineTo(point.x+6/z,point.y);ctx.moveTo(point.x,point.y-6/z);ctx.lineTo(point.x,point.y+6/z);ctx.stroke();ctx.restore();}
+    if(this.touchAim.kind==='ultimate'&&this.touchAim.point&&['red','yellow'].includes(p.color)){const cfg=this.abilities.skill(p,'R'),point=cfg.effect==='muster'?p:near(p,this.touchAim.point,this.balance.world);ctx.save();ctx.beginPath();ctx.arc(point.x,point.y,cfg.radius,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.04)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=1.5/z;ctx.setLineDash([6/z,4/z]);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(point.x-6/z,point.y);ctx.lineTo(point.x+6/z,point.y);ctx.moveTo(point.x,point.y-6/z);ctx.lineTo(point.x,point.y+6/z);ctx.stroke();ctx.restore();}
     ctx.save();ctx.translate(p.x,p.y);ctx.rotate(this.touchAim.angle);
     ctx.strokeStyle='#ffffff';ctx.lineWidth=2/z;ctx.lineCap='round';ctx.lineJoin='round';
     ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(length,0);
@@ -882,6 +882,7 @@ export class Game {
         const x=e.x+(e.apex?(i?1:-1)*32/this.camera.zoom:0),y=e.y-r-entityLabelRows(e,this.showAILabels,true).skill/this.camera.zoom;ctx.strokeText(label,x,y);ctx.fillStyle=ready?'#fff':'#94a3b8';ctx.fillText(label,x,y);
       }ctx.restore();
     }
+    if(e.frostbiteRemaining>0){const z=this.camera.zoom;ctx.save();ctx.strokeStyle='#a5f3fc';ctx.lineWidth=2/z;ctx.beginPath();ctx.arc(e.x,e.y,r+5/z,0,Math.PI*2);ctx.stroke();ctx.font=`bold ${12/z}px system-ui`;ctx.fillStyle='#cffafe';ctx.textAlign='center';ctx.fillText('❄ 동상',e.x,e.y+r+18/z);ctx.restore();}
     if(this.era.activeWar(e)){const z=this.camera.zoom;ctx.save();ctx.font=`bold ${13/z}px system-ui`;ctx.textAlign='center';ctx.strokeStyle='#0f172a';ctx.lineWidth=3/z;ctx.strokeText(`⚔ ${e.warTargets.size}`,e.x+r*.65,e.y-r*.65);ctx.fillStyle='#fb7185';ctx.fillText(`⚔ ${e.warTargets.size}`,e.x+r*.65,e.y-r*.65);ctx.restore();}
     if(e.apex){const z=this.camera.zoom;ctx.save();ctx.strokeStyle='#facc15';ctx.lineWidth=3/z;ctx.beginPath();ctx.arc(e.x,e.y,r+9/z,0,Math.PI*2);ctx.stroke();
       for(let i=0;i<6;i++){const a=i*Math.PI/3+this.gameTime*.25,x=e.x+Math.cos(a)*(r+17/z),y=e.y+Math.sin(a)*(r+17/z);ctx.beginPath();ctx.moveTo(x,y-4/z);ctx.lineTo(x+3/z,y);ctx.lineTo(x,y+4/z);ctx.lineTo(x-3/z,y);ctx.closePath();ctx.fillStyle='#fde68a';ctx.fill();}

@@ -717,3 +717,6 @@ body.mobile-minimal #debug-panel{z-index:20}
 .rank-apex{color:#facc15;font-size:12px;flex:0 0 12px;text-shadow:0 0 5px #facc1588}
 #touch-absorb{position:absolute;left:-64px;bottom:0;width:56px;font-size:11px!important;min-height:32px!important;border-radius:14px!important}
 #touch-absorb[aria-pressed="true"]{border-color:#86efac;background:#14532d}
+
+#quick-absorb[aria-pressed='true']{border-color:#86efac;background:#14532d;color:#fff}
+@media(pointer:coarse){#quick-absorb{display:none}}

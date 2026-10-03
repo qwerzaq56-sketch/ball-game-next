@@ -123,7 +123,7 @@ export class AllyLinks {
   }
  }
  move(e,dt){
-  const group=this.groups.get(e.companionGroup);if(!group)return false;const moveSpeed=e.moveSpeed*this.game.abilities.speedMultiplier(e);
+  const group=this.groups.get(e.companionGroup);if(!group)return false;const moveSpeed=e.moveSpeed*this.game.abilities.speedMultiplier(e)*this.game.biomes.moveMultiplier(e);
   e.companionVelocity={x:0,y:0};
   const environment=this.game.biomes.danger(e,!!e.environmentThreat);e.environmentThreat=environment;
   if(environment){const angle=angleTo(environment,e);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*moveSpeed*1.3*dt;e.y+=Math.sin(angle)*moveSpeed*1.3*dt;return true;}

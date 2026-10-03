@@ -51,6 +51,8 @@ export class Biomes {
    if(Math.hypot(p.x-t*d.x,p.y-t*d.y)<=a.hotRadius+padding)return a;
   }return null;
  }
+ moveMultiplier(e){return this.enabled&&this.regionAt(e)?.id==='lake'?(e.color==='blue'?(this.game.balance.biomes.blueWaterMoveMultiplier??.9):(this.game.balance.biomes.waterMoveMultiplier??.65)):1;}
+ frostResistance(e){const c=this.game.balance.biomes;return Math.min(.85,(e.color==='cyan'?(c.cyanFrostResistance??.65):0)+Math.min(c.frostSizeResistanceCap??.15,Math.max(0,e.size-40)*(c.frostSizeResistancePerSize??.00025)));}
  blizzard(){return this.enabled&&this.game.gameTime%24>=16;}
  playerSightRadius(){return this.regionAt(this.game.player)?.id==='snow'&&this.blizzard()?this.game.balance.ai.detectionRange*.65+Math.max(0,this.game.player.size-40)*.65:Infinity;}
  playerCanSee(e){return e===this.game.player||dist(this.game.player,e)-(e.size??0)/2<=this.playerSightRadius()*2;}
@@ -70,7 +72,15 @@ export class Biomes {
  danger(e,held=false){return this.hazards().find(r=>r.hotRadius&&dist(e,r)<=r.hotRadius+e.size/2+(held?120:80))??null;}
  update(dt){
   this.game.audio?.updateBlizzard?.(this.enabled&&this.blizzard()&&this.regionAt(this.game.player)?.id==='snow'&&this.game.player.alive&&!this.game.gameOver);
-  if(!this.enabled)return;this.damageTimer+=dt;this.encounterTimer-=dt;
+  if(!this.enabled)return;
+  const c=this.game.balance.biomes;
+  for(const e of this.game.entities){if(!e.alive||e.behavior==='orb')continue;
+   const cold=this.blizzard()&&this.regionAt(e)?.id==='snow',resistance=this.frostResistance(e);
+   e.frostExposure=cold?(e.frostExposure??0)+dt*(1-resistance*.5):Math.max(0,(e.frostExposure??0)-dt*2);
+   e.frostbiteRemaining=Math.max(0,(e.frostbiteRemaining??0)-dt);
+   if(cold&&e.frostExposure>=(c.frostExposureSeconds??4))e.frostbiteRemaining=c.frostDuration??6;
+  }
+  this.damageTimer+=dt;this.encounterTimer-=dt;
   const cycle=Math.floor(this.game.gameTime/24);
   if(this.blizzard()&&cycle!==this.snowEvent){this.snowEvent=cycle;
     const snow=this.regions.find(r=>r.id==='snow');let slots=Math.max(0,this.game.balance.spawning.maxOrbCount-this.game.entities.filter(e=>e.alive&&e.behavior==='orb').length);
@@ -79,6 +89,7 @@ export class Biomes {
   }
   while(this.damageTimer>=.5-1e-8){this.damageTimer-=.5;
    for(const e of this.game.entities){if(!e.alive||e.behavior==='orb')continue;
+    if(e.frostbiteRemaining>0)applyDamage(e,e.maxHp*(c.frostTickHpFraction??.0125),this.game,null,this.game.balance,{kind:'field',knockback:false,ignoreDefense:true,postDefenseMultiplier:1-this.frostResistance(e)});
     const hot=this.lavaAt(e);
     if(hot){const resistance=lavaResistance(e,this.game.balance),beforeRatio=e.damageHpRatio??0;applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false,postDefenseMultiplier:(1-resistance)*terrainDamageMultiplier(e.size,this.game.balance)});const log=this.game.lavaLog??=([]);const entry={time:this.game.gameTime,size:e.size,color:e.color,region:'volcano',resistance,hpRatio:(e.damageHpRatio??0)-beforeRatio};log.push(entry);this.game.balanceLog?.lava.push(entry);if(log.length>1000)log.shift();}
    }
@@ -108,7 +119,7 @@ export class Biomes {
   }
   e.environmentRoute=null;return target;
  }
- status(e){const r=this.regionAt(e);if(!r)return '평원';return r.name+(r.id==='snow'&&this.blizzard()?' · 눈보라 · 얼음꽃':this.lavaAt(e)?' · 용암 강 위험':'');}
+ status(e){const r=this.regionAt(e);if(!r)return '평원';return r.name+(e.frostbiteRemaining>0?' · 동상':'')+(r.id==='lake'?' · 물속':'')+(r.id==='snow'&&this.blizzard()?' · 눈보라 · 얼음꽃':this.lavaAt(e)?' · 용암 강 위험':'');}
  draw(ctx,zoom){
   if(!this.enabled)return;const camera=this.game.renderCamera??this.game.camera;
   const halfW=this.game.canvas.width/zoom/2,halfH=this.game.canvas.height/zoom/2,time=this.game.gameTime;
@@ -116,6 +127,9 @@ export class Biomes {
   for(const tile of this.tiles){
    if(tile.x+this.tile<camera.x-halfW||tile.x>camera.x+halfW||tile.y+this.tile<camera.y-halfH||tile.y>camera.y+halfH)continue;
    const r=tile.region;ctx.fillStyle=r.color+'88';ctx.fillRect(tile.x,tile.y,this.tile,this.tile);
+   if(r.id==='snow'&&this.blizzard()){ctx.fillStyle='rgba(224,242,254,.22)';ctx.fillRect(tile.x,tile.y,this.tile,this.tile);ctx.strokeStyle='rgba(240,249,255,.65)';ctx.lineWidth=1.5/zoom;
+    for(let i=0;i<5;i++){const x=tile.x+24+(i*37)%150,y=tile.y+25+(i*61)%150;ctx.beginPath();ctx.moveTo(x-5,y);ctx.lineTo(x+5,y);ctx.moveTo(x,y-5);ctx.lineTo(x,y+5);ctx.stroke();}}
+
    ctx.strokeStyle=r.id==='snow'?'rgba(235,248,255,.45)':r.color;ctx.lineWidth=1.5/zoom;
    for(let i=0;i<3;i++){const x=tile.x+32+i*57,y=tile.y+40+(i*53)%130;ctx.beginPath();
     if(r.id==='forest'){ctx.moveTo(x-12,y+15);ctx.lineTo(x,y-17);ctx.lineTo(x+12,y+15);}
@@ -129,7 +143,7 @@ export class Biomes {
    path();ctx.strokeStyle='#f97316';ctx.lineWidth=86;ctx.stroke();
    path();ctx.strokeStyle='#ffcc68';ctx.lineWidth=20;ctx.setLineDash([32,60]);ctx.lineDashOffset=-time*90;ctx.stroke();ctx.setLineDash([]);
   }
-  for(const r of this.labels){ctx.fillStyle='#e2e8f0';ctx.font=`bold ${Math.min(20/zoom,60)}px system-ui`;ctx.textAlign='center';ctx.fillText(r.name,r.x,r.y);}
+  for(const r of this.labels){ctx.fillStyle='#e2e8f0';ctx.font=`bold ${Math.min(20/zoom,60)}px system-ui`;ctx.textAlign='center';ctx.fillText(r.name+(r.id==='snow'&&this.blizzard()?' · 눈보라':''),r.x,r.y);}
   ctx.restore();
  }
 }

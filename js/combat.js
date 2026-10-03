@@ -195,7 +195,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   if ((attacker && !isHostile(attacker,target)) || target.invincible || !target.alive) return false;
   if(options.kind!=='field' && game?.abilities?.miss(target)){game.spawnFloatingText(target.x,target.y-target.size/2,"MISS","#eab308");return false;}
   const bal = balance || (game && game.balance);
-  const defended = bal ? applyDefense(rawDamage, target.size, bal,game?.abilities?.defenseMultiplier(target)??1) : rawDamage;
+  const defended = bal && !options.ignoreDefense ? applyDefense(rawDamage, target.size, bal,game?.abilities?.defenseMultiplier(target)??1) : rawDamage;
   const dmg = Math.max(bal?.combatScaling?.minimumDamage??1,defended*Math.max(0,Math.min(1,options.postDefenseMultiplier??1)));
   const cfg = game ? game.balance.combat : null;
 
@@ -205,6 +205,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   target.damageReceived=(target.damageReceived??0)+lost;
   target.damageHpRatio=(target.damageHpRatio??0)+lost/Math.max(1,target.maxHp);
   game?.era?.observeWarDamage(attacker,target,lost,options);
+  game?.abilities?.observeMusterCombat(attacker,target,lost);
   target.hp -= dmg;
   target.hitFlash = cfg ? cfg.hitFlashDuration : 0.08;
   target.regenTimer = 0; // taking a hit resets the HP regen delay

@@ -19,6 +19,7 @@ export class UI {
     this.killsText = document.getElementById('kills-text');
     this.scoreText = document.getElementById('score-text');
     this.lifeText = document.getElementById('life-text');
+    this.absorbButton=document.getElementById('quick-absorb');this.absorbButton.addEventListener('click',()=>{if(this.game&&!this.game.paused&&!this.game.gameOver)this.game.input.absorbToggle=!this.game.input.absorbToggle;});
     this.allyAbsorbText = document.getElementById('ally-absorb-text');
     this.attackPips = document.getElementById('attack-pips');
     this.dodgePips = document.getElementById('dodge-pips');
@@ -133,6 +134,7 @@ export class UI {
     this.ecologyUI.update(game);
     this.game = game; // debug-panel checkbox handlers read this
     const player = game.player;
+    this.absorbButton.textContent=game.input.absorbToggle?'흡수 ON':'흡수 OFF';this.absorbButton.setAttribute('aria-pressed',String(!!game.input.absorbToggle));this.absorbButton.disabled=game.paused||game.gameOver;
     document.getElementById('player-identity').textContent = player.displayName;
     document.getElementById('region-text').textContent=game.biomes.status(player);
     const field=game.era.apocalypse;document.getElementById('era-text').textContent=game.era.status()+(field?field.active?' · 파멸 위험':' · 파멸 전조':'');
@@ -333,9 +335,9 @@ export class UI {
     checkbox.type = 'checkbox';
     checkbox.checked = false; // matches Player's default (player.js)
     checkbox.addEventListener('change', () => {
-      if(this.game?.input.touchMode)this.game.input.absorbToggle=checkbox.checked;
+      if(this.game)this.game.input.absorbToggle=checkbox.checked;
     });
-    checkbox.title='PC는 우클릭 유지, 모바일은 흡수 버튼으로 전환';checkbox.disabled=!window.matchMedia('(pointer:coarse)').matches;
+    checkbox.title='흡수 버튼 토글 또는 PC 우클릭 유지';checkbox.disabled=false;
     this.allyAbsorbCheckbox = checkbox;
     row.appendChild(span);
     row.appendChild(checkbox);

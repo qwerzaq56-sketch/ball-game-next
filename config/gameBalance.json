@@ -12,7 +12,15 @@
     "terrainDefenseScale": 200,
     "enabled": true,
     "redLavaResistancePerSize": 0.002,
-    "maxRedLavaResistance": 0.85
+    "maxRedLavaResistance": 0.85,
+    "waterMoveMultiplier": 0.65,
+    "blueWaterMoveMultiplier": 0.9,
+    "frostExposureSeconds": 4,
+    "frostDuration": 6,
+    "frostTickHpFraction": 0.0125,
+    "cyanFrostResistance": 0.65,
+    "frostSizeResistancePerSize": 0.00025,
+    "frostSizeResistanceCap": 0.15
   },
   "player": {
     "startingSize": 20,
@@ -267,8 +275,8 @@
         "R": "green-summon"
       },
       "red": {
-        "E": "red-vigor",
-        "R": "red-rally"
+        "E": "red-embers",
+        "R": "red-muster"
       },
       "yellow": {
         "E": "yellow-dust",
