@@ -744,3 +744,5 @@ html{height:100%}body{height:100dvh;width:100%;overscroll-behavior:none}#game-ca
 .panel-moved .observer-heading,.panel-moved .ai-head{cursor:grabbing}
 @media(pointer:coarse){#minimal-tools{flex-wrap:wrap}}
 #auto-companion[aria-pressed='true']{border-color:#86efac;color:#86efac}
+
+@media(pointer:coarse){#touch-actions{grid-template-columns:52px 52px 100px}#touch-dodge{grid-column:2 / span 2;grid-row:2;min-height:84px!important;border-radius:42px!important;font-size:14px}#touch-attack{grid-column:3;grid-row:1;min-height:48px!important;border-radius:24px;opacity:.7}}

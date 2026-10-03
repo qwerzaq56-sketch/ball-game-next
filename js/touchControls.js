@@ -36,10 +36,12 @@ export class TouchControls {
     canvas.addEventListener('pointerdown',e=>{
       if(e.pointerType!=='touch'||this.blocked())return;
       const rect=canvas.getBoundingClientRect();
-      if(e.clientX<rect.left+rect.width/2){if(![...this.pointers.values()].includes('move'))this.beginMove(e,canvas);return;}
+      const moving=[...this.pointers.values()].includes('move')||Math.hypot(input.touchMove?.x??0,input.touchMove?.y??0)>0;
+      if(e.clientX<rect.left+rect.width/2&&!moving){this.beginMove(e,canvas);return;}
       if(!game.player.attackUnlocked||this.gestures.size)return;
       e.preventDefault();canvas.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,'attack');
-      this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,canvas:true,kind:"attack",started:game.gameTime});this.aim(e);
+      const playerScreen=game.worldToScreen(game.player.x,game.player.y),angle=Math.atan2(e.clientY-rect.top-playerScreen.y,e.clientX-rect.left-playerScreen.x);
+      this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle,canvas:true,kind:"attack",started:game.gameTime});this.aim(e);
     });
     window.addEventListener('blur',()=>this.clear());
     window.addEventListener('resize',()=>this.clear());
@@ -64,11 +66,11 @@ export class TouchControls {
   }
   aim(e){
     const gesture=this.gestures.get(e.pointerId);if(!gesture)return;
-    if(!gesture.dragged)gesture.angle=this.game.player.facing;
+    if(!gesture.dragged&&!gesture.canvas)gesture.angle=this.game.player.facing;
     const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
     gesture.distance=Math.hypot(dx,dy);
     if(gesture.distance>=8){gesture.angle=Math.atan2(dy,dx);gesture.dragged=true;}
-    this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180,!!gesture.dragged);
+    this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180,!!(gesture.dragged||gesture.canvas));
   }
   showAim(angle,kind,distance=180,dragged=false){
     const p=this.game.worldToScreen(this.game.player.x,this.game.player.y);
@@ -79,7 +81,7 @@ export class TouchControls {
   release(id,fire=false){
     const kind=this.pointers.get(id);if(!kind)return;this.pointers.delete(id);
     const gesture=this.gestures.get(id);this.gestures.delete(id);
-    if(gesture&&fire&&!this.blocked()&&(!gesture.canvas||gesture.dragged||this.game.gameTime-gesture.started>=.15)){
+    if(gesture&&fire&&!this.blocked()){
       if(kind==='ultimate'&&!touchActionFeedback(this.game,kind).disabled)this.input._ultimateQueued={angle:gesture.angle,point:{...this.game.touchAim.point}};
       if(kind==='attack')this.input._attackQueued={angle:gesture.angle,charge:Math.min(1,(this.game.gameTime-gesture.started)/(this.game.balance.attack.manualChargeSeconds??1.5))};
       if(kind==='dodge'){this.input._dodgeAngle=gesture.angle;this.input._dodgeQueued=true;}
@@ -96,7 +98,7 @@ export class TouchControls {
     const fresh=this.lastHistory!==this.game.apexHistory;
     if(fresh||(!this.wasPaused&&this.game.paused))this.clear();
     this.lastHistory=this.game.apexHistory;this.wasPaused=this.game.paused;
-    const gesture=this.gestures.values().next().value;if(gesture&&!gesture.dragged)gesture.angle=this.game.player.facing;if(gesture)this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180,!!gesture.dragged);
+    const gesture=this.gestures.values().next().value;if(gesture&&!gesture.dragged&&!gesture.canvas)gesture.angle=this.game.player.facing;if(gesture)this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180,!!(gesture.dragged||gesture.canvas));
     const p=this.game.player,blocked=this.blocked();
     this.absorb.disabled=blocked;this.absorb.textContent=this.input.absorbToggle?'흡수 ON':'흡수 OFF';this.absorb.setAttribute('aria-pressed',String(!!this.input.absorbToggle));
     for(const [button,kind]of [[this.attack,'attack'],[this.dodge,'dodge'],[this.special,'special'],[this.ultimate,'ultimate']]){
