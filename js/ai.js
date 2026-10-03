@@ -191,9 +191,9 @@ export function decideAI(ai, game, balance) {
     heldThreat!==duel && dist(ai,heldThreat)<400 ? heldThreat : null;
   const fleeFrom=threat ?? heldDanger;
   ai.fleeThreat=!risk ? fleeFrom : null;
-  if(fleeFrom && !risk && hp>.4 && canStartAttack(ai) && fleeFrom.size<=ai.size*1.8 &&
-    fleeFrom.attackState==='RECOVERY' && dist(ai,fleeFrom)<=attackReach(ai,balance)+(ai.size+fleeFrom.size)/2 && game.gameTime>(ai.nextHarass??0)){
-    ai.nextHarass=game.gameTime+3;ai.state='chase_fight';ai.target=fleeFrom;return;
+  if(fleeFrom && !risk && hp>.4 && canStartAttack(ai) && fleeFrom.size<=ai.size*(1.8+Math.min(1,Math.max(0,fleeFrom.size-100)/300)) &&
+    (fleeFrom.attackState==='RECOVERY'||(fleeFrom.attackState==='READY'&&ai.personality!=='cautious'&&random('ai')<Math.min(.6,Math.max(0,fleeFrom.size-100)/500))) && dist(ai,fleeFrom)<=attackReach(ai,balance)+(ai.size+fleeFrom.size)/2 && game.gameTime>(ai.nextHarass??0)){
+    ai.nextHarass=game.gameTime+Math.max(1.5,3-Math.max(0,fleeFrom.size-100)/200);ai.state='chase_fight';ai.target=fleeFrom;return;
   }
   if(fleeFrom && !risk){game.abilities?.endCommand(ai,'threat');ai.state='flee';ai.target=fleeFrom;return;}
   if(ai.state==='flee'){ai.state='search';ai.target=null;}

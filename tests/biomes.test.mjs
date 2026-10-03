@@ -41,3 +41,10 @@ test('terrain is reproducible by seed, varies across seeds and wraps all sampled
  const a=createGame(7),before=a.biomes.tiles.map(t=>t.region.id);a.reset();assert.deepEqual(a.biomes.tiles.map(t=>t.region.id),before);const b=createGame(701);assert.notDeepEqual(b.biomes.tiles.map(t=>t.region.id),before);
  const w=a.balance.world;for(let y=0;y<w.worldHeight;y+=333){assert.equal(a.biomes.regionAt({x:-1,y}),a.biomes.regionAt({x:w.worldWidth-1,y}));assert.equal(a.biomes.regionAt({x:20,y:y+w.worldHeight}),a.biomes.regionAt({x:20,y}));}
 });
+
+test('growth increases snow sight and reduces terrain fraction without granting immunity',async()=>{
+ const {terrainDamageMultiplier}=await import('../js/biomes.js');const g=createGame(7),p=g.player,r=g.biomes.regions.find(r=>r.id==='snow');p.x=r.x;p.y=r.y;g.gameTime=17;
+ p.size=40;const small=g.biomes.playerSightRadius();p.size=400;assert(g.biomes.playerSightRadius()>small);
+ assert.equal(terrainDamageMultiplier(40,g.balance),1);assert.equal(terrainDamageMultiplier(240,g.balance),.5);assert(terrainDamageMultiplier(400,g.balance)>0);assert(terrainDamageMultiplier(400,g.balance)<.5);
+ const blurred={x:p.x+g.biomes.playerSightRadius()*1.5,y:p.y,size:0};assert(g.biomes.playerCanSee(blurred));blurred.x=p.x+g.biomes.playerSightRadius()*2.1;assert(!g.biomes.playerCanSee(blurred));
+});

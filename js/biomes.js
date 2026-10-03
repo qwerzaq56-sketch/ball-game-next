@@ -1,3 +1,4 @@
+export function terrainDamageMultiplier(size,balance){return 1/(1+Math.max(0,size-40)/(balance.biomes.terrainDefenseScale??200));}
 export function lavaResistance(e,balance){const c=balance.biomes;return e.color==='red'?Math.min(Math.max(0,c.maxRedLavaResistance??.85),.95,Math.max(0,e.size*(c.redLavaResistancePerSize??0))):0;}
 import {delta,angleTo,wrap} from './topology.js';
 import {dist} from './collision.js';
@@ -51,17 +52,23 @@ export class Biomes {
   }return null;
  }
  blizzard(){return this.enabled&&this.game.gameTime%24>=16;}
- playerSightRadius(){return this.regionAt(this.game.player)?.id==='snow'&&this.blizzard()?Math.max(this.game.player.size/2+40,this.game.balance.ai.detectionRange*.65):Infinity;}
- playerCanSee(e){return e===this.game.player||dist(this.game.player,e)-(e.size??0)/2<=this.playerSightRadius();}
+ playerSightRadius(){return this.regionAt(this.game.player)?.id==='snow'&&this.blizzard()?this.game.balance.ai.detectionRange*.65+Math.max(0,this.game.player.size-40)*.65:Infinity;}
+ playerCanSee(e){return e===this.game.player||dist(this.game.player,e)-(e.size??0)/2<=this.playerSightRadius()*2;}
  drawBlizzardOverlay(ctx){
   const radius=this.playerSightRadius();if(!Number.isFinite(radius))return;const g=this.game,p=g.worldToScreen(g.player.x,g.player.y),r=radius*g.camera.zoom;
-  const fog=ctx.createRadialGradient(p.x,p.y,r*.65,p.x,p.y,r);fog.addColorStop(0,'rgba(224,235,247,.03)');fog.addColorStop(.75,'rgba(148,169,190,.16)');fog.addColorStop(1,'#273747');
-  ctx.save();ctx.fillStyle=fog;ctx.fillRect(0,0,g.canvas.width,g.canvas.height);ctx.restore();
+  // Snapshot once per frame; blur only the surrounding annulus, keeping the player clear.
+  this.fogCanvas??=document.createElement('canvas');const layer=this.fogCanvas;
+  if(layer.width!==g.canvas.width||layer.height!==g.canvas.height){layer.width=g.canvas.width;layer.height=g.canvas.height;}
+  const c=layer.getContext('2d');c.clearRect(0,0,layer.width,layer.height);c.save();c.filter='blur(5px)';c.drawImage(g.canvas,0,0);c.restore();
+  c.globalCompositeOperation='destination-in';const mask=c.createRadialGradient(p.x,p.y,r*.4,p.x,p.y,r*2);mask.addColorStop(0,'transparent');mask.addColorStop(.35,'white');mask.addColorStop(1,'white');c.fillStyle=mask;c.fillRect(0,0,layer.width,layer.height);c.globalCompositeOperation='source-over';
+  const fog=ctx.createRadialGradient(p.x,p.y,r*.4,p.x,p.y,r*2);fog.addColorStop(0,'rgba(224,235,247,0)');fog.addColorStop(.35,'rgba(224,235,247,.18)');fog.addColorStop(.75,'rgba(148,169,190,.48)');fog.addColorStop(1,'rgba(39,55,71,.88)');
+  ctx.save();ctx.drawImage(layer,0,0);ctx.fillStyle=fog;ctx.fillRect(0,0,g.canvas.width,g.canvas.height);ctx.restore();
  }
  sensingRange(e,base=this.game.balance.ai.detectionRange){return this.regionAt(e)?.id==='snow'&&this.blizzard()?base*.65:base;}
  hazards(){return [...this.rivers,...(this.game.era?.apocalypse?[this.game.era.apocalypse]:[])];}
  danger(e,held=false){return this.hazards().find(r=>r.hotRadius&&dist(e,r)<=r.hotRadius+e.size/2+(held?120:80))??null;}
  update(dt){
+  this.game.audio?.updateBlizzard?.(this.enabled&&this.blizzard()&&this.regionAt(this.game.player)?.id==='snow'&&this.game.player.alive&&!this.game.gameOver);
   if(!this.enabled)return;this.damageTimer+=dt;this.encounterTimer-=dt;
   const cycle=Math.floor(this.game.gameTime/24);
   if(this.blizzard()&&cycle!==this.snowEvent){this.snowEvent=cycle;
@@ -72,7 +79,7 @@ export class Biomes {
   while(this.damageTimer>=.5-1e-8){this.damageTimer-=.5;
    for(const e of this.game.entities){if(!e.alive||e.behavior==='orb')continue;
     const hot=this.lavaAt(e);
-    if(hot){const resistance=lavaResistance(e,this.game.balance),beforeRatio=e.damageHpRatio??0;applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false,postDefenseMultiplier:1-resistance});const log=this.game.lavaLog??=([]);const entry={time:this.game.gameTime,size:e.size,color:e.color,region:'volcano',resistance,hpRatio:(e.damageHpRatio??0)-beforeRatio};log.push(entry);this.game.balanceLog?.lava.push(entry);if(log.length>1000)log.shift();}
+    if(hot){const resistance=lavaResistance(e,this.game.balance),beforeRatio=e.damageHpRatio??0;applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false,postDefenseMultiplier:(1-resistance)*terrainDamageMultiplier(e.size,this.game.balance)});const log=this.game.lavaLog??=([]);const entry={time:this.game.gameTime,size:e.size,color:e.color,region:'volcano',resistance,hpRatio:(e.damageHpRatio??0)-beforeRatio};log.push(entry);this.game.balanceLog?.lava.push(entry);if(log.length>1000)log.shift();}
    }
   }
   if(this.encounterTimer<=0){this.encounterTimer+=this.game.era?.encounterInterval??45;this.spawnEncounter();}

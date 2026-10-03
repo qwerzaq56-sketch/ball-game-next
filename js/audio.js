@@ -142,6 +142,23 @@ export class AudioManager {
     this.absorbDrone = null;
   }
 
+  updateBlizzard(active) {
+    if(!active||this.muted){this.stopBlizzard();return;}
+    const ctx=this.ensureContext();if(!ctx)return;
+    if(!this.blizzardWind){
+      const buffer=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate),data=buffer.getChannelData(0);
+      for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
+      const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+      source.buffer=buffer;source.loop=true;filter.type='lowpass';filter.frequency.value=650;gain.gain.value=.0001;
+      source.connect(filter).connect(gain).connect(ctx.destination);source.start();this.blizzardWind={source,gain};
+    }
+    this.blizzardWind.gain.gain.setTargetAtTime(this.volume('sfx')*.12,ctx.currentTime,.25);
+  }
+  stopBlizzard(){
+    if(!this.blizzardWind)return;const {source,gain}=this.blizzardWind,now=this.ctx.currentTime;
+    gain.gain.setTargetAtTime(.0001,now,.08);source.stop(now+.35);this.blizzardWind=null;
+  }
+
   // v0.6 spec §17: mute toggles ALL SFX (one-shots and the drone) by zeroing masterVolume —
   // every sound already reads it live via volume(), so nothing else needs to change.
   setMuted(muted) {
@@ -153,6 +170,7 @@ export class AudioManager {
       this.balance.audio.masterVolume = this._preMuteVolume ?? 1;
     }
     this.muted = muted;
+    if(muted)this.stopBlizzard();
   }
 
   telegraph() { this.tone(880, 0.08, 'square', 'attack', 0.4); }

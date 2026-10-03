@@ -6,6 +6,7 @@
     "enabled": true
   },
   "biomes": {
+    "terrainDefenseScale": 200,
     "enabled": true,
     "redLavaResistancePerSize": 0.002,
     "maxRedLavaResistance": 0.85

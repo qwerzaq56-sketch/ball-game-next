@@ -183,3 +183,9 @@ test('companion command and combat guards follow custom sand radius instead of a
  let commands=0,combats=0;t.g.biomes.danger=()=>null;t.g.abilities.commandDecision=()=>{commands++;return true;};t.g.allyLinks.move=()=>{};t.g.allyLinks.combat=()=>{combats++;return false;};
  updateAI(a,.01,t.g,t.b);assert.equal(commands,1);assert.equal(combats,0);field.x=1500;field.radius=800;updateAI(a,.01,t.g,t.b);assert.equal(commands,1);assert.equal(combats,1);
 });
+
+test('healthy prey exploit recovery of larger grown threats, but low health still flees',()=>{
+ const t=setup(),a=t.unit(160,'blue',1000),big=t.unit(400,'red',1100);a.personality='cautious';big.attackState='RECOVERY';t.g.gameTime=10;
+ assert.equal(t.run([a,big],a),'chase_fight');assert.equal(a.nextHarass,11.5);
+ a.hp=a.maxHp*.3;assert.equal(t.run([a,big],a),'flee');
+});

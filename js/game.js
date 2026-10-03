@@ -310,6 +310,7 @@ export class Game {
   }
 
   stopContinuousAudio() {
+    this.audio.stopBlizzard?.();
     if(this._absorbDroneActive||this.audio.absorbDrone)this.audio.stopAbsorbDrone();
     this._absorbDroneActive=false;
   }

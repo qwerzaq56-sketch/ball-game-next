@@ -1,3 +1,4 @@
+import {terrainDamageMultiplier} from './biomes.js';
 import {delta,angleTo} from './topology.js';
 import { boundCenter } from './worldBounds.js';
 import { attackDamageForSize, applyDamage, canStartAttack } from './combat.js';
@@ -164,7 +165,7 @@ export class Abilities {
   const hits=new Map();
   for(const f of this.fields){f.time+=dt;f.tick+=dt;if(!f.owner.alive||!f.owner.apex)continue;
     if(f.tick+1e-8>=(f.tickInterval??.25)&&f.time<=(f.duration??5)+1e-8){f.tick-=f.tickInterval??.25;for(const t of units)if(isHostile(f.owner,t)&&dist(f,t)<=(f.radius??360)){const raw=t.maxHp*(f.hpFraction??.20)*this.damageMultiplier(f.owner);if(!hits.has(t.id)||hits.get(t.id).raw<raw)hits.set(t.id,{t,owner:f.owner,raw,skillToken:f.skillToken});}}}
-  for(const {t,owner,raw,skillToken}of hits.values())if(owner.alive&&owner.apex)applyDamage(t,raw,this.game,owner,this.game.balance,{knockback:false,kind:'field',skillToken});
+  for(const {t,owner,raw,skillToken}of hits.values())if(owner.alive&&owner.apex)applyDamage(t,raw,this.game,owner,this.game.balance,{knockback:false,kind:'field',skillToken,postDefenseMultiplier:terrainDamageMultiplier(t.size,this.game.balance)});
   this.fields=this.fields.filter(f=>f.time<(f.duration??5)-1e-8&&f.owner.alive&&f.owner.apex);
   this.metrics.reconcile();
  }
