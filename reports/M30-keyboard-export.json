@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "keyboardJSON": true,
+  "keyboardCSV": true,
+  "readOnly": true,
+  "autoplayPreserved": true,
+  "manualCompanionDeparture": true,
+  "mobile": true,
+  "errors": []
+}

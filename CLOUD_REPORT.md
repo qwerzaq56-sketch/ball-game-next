@@ -1,3 +1,5 @@
+> 최신 M30: CSV 저장·관찰 JSON 조건 기록·버튼 키보드 충돌 수정. 테스트149개, 실제 다운로드/상태 유지/모바일 검증 완료. 정오 코호트 진행 중. reports/M30-development.md.
+
 > 최신 M29: F1에서 시드 재시작, 취소 보존과 동일 시작 배치 검증. M28 핵심 코드의 정오 실제 브라우저 코호트3개 진행 중. reports/M29-development.md.
 
 > 최신 M28: 자동 탐색 목적지 유지·재방문 회피(local-survival-v2). 테스트147개/브라우저·터치/3시드 일반 Life 비교 완료. 이전 장기 실행은 프로세스 중단으로 partial 기록, 최신 코호트 재개. reports/M28-development.md.

@@ -53,7 +53,7 @@ async function main() {
   const input = new InputState();
 
   window.addEventListener('keydown', (e) => {
-    if (document.getElementById('player-setup').open || e.target.closest?.('input,textarea,select')) return;
+    if (document.getElementById('player-setup').open || e.target.closest?.('input,textarea,select') || (e.target.closest?.('button')&&(e.key===' '||e.key==='Enter'))) return;
     const k = e.key.toLowerCase();
     if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright',' ','e','g'].includes(k))window.__game?.autoplay.setEnabled(false);
     input.keys.add(k);

@@ -35,7 +35,7 @@ export class UI {
     this.debugVisible = false;
     this.buildDebugPanel();
     this.ecologyUI = new EcologyUI(this);
-    document.getElementById('companion-leave').addEventListener('click',()=>{if(this.game&&!this.game.paused&&this.game.player.companionGroup)this.game.allyLinks.leave(this.game.player,'player-choice');});
+    document.getElementById('companion-leave').addEventListener('click',()=>{if(this.game&&!this.game.paused&&this.game.player.companionGroup){this.game.autoplay.setEnabled(false);this.game.allyLinks.leave(this.game.player,'player-choice');}});
 
     window.addEventListener('keydown', (e) => {
       if (document.getElementById('player-setup').open) return;

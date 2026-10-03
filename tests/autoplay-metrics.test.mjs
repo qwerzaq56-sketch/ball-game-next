@@ -25,7 +25,7 @@ test('observer samples once per second, keeps 600 rows and lifetime totals survi
 });
 test('read-only export cannot mutate simulation/RNG and makes independent nested samples',()=>{
  const g=createGame(7);g.gameTime=1;g.runMetrics.observe(g,1);const before=JSON.stringify(g.snapshot());resetRandom(42);const expected=random('ai');resetRandom(42);const exported=g.runMetrics.export(g);
- assert.equal(random('ai'),expected);assert.equal(JSON.stringify(g.snapshot()),before);assert.equal(exported.policy.lifePolicy,'normal gameplay; no replenishment');exported.samples[0].roles.prey=-1;assert(g.runMetrics.samples[0].roles.prey>=0);exported.config.player.startingSize=999;assert.equal(g.balance.player.startingSize,20);
+ assert.equal(random('ai'),expected);assert.equal(JSON.stringify(g.snapshot()),before);assert.equal(exported.policy.lifePolicy,'normal gameplay; no replenishment');assert.equal(exported.playerProfile.name,g.player.displayName);assert.equal(exported.playerProfile.color,g.player.color);assert.equal(exported.runtimeSettings.allyAbsorptionEnabled,g.player.allyAbsorptionEnabled);const originalColor=g.player.color;exported.playerProfile.color='other';assert.equal(g.player.color,originalColor);exported.samples[0].roles.prey=-1;assert(g.runMetrics.samples[0].roles.prey>=0);exported.config.player.startingSize=999;assert.equal(g.balance.player.startingSize,20);
 });
 test('phase observation attributes actual titles and transitions without enforcing occupancy',()=>{
  const g=createGame(7),m=g.runMetrics,p=g.player;g.entities=[p];p.apex=false;m.observe(g,2);assert.equal(m.byPhase.abundance.secondsByCount.absent,2);
