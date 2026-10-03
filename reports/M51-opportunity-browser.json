@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "retryAfterNetworkFailure": true,
+  "latestDatasetWins": true,
+  "channels": true,
+  "actualGrowth": true,
+  "typeFilter": true,
+  "observationImport": true,
+  "legacyMissingNotZero": true,
+  "errors": []
+}

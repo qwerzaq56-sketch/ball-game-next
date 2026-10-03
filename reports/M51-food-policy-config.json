@@ -1,0 +1,260 @@
+{
+  "relics": {
+    "enabled": true
+  },
+  "era": {
+    "enabled": true
+  },
+  "biomes": {
+    "enabled": true,
+    "redLavaResistancePerSize": 0.002,
+    "maxRedLavaResistance": 0.85
+  },
+  "player": {
+    "startingSize": 20,
+    "startingGrowth": 0,
+    "startingHp": 100,
+    "moveSpeed": 250,
+    "hpPerGrowth": 0.4
+  },
+  "growth": {
+    "growthToSizeRatio": 1.6,
+    "minEatSizeDifference": 0,
+    "lateThreshold": 25,
+    "lateMultiplier": 1.4,
+    "lateTransition": 50
+  },
+  "attack": {
+    "attackCooldown": 1.5,
+    "attackRecoveryTime": 0.4
+  },
+  "dodge": {
+    "dodgeDuration": 0.2,
+    "dodgeInvincibleTime": 0.22,
+    "dodgeCooldown": 3,
+    "effectLifetime": 0.3,
+    "baseDistance": 100,
+    "distanceGrowth": 0.8
+  },
+  "skills": {
+    "attackStackThresholds": [
+      {
+        "size": 40,
+        "maxStack": 1
+      },
+      {
+        "size": 100,
+        "maxStack": 2
+      }
+    ],
+    "dodgeStackThresholds": [
+      {
+        "size": 50,
+        "maxStack": 1
+      },
+      {
+        "size": 70,
+        "maxStack": 2
+      }
+    ]
+  },
+  "absorption": {
+    "areaEfficiency": 0.8,
+    "baseResistanceTime": 0.2,
+    "resistancePerSize": 0.02,
+    "baseMaintainDistance": 30,
+    "maintainDistancePerSize": 0.5,
+    "maxAbsorptionSpeed": 5,
+    "pullForce": 1
+  },
+  "combat": {
+    "knockbackDuration": 0.15,
+    "knockbackResistance": 1,
+    "hitFlashDuration": 0.08,
+    "hitParticleLifetime": 0.25
+  },
+  "combatScaling": {
+    "referenceSize": 40,
+    "baseAttackDamage": 10,
+    "attackDamagePerSize": 1,
+    "baseAttackRange": 120,
+    "attackRangeGrowthExponent": 1.05,
+    "chargeDistanceMultiplier": 1,
+    "attackChargeDurationBase": 0,
+    "attackChargeDurationPerSize": 0.004,
+    "attackTelegraphTimeBase": 0,
+    "attackTelegraphTimePerSize": 0.004,
+    "baseDefense": 0,
+    "defensePerSize": 0.5,
+    "minimumDamage": 1,
+    "knockbackForce": 500,
+    "attackTimingSizeScale": 0.5714285714285714
+  },
+  "healthRegen": {
+    "delay": 5,
+    "baseRate": 2,
+    "regenPerSize": 0.05
+  },
+  "ai": {
+    "movementSpeed": 130,
+    "detectionRange": 320,
+    "explorationEnabled": true,
+    "explorationDistance": 600,
+    "aggression": 0.55,
+    "fleeThreshold": 0.3,
+    "absorptionDetectionRange": 400,
+    "absorptionPriorityRatio": 1.5,
+    "highPriorityAbsorptionRatio": 2,
+    "attackCooldown": 1.8,
+    "absorptionAttemptChance": 0.6,
+    "lowHealthAttackChance": 0.15
+  },
+  "world": {
+    "wrap": true,
+    "worldWidth": 8000,
+    "worldHeight": 8000,
+    "minOrbSize": 8,
+    "maxOrbSize": 16,
+    "colorCount": 5
+  },
+  "spawning": {
+    "initialOrbCount": 1800,
+    "maxOrbCount": 2400,
+    "orbSpawnInterval": 0.06,
+    "initialEnemyCount": 60,
+    "maxEnemyCount": 80,
+    "enemySpawnInterval": 2,
+    "minimumOrbDensity": 12.5,
+    "naturalFoodGrowthMultiplier": 1,
+    "maximumReplenishBatch": 6
+  },
+  "enemySpawn": {
+    "smallSizeRatio": 0.6,
+    "mediumSizeRatio": 0.3,
+    "largeSizeRatio": 0.1,
+    "smallSizeMin": 16,
+    "smallSizeMax": 24,
+    "mediumSizeMin": 24,
+    "mediumSizeMax": 36,
+    "largeSizeMin": 36,
+    "largeSizeMax": 55
+  },
+  "enemyScaling": {
+    "baseEnemyMaxSize": 40,
+    "enemyMaxSizePerPlayerSize": 0.8
+  },
+  "killReward": {
+    "baseReward": 10,
+    "referenceSize": 20,
+    "growthExponent": 1.2,
+    "growthRewardMultiplier": 0.5,
+    "orbBaseCount": 3,
+    "orbPerEnemySize": 0.1,
+    "orbMaxCount": 40,
+    "orbSizeGrowthPerEnemySize": 0.25,
+    "orbSpreadBase": 20,
+    "orbSpreadMultiplier": 2,
+    "retainedGrowthFraction": 0.9,
+    "growthPerSize": 4,
+    "retainBodyCapital": false
+  },
+  "lives": {
+    "maxLives": 3
+  },
+  "camera": {
+    "baseZoom": 1,
+    "zoomOutPerSize": 0.003,
+    "maxZoomOut": 2
+  },
+  "audio": {
+    "masterVolume": 1,
+    "sfxVolume": 0.8,
+    "attackVolume": 0.8,
+    "damageVolume": 1,
+    "dodgeVolume": 0.7,
+    "deathVolume": 0.8
+  },
+  "colors": [
+    {
+      "id": "blue",
+      "color": "#3B82F6"
+    },
+    {
+      "id": "red",
+      "color": "#EF4444"
+    },
+    {
+      "id": "green",
+      "color": "#22C55E"
+    },
+    {
+      "id": "yellow",
+      "color": "#EAB308"
+    },
+    {
+      "id": "cyan",
+      "color": "#22D3EE"
+    }
+  ],
+  "ecology": {
+    "maxApex": 5
+  },
+  "evaluation": {
+    "encounterSeconds": 5,
+    "minimumSizeGain": 0.5,
+    "minimumGrowthRatio": 0.01,
+    "clusterRadius": 120,
+    "targetSizes": [
+      {
+        "seconds": 0,
+        "size": 20
+      },
+      {
+        "seconds": 60,
+        "size": 55
+      },
+      {
+        "seconds": 180,
+        "size": 140
+      },
+      {
+        "seconds": 300,
+        "size": 190
+      },
+      {
+        "seconds": 600,
+        "size": 300
+      },
+      {
+        "seconds": 900,
+        "size": 450
+      }
+    ]
+  },
+  "abilitySkills": {
+    "unlockSize": 100,
+    "territoryMultiplier": 1,
+    "loadout": {
+      "cyan": {
+        "E": "cyan-chill",
+        "R": "cyan-freeze"
+      },
+      "blue": {
+        "E": "blue-ripple",
+        "R": "blue-trident"
+      },
+      "green": {
+        "E": "green-invite",
+        "R": "green-summon"
+      },
+      "red": {
+        "E": "red-vigor",
+        "R": "red-rally"
+      },
+      "yellow": {
+        "E": "yellow-dust",
+        "R": "yellow-storm"
+      }
+    }
+  }
+}
