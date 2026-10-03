@@ -6,8 +6,8 @@ export function assessGameplay(game,actor=game.player){
  const p=actor,b=game.balance,c=b.evaluation??{},range=actor===game.player?Math.min(b.ai.detectionRange,game.biomes.playerSightRadius()):game.biomes.sensingRange(actor);
  const nearby=game.getNearbyEntities(p,range).filter(e=>e.alive&&dist(p,e)<=range);
  const threats=nearby.filter(e=>e.behavior!=='orb'&&(isHostile(p,e)&&e.attackUnlocked||canAbsorb(e,p)));
- const fields=game.abilities.fields.filter(f=>isHostile(p,f.owner)&&dist(p,f)<=360),environment=game.biomes.danger(p);
- const safe=orb=>!game.biomes.danger(orb)&&!fields.some(f=>dist(orb,f)<=360)&&threats.every(t=>dist(orb,t)>160);
+ const fields=game.abilities.fields.filter(f=>isHostile(p,f.owner)&&dist(p,f)<=(f.radius??360)),environment=game.biomes.danger(p);
+ const safe=orb=>!game.biomes.danger(orb)&&!fields.some(f=>dist(orb,f)<=(f.radius??360))&&threats.every(t=>dist(orb,t)>160);
  const food=nearby.filter(e=>canEatOrb(p,e,b)&&safe(e));
  const cluster=Math.max(40,Number(c.clusterRadius)||120);
  let potentialSizeGain=0,growthValue=0;

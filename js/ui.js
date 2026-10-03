@@ -1,6 +1,6 @@
 // HUD rendering (DOM overlay) + live-editable Debug/Balance panel.
 
-import {SKILL_CATALOG,DEFAULT_SKILLS} from './skillCatalog.js';
+import {SkillTuningUI} from './skillTuningUI.js';
 import { ERA_PHASES } from './era.js';
 import { submitScore } from './storage.js';
 import { EcologyUI } from './ecologyUI.js';
@@ -36,13 +36,7 @@ export class UI {
     this.debugPanel = document.getElementById('debug-panel');
     this.debugVisible = false;
     this.buildDebugPanel();
-    const skillSection=document.createElement('details');skillSection.innerHTML='<summary>E/R 스킬 후보 교체</summary>';
-    for(const color of balance.colors)for(const slot of ['E','R']){
-      const label=document.createElement('label');label.textContent=`${color.id} ${slot} `;const select=document.createElement('select');select.dataset.skillSlot=`${color.id}-${slot}`;
-      for(const [id,cfg] of Object.entries(SKILL_CATALOG))if(cfg.color===color.id&&cfg.slot===slot){const option=document.createElement('option');option.value=id;option.textContent=cfg.name;select.append(option);}
-      select.value=balance.abilitySkills?.loadout?.[color.id]?.[slot]??DEFAULT_SKILLS[color.id][slot];
-      select.addEventListener('change',()=>{balance.abilitySkills??={};balance.abilitySkills.loadout??={};balance.abilitySkills.loadout[color.id]??={};balance.abilitySkills.loadout[color.id][slot]=select.value;});label.append(select);skillSection.append(label,document.createElement('br'));
-    }this.debugPanel.append(skillSection);
+    this.skillTuning=new SkillTuningUI(balance,this.debugPanel);
     this.ecologyUI = new EcologyUI(this);
     document.getElementById('companion-invite').addEventListener('click',()=>{if(this.game&&!this.game.paused&&!this.game.gameOver){this.game.autoplay.setEnabled(false);this.game.allyLinks.offer(this.game.player);}});
     document.getElementById('companion-leave').addEventListener('click',()=>{if(this.game&&!this.game.paused&&this.game.player.companionGroup){this.game.autoplay.setEnabled(false);this.game.allyLinks.leave(this.game.player,'player-choice');}});

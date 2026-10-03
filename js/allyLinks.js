@@ -127,9 +127,9 @@ export class AllyLinks {
   const fields=this.game.abilities.fields.filter(f=>isHostile(e,f.owner));
   const remembered=e.companionThreat;
   const held=remembered && (fields.includes(remembered)
-   ? remembered.owner.alive&&remembered.owner.apex&&remembered.owner.color!==e.color&&dist(e,remembered)<=420
+   ? remembered.owner.alive&&remembered.owner.apex&&remembered.owner.color!==e.color&&dist(e,remembered)<=(remembered.radius??360)+60
    : unit(remembered)&&isHostile(e,remembered)&&remembered.size>=e.size*1.2&&dist(e,remembered)<=ALLY_RULES.threatRelease);
-  const danger=fields.find(f=>f.owner.alive&&f.owner.apex&&f.owner.color!==e.color&&dist(e,f)<=360);
+  const danger=fields.find(f=>f.owner.alive&&f.owner.apex&&f.owner.color!==e.color&&dist(e,f)<=(f.radius??360));
   const threat=e.beingAbsorbedByRef??e.escapeAbsorber??(held?remembered:null)??danger??this.game.getNearbyEntities(e,ALLY_RULES.threatEnter)
    .filter(t=>unit(t)&&isHostile(e,t)&&t.size>=e.size*1.2&&dist(e,t)<=ALLY_RULES.threatEnter)
    .sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id)[0];

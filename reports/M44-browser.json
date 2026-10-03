@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "numericEdit": true,
+  "persistReload": true,
+  "downloadImport": true,
+  "actualSummonCount": 1,
+  "cooldown": 25,
+  "defaultRestore": true,
+  "invalidImportTransactional": true,
+  "errors": []
+}

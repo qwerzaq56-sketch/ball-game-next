@@ -6,6 +6,7 @@ import { AIInspector } from './aiInspector.js';
 import { PlayerSetup, loadPlayerProfile } from './playerProfile.js';
 import { PlayControls } from './playControls.js';
 import { TouchControls } from './touchControls.js';
+import {loadSavedSkillPreset} from './skillPreset.js';
 
 class InputState {
   constructor() {
@@ -46,6 +47,7 @@ async function main() {
   let balance;
   try {
     balance = await loadBalance();
+    const presetError=loadSavedSkillPreset(balance);if(presetError)window.__skillPresetError=presetError;
   } catch (err) {
     document.getElementById('load-error').style.display = 'block';
     document.getElementById('load-error').textContent =

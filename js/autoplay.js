@@ -21,7 +21,7 @@ export class Autoplay {
   const range=Math.min(800,g.biomes.playerSightRadius());
   const candidates=g.getNearbyEntities(p,range).filter(e=>e.alive&&dist(p,e)<=range);
   const threats=candidates.filter(e=>e.behavior!=='orb'&&dist(p,e)<360&&(isHostile(p,e)&&e.size>=p.size*1.2||canAbsorb(e,p)));
-  const sand=g.abilities.fields.find(f=>f.owner.alive&&f.owner.apex&&isHostile(p,f.owner)&&dist(p,f)<420);
+  const sand=g.abilities.fields.find(f=>f.owner.alive&&f.owner.apex&&isHostile(p,f.owner)&&dist(p,f)<(f.radius??360)+60);
   const environment=g.biomes.danger(p);const danger=p.beingAbsorbedByRef??environment??sand??threats.sort((a,b)=>dist(p,a)-dist(p,b)||a.id-b.id)[0];
   let target,escape=!!danger;
   if(danger){const away=delta(danger,p);target={x:p.x+away.x,y:p.y+away.y};if(target.x===p.x&&target.y===p.y)target.x+=100;this.reason=`도주 · ${environment?.name??(sand?'모래바람':'위협')}`;}
@@ -37,7 +37,7 @@ export class Autoplay {
   target={x:boundCenter(target.x,p.size,w.worldWidth,w.wrap),y:boundCenter(target.y,p.size,w.worldHeight,w.wrap)};
   const {x:dx,y:dy}=delta(p,target),length=Math.hypot(dx,dy),enemy=candidates.filter(e=>isHostile(p,e)&&dist(p,e)<=350).sort((a,b)=>dist(p,a)-dist(p,b)||a.id-b.id)[0];
   const dodge=escape&&this.dodgeWait<=0&&canStartDodge(p);if(dodge)this.dodgeWait=.8;
-  const skillSlot=!escape&&enemy?(['R','E'].find(slot=>g.abilities.canCast(p,slot))??null):null;
+  const skillSlot=!escape&&enemy?(['R','E'].find(slot=>g.abilities.canAffect(p,enemy,slot))??null):null;
   this.action={skillSlot,move:length>8?{x:dx/length,y:dy/length}:{x:0,y:0},aim:enemy??target,attack:!escape&&p.hp/p.maxHp>.3&&!!enemy&&canStartAttack(p),dodge,special:!!skillSlot};
  }
 }

@@ -34,7 +34,7 @@ export class Abilities {
    for(const unit of this.game.entities)unit.rallyBuffs?.delete(owner.id);
    this.fields=this.fields.filter(f=>f.owner!==owner);
    // A launched wave is an instantaneous cast's continuing projectile, not a maintained field.
-   for(const e of this.game.entities){if(e.command?.owner===owner)this.endCommand(e,'owner-loss');e.morale?.delete(owner.id);}
+   for(const e of this.game.entities){if(e.command?.owner===owner)this.endCommand(e,'owner-loss');e.morale?.delete(owner.id);e.moralePower?.delete(owner.id);}
  }
  loseApex(e){const normal=e.specialCast?.slot==='E'?e.specialCast:null;this.release(e);e.specialCast=normal;e._specialApex=false;}
  endCommand(e,reason){if(!e.command)return;this.log('command-end',e,{kind:e.command.kind,reason});e.command=null;e.commandLock=3;e.target=null;e.state='search';e.decisionTimer=0;}
@@ -48,10 +48,11 @@ export class Abilities {
   if(slot==='E'){const cfg=this.skill(e,slot);e.normalSkillCooldown=cfg.cooldown;e.specialCast={id:++this.castId,time:0,dir,point:{x:e.x,y:e.y},slot,skill:cfg};this.metrics.start(e,e.specialCast);this.log('special-start',e,{slot,skill:cfg.id,cast:e.specialCast.id});return true;}
   const target=e.color==='red'?(seenTarget??this.redTarget(e,dir)):null;if(e.color==='red'&&!target&&!point)return false;
   const cfg=this.skill(e,slot),w=this.game.balance.world;
+  const castRange=cfg.castRange??350;
   let p=point??(target?{x:target.x,y:target.y}:null)??{x:e.x+Math.cos(dir)*350,y:e.y+Math.sin(dir)*350};const d=dist(e,p);
-  if(d>350){const toward=delta(e,p);p={x:e.x+toward.x*350/d,y:e.y+toward.y*350/d};}
+  if(d>castRange){const toward=delta(e,p);p={x:e.x+toward.x*castRange/d,y:e.y+toward.y*castRange/d};}
   p={x:boundCenter(p.x,0,w.worldWidth,w.wrap),y:boundCenter(p.y,0,w.worldHeight,w.wrap)};
-  if(e.color==='red'&&!this.units().some(t=>isHostile(e,t)&&dist({...p,_world:w},t)<=250))return false;
+  if(e.color==='red'&&!this.units().some(t=>isHostile(e,t)&&dist({...p,_world:w},t)<=cfg.radius))return false;
   const directions=e.color==='blue'?blueWaveDirections(dir):null;
   e.specialCooldown=cfg.cooldown;e.specialCast={slot,skill:cfg,directions,id:++this.castId,time:0,dir,point:p,target,targetPoint:target?{x:target.x,y:target.y}:null};
   this.metrics.start(e,e.specialCast);this.log('special-start',e,{color:e.color,slot,skill:cfg.id,cast:e.specialCast.id});return true;
@@ -67,57 +68,59 @@ export class Abilities {
   for(const e of recipients){e.command={owner,kind,remaining:seconds,choices:new Map(),cast:cast.id,target:cast.target,point:cast.targetPoint};this.log('command-start',e,{kind,owner:owner.id});}
  }
  fire(e,cast){
+  const cfg=cast.skill??this.skill(e,cast.slot??'R');
   this.metrics.fire(e,cast);
   if(cast.slot==='E'){this.fireNormal(e,cast);return;}
   if(cast.skill?.effect==='summon')this.summon(e,cast);
   this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,directions:cast.directions ? [...cast.directions] : null,point:{...cast.point},remaining:.75,skill:cast.skill});
   this.log('special-fire',e,{color:e.color,slot:cast.slot??'R',skill:cast.skill?.id,cast:cast.id});const units=this.units();
-  if(e.color==='cyan')for(const t of units){if(!isHostile(e,t)||!inCone(e,t,cast.dir,260))continue;
-    if(this.damage(e,t,.5,'direct',cast)&&t.alive&&!(t.freezeImmune>0)){t.frozen=1;t.attackState='READY';t.dodgeState='READY';t.invincible=false;t.trail=[];cancelAbsorption(t);for(const o of units)if(o.beingAbsorbedByRef===t)cancelAbsorption(o);if(t.specialCast)t.specialCast=null;}
+  if(e.color==='cyan')for(const t of units){if(!isHostile(e,t)||!inCone(e,t,cast.dir,cfg.radius))continue;
+    if(this.damage(e,t,cfg.damage??.5,'direct',cast)&&t.alive&&!(t.freezeImmune>0)){t.frozen=cfg.freezeSeconds??1;t.attackState='READY';t.dodgeState='READY';t.invincible=false;t.trail=[];cancelAbsorption(t);for(const o of units)if(o.beingAbsorbedByRef===t)cancelAbsorption(o);if(t.specialCast)t.specialCast=null;}
   }
   if(e.color==='blue'){
     // One cast, one shared registry: even overlapping lanes hit each target only once.
     const hit=new Set();
     for(const dir of cast.directions ?? [cast.dir])this.waves.push({owner:e,cast:cast.id,x:e.x,y:e.y,dir,time:0,hit,skill:cast.skill,metricKey:cast.metricKey,slot:cast.slot});
-    this.command(e,'devour',4,350,cast);
+    this.command(e,'devour',cfg.commandDuration??4,cfg.commandRadius??350,cast);
   }
   if(e.color==='green'){
-    for(const t of units)if(t.color===e.color&&dist(e,t)<=350){t.morale??=new Map();t.morale.set(e.id,Math.max(t.morale.get(e.id)??0,5));this.metrics.count(e,cast,'buffs');}
-    for(const t of units.filter(t=>(t.behavior==='ai'||t.behavior==='player')&&t!==e&&t.color===e.color&&dist(e,t)<=350&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id))if(this.game.allyLinks.recruit(e,t))this.metrics.count(e,cast,'recruits');
+    for(const t of units)if(t.color===e.color&&dist(e,t)<=cfg.radius){t.morale??=new Map();t.morale.set(e.id,Math.max(t.morale.get(e.id)??0,cfg.buffDuration??5));t.moralePower??=new Map();t.moralePower.set(e.id,cfg.buffDamage??.15);this.metrics.count(e,cast,'buffs');}
+    for(const t of units.filter(t=>(t.behavior==='ai'||t.behavior==='player')&&t!==e&&t.color===e.color&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id))if(this.game.allyLinks.recruit(e,t))this.metrics.count(e,cast,'recruits');
   }
   if(e.color==='red'){
     const origin={...cast.point,_world:this.game.balance.world};
-    const rally={owner:e,point:{...cast.point},expires:this.game.gameTime+6,targets:new Set(units.filter(t=>isHostile(e,t)&&dist(origin,t)<=250))};
+    const rally={owner:e,point:{...cast.point},expires:this.game.gameTime+(cfg.buffDuration??6),buffSpeed:cfg.buffSpeed??1.25,buffDamage:cfg.buffDamage??.3,targets:new Set(units.filter(t=>isHostile(e,t)&&dist(origin,t)<=cfg.radius))};
     if(rally.targets.size){this.rallies=this.rallies.filter(r=>r.owner!==e);this.rallies.push(rally);this.metrics.count(e,cast,'marks',rally.targets.size);
-     for(const ally of units.filter(t=>t.color===e.color&&dist(e,t)<=450)){
+     for(const ally of units.filter(t=>t.color===e.color&&dist(e,t)<=(cfg.buffRadius??450))){
       ally.rallyBuffs??=new Map();ally.rallyBuffs.set(e.id,rally);this.metrics.count(e,cast,'buffs');
-      if(ally.behavior==='ai'&&ally.attackUnlocked&&ally.hp/ally.maxHp>.4&&!ally.beingAbsorbedByRef){this.endCommand(ally,'new-rally');ally.command={owner:e,kind:'rally',remaining:6,targets:rally.targets,point:rally.point,target:[...rally.targets][0]};this.log('command-start',ally,{kind:'rally',owner:e.id});}
+      if(ally.behavior==='ai'&&ally.attackUnlocked&&ally.hp/ally.maxHp>.4&&!ally.beingAbsorbedByRef){this.endCommand(ally,'new-rally');ally.command={owner:e,kind:'rally',remaining:cfg.buffDuration??6,targets:rally.targets,point:rally.point,target:[...rally.targets][0]};this.log('command-start',ally,{kind:'rally',owner:e.id});}
      }
     }
   }
-  if(e.color==='yellow'){this.fields=this.fields.filter(f=>f.owner!==e);this.fields.push({owner:e,...cast.point,time:0,tick:0,skillToken:this.metrics.token(e,cast)});}
+  if(e.color==='yellow'){this.fields=this.fields.filter(f=>f.owner!==e);this.fields.push({owner:e,...cast.point,time:0,tick:0,radius:cfg.radius,duration:cfg.fieldDuration??5,tickInterval:cfg.tickInterval??.25,hpFraction:cfg.hpFraction??.2,missChance:cfg.missChance??.25,skillToken:this.metrics.token(e,cast)});}
  }
  fireNormal(e,cast){
   const cfg=cast.skill,units=this.units();
-  this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,point:{x:e.x,y:e.y},remaining:.75,normal:true,skill:cfg});
+  this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,point:{x:e.x,y:e.y},remaining:.75,normal:true,skill:cfg,size:e.size});
   this.log('special-fire',e,{slot:'E',skill:cfg.id,cast:cast.id});
   if(cfg.effect==='invite'){
    for(const t of units.filter(t=>t!==e&&t.color===e.color&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b)))if(this.game.allyLinks.recruit(e,t))this.metrics.count(e,cast,'recruits');
   }else if(cfg.effect==='vigor'){
-   for(const t of units)if(t.color===e.color&&dist(e,t)<=cfg.radius){t.vigorUntil=this.game.gameTime+4;this.metrics.count(e,cast,'buffs');}
-  }else if(cfg.effect==='dust'){e.dustUntil=this.game.gameTime+3;}
-  else for(const t of units)if(isHostile(e,t)&&inCone(e,t,cast.dir,cfg.radius)&&this.damage(e,t,cfg.effect==='chill'?.35:.4,'direct',cast)&&t.alive){
-   if(cfg.effect==='chill'&&!(t.freezeImmune>0)){t.frozen=.35;t.attackState='READY';t.dodgeState='READY';t.invincible=false;t.trail=[];cancelAbsorption(t);for(const other of units)if(other.beingAbsorbedByRef===t)cancelAbsorption(other);t.specialCast=null;}
-   if(cfg.effect==='ripple'&&!t.wavePush&&!(t.waveImmune>0))t.wavePush={remaining:.15,vx:Math.cos(cast.dir)*400,vy:Math.sin(cast.dir)*400};
+   for(const t of units)if(t.color===e.color&&dist(e,t)<=cfg.radius){t.vigorUntil=this.game.gameTime+(cfg.buffDuration??4);t.vigorEffect={damage:cfg.buffDamage??.15,speed:cfg.buffSpeed??1.12};this.metrics.count(e,cast,'buffs');}
+  }else if(cfg.effect==='dust'){e.dustUntil=this.game.gameTime+(cfg.buffDuration??3);e.dustChance=cfg.missChance??.15;}
+  else for(const t of units)if(isHostile(e,t)&&inCone(e,t,cast.dir,cfg.radius)&&this.damage(e,t,cfg.damage??(cfg.effect==='chill'?.35:.4),'direct',cast)&&t.alive){
+   if(cfg.effect==='chill'&&!(t.freezeImmune>0)){t.frozen=cfg.freezeSeconds??.35;t.attackState='READY';t.dodgeState='READY';t.invincible=false;t.trail=[];cancelAbsorption(t);for(const other of units)if(other.beingAbsorbedByRef===t)cancelAbsorption(other);t.specialCast=null;}
+   if(cfg.effect==='ripple'&&!t.wavePush&&!(t.waveImmune>0))t.wavePush={remaining:cfg.pushDuration??.15,vx:Math.cos(cast.dir)*(cfg.pushSpeed??400),vy:Math.sin(cast.dir)*(cfg.pushSpeed??400)};
   }
  }
  summon(e,cast){
+  const cfg=cast?.skill??this.skill(e,'R');
   const g=this.game,existing=this.units().filter(t=>t.summoned?.owner===e),group=g.allyLinks.groups.get(e.companionGroup);
-  const room=Math.max(0,Math.min(2-existing.length,6-(group?.members.size??1)));
+  const room=Math.max(0,Math.min((cfg.summonCount??2)-existing.length,6-(group?.members.size??1)));
   for(let i=0;i<room;i++){
    const dir=e.facing+(i?1:-1)*Math.PI/2,d=e.size/2+55,w=g.balance.world;
-   const t=new AIEntity({balance:g.balance,color:e.color,colorHex:e.colorHex,x:boundCenter(e.x+Math.cos(dir)*d,0,w.worldWidth,w.wrap),y:boundCenter(e.y+Math.sin(dir)*d,0,w.worldHeight,w.wrap),startSize:Math.min(80,Math.max(40,e.size*.3))});
-   t.growth=0;t.summoned={owner:e,expires:g.gameTime+15};t.displayName='숲의 동행';t.companionAffinity='social';t._recomputeStacks(g.balance,true);g.entities.push(t);g.ecology.initializeUnit(g,t);g.allyLinks.recruit(e,t);this.metrics.count(e,cast,'summons');this.log('summon',e,{target:t.id,expires:t.summoned.expires});
+   const t=new AIEntity({balance:g.balance,color:e.color,colorHex:e.colorHex,x:boundCenter(e.x+Math.cos(dir)*d,0,w.worldWidth,w.wrap),y:boundCenter(e.y+Math.sin(dir)*d,0,w.worldHeight,w.wrap),startSize:Math.min(cfg.summonMaxSize??80,Math.max(cfg.summonMinSize??40,e.size*(cfg.summonSizeFraction??.3)))});
+   t.growth=0;t.summoned={owner:e,expires:g.gameTime+(cfg.summonDuration??15)};t.displayName='숲의 동행';t.companionAffinity='social';t._recomputeStacks(g.balance,true);g.entities.push(t);g.ecology.initializeUnit(g,t);g.allyLinks.recruit(e,t);this.metrics.count(e,cast,'summons');this.log('summon',e,{target:t.id,expires:t.summoned.expires});
   }
  }
  update(dt){
@@ -138,31 +141,32 @@ export class Abilities {
     if(e.wavePush){const p=e.wavePush,used=Math.min(dt,p.remaining);e.x+=p.vx*used;e.y+=p.vy*used;p.remaining-=used;
       e.x=boundCenter(e.x,e.size,w.worldWidth,w.wrap);e.y=boundCenter(e.y,e.size,w.worldHeight,w.wrap);
       if(p.remaining<=1e-8){e.wavePush=null;e.waveImmune=1;}}
-    if(e.morale)for(const [id,time]of e.morale){if(time<=dt)e.morale.delete(id);else e.morale.set(id,time-dt);}
+    if(e.morale)for(const [id,time]of e.morale){if(time<=dt){e.morale.delete(id);e.moralePower?.delete(id);}else e.morale.set(id,time-dt);}
     if(e.command){e.command.remaining-=dt;if(e.command.remaining<=0||!e.command.owner.alive||!e.command.owner.apex)this.endCommand(e,'expiry-or-owner');}
     if(e.specialCast){if(!e.alive||!this.unlocked(e,e.specialCast.slot??'R')||e.frozen>0)e.specialCast=null;else {e.specialCast.time+=dt;if(e.specialCast.time+1e-8>=(e.specialCast.skill?.windup??ABILITIES[e.color].windup)){const cast=e.specialCast;e.specialCast=null;this.fire(e,cast);}}}
   }
-  for(const wave of this.waves){const previous=wave.time;wave.time=Math.min(.5,wave.time+dt);
+  for(const wave of this.waves){const cfg=wave.skill??ABILITIES.blue,duration=cfg.waveDuration??.5,length=cfg.length??400,width=cfg.width??180;const previous=wave.time;wave.time=Math.min(duration,wave.time+dt);
     // Swept advancing strip avoids tunneling across frame boundaries.
     for(const t of units){if(!t.alive||!isHostile(wave.owner,t)||wave.hit.has(t.id))continue;
-      if(!inWave(wave,t,wave.dir,wave.time/.5*400,180))continue;
+      if(!inWave(wave,t,wave.dir,wave.time/duration*length,width))continue;
       const relative=delta(wave,t),along=relative.x*Math.cos(wave.dir)+relative.y*Math.sin(wave.dir);
-      if(along<previous/.5*400-1e-8)continue;
-      wave.hit.add(t.id);if(this.damage(wave.owner,t,.5,'direct',wave)&&t.alive&&!t.wavePush&&!(t.waveImmune>0))t.wavePush={remaining:.2,vx:Math.cos(wave.dir)*600,vy:Math.sin(wave.dir)*600};
+      if(along<previous/duration*length-1e-8)continue;
+      wave.hit.add(t.id);if(this.damage(wave.owner,t,cfg.damage??.5,'direct',wave)&&t.alive&&!t.wavePush&&!(t.waveImmune>0))t.wavePush={remaining:cfg.pushDuration??.2,vx:Math.cos(wave.dir)*(cfg.pushSpeed??600),vy:Math.sin(wave.dir)*(cfg.pushSpeed??600)};
     }
   }
-  this.waves=this.waves.filter(f=>f.time<.5-1e-8);
+  this.waves=this.waves.filter(f=>f.time<(f.skill?.waveDuration??.5)-1e-8);
   const hits=new Map();
   for(const f of this.fields){f.time+=dt;f.tick+=dt;if(!f.owner.alive||!f.owner.apex)continue;
-    if(f.tick+1e-8>=.25&&f.time<=5+1e-8){f.tick-=.25;for(const t of units)if(isHostile(f.owner,t)&&dist(f,t)<=360){const raw=t.maxHp*.20*this.damageMultiplier(f.owner);if(!hits.has(t.id)||hits.get(t.id).raw<raw)hits.set(t.id,{t,owner:f.owner,raw,skillToken:f.skillToken});}}}
+    if(f.tick+1e-8>=(f.tickInterval??.25)&&f.time<=(f.duration??5)+1e-8){f.tick-=f.tickInterval??.25;for(const t of units)if(isHostile(f.owner,t)&&dist(f,t)<=(f.radius??360)){const raw=t.maxHp*(f.hpFraction??.20)*this.damageMultiplier(f.owner);if(!hits.has(t.id)||hits.get(t.id).raw<raw)hits.set(t.id,{t,owner:f.owner,raw,skillToken:f.skillToken});}}}
   for(const {t,owner,raw,skillToken}of hits.values())if(owner.alive&&owner.apex)applyDamage(t,raw,this.game,owner,this.game.balance,{knockback:false,kind:'field',skillToken});
-  this.fields=this.fields.filter(f=>f.time<5-1e-8&&f.owner.alive&&f.owner.apex);
+  this.fields=this.fields.filter(f=>f.time<(f.duration??5)-1e-8&&f.owner.alive&&f.owner.apex);
   this.metrics.reconcile();
  }
- miss(target){if((target.dustUntil??0)>this.game.gameTime)return random('ai')<.15;return this.fields.some(f=>f.owner===target&&dist(f,target)<=360)&&random('ai')<.25;}
+ miss(target){if((target.dustUntil??0)>this.game.gameTime)return random('ai')<(target.dustChance??.15);const fields=this.fields.filter(f=>f.owner===target&&dist(f,target)<=(f.radius??360));return fields.length>0&&random('ai')<Math.max(...fields.map(f=>f.missChance??.25));}
  rallyActive(e){return [...(e.rallyBuffs?.values()??[])].some(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex);}
- speedMultiplier(e){return this.rallyActive(e)?1.25:(e.vigorUntil??0)>this.game.gameTime?1.12:1;}
- damageMultiplier(e){return 1+((e.vigorUntil??0)>this.game.gameTime?.15:0)+(this.rallyActive(e)?.3:0)+(this.game.relics?.damageBonus(e)??0)+(e.morale?.size ? .15 : 0)+(this.game.allyLinks?.bonus(e)??0);}
+ rallyPower(e,key,fallback){return Math.max(0,...[...(e.rallyBuffs?.values()??[])].filter(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex).map(r=>r[key]??fallback));}
+ speedMultiplier(e){return Math.max(1,this.rallyPower(e,'buffSpeed',1.25),(e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.speed??1.12):1);}
+ damageMultiplier(e){return 1+((e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.damage??.15):0)+this.rallyPower(e,'buffDamage',.3)+(this.game.relics?.damageBonus(e)??0)+(e.morale?.size?Math.max(...[...e.morale.keys()].map(id=>e.moralePower?.get(id)??.15)):0)+(this.game.allyLinks?.bonus(e)??0);}
  commandDecision(e){
   const c=e.command;if(!c)return false;
   if(e.recovering||e.hp/e.maxHp<=.3||e.beingAbsorbedByRef){this.endCommand(e,'survival');return false;}
@@ -188,28 +192,39 @@ export class Abilities {
   if(!target){this.endCommand(e,'no-target');return false;}e.state='chase_eat';e.target=target;return true;
  }
  absorptionAllowed(e,t){return e.command?.kind!=='devour'||(t!==e.command.owner&&!t.apex&&e.command.choices.get(t.id)===true);}
+ canAffect(e,target,slot='R'){
+  if(!this.canCast(e,slot))return false;const cfg=this.skill(e,slot),group=this.game.allyLinks.groups.get(e.companionGroup),room=6-(group?.members.size??1);
+  if(cfg.effect==='invite')return room>0&&this.units().some(t=>t!==e&&t.color===e.color&&!t.companionGroup&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3&&dist(e,t)<=cfg.radius);
+  if(!target?.alive||!isHostile(e,target))return false;const dir=angleTo(e,target);
+  if(['chill','ripple'].includes(cfg.effect)||slot==='R'&&e.color==='cyan')return inCone(e,target,dir,cfg.radius);
+  if(slot==='R'&&e.color==='blue')return inWave(e,target,dir,cfg.length,cfg.width);
+  if(slot==='R'&&['red','yellow'].includes(e.color))return dist(e,target)<=(cfg.castRange??350)+cfg.radius;
+  if(cfg.effect==='dust')return dist(e,target)<=Math.max(180,attackReach(target,this.game.balance))&&((e.dustUntil??0)<=this.game.gameTime);
+  return true;
+ }
  considerAI(e){
-  const slot=this.canCast(e,'R')?'R':'E';
+  let slot=this.canCast(e,'R')?'R':'E';const cfg=this.skill(e,slot);
   if(!this.canCast(e,slot)||e.recovering||e.state==='flee'||e.beingAbsorbedByRef)return false;
-  const nearby=this.game.getNearbyEntities(e,Math.max(320,e.color==='red'?450:350)).filter(t=>t.alive);
+  const nearby=this.game.getNearbyEntities(e,Math.max(320,cfg.buffRadius??cfg.radius??350)).filter(t=>t.alive);
   const enemies=nearby.filter(t=>isHostile(e,t)&&dist(e,t)<=this.game.biomes.sensingRange(e,320));
   const target=enemies.sort((a,b)=>dist(e,a)-dist(e,b))[0];if(!target){if(e.color==='green'&&slot==='E'&&e.companionAffinity!=='independent'&&nearby.some(t=>t!==e&&t.color===e.color&&!t.companionGroup))return this.start(e,e.facing,null,null,slot);return false;}
   const dir=angleTo(e,target);
-  if(slot==='E'){if(canStartAttack(e)&&e.color!=='green')return false;if(e.color==='green'&&!nearby.some(t=>t!==e&&t.color===e.color))return false;return this.start(e,dir,null,target,slot);}
-  if(e.color==='cyan'&&!inCone(e,target,dir,260))return false;
-  if(e.color==='blue'&&!inWave(e,target,dir))return false;
-  if(e.color==='green'&&!canStartAttack(e)&&!nearby.some(t=>t.color===e.color&&dist(e,t)<=350&&canStartAttack(t)))return false;
-  if(e.color==='red'&&!nearby.some(t=>t!==e&&t.color===e.color&&dist(e,t)<=450&&t.attackUnlocked&&t.hp/t.maxHp>.4))return false;
+  if(slot==='E'){const cfg=this.skill(e,slot);if(['chill','ripple'].includes(cfg.effect)&&!inCone(e,target,dir,cfg.radius))return false;if(canStartAttack(e)&&e.color!=='green')return false;if(e.color==='green'&&!nearby.some(t=>t!==e&&t.color===e.color))return false;return this.start(e,dir,null,target,slot);}
+  if(e.color==='cyan'&&!inCone(e,target,dir,cfg.radius))return false;
+  if(e.color==='blue'&&!inWave(e,target,dir,cfg.length,cfg.width))return false;
+  if(e.color==='green'&&!canStartAttack(e)&&!nearby.some(t=>t.color===e.color&&dist(e,t)<=cfg.radius&&canStartAttack(t)))return false;
+  if(e.color==='red'&&!nearby.some(t=>t!==e&&t.color===e.color&&dist(e,t)<=(cfg.buffRadius??450)&&t.attackUnlocked&&t.hp/t.maxHp>.4))return false;
   return this.start(e,dir,{x:target.x,y:target.y},target,slot);
  }
  draw(ctx,zoom){
   const shape=(e,dir,point)=>{
-    if(e.normal||e.specialCast?.slot==='E'){const cfg=e.skill??e.specialCast.skill;if(['chill','ripple'].includes(cfg.effect)){ctx.moveTo(e.x,e.y);ctx.arc(e.x,e.y,cfg.radius,dir-Math.PI/3,dir+Math.PI/3);ctx.closePath();}else ctx.arc(e.x,e.y,cfg.radius,0,Math.PI*2);return;}
-    if(e.color==='cyan'){ctx.moveTo(e.x,e.y);ctx.arc(e.x,e.y,260,dir-Math.PI/3,dir+Math.PI/3);ctx.closePath();}
-    else if(e.color==='blue'){for(const lane of e.directions ?? e.specialCast?.directions ?? [dir]){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(lane);ctx.rect(0,-90,400,180);ctx.restore();}}
-    else if(e.color==='red')ctx.arc(point.x,point.y,250,0,Math.PI*2);
-    else if(e.color==='yellow')ctx.arc(point.x,point.y,360,0,Math.PI*2);
-    else ctx.arc(e.x,e.y,ABILITIES[e.color].radius,0,Math.PI*2);
+    const cfg=e.skill??e.specialCast?.skill??ABILITIES[e.color];
+    if(e.normal||e.specialCast?.slot==='E'){const cfg=e.skill??e.specialCast.skill;if(cfg.effect==='dust'){ctx.arc(e.x,e.y,(e.size??40)/2+16/zoom,0,Math.PI*2);return;}if(['chill','ripple'].includes(cfg.effect)){ctx.moveTo(e.x,e.y);ctx.arc(e.x,e.y,cfg.radius,dir-Math.PI/3,dir+Math.PI/3);ctx.closePath();}else ctx.arc(e.x,e.y,cfg.radius,0,Math.PI*2);return;}
+    if(e.color==='cyan'){ctx.moveTo(e.x,e.y);ctx.arc(e.x,e.y,cfg.radius,dir-Math.PI/3,dir+Math.PI/3);ctx.closePath();}
+    else if(e.color==='blue'){for(const lane of e.directions ?? e.specialCast?.directions ?? [dir]){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(lane);ctx.rect(0,-cfg.width/2,cfg.length,cfg.width);ctx.restore();}}
+    else if(e.color==='red')ctx.arc(point.x,point.y,cfg.radius,0,Math.PI*2);
+    else if(e.color==='yellow')ctx.arc(point.x,point.y,cfg.radius,0,Math.PI*2);
+    else ctx.arc(e.x,e.y,cfg.radius,0,Math.PI*2);
   };
   for(const e of this.units())if(e.specialCast){ctx.save();ctx.beginPath();shape(e,e.specialCast.dir,e.specialCast.point);ctx.fillStyle=this.game.withAlpha(e.colorHex,.09);ctx.fill();ctx.strokeStyle=e.colorHex;ctx.lineWidth=2/zoom;ctx.setLineDash([8/zoom,5/zoom]);ctx.stroke();ctx.setLineDash([]);if(e.color==='red'&&e.specialCast.target){const t=e.specialCast.target;ctx.beginPath();ctx.arc(t.x,t.y,t.size/2+10,0,Math.PI*2);ctx.stroke();}ctx.restore();}
   const labels={cyan:'냉기 휘두르기',blue:'삼중 파도',green:'사기 진작',red:'사냥 지휘',yellow:'모래바람'};
@@ -230,7 +245,7 @@ export class Abilities {
    for(const target of rally.targets){if(!target.alive||!isHostile(rally.owner,target))continue;ctx.beginPath();ctx.arc(target.x,target.y,target.size/2+10/zoom,0,Math.PI*2);ctx.stroke();ctx.font=`bold ${13/zoom}px system-ui`;ctx.fillStyle='#fecdd3';ctx.textAlign='center';ctx.fillText(`표적 ${Math.ceil(rally.expires-this.game.gameTime)}s`,target.x,target.y-target.size/2-18/zoom);}
    for(const ally of this.units())if(ally.rallyBuffs?.get(rally.owner.id)===rally){ctx.beginPath();ctx.arc(ally.x,ally.y,ally.size/2+5/zoom,0,Math.PI*2);ctx.strokeStyle='rgba(251,113,133,.65)';ctx.stroke();}ctx.restore();
   }
-  for(const f of this.fields){ctx.beginPath();ctx.arc(f.x,f.y,360,0,Math.PI*2);ctx.fillStyle='rgba(234,179,8,.12)';ctx.fill();ctx.strokeStyle='#eab308';ctx.lineWidth=2/zoom;ctx.stroke();}
-  for(const wave of this.waves){ctx.save();ctx.translate(wave.x,wave.y);ctx.rotate(wave.dir);ctx.fillStyle='rgba(59,130,246,.4)';ctx.fillRect(Math.max(0,wave.time/.5*400-20),-90,20,180);ctx.restore();}
+  for(const f of this.fields){ctx.beginPath();ctx.arc(f.x,f.y,f.radius??360,0,Math.PI*2);ctx.fillStyle='rgba(234,179,8,.12)';ctx.fill();ctx.strokeStyle='#eab308';ctx.lineWidth=2/zoom;ctx.stroke();}
+  for(const wave of this.waves){ctx.save();ctx.translate(wave.x,wave.y);ctx.rotate(wave.dir);ctx.fillStyle='rgba(59,130,246,.4)';ctx.fillRect(Math.max(0,wave.time/(wave.skill?.waveDuration??.5)*(wave.skill?.length??400)-20),-(wave.skill?.width??180)/2,20,wave.skill?.width??180);ctx.restore();}
  }
 }
