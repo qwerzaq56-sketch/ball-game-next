@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "invalidInputsRejected": 4,
+  "cancelReadOnly": true,
+  "seedAppliedOnConfirm": true,
+  "initialPositionsReproduced": 511,
+  "autoResetOff": true,
+  "ordinaryResetPreservesSeed": true,
+  "mobile": true,
+  "errors": []
+}

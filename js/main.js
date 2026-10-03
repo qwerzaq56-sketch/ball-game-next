@@ -90,7 +90,7 @@ async function main() {
     for(const e of activeGame.entities)if(e.alive&&e.behavior==='ai')e._recomputeStacks(balance);
   });
   const game = new Game(balance, canvas, input, ui, {profile:loadPlayerProfile(balance.colors)});
-  const diagnosticsUI=new DiagnosticsUI(game,ui);
+  const diagnosticsUI=new DiagnosticsUI(game,ui,{requestSeedReset:seed=>requestReset(seed)});
   const playerSetup = new PlayerSetup(game, input);
   playerSetup.open();
   window.__game = game; // debug inspection hook
@@ -127,19 +127,25 @@ async function main() {
   // what made the button look broken/unresponsive.
   const resetBtn = document.getElementById('reset-btn');
   const resetConfirmOverlay = document.getElementById('reset-confirm-overlay');
-  let resetWasPaused=false;
-  resetBtn.addEventListener('click', () => {
+  let resetWasPaused=false,resetSeed=null;
+  function requestReset(seed=null){
     if(resetConfirmOverlay.style.display==='flex')return;
+    resetSeed=seed;
+    document.getElementById('reset-confirm-title').textContent=seed===null?'진행 상황을 전체 초기화할까요?':`시드 ${seed}로 다시 시작할까요?`;
     resetWasPaused=game.paused;game.paused=true;playControls.clearInput();game.stopContinuousAudio();
     resetConfirmOverlay.style.display = 'flex';
-  });
+  }
+  resetBtn.addEventListener('click',()=>requestReset());
   document.getElementById('reset-confirm-yes').addEventListener('click', () => {
     resetConfirmOverlay.style.display = 'none';
+    if(resetSeed!==null)game.seed=resetSeed;
+    resetSeed=null;
     game.reset();
     playerSetup.open();
   });
   document.getElementById('reset-confirm-no').addEventListener('click', () => {
     resetConfirmOverlay.style.display = 'none';
+    resetSeed=null;
     game.paused=resetWasPaused;playControls.clearInput();playControls.focusCanvas();
   });
 

@@ -1,8 +1,16 @@
 export class DiagnosticsUI {
- constructor(game,ui){
+ constructor(game,ui,{requestSeedReset}={}){
   this.game=game;this.ui=ui;this.last=0;this.root=document.createElement('section');this.root.className='debug-section';this.root.id='observation-tools';
   this.root.innerHTML='<h3>자동 플레이 · 관찰</h3><label class="debug-row"><span>자동 플레이 (실험)</span><input id="autoplay-toggle" type="checkbox"></label><p id="autoplay-status" class="hint"></p><p class="hint">직접 이동/공격/터치하면 수동으로 돌아옵니다. Life와 피해는 일반 플레이 규칙을 따릅니다.</p><p id="run-metrics-summary"></p><canvas id="run-metrics-chart" width="280" height="90" aria-label="최근 플레이어와 가장 큰 AI의 크기 변화"></canvas><p class="hint">파랑: 내 크기 · 초록: 가장 큰 AI</p><button id="metrics-export" class="hud-btn" type="button">관찰 JSON 저장</button><p id="run-seed" class="hint"></p>';
   const phaseTable=document.createElement('div');phaseTable.id='phase-observation';this.root.insertBefore(phaseTable,this.root.querySelector('#metrics-export'));
+  const seedControls=document.createElement('div');seedControls.innerHTML='<label class="debug-row"><span>재시작 시드</span><input id="run-seed-input" type="number" min="0" max="9007199254740991" step="1"></label><button id="seed-restart" class="hud-btn" type="button">이 시드로 재시작</button><p id="seed-reset-hint" class="hint" aria-live="polite">같은 시드로 시작 배치를 다시 살펴볼 수 있습니다.</p>';this.root.append(seedControls);
+  this.seedInput=seedControls.querySelector('input');this.seedInput.value=String(game.seed);this.lastMetrics=game.runMetrics;
+  const restart=seedControls.querySelector('button');restart.disabled=!requestSeedReset;
+  restart.addEventListener('click',()=>{
+   const seed=Number(this.seedInput.value),valid=this.seedInput.value.trim()!==''&&Number.isSafeInteger(seed)&&seed>=0;
+   seedControls.querySelector('#seed-reset-hint').textContent=valid?'같은 시드로 시작 배치를 다시 살펴볼 수 있습니다.':'0 이상의 정수를 입력하세요.';
+   if(valid)requestSeedReset?.(seed);
+  });
   ui.debugPanel.firstElementChild.insertBefore(this.root,ui.debugPanel.firstElementChild.children[1]);this.toggle=this.root.querySelector('#autoplay-toggle');this.toggle.addEventListener('change',()=>{game.autoplay.setEnabled(this.toggle.checked);game.canvas.focus?.();});
   this.root.querySelector('#metrics-export').addEventListener('click',()=>{
    const json=JSON.stringify(game.runMetrics.export(game),null,2),url=URL.createObjectURL(new Blob([json],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=`ball-next-${game.seed}-${Math.floor(game.gameTime)}s.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -10,6 +18,7 @@ export class DiagnosticsUI {
  }
  update(){
   if(!this.ui.debugVisible)return;const now=performance.now();if(now-this.last<250)return;this.last=now;const g=this.game,m=g.runMetrics;
+  if(this.lastMetrics!==m){this.lastMetrics=m;this.seedInput.value=String(g.seed);this.root.querySelector('#seed-reset-hint').textContent='같은 시드로 시작 배치를 다시 살펴볼 수 있습니다.';}
   this.toggle.checked=g.autoplay.enabled;this.root.querySelector('#autoplay-status').textContent=g.autoplay.enabled?`ON · ${g.gameOver?'게임 종료':g.paused?'일시정지':g.autoplay.reason}`:'OFF · 수동 플레이';
   const s=m.samples.at(-1);this.root.querySelector('#run-metrics-summary').textContent=`관찰 ${Math.floor(m.seconds)}s · 공격 시작 ${m.attackStarts} · ${s?.liveAI??g.entities.filter(e=>e.alive&&e.behavior==='ai').length} AI · 내 크기 ${Math.floor(g.player.size)} / 점수 ${g.player.score}`;
   this.root.querySelector('#run-seed').textContent=`시드 ${g.seed} · 최근 ${m.samples.length}개 샘플 · 자동 ${Math.floor(m.autoSeconds)}s`;
