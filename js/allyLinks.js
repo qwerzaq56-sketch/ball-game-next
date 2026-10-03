@@ -4,7 +4,7 @@ import {dist,isHostile,canAbsorb} from './collision.js';
 import {random} from './random.js';
 import {cancelAbsorption,maintainDistanceFor} from './absorption.js';
 
-export const ALLY_RULES={enter:100,release:140,bonus:.05,bonusCap:3,decisionSeconds:3,joinChance:.18,leaveChance:.08,maxGroup:6,threatEnter:320,threatRelease:400};
+export const ALLY_RULES={enter:100,release:140,bonus:.05,bonusCap:3,decisionSeconds:3,joinChance:.18,leaveChance:.08,maxGroup:6,freeRadius:60,spring:2,catchup:1.6,leaderPace:.9,threatEnter:320,threatRelease:400};
 const key=(a,b)=>a.id<b.id?`${a.id}:${b.id}`:`${b.id}:${a.id}`;
 const unit=e=>e.alive&&(e.behavior==='ai'||e.behavior==='player');
 export class AllyLinks {
@@ -74,6 +74,7 @@ export class AllyLinks {
  }
  move(e,dt){
   const group=this.groups.get(e.companionGroup);if(!group)return false;
+  e.companionVelocity={x:0,y:0};
   const environment=this.game.biomes.danger(e,!!e.environmentThreat);e.environmentThreat=environment;
   if(environment){const angle=Math.atan2(e.y-environment.y,e.x-environment.x);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*e.moveSpeed*1.3*dt;e.y+=Math.sin(angle)*e.moveSpeed*1.3*dt;return true;}
   // Survival escape takes priority, but never starts an attack or a cast.
@@ -94,14 +95,21 @@ export class AllyLinks {
   if(group.leader===e){e.wanderTimer-=dt;if(e.wanderTimer<=0){e.wanderAngle=random('ai')*Math.PI*2;e.wanderTimer=3;}const w=this.game.balance.world,pad=e.size/2+60;
    if((e.x<pad&&Math.cos(e.wanderAngle)<0)||(e.x>w.worldWidth-pad&&Math.cos(e.wanderAngle)>0))e.wanderAngle=Math.PI-e.wanderAngle;
    if((e.y<pad&&Math.sin(e.wanderAngle)<0)||(e.y>w.worldHeight-pad&&Math.sin(e.wanderAngle)>0))e.wanderAngle=-e.wanderAngle;
-   const route=this.game.biomes.routePoint(e,{x:e.x+Math.cos(e.wanderAngle)*300,y:e.y+Math.sin(e.wanderAngle)*300});e.facing=Math.atan2(route.y-e.y,route.x-e.x);e.x+=Math.cos(e.facing)*Math.min(...[...group.members].map(m=>m.moveSpeed))*.55*dt;e.y+=Math.sin(e.facing)*Math.min(...[...group.members].map(m=>m.moveSpeed))*.55*dt;return true;}
+   const route=this.game.biomes.routePoint(e,{x:e.x+Math.cos(e.wanderAngle)*300,y:e.y+Math.sin(e.wanderAngle)*300});e.facing=Math.atan2(route.y-e.y,route.x-e.x);e.companionVelocity={x:Math.cos(e.facing)*e.moveSpeed*ALLY_RULES.leaderPace,y:Math.sin(e.facing)*e.moveSpeed*ALLY_RULES.leaderPace};e.x+=e.companionVelocity.x*dt;e.y+=e.companionVelocity.y*dt;return true;}
   const members=[...group.members].filter(m=>m!==group.leader).sort((a,b)=>a.id-b.id),i=members.indexOf(e);
   const lead=group.leader,back=lead.facing+Math.PI;
   const gap=(lead.size+e.size)/2+35,side=(i%2?1:-1)*(25+Math.floor(i/2)*30);
   const w=this.game.balance.world;
   const point={x:boundCenter(lead.x+Math.cos(back)*gap-Math.sin(back)*side,e.size,w.worldWidth),y:boundCenter(lead.y+Math.sin(back)*gap+Math.cos(back)*side,e.size,w.worldHeight)};
-  const route=this.game.biomes.routePoint(e,point),d=dist(e,route),angle=Math.atan2(route.y-e.y,route.x-e.x),speed=Math.min(e.moveSpeed*1.25,d/Math.max(dt,1e-8));
-  e.facing=lead.facing;e.x+=Math.cos(angle)*speed*dt;e.y+=Math.sin(angle)*speed*dt;return true;
+  const route=this.game.biomes.routePoint(e,point),d=dist(e,route);
+  const free=ALLY_RULES.freeRadius+Math.min(40,e.size*.1);
+  const spring=d>free?(d-free)*(1-Math.exp(-ALLY_RULES.spring*dt))/Math.max(dt,1e-8):0;
+  const velocity=lead.companionVelocity??{x:0,y:0};
+  let vx=velocity.x+(d>0?(route.x-e.x)/d*spring:0),vy=velocity.y+(d>0?(route.y-e.y)/d*spring:0);
+  const speed=Math.hypot(vx,vy),cap=e.moveSpeed*ALLY_RULES.catchup;
+  if(speed>cap){vx*=cap/speed;vy*=cap/speed;}
+  e.companionVelocity={x:vx,y:vy};if(speed>1)e.facing=Math.atan2(vy,vx);
+  e.x+=vx*dt;e.y+=vy*dt;return true;
  }
  draw(ctx,zoom){const view=worldView(this.game.canvas,this.game.camera);ctx.save();ctx.lineWidth=2/zoom;for(const [a,b]of this.edges.values()){
   if(!segmentInView(view,a,b,2/zoom)||!this.connected(a,b))continue;const d=dist(a,b);if(d<1||d<=(a.size+b.size)/2)continue;

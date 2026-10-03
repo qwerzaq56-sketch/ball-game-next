@@ -41,12 +41,12 @@ test('edge drawing and refresh consume no random numbers; reset clears links and
  g.reset();assert.equal(g.allyLinks.groups.size,0);assert.equal(g.allyLinks.edges.size,0);
 });
 
-test('a player joining an existing AI formation becomes its leader; leaders move at the slowest member pace',()=>{
+test('a player joining an existing AI formation becomes its leader; leaders use their own pace despite slower members',()=>{
  const {g,a,b}=fixture();a.moveSpeed=200;b.moveSpeed=80;g.entities=[a,b,g.player];g.player.x=1100;g.player.y=1000;
  g.allyLinks.refresh();assert(g.allyLinks.join(b,a));assert(g.allyLinks.join(g.player,a));
  const group=g.allyLinks.groups.get(a.companionGroup);assert.equal(group.leader,g.player);
  g.allyLinks.leave(g.player);assert.equal(group.leader,a);a.wanderAngle=0;a.wanderTimer=3;
- const x=a.x;g.allyLinks.move(a,1);assert.equal(a.x-x,44);
+ const x=a.x;g.allyLinks.move(a,1);assert.equal(a.x-x,180);
 });
 
 test('companion danger uses separate entry and release distances, and forgets invalid threats',()=>{
@@ -79,4 +79,29 @@ test('companions keep escaping same-color absorbers beyond their size-driven con
  a.beingAbsorbedByRef=null;owner.x=1550;g.allyLinks.move(a,0);assert.equal(a.state,'flee');
  owner.x=1611;g.allyLinks.move(a,0);assert.equal(a.state,'companion');assert.equal(a.escapeAbsorber,null);
  owner.x=1529;a.escapeAbsorber=owner;g.allyLinks.leave(a);g.allyLinks.join(a,b);assert.equal(a.escapeAbsorber,owner);owner.alive=false;g.allyLinks.move(a,0);assert.equal(a.escapeAbsorber,null);
+});
+
+test('player keeps normal analog speed with a slow companion',()=>{
+ const {g,a}=fixture(),p=g.player;g.entities=[p,a];p.x=a.x;p.y=a.y;a.moveSpeed=40;
+ g.allyLinks.refresh();assert(g.allyLinks.join(p,a));g.input.touchMove={x:.5,y:0};const x=p.x;
+ g.updatePlayer(.1);assert(Math.abs(p.x-x-p.moveSpeed*.05)<1e-8);
+});
+test('followers keep offsets inside the free band and ease back beyond it',()=>{
+ const {g,a,b}=fixture();g.entities=[a,b];g.allyLinks.refresh();assert(g.allyLinks.join(a,b));
+ const group=g.allyLinks.groups.get(a.companionGroup),lead=group.leader,member=lead===a?b:a;
+ lead.facing=0;lead.companionVelocity={x:0,y:0};
+ const target={x:lead.x-(lead.size+member.size)/2-35,y:lead.y-25};
+ member.x=target.x+30;member.y=target.y;const x=member.x;g.allyLinks.move(member,.1);assert.equal(member.x,x);
+ member.x=target.x-120;const start=member.x;g.allyLinks.move(member,.1);assert(member.x>start);assert(member.x<target.x-60);
+ assert(Math.hypot(member.companionVelocity.x,member.companionVelocity.y)<=member.moveSpeed*1.6+1e-8);
+ lead.companionVelocity={x:90,y:0};member.x=target.x;member.y=target.y;const before=member.x;g.allyLinks.move(member,.1);assert.equal(member.x-before,9);
+});
+test('a player-led spring formation keeps up through consecutive simulation frames',()=>{
+ const {g,a,b}=fixture(),p=g.player;g.entities=[p,a,b];p.size=80;p.x=2500;p.y=2500;
+ a.x=2410;a.y=2475;b.x=2410;b.y=2525;a.moveSpeed=b.moveSpeed=p.moveSpeed;
+ g.allyLinks.refresh();assert(g.allyLinks.join(a,p));assert(g.allyLinks.join(b,p));
+ g.allyLinks.timer=g.ecology.timer=10000;g.input.keys.add('d');const start=p.x;
+ for(let i=0;i<180;i++)g.update(1/60);
+ assert(Math.abs(p.x-start-p.moveSpeed*3)<1e-6);assert.equal(g.allyLinks.groups.size,1);assert.equal(g.allyLinks.groups.get(p.companionGroup).members.size,3);
+ for(const e of [p,a,b])assert(Number.isFinite(e.x)&&Number.isFinite(e.y));
 });

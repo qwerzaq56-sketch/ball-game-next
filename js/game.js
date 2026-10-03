@@ -310,6 +310,7 @@ export class Game {
     const b = this.balance;
     const p = this.player;
     const inp = this.input;
+    p.companionVelocity={x:0,y:0};
 
     const releasedAttack=inp._attackQueued;inp._attackQueued=null;
     const releasedDodgeAngle=inp._dodgeAngle;inp._dodgeAngle=null;
@@ -334,8 +335,7 @@ export class Game {
     dx+=inp.touchMove?.x??0;dy+=inp.touchMove?.y??0;
     }
 
-    const group=this.allyLinks.groups.get(p.companionGroup);
-    const moveSpeed=group ? Math.min(p.moveSpeed,...[...group.members].map(e=>e.moveSpeed))*.85 : p.moveSpeed;
+    const moveSpeed=p.moveSpeed;
     const moving = dx !== 0 || dy !== 0;
     const moveAngle = moving ? Math.atan2(dy, dx) : p.facing;
 
@@ -343,6 +343,7 @@ export class Game {
       if (moving) {
         const len = Math.hypot(dx, dy);
         const strength=Math.min(1,len);
+        p.companionVelocity={x:(dx/len)*moveSpeed*strength,y:(dy/len)*moveSpeed*strength};
         p.x += (dx / len) * moveSpeed * strength * dt;
         p.y += (dy / len) * moveSpeed * strength * dt;
       }
