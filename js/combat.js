@@ -44,6 +44,11 @@ export function attackRangeForSize(size, balance) {
   return Math.max(20, c.baseAttackRange * Math.pow(size / c.referenceSize, c.attackRangeGrowthExponent));
 }
 
+export function attackChargeDistanceForSize(size,balance,apex=false){
+ const c=balance.combatScaling;
+ return Math.min(c.maxChargeDistance??600,attackRangeForSize(size,balance)*c.chargeDistanceMultiplier)*(apex?.7:1);
+}
+
 // v0.6 spec §4-2: bigger balls hit harder and further, but need longer to wind up — a
 // deliberate risk/reward tradeoff, not just a range bonus. Independent of attackRangeForSize;
 // see startAttack for how the two combine into an actual dash speed.
@@ -81,7 +86,7 @@ export function startAttack(entity, dirAngle, balance) {
   entity.trail = [];
   const c = balance.combatScaling;
   entity.currentAttackRange = attackRangeForSize(entity.size, balance);
-  entity.currentChargeDistance = entity.currentAttackRange * c.chargeDistanceMultiplier * (entity.apex ? .7 : 1);
+  entity.currentChargeDistance = attackChargeDistanceForSize(entity.size,balance,entity.apex);
   entity.currentChargeDuration = attackChargeDurationForSize(entity.size, balance);
   entity.currentTelegraphTime = attackTelegraphTimeForSize(entity.size, balance);
   if (entity.behavior === 'ai') entity.aiAttackGateTimer = balance.ai.attackCooldown;

@@ -19,6 +19,9 @@
     "hpPerGrowth": 0.4
   },
   "growth": {
+    "rewardReductionStart": 400,
+    "rewardReductionFull": 500,
+    "largeRewardMultiplier": 0.5,
     "growthToSizeRatio": 1.6,
     "minEatSizeDifference": 0,
     "lateThreshold": 25,
@@ -75,6 +78,7 @@
     "hitParticleLifetime": 0.25
   },
   "combatScaling": {
+    "maxChargeDistance": 600,
     "referenceSize": 40,
     "baseAttackDamage": 10,
     "attackDamagePerSize": 1,
@@ -163,6 +167,7 @@
     "maxLives": 3
   },
   "camera": {
+    "maxBodyScreenFraction": 0.42,
     "baseZoom": 1.0,
     "zoomOutPerSize": 0.003,
     "maxZoomOut": 2.0
@@ -233,6 +238,7 @@
     ]
   },
   "abilitySkills": {
+    "rangeReferenceSize": 350,
     "unlockSize": 100,
     "territoryMultiplier": 1,
     "loadout": {

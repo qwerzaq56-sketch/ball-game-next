@@ -1,3 +1,4 @@
+import {growthRewardFor} from './entity.js';
 import {growthFromSize} from './entity.js';
 import {dist} from './collision.js';
 import {delta} from './topology.js';
@@ -48,7 +49,7 @@ export function absorptionGrowthFor(absorber,target,balance){
 }
 
 function completeAbsorption(absorber, target, game, balance) {
-  const gained = target.behavior === 'orb' ? target.growthValue : absorptionGrowthFor(absorber,target,balance);
+  const gained = growthRewardFor(target.behavior === 'orb' ? target.growthValue : absorptionGrowthFor(absorber,target,balance),absorber,balance);
   if(target.behavior!=='orb')game.balanceLog?.absorb(absorber,target,gained);
   absorber.addGrowth(gained, balance);
   game.awardScore(absorber, gained);

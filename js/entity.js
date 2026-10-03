@@ -110,3 +110,8 @@ export class Entity {
     this.scalePulseTimer = 0;
   }
 }
+
+export function growthRewardFor(amount,e,balance){
+ const g=balance.growth,t=Math.min(1,Math.max(0,(e.size-(g.rewardReductionStart??400))/Math.max(1,(g.rewardReductionFull??500)-(g.rewardReductionStart??400))));
+ return amount*(1-t*(1-(g.largeRewardMultiplier??.5)));
+}

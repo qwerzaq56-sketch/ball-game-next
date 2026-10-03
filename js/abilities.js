@@ -1,11 +1,11 @@
 import {terrainDamageMultiplier} from './biomes.js';
 import {delta,angleTo} from './topology.js';
 import { boundCenter } from './worldBounds.js';
-import { attackDamageForSize, applyDamage, canStartAttack } from './combat.js';
+import { attackChargeDistanceForSize, attackDamageForSize, applyDamage, canStartAttack } from './combat.js';
 import { cancelAbsorption } from './absorption.js';
 import { dist, isHostile, canAbsorb, canEatOrb } from './collision.js';
 import { random } from './random.js';
-import {selectedSkill} from './skillCatalog.js';
+import {scaledSkill} from './skillCatalog.js';
 import {AIEntity} from './ai.js';
 import {AbilityMetrics} from './abilityMetrics.js';
 export const ABILITIES = {
@@ -17,7 +17,7 @@ export function blueWaveDirections(dir) {
   const radians = Math.PI / 180;
   return [dir, dir + (-120 + random('ai') * 80) * radians, dir + (40 + random('ai') * 80) * radians];
 }
-export function attackReach(e,b){return Math.max(20,b.combatScaling.baseAttackRange*Math.pow(e.size/b.combatScaling.referenceSize,b.combatScaling.attackRangeGrowthExponent))*b.combatScaling.chargeDistanceMultiplier*(e.apex?.7:1);}
+export function attackReach(e,b){return attackChargeDistanceForSize(e.size,b,e.apex);}
 export function inCone(origin,target,dir,radius,angle=Math.PI*2/3){
   const d=dist(origin,target);return d<=radius && Math.abs(Math.atan2(Math.sin(angleTo(origin,target)-dir),Math.cos(angleTo(origin,target)-dir)))<=angle/2;
 }
@@ -40,7 +40,7 @@ export class Abilities {
  loseApex(e){const normal=e.specialCast?.slot==='E'?e.specialCast:null;this.release(e);e.specialCast=normal;e._specialApex=false;}
  endCommand(e,reason){if(!e.command)return;this.log('command-end',e,{kind:e.command.kind,reason});e.command=null;e.commandLock=3;e.target=null;e.state='search';e.decisionTimer=0;}
  redTarget(owner,dir){return this.units().filter(e=>isHostile(owner,e)&&dist(owner,e)<=500).sort((a,b)=>angleDelta(angleTo(owner,a),dir)-angleDelta(angleTo(owner,b),dir)||dist(owner,a)-dist(owner,b)||a.id-b.id)[0];}
- skill(e,slot='R'){return selectedSkill(this.game.balance,e.color,slot);}
+ skill(e,slot='R'){return scaledSkill(this.game.balance,e,slot);}
  unlocked(e,slot='R'){return e.behavior!=='orb'&&!e.summoned&&(slot==='R'?!!e.apex:e.apex||e.size>=(this.game.balance.abilitySkills?.unlockSize??100));}
  cooldown(e,slot='R'){return slot==='R'?(e.specialCooldown??0):(e.normalSkillCooldown??0);}
  canCast(e,slot='R'){return this.enabled&&e.alive&&this.unlocked(e,slot)&&this.cooldown(e,slot)<=0&&!e.specialCast&&!(e.frozen>0)&&!e.beingAbsorbedByRef&&e.attackState==='READY'&&e.dodgeState!=='DODGING';}
@@ -49,7 +49,7 @@ export class Abilities {
   const hostiles=this.units().filter(t=>isHostile(e,t));return {hostiles,targets:hostiles.filter(t=>inCone(e,t,cast.dir,cast.skill.radius))};
  }
  aimPoint(e,dir,point=null,cfg=this.skill(e,'R')){
-  const w=this.game.balance.world,castRange=cfg.castRange??350;let p=point??{x:e.x+Math.cos(dir)*350,y:e.y+Math.sin(dir)*350};const d=dist(e,p);
+  const w=this.game.balance.world,castRange=cfg.castRange??350;let p=point??{x:e.x+Math.cos(dir)*castRange,y:e.y+Math.sin(dir)*castRange};const d=dist(e,p);
   if(d>castRange){const toward=delta(e,p);p={x:e.x+toward.x*castRange/d,y:e.y+toward.y*castRange/d};}
   return {x:boundCenter(p.x,0,w.worldWidth,w.wrap),y:boundCenter(p.y,0,w.worldHeight,w.wrap)};
  }

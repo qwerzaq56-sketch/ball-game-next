@@ -14,13 +14,13 @@ import { Abilities } from './abilities.js';
 import { acceptsAbsorption } from './species.js';
 import { Ecology } from './ecology.js';
 import { random, resetRandom } from './random.js';
-import { resetEntityIds } from './entity.js';
+import { resetEntityIds, growthRewardFor } from './entity.js';
 import { Player } from './player.js';
 import { AIEntity, updateAI } from './ai.js';
 import { canEatOrb, canAbsorb, isHostile, circlesOverlap, dist } from './collision.js';
 import {
   updateAttack, updateDodge, updateKnockback, updateHealthRegen,
-  updateAttackStack, updateDodgeStack, attackRangeForSize,
+  updateAttackStack, updateDodgeStack, attackChargeDistanceForSize,
   canStartAttack, startAttack, canStartDodge, startDodge,
 } from './combat.js';
 import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
@@ -201,9 +201,8 @@ export class Game {
   hostileTargetsFor(entity) {
     // v0.5: charge distance now scales with attack range (see combat.js), so the candidate
     // scan radius has to cover that instead of the old fixed chargeSpeed*duration distance.
-    const c = this.balance.combatScaling;
     const largest=this.entities.reduce((n,e)=>e.alive&&isHostile(entity,e)?Math.max(n,e.size/2):n,0);
-    const range = attackRangeForSize(entity.size, this.balance) * c.chargeDistanceMultiplier + entity.size/2 + largest;
+    const range = attackChargeDistanceForSize(entity.size, this.balance,entity.apex) + entity.size/2 + largest;
     return this.getNearbyEntities(entity, range).filter((o) => isHostile(entity, o));
   }
 
@@ -395,8 +394,9 @@ export class Game {
           if (!canEatOrb(eater, target, b)) continue;
           if (!circlesOverlap(eater, target)) continue;
           target.alive = false;
-          this.balanceLog?.pickup(target,eater);
-          eater.addGrowth(target.growthValue*this.relics.growthMultiplier(eater), b);
+          const received=growthRewardFor(target.growthValue*this.relics.growthMultiplier(eater),eater,b);
+          this.balanceLog?.pickup(target,eater,received);
+          eater.addGrowth(received, b);
           eater.scalePulseTimer=Math.max(eater.scalePulseTimer,.2);
           this.awardScore(eater, target.growthValue);
           this.spawnGrowthParticles(target.x, target.y, target.colorHex);
@@ -469,10 +469,11 @@ export class Game {
     const p = this.player;
 
     const zoomOutFactor = Math.min(cfg.maxZoomOut, 1 + p.size * cfg.zoomOutPerSize);
-    const targetZoom = cfg.baseZoom / zoomOutFactor;
+    const targetZoom = Math.min(cfg.baseZoom / zoomOutFactor,Math.min(this.canvas.width,this.canvas.height)*(cfg.maxBodyScreenFraction??.42)/Math.max(1,p.size));
 
     const lerp = 1 - Math.pow(0.001, dt);
     this.camera.zoom += (targetZoom - this.camera.zoom) * lerp;
+    this.camera.zoom=Math.min(this.camera.zoom,Math.min(this.canvas.width,this.canvas.height)*(cfg.maxBodyScreenFraction??.42)/Math.max(1,p.size));
     const toward=delta(this.camera,p,w);
     this.camera.x += toward.x*lerp;this.camera.y += toward.y*lerp;
     if(w.wrap){this.camera.x=wrap(this.camera.x,w.worldWidth);this.camera.y=wrap(this.camera.y,w.worldHeight);return;}
@@ -547,9 +548,11 @@ export class Game {
     // v0.4 spec §31-36 / v0.6 spec §10-12: a direct, size-scaled growth reward for whoever
     // landed the killing attack, but cut down by `growthRewardMultiplier` — the bulk of a kill's
     // payoff now comes from the orb spray below instead, which has to be collected in person.
+    let directGrowth=0;
     if (attacker && (attacker.behavior === 'player' || attacker.behavior === 'ai') && attacker.alive) {
       const kr = this.balance.killReward;
-      const reward = kr.baseReward * Math.pow(entity.size / kr.referenceSize, kr.growthExponent) * kr.growthRewardMultiplier;
+      const reward = growthRewardFor(kr.baseReward * Math.pow(entity.size / kr.referenceSize, kr.growthExponent) * kr.growthRewardMultiplier,attacker,this.balance);
+      directGrowth=reward;
       attacker.addGrowth(reward, this.balance);
       this.awardScore(attacker, Math.round(reward) + 100);
       if (attacker === this.player) {
@@ -564,7 +567,7 @@ export class Game {
 
     if (entity.behavior === 'ai') {
       const orbs = spawnDeathOrbs(entity, this.balance);
-      const kr=this.balance.killReward,direct=attacker?.alive?kr.baseReward*Math.pow(entity.size/kr.referenceSize,kr.growthExponent)*kr.growthRewardMultiplier:0;
+      const direct=directGrowth;
       this.balanceLog?.drop(entity,orbs,direct);
       this.entities.push(...orbs);
     }
@@ -903,7 +906,7 @@ export class Game {
     const aiming=e===this.player&&this.touchAim?.kind==='attack'&&e.attackUnlocked&&e.attackState==='READY';
     if(aiming||e.attackState==='TELEGRAPH'||e.attackState==='CHARGING'){
       const direction=aiming?this.touchAim.angle:e.attackDir;
-      const remaining=aiming?attackRangeForSize(e.size,this.balance)*this.balance.combatScaling.chargeDistanceMultiplier*(e.apex?.7:1):e.attackState==='TELEGRAPH'?e.currentChargeDistance:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
+      const remaining=aiming?attackChargeDistanceForSize(e.size,this.balance,e.apex):e.attackState==='TELEGRAPH'?e.currentChargeDistance:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
       ctx.save();ctx.translate(e.x,e.y);ctx.rotate(direction);ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(remaining,-r);ctx.arc(remaining,0,r,-Math.PI/2,Math.PI/2);ctx.lineTo(0,r);ctx.arc(0,0,r,Math.PI/2,Math.PI*1.5);ctx.closePath();ctx.fillStyle='rgba(255,255,255,.055)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1/this.camera.zoom;ctx.stroke();ctx.restore();
     }
     // telegraph indicator

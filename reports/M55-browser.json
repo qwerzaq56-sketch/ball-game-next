@@ -1,0 +1,42 @@
+{
+  "result": "PASS",
+  "checks": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "size": 1500,
+      "diameter": 302.4,
+      "limit": 302.4,
+      "range": 1114.2857142857142,
+      "radius": 750,
+      "build": "NEXT · M55"
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "size": 1500,
+      "diameter": 163.79999999999998,
+      "limit": 163.79999999999998,
+      "range": 1114.2857142857142,
+      "radius": 750,
+      "build": "NEXT · M55"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "size": 1500,
+      "diameter": 163.79999999999998,
+      "limit": 163.79999999999998,
+      "range": 1114.2857142857142,
+      "radius": 750,
+      "build": "NEXT · M55"
+    }
+  ],
+  "errors": []
+}

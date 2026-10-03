@@ -1,6 +1,6 @@
 import {assessOpportunityChannels} from './opportunityChannels.js';
 import {dist,isHostile,canAbsorb,canEatOrb} from './collision.js';
-import {sizeFromGrowth} from './entity.js';
+import {sizeFromGrowth,growthRewardFor} from './entity.js';
 import {attackDamageForSize,applyDefense} from './combat.js';
 // Read-only local opportunity assessment. No spawn/AI decisions or random calls.
 export function assessGameplay(game,actor=game.player){
@@ -12,7 +12,7 @@ export function assessGameplay(game,actor=game.player){
  const food=nearby.filter(e=>canEatOrb(p,e,b)&&safe(e));
  const cluster=Math.max(40,Number(c.clusterRadius)||120);
  let potentialSizeGain=0,growthValue=0;
- for(const center of food){const value=food.reduce((sum,e)=>sum+(dist(center,e)<=cluster?e.growthValue:0),0);const gain=sizeFromGrowth(p.growth+value,p.baseSize,b.growth.growthToSizeRatio,b.growth)-p.size;if(gain>potentialSizeGain){potentialSizeGain=gain;growthValue=value;}}
+ for(const center of food){const value=food.reduce((sum,e)=>sum+(dist(center,e)<=cluster?e.growthValue:0),0);const gain=sizeFromGrowth(p.growth+growthRewardFor(value,p,b),p.baseSize,b.growth.growthToSizeRatio,b.growth)-p.size;if(gain>potentialSizeGain){potentialSizeGain=gain;growthValue=value;}}
  const needed=Math.max(0,Number.isFinite(Number(c.minimumSizeGain))?Number(c.minimumSizeGain):.5,p.size*(Number.isFinite(Number(c.minimumGrowthRatio))?Math.max(0,Number(c.minimumGrowthRatio)):.01));
  const damageRatio=Math.max(0,...threats.filter(t=>isHostile(p,t)).map(t=>applyDefense(attackDamageForSize(t.size,b),p.size,b)/p.maxHp));
  const sizeRatio=Math.max(0,...threats.map(t=>t.size/p.size));

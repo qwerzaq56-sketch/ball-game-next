@@ -1,11 +1,11 @@
 import {dist,isHostile,canAbsorb} from './collision.js';
-import {sizeFromGrowth} from './entity.js';
+import {sizeFromGrowth,growthRewardFor} from './entity.js';
 import {absorptionGrowthFor} from './absorption.js';
 import {attackDamageForSize,applyDefense,attackChargeDurationForSize,attackTelegraphTimeForSize} from './combat.js';
 import {minimumDeathDropGrowth} from './spawning.js';
 // Potential rewards assume successful interaction and full collection, never probability.
 export function assessOpportunityChannels(game,p,nearby,needed,foodGrowth,threats,fields,environment){
- const b=game.balance,gain=g=>Math.max(0,sizeFromGrowth(p.growth+g,p.baseSize,b.growth.growthToSizeRatio,b.growth)-p.size),foodGain=gain(foodGrowth*(game.relics?.growthMultiplier(p)??1));
+ const b=game.balance,gain=g=>Math.max(0,sizeFromGrowth(p.growth+growthRewardFor(g,p,b),p.baseSize,b.growth.growthToSizeRatio,b.growth)-p.size),foodGain=gain(foodGrowth*(game.relics?.growthMultiplier(p)??1));
  const safe=(target,ignored)=>!game.biomes.danger(target)&&!fields.some(f=>dist(target,f)<=(f.radius??360))&&threats.every(t=>t===ignored||dist(target,t)>160);
  let absorptionGain=0,huntGain=0,huntEstimatedSeconds=null,absorptionTargets=0,huntTargets=0;
  if(!environment&&!fields.length&&!p.beingAbsorbedByRef&&p.hp/p.maxHp>.3)for(const t of nearby){

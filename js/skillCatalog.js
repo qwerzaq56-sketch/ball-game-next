@@ -16,3 +16,9 @@ export const SKILL_CATALOG = {
 export const DEFAULT_SKILLS={cyan:{E:'cyan-chill',R:'cyan-freeze'},blue:{E:'blue-ripple',R:'blue-trident'},green:{E:'green-invite',R:'green-summon'},red:{E:'red-vigor',R:'red-rally'},yellow:{E:'yellow-dust',R:'yellow-storm'}};
 export function selectedSkill(balance,color,slot){const selected=balance.abilitySkills?.loadout?.[color]?.[slot]??DEFAULT_SKILLS[color]?.[slot],valid=SKILL_CATALOG[selected]?.color===color&&SKILL_CATALOG[selected]?.slot===slot,id=valid?selected:DEFAULT_SKILLS[color]?.[slot],base=SKILL_CATALOG[id];return {...base,...skillOverrides(id,balance.abilitySkills?.overrides?.[id],base),id};}
 export function apexTerritoryRadius(e,balance){return 900*Math.sqrt(Math.max(100,e.size)/100)*(balance.abilitySkills?.territoryMultiplier??1);}
+
+export function scaledSkill(balance,e,slot){
+ const cfg=selectedSkill(balance,e.color,slot),scale=Math.max(1,e.size/(balance.abilitySkills?.rangeReferenceSize??350));
+ for(const key of ['radius','length','width','castRange','buffRadius','commandRadius'])if(Number.isFinite(cfg[key]))cfg[key]*=scale;
+ return cfg;
+}
