@@ -84,6 +84,19 @@ export class AllyLinks {
   if(mixed)group.truceUntil=this.truceUntil;
   group.members.add(target);this.enter(target,group);target.recruitedUntil=this.game.gameTime+20;if(owner.behavior==='player'||!group.leader?.alive)group.leader=owner;this.personality(group);return true;
  }
+ merge(owner,target){
+  const source=this.groups.get(target.companionGroup),destination=this.groups.get(owner.companionGroup);
+  if(!source)return this.recruit(owner,target);
+  if(source===destination)return false;
+  const members=new Set([...(destination?.members??[owner]),...source.members]);
+  // All-or-nothing: a full formation stays intact rather than losing a few members.
+  if(members.size>ALLY_RULES.maxGroup||[...members].some(e=>!unit(e)||e.beingAbsorbedByRef||e.color!==owner.color))return false;
+  for(const a of members)for(const b of members)if(a.warTargets?.has(b)||b.warTargets?.has(a))return false;
+  let group=destination;if(!group){group={id:this.nextGroup++,color:owner.color,leader:owner,members:new Set([owner])};this.groups.set(group.id,group);this.enter(owner,group);}
+  const incoming=[...source.members];this.groups.delete(source.id);source.members.clear();
+  for(const e of incoming){group.members.add(e);this.enter(e,group);e.recruitedUntil=this.game.gameTime+20;}
+  group.leader=this.leader([...group.members]);this.personality(group);return true;
+ }
  join(a,b){
   if(a.warTargets?.has(b)||b.warTargets?.has(a)||a.companionGroup||!this.connected(a,b)||a.beingAbsorbedByRef||b.beingAbsorbedByRef)return false;
   let group=this.groups.get(b.companionGroup);

@@ -114,12 +114,14 @@ export class Abilities {
   this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,point:{x:e.x,y:e.y},remaining:.75,normal:true,skill:cfg,size:e.size});
   this.log('special-fire',e,{slot:'E',skill:cfg.id,cast:cast.id});
   if(cfg.effect==='invite'){
-   for(const t of units.filter(t=>t!==e&&!t.companionGroup&&t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b))) {
+   const attemptedGroups=new Set();
+   for(const t of units.filter(t=>t!==e&&(!t.companionGroup||t.companionGroup!==e.companionGroup)&&t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b))) {
     const group=this.game.allyLinks.groups.get(e.companionGroup);if(group?.members.size>=6)break;
-    if(random('ai')<(cfg.acceptChance??.8)&&this.game.allyLinks.recruit(e,t))this.metrics.count(e,cast,'recruits');
+    if(t.companionGroup){if(attemptedGroups.has(t.companionGroup))continue;attemptedGroups.add(t.companionGroup);}
+    if(random('ai')<(cfg.acceptChance??.8)&&this.game.allyLinks.merge(e,t))this.metrics.count(e,cast,'recruits');
    }
    const group=this.game.allyLinks.groups.get(e.companionGroup),recipients=group?[...group.members]:[e];
-   for(const t of recipients)if(t.alive){
+   for(const t of recipients)if(t.alive&&!isHostile(e,t)){
     t.inviteBuffs=(t.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime);t.inviteBuffs.push({expires:this.game.gameTime+(cfg.buffDuration??30),damage:cfg.buffDamage??.05,defense:cfg.buffDefense??.05});
     t.inviteBuffs=t.inviteBuffs.slice(-Math.max(1,Math.floor(cfg.buffStackCap??5)));t.recruitedUntil=Math.max(t.recruitedUntil??0,this.game.gameTime+20);this.metrics.count(e,cast,'buffs');
    }

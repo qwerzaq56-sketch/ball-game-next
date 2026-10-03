@@ -102,7 +102,7 @@ export class Biomes {
    for(const e of this.game.entities){if(!e.alive||e.behavior==='orb')continue;
     if(e.frostbiteRemaining>0)applyDamage(e,e.maxHp*(c.frostTickHpFraction??.0125),this.game,null,this.game.balance,{kind:'field',knockback:false,ignoreDefense:true,postDefenseMultiplier:1-this.frostResistance(e)});
     if(this.sandstormAt(e)){const resistance=e.color==='yellow'?(c.yellowSandstormResistance??.8):0;applyDamage(e,e.maxHp*(c.sandstormTickHpFraction??.025),this.game,null,this.game.balance,{kind:'field',knockback:false,ignoreDefense:true,postDefenseMultiplier:(1-resistance)*terrainDamageMultiplier(e.size,this.game.balance)});}
-    const hot=this.lavaAt(e);
+    const hot=this.lavaAt(e,e.size/2);
     if(hot){const resistance=lavaResistance(e,this.game.balance),beforeRatio=e.damageHpRatio??0;applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false,postDefenseMultiplier:(1-resistance)*terrainDamageMultiplier(e.size,this.game.balance)});const log=this.game.lavaLog??=([]);const entry={time:this.game.gameTime,size:e.size,color:e.color,region:'volcano',resistance,hpRatio:(e.damageHpRatio??0)-beforeRatio};log.push(entry);this.game.balanceLog?.lava.push(entry);if(log.length>1000)log.shift();}
    }
   }
@@ -131,7 +131,7 @@ export class Biomes {
   }
   e.environmentRoute=null;return target;
  }
- status(e){const r=this.regionAt(e);if(!r)return '평원';return r.name+(this.sandstormAt(e)?e.color==='yellow'?' · 모래바람 · 방어 +25%':' · 모래바람':'')+(e.frostbiteRemaining>0?' · 동상':'')+(r.id==='lake'?' · 물속':'')+(r.id==='snow'&&this.blizzard()?' · 눈보라 · 얼음꽃':this.lavaAt(e)?' · 용암 강 위험':'');}
+ status(e){const r=this.regionAt(e);if(!r)return '평원';return r.name+(this.sandstormAt(e)?e.color==='yellow'?' · 모래바람 · 방어 +25%':' · 모래바람':'')+(e.frostbiteRemaining>0?' · 동상':'')+(r.id==='lake'?' · 물속':'')+(r.id==='snow'&&this.blizzard()?' · 눈보라 · 얼음꽃':this.lavaAt(e,e.size/2)?' · 용암 강 위험':'');}
  draw(ctx,zoom){
   if(!this.enabled)return;const camera=this.game.renderCamera??this.game.camera;
   const halfW=this.game.canvas.width/zoom/2,halfH=this.game.canvas.height/zoom/2,time=this.game.gameTime;

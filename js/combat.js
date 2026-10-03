@@ -130,7 +130,7 @@ export function updateAttack(entity, dt, balance, hostiles, game) {
       if (entity.trail.length > 8) entity.trail.shift();
 
       const dx=entity.x-previous.x,dy=entity.y-previous.y,length=dx*dx+dy*dy;
-      const rawDamage = attackDamageForEntity(entity, balance) * (entity.currentAttackPower??1) * (game?.abilities?.damageMultiplier(entity) ?? 1);
+      const rawDamage = attackDamageForEntity(entity, balance) * (balance.attack.baseDamageMultiplier??1) * (entity.currentAttackPower??1) * (game?.abilities?.damageMultiplier(entity) ?? 1);
       for (const target of hostiles) {
         if (!target.alive || entity.attackHitSet.has(target.id)) continue;
         const relative=delta(previous,target,entity._world),t=length?Math.max(0,Math.min(1,(relative.x*dx+relative.y*dy)/length)):0;

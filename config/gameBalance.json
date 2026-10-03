@@ -52,12 +52,19 @@
   },
   "attack": {
     "manualChargeSeconds": 0.9,
+    "baseDamageMultiplier": 0.7,
     "maxChargeDamageBonus": 1,
     "attackCooldown": 1.5,
     "attackRecoveryTime": 0.4,
     "minChargeDamageMultiplier": 0.35,
     "minChargeDistanceFraction": 0.03,
     "aiChargeFraction": 0.75
+  },
+  "sprint": {
+    "unlockSize": 150,
+    "capacitySeconds": 3,
+    "recoveryPerSecond": 0.6,
+    "speedMultiplier": 1.5
   },
   "dodge": {
     "dodgeDuration": 0.2,

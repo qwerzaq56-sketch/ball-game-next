@@ -235,7 +235,7 @@ export function decideAI(ai, game, balance) {
   const opportunist=ai.personality==='opportunist';
   const lastHit=opportunist && hp>=.6 && canStartAttack(ai) ? closest(within.filter(e=>isHostile(ai,e)&&
     e.size<=ai.size*1.2&&e.attackState==='RECOVERY'&&!e.invincible&&dist(ai,e)<=attackRangeForSize(ai.size,balance)&&
-    e.hp<=applyDefense(attackDamageForSize(ai.size,balance),e.size,balance))) : null;
+    e.hp<=applyDefense(attackDamageForSize(ai.size,balance)*(balance.attack.baseDamageMultiplier??1)*((balance.attack.minChargeDamageMultiplier??.35)+(1+(balance.attack.maxChargeDamageBonus??1)-(balance.attack.minChargeDamageMultiplier??.35))*(balance.attack.aiChargeFraction??.75)),e.size,balance))) : null;
   if(lastHit){ai.state='chase_fight';ai.target=lastHit;return;}
   if(ai.challengeTarget && canStartAttack(ai) && (ai.personality!=='cautious'||safe(ai.challengeTarget,ai.challengeTarget))){ai.state='chase_fight';ai.target=ai.challengeTarget;return;}
   const absorb=closest(nearby.filter(e=>dist(ai,e)<=cfg.absorptionDetectionRange&&canAbsorb(ai,e)&&
@@ -244,7 +244,8 @@ export function decideAI(ai, game, balance) {
   const huntAllowed=hp>.4&&ai.attackUnlocked&&canStartAttack(ai);
   const hunt=huntAllowed && ai.attackUnlocked ? closest(within.filter(e=>isHostile(ai,e)&&e.size<=ai.size*1.15&&
     (ai.personality!=='cautious'||safe(e)))) : null;
-  const orb=closest(food.filter(e=>safe(e)||risk));
+  const orb=food.filter(e=>safe(e)||risk).sort((a,b)=>(b.growthValue??0)/Math.max(40,dist(ai,b))-(a.growthValue??0)/Math.max(40,dist(ai,a))||a.id-b.id)[0];
+  if(orb&&(orb.growthValue??0)>=80){ai.state='chase_eat';ai.target=orb;return;}
   if(rich && (safe(rich)||risk) && (ai.personality==='growth'||(ai.role==='predator'&&ai.size>=70&&hp>.5))){ai.state='chase_eat';ai.target=rich;return;}
   const counter=ai.counterattacker;
   const counterAllowed=counter&&hp>=.6&&canStartAttack(ai)&&dist(ai,counter)<=attackRangeForSize(ai.size,balance)&&
@@ -314,6 +315,8 @@ function moveAI(ai, dt, balance,game) {
     targetAngle=angleTo(ai,ai.target);speed*=.55;
     speed=Math.min(speed,dist(ai,ai.target)/Math.max(dt,1e-8));
   } else if (ai.state === 'chase_eat' && ai.target && ai.target.alive) {
+    // Valuable food prompts faster collection; no extra speed while absorbing bodies.
+    if(ai.target.behavior==='orb'&&(ai.target.growthValue??0)>=80)speed*=1.2;
     // actual eating/absorption is resolved centrally in Game.resolveConsumption()
     targetAngle = angleTo(ai,ai.target);
   } else if (ai.state === 'chase_fight' && ai.target && ai.target.alive) {

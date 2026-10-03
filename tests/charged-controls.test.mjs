@@ -4,7 +4,7 @@ function setup(){const g=createGame(7),p=g.player;p.size=100;p.x=p.y=4000;p.colo
 test('holding does not attack; release consumes charge once and full charge increases real damage',()=>{
  const {g,p}=setup();g.input.mouseDown=true;g.updatePlayer(.75);assert.equal(p.attackState,'READY');assert.equal(g.input.attackChargeSeconds,.75);
  g.input.mouseDown=false;g.input._attackQueued={angle:0,charge:.5};g.updatePlayer(.01);assert.equal(p.attackState,'CHARGING');assert(Math.abs(p.currentAttackPower-1.175)<1e-8);assert.equal(g.input._attackQueued,null);
- const target=new AIEntity({balance:g.balance,x:4100,y:4000,startSize:100,color:'red',colorHex:'#f00'});g.entities.push(target);p.attackStack=1;startAttack(p,0,g.balance,1);p.attackState='CHARGING';const hp=target.hp;updateAttack(p,p.currentChargeDuration,g.balance,[target],g);assert.equal(hp-target.hp,170);assert.equal(p.currentAttackPower,2);
+ const target=new AIEntity({balance:g.balance,x:4100,y:4000,startSize:100,color:'red',colorHex:'#f00'});g.entities.push(target);p.attackStack=1;startAttack(p,0,g.balance,1);p.attackState='CHARGING';const hp=target.hp;updateAttack(p,p.currentChargeDuration,g.balance,[target],g);assert.equal(hp-target.hp,104);assert.equal(p.currentAttackPower,2);
 });
 test('right hold and mobile toggle gate absorption; releasing cancels an existing connection',()=>{
  const {g,p}=setup(),target=new AIEntity({balance:g.balance,x:4100,y:4000,startSize:40,color:'blue',colorHex:'#00f'});g.entities.push(target);g.updatePlayer(.01);assert.equal(p.allyAbsorptionEnabled,false);

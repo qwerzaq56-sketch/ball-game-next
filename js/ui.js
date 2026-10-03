@@ -20,6 +20,11 @@ export class UI {
     this.scoreText = document.getElementById('score-text');
     this.lifeText = document.getElementById('life-text');
     this.starterGuide=document.getElementById('starter-guide');this.guideDismissed=false;document.getElementById('starter-guide-close').addEventListener('click',()=>{this.guideDismissed=true;this.starterGuide.hidden=true;});
+    this.sprintButton=document.getElementById('quick-sprint');
+    this.sprintButton.addEventListener('pointerdown',e=>{if(this.game&&!this.game.paused&&!this.game.gameOver){e.preventDefault();this.sprintButton.setPointerCapture(e.pointerId);this.game.input.sprintHeld=true;this.game.autoplay.setEnabled(false);}});
+    const stopSprint=()=>{if(this.game)this.game.input.sprintHeld=false;};
+    for(const event of ['pointerup','pointercancel','lostpointercapture'])this.sprintButton.addEventListener(event,stopSprint);
+    window.addEventListener('blur',stopSprint);
     this.absorbButton=document.getElementById('quick-absorb');this.absorbButton.addEventListener('click',()=>{if(this.game&&!this.game.paused&&!this.game.gameOver)this.game.input.absorbToggle=!this.game.input.absorbToggle;});
     this.allyAbsorbText = document.getElementById('ally-absorb-text');
     this.attackPips = document.getElementById('attack-pips');
@@ -137,12 +142,16 @@ export class UI {
     const player = game.player;
     if(this.guideRun!==game.apexHistory){this.guideRun=game.apexHistory;this.guideDismissed=false;}
     this.starterGuide.hidden=this.guideDismissed||game.gameTime>20||document.getElementById('player-setup').open;
-    document.getElementById('starter-guide-text').textContent=game.input.touchMode?'이동 패드 · 공격/회피 드래그→떼기 · 흡수 ON/OFF · E/R 스킬':'WASD 이동 · 클릭 충전→떼기 · Space 회피 · E/R 스킬 · 흡수 토글 · ESC 일시정지';
+    document.getElementById('starter-guide-text').textContent=game.input.touchMode?'이동 패드 · 공격/회피 드래그→떼기 · 흡수 ON/OFF · E/R 스킬':'WASD 이동 · 클릭 충전→떼기 · Space 회피/소진 후 꾹 달리기 · E/R 스킬 · 흡수 토글 · ESC 일시정지';
     this.absorbButton.textContent=game.input.absorbToggle?'흡수 ON':'흡수 OFF';this.absorbButton.setAttribute('aria-pressed',String(!!game.input.absorbToggle));this.absorbButton.disabled=game.paused||game.gameOver;
     document.getElementById('player-identity').textContent = player.displayName;
     document.getElementById('region-text').textContent=game.biomes.status(player);
     const field=game.era.apocalypse;document.getElementById('era-text').textContent=game.era.status()+(field?field.active?' · 파멸 위험':' · 파멸 전조':'');
     this.updateEraBadge(game);
+    this.sprintButton.hidden=game.player.size<(game.balance.sprint?.unlockSize??150);
+    this.sprintButton.textContent=`${game.player.sprinting?'달리는 중':'달리기'} ${Math.round(100*(game.player.sprintGauge??(game.balance.sprint?.capacitySeconds??3))/(game.balance.sprint?.capacitySeconds??3))}%`;
+    this.sprintButton.style.background=`linear-gradient(90deg,rgba(56,189,248,.3) ${Math.round(100*(game.player.sprintGauge??3)/(game.balance.sprint?.capacitySeconds??3))}%,rgba(15,23,42,.85) 0)`;
+    this.sprintButton.title='회피를 모두 쓴 뒤 누르고 유지 · Space';
     document.getElementById('play-time').textContent=`플레이 ${Math.floor(game.gameTime/60)}:${String(Math.floor(game.gameTime%60)).padStart(2,'0')}`;
     const invitation=document.getElementById('companion-invite'),wait=Math.ceil(Math.max(0,(player.inviteReadyAt??0)-game.gameTime));
     invitation.textContent=game.allyLinks.truceUntil>game.gameTime?`동행 Q · 축제 ${Math.ceil(game.allyLinks.truceUntil-game.gameTime)}s`:wait?`동행 제안 ${wait}s`:'동행 제안 (Q)';invitation.disabled=game.paused||game.gameOver||wait>0||player.frozen>0||!!player.specialCast||player.attackState!=='READY'||player.dodgeState==='DODGING'||!!player.beingAbsorbedByRef;

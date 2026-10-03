@@ -1,3 +1,4 @@
+import {updateSprint} from './sprint.js';
 import {delta,angleTo,near,wrap} from './topology.js';
 import {worldView,boxInView,segmentInView} from './renderVisibility.js';
 import { clampEntity } from './worldBounds.js';
@@ -349,8 +350,9 @@ export class Game {
     dx+=inp.touchMove?.x??0;dy+=inp.touchMove?.y??0;
     }
 
-    const moveSpeed=p.moveSpeed*this.abilities.speedMultiplier(p)*this.biomes.moveMultiplier(p);
     const moving = dx !== 0 || dy !== 0;
+    const sprintMultiplier=updateSprint(p,dt,b,{held:!auto&&(inp.keys.has(' ')||inp.sprintHeld),moving});
+    const moveSpeed=p.moveSpeed*this.abilities.speedMultiplier(p)*this.biomes.moveMultiplier(p)*sprintMultiplier;
     const moveAngle = moving ? Math.atan2(dy, dx) : p.facing;
 
     if (p.attackState === 'READY' && p.dodgeState !== 'DODGING') {

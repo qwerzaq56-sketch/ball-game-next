@@ -88,7 +88,7 @@ async function main() {
     if (e.sourceCapabilities?.firesTouchEvents) return;
     if(!window.__game?.paused&&!window.__game?.gameOver){if(e.button===0){input.mouseDown=true;input.attackChargeSeconds=0;}if(e.button===2)input.absorbHeld=true;}
   });
-  window.addEventListener('blur', () => {input.keys.clear();input.mouseDown=false;input.absorbHeld=false;input.attackChargeSeconds=0;input._dodgeQueued=false;input._dodgeAngle=null;input._attackQueued=null;input._specialQueued=false;input._ultimateQueued=false;});
+  window.addEventListener('blur', () => {input.keys.clear();input.mouseDown=false;input.absorbHeld=false;input.sprintHeld=false;input.attackChargeSeconds=0;input._dodgeQueued=false;input._dodgeAngle=null;input._attackQueued=null;input._specialQueued=false;input._ultimateQueued=false;});
   window.addEventListener('mouseup', (e) => {
     if(e.button===0){if(input.mouseDown&&!window.__game?.paused&&!window.__game?.gameOver)input._attackQueued={charge:Math.min(1,input.attackChargeSeconds/(window.__game.balance.attack.manualChargeSeconds??1.5))};input.mouseDown=false;input.attackChargeSeconds=0;}if(e.button===2)input.absorbHeld=false;
   });

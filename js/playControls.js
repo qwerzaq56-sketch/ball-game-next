@@ -26,7 +26,7 @@ export class PlayControls {
     window.addEventListener('blur',()=>this.backgroundPause());
     document.addEventListener('visibilitychange',()=>{if(document.hidden)this.backgroundPause();});
   }
-  clearInput(){this.input.keys.clear();this.input.touchMove={x:0,y:0};this.input.mouseDown=false;this.input.absorbHeld=false;this.input.attackChargeSeconds=0;this.input._dodgeQueued=false;this.input._dodgeAngle=null;this.input._attackQueued=null;this.input._specialQueued=false;this.input._ultimateQueued=false;}
+  clearInput(){this.input.keys.clear();this.input.touchMove={x:0,y:0};this.input.mouseDown=false;this.input.absorbHeld=false;this.input.sprintHeld=false;this.input.attackChargeSeconds=0;this.input._dodgeQueued=false;this.input._dodgeAngle=null;this.input._attackQueued=null;this.input._specialQueued=false;this.input._ultimateQueued=false;}
   focusCanvas(){document.getElementById('game-canvas').focus({preventScroll:true});}
   blocked(){return this.game.gameOver||document.getElementById('player-setup').open||document.getElementById('reset-confirm-overlay').style.display==='flex';}
   pause(reason='일시정지'){this.resumePointers.clear();this.lastHistory=this.game.apexHistory;this.game.paused=true;this.pauseReason=reason;this.clearInput();this.game.stopContinuousAudio();}

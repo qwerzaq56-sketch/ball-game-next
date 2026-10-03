@@ -1,3 +1,7 @@
+## M63 — 달리기/공격/회수 조정
+
+달리기는 `sprint` 설정(Size150,3초 용량,초당0.6 회복,이속1.5배)으로 조절한다. `attack.baseDamageMultiplier=0.7`은 기본 공격에만 적용하고 충전 최대2배와 스킬 피해는 유지한다. AI 안전한 먹이 선택은 성장치/거리, 성장치80 이상은 우선 회수하며 이동1.2배. 이번 결과는 기능/회귀 검증이며 새 정책의 장기 성장 그래프나 유저 체감 최적값을 산출한 것은 아니다.
+
 ## M62 — 대형 처치 보상 밀집
 
 Size300 이상 처치 드롭은 개수의90% 이상을 사망한 캐릭터 중심에서 그 직경0.9배 반경 안에 생성한다. 최대10%(개수 내림)만0.9~2.25배 반경으로 퍼진다. 기본 먹이 크기까지 고려해 직경2배 바깥에 걸치는 개수도 최대10%다. Size300 미만은 기존 분산을 유지한다. 드롭 개수·개별 크기·총 성장치·난수 소비는 변경하지 않는다. `killReward.compactDropMinSize/compactDropRadiusDiameters/compactDropOuterFraction/compactDropOuterRadiusDiameters`로 조절한다.
