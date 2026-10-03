@@ -40,14 +40,15 @@ export class Ecology {
     const sizes=ordered(units,'size',this.sizeOrder), scores=ordered(units,'score',this.scoreOrder);
     this.sizeOrder=sizes.map(e=>e.id);this.scoreOrder=scores.map(e=>e.id);
     const cap=Math.max(0,Math.min(50,Math.floor(game.balance?.ecology?.maxApex??5)));
-    const titles=new Set(sizes.filter(e=>!e.summoned).slice(0,cap).filter(e=>e.size>=100).map(e=>e.id));
+    const relativeMinimum=(sizes[0]?.size??0)*(game.balance?.ecology?.minLargestSizeFraction??.5),minimumSize=Math.max(100,relativeMinimum);
+    const titles=new Set(sizes.filter(e=>!e.summoned).slice(0,cap).filter(e=>e.size>=minimumSize).map(e=>e.id));
     sizes.forEach((e,i)=>{
       assignPersonality(e);
       const role=units.length<5?'forager':i<Math.floor(units.length*.2)?'predator':i>=units.length-Math.floor(units.length*.4)?'prey':'forager';
       commitCandidate(e,'role',role,this.initial||e.role===undefined);
       if(e.role==='predator' && e.behavior==='ai'&&!e.relationship){const r=random('ai');e.relationship=r<.4?'subordinate':r<.7?'challenger':'independent';}
       e._apexBefore=e.apex;
-      commitCandidate(e,'apex',titles.has(e.id),(this.initial||e.apex===undefined)&&!e._titleNeedsConfirmation);
+      commitCandidate(e,'apex',titles.has(e.id),e.size<relativeMinimum||(this.initial||e.apex===undefined)&&!e._titleNeedsConfirmation);
     });
     // Retained titles and newly confirmed replacements may overlap; enforce the hard cap.
     const excess=sizes.filter(e=>e.apex).slice(cap);

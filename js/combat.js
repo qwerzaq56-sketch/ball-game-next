@@ -198,7 +198,10 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   if(options.kind!=='field' && game?.abilities?.miss(target)){game.spawnFloatingText(target.x,target.y-target.size/2,"MISS","#eab308");return false;}
   const bal = balance || (game && game.balance);
   const defended = bal && !options.ignoreDefense ? applyDefense(rawDamage, target.size, bal,game?.abilities?.defenseMultiplier(target)??1) : rawDamage;
-  const dmg = Math.max(bal?.combatScaling?.minimumDamage??1,defended*Math.max(0,Math.min(1,options.postDefenseMultiplier??1)));
+  let dmg = Math.max(bal?.combatScaling?.minimumDamage??1,defended*Math.max(0,Math.min(1,options.postDefenseMultiplier??1)));
+  const shield=Math.min(dmg,Math.max(0,target.shieldHp??0));target.shieldHp=Math.max(0,(target.shieldHp??0)-shield);dmg-=shield;
+  if(shield>0){target.shieldDamageAbsorbed=(target.shieldDamageAbsorbed??0)+shield;target.regenTimer=0;}
+  if(dmg<=0){target.hitFlash=.08;return true;}
   const cfg = game ? game.balance.combat : null;
 
   const lost=Math.min(Math.max(0,target.hp),dmg);

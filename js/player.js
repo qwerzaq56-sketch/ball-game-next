@@ -1,3 +1,4 @@
+import {beginGrowthMotion} from './growthMotion.js';
 import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
 import { normalizeProfile } from './playerProfile.js';
 
@@ -31,6 +32,7 @@ export class Player extends Entity {
   }
 
   addGrowth(amount, balance) {
+    beginGrowthMotion(this);
     this.growth += amount;
     this.refreshFromGrowth(balance);
     this._recomputeStacks(balance, true);

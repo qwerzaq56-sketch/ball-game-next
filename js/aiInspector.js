@@ -144,8 +144,8 @@ export class AIInspector {
     const sr = eco.scoreOrder.indexOf(e.id) + 1, zr = eco.sizeOrder.indexOf(e.id) + 1;
     const f = (v) => (v == null ? '-' : v);
     const rows = [
-      ['이름 / id', `${e.displayName} · #${e.id}`], ['색', e.color], ['역할 / 성격', `${ROLE_LABELS[e.role] ?? f(e.role)} / ${f(e.personality)}`],
-      ['프레데터 관계', e.role==='predator' ? (RELATIONSHIP_LABELS[e.relationship] ?? '-') : '-'], ['state', e.state], ['target', this.describeTarget(e)],
+      ['이름 / id', `${e.displayName} · #${e.id}`], ['색', e.color], ['역할 / 성격', `${e.apex?'최상위 포식자':ROLE_LABELS[e.role] ?? f(e.role)} / ${f(e.personality)}`],
+      ['프레데터 관계', !e.apex&&e.role==='predator' ? (RELATIONSHIP_LABELS[e.relationship] ?? '-') : '-'], ['state', e.state], ['target', this.describeTarget(e)],
       ['지역 / 감지 거리', `${g.biomes.status(e)} / ${Math.round(g.biomes.sensingRange(e))}`],
       ['유물', g.relics.label(e)||'-'],
       ['시기 / 결투', `${g.era.phase.name} / ${e.challengeTarget?'#'+e.challengeTarget.id:'-'}`],
@@ -182,7 +182,7 @@ export class AIInspector {
       const chg = this.recent(e);
       return `<div class="ai-row${e.id === this.selectedId ? ' sel' : ''}${chg >= 4 ? ' hot' : ''}" data-id="${e.id}">` +
         `<span>${e.id}${e.apex ? '★' : ''}</span><span><i class="dot" style="background:${e.colorHex}"></i></span>` +
-        `<span>${ROLE_LABELS[e.role] ?? '-'}</span><span>${e.personality ?? '-'}</span><span>${e.role==='predator' ? (RELATIONSHIP_LABELS[e.relationship] ?? '-') : '-'}</span>` +
+        `<span>${e.apex?'최상위 포식자':ROLE_LABELS[e.role] ?? '-'}</span><span>${e.personality ?? '-'}</span><span>${!e.apex&&e.role==='predator' ? (RELATIONSHIP_LABELS[e.relationship] ?? '-') : '-'}</span>` +
         `<span>${e.state}</span><span>${Math.round(e.hp / e.maxHp * 100)}</span><span>${Math.round(e.size)}</span>` +
         `<span>${Math.round(e.score)}</span><span>${chg}</span></div>`;
     }).join('');

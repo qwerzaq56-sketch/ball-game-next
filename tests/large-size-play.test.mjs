@@ -30,5 +30,5 @@ test('grown skill snapshot hits beyond its original radius and keeps its cast ge
  const {AIEntity}=await import('../js/ai.js'),g=createGame(7),p=g.player;p.color='cyan';p.size=1400;p.apex=true;p.x=p.y=3000;
  const t=new AIEntity({x:3650,y:3000,startSize:1400,color:'red',colorHex:'#f00',balance:g.balance});g.entities=[p,t];g.buildGrid();
  assert(g.abilities.start(p,0,null,null,'R'));const cast=p.specialCast;assert.equal(cast.skill.radius,3640);
- p.size=1500;assert.equal(cast.skill.radius,3640);g.abilities.fire(p,cast);assert(t.frozen>0);
+ p.size=1500;assert.equal(cast.skill.radius,3640);g.abilities.fire(p,cast);assert.equal(g.abilities.frostMarks[0].target,t);assert.equal(g.abilities.frostMarks[0].skill.radius,3640);
 });

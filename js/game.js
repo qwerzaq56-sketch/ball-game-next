@@ -1,3 +1,4 @@
+import {updateGrowthMotion} from './growthMotion.js';
 import {updateSprint} from './sprint.js';
 import {delta,angleTo,near,wrap} from './topology.js';
 import {worldView,boxInView,segmentInView} from './renderVisibility.js';
@@ -230,6 +231,7 @@ export class Game {
 
     for (const e of this.entities) {
       if (!e.alive || (e.behavior !== 'player' && e.behavior !== 'ai')) continue;
+      updateGrowthMotion(e,dt);
       updateKnockback(e, dt);
       const regenerating = updateHealthRegen(e, dt, b,this.relics.regenMultiplier(e));
       if (regenerating && random('visual') < 0.15) this.spawnRegenParticle(e.x, e.y, e.size);
@@ -465,7 +467,7 @@ export class Game {
     const w = this.balance.world;
     for (const e of this.entities) {
       if (!e.alive) continue;
-      const r = e.size / 2;
+      const r = (e.visualSize??e.size) / 2;
       if(!w.wrap&&e.behavior==='ai'&&e.state==='search'&&(e.x<r||e.y<r||e.x>w.worldWidth-r||e.y>w.worldHeight-r)){e.wanderTimer=0;e.explorationPoint=null;}
       clampEntity(e,w);
     }
@@ -615,7 +617,7 @@ export class Game {
     if(this.player.companionGroup)this.allyLinks.leave(this.player,'defeat');
     this.abilities.release(this.player);
     this.player._specialApex=false;
-    this.player.frozen=0;this.player.wavePush=null;this.player.morale?.clear();
+    this.player.frozen=0;this.player.shieldHp=0;this.player.shieldRemaining=0;this.player.wavePush=null;this.player.morale?.clear();
     this.ecology.release(this.player, this.gameTime, reason);
     this.lives -= 1;
     if (this.lives > 0) {
@@ -881,7 +883,7 @@ export class Game {
     const absorbT = beingAbsorbed && e.absorptionRequired > 0 ? Math.min(1, e.absorptionProgress / e.absorptionRequired) : (beingAbsorbed ? 1 : 0);
     // v0.4 spec §23: a short outward "grew bigger" pulse plays on a successful absorption.
 
-    const r = e.size / 2;
+    const r = (e.visualSize??e.size) / 2;
     if(e.behavior!=='orb'&&this.abilities.unlocked(e,'E')){
       ctx.save();ctx.font=`bold ${12/this.camera.zoom}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3/this.camera.zoom;ctx.strokeStyle='#0f172a';
       for(const [i,slot] of ['E','R'].entries())if(this.abilities.unlocked(e,slot)){
@@ -925,9 +927,10 @@ export class Game {
 
     const aiming=e===this.player&&(this.touchAim?.kind==='attack'||this.input.mouseDown||e.autoChargeSeconds>0)&&e.attackUnlocked&&e.attackState==='READY';
     if(aiming||e.attackState==='TELEGRAPH'||e.attackState==='CHARGING'){
+      const hitRadius=e.size/2;
       const direction=aiming?(this.touchAim?.angle??angleTo(e,this.autoplay.action?.aim??this.screenToWorld(this.input.mouseX,this.input.mouseY))):e.attackDir;
       const remaining=aiming?attackChargeDistanceForSize(e.size,this.balance,e.apex)*((this.balance.attack.minChargeDistanceFraction??.03)+(1-(this.balance.attack.minChargeDistanceFraction??.03))*(e.attackHoldProgress??0)):e.attackState==='TELEGRAPH'?e.currentChargeDistance:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
-      ctx.save();ctx.translate(e.x,e.y);ctx.rotate(direction);ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(remaining,-r);ctx.arc(remaining,0,r,-Math.PI/2,Math.PI/2);ctx.lineTo(0,r);ctx.arc(0,0,r,Math.PI/2,Math.PI*1.5);ctx.closePath();ctx.fillStyle='rgba(255,255,255,.055)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1/this.camera.zoom;ctx.stroke();ctx.restore();
+      ctx.save();ctx.translate(e.x,e.y);ctx.rotate(direction);ctx.beginPath();ctx.moveTo(0,-hitRadius);ctx.lineTo(remaining,-hitRadius);ctx.arc(remaining,0,hitRadius,-Math.PI/2,Math.PI/2);ctx.lineTo(0,hitRadius);ctx.arc(0,0,hitRadius,Math.PI/2,Math.PI*1.5);ctx.closePath();ctx.fillStyle='rgba(255,255,255,.055)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1/this.camera.zoom;ctx.stroke();ctx.restore();
     }
     // telegraph indicator
     if (e.attackState === 'TELEGRAPH') {
@@ -968,6 +971,8 @@ export class Game {
     ctx.stroke();
     // Canvas save/restore does not restore the current path. Stroke the body before
     // decorative helpers replace it with their marks, pulse circles or arrow triangles.
+    if((e.shieldHp??0)>0){ctx.beginPath();ctx.arc(e.x,e.y,r+7/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#a5f3fc';ctx.lineWidth=3/this.camera.zoom;ctx.stroke();}
+    if(this.abilities.frostMarks.some(m=>m.target===e)){ctx.beginPath();ctx.arc(e.x,e.y,r+12/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#67e8f9';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([5/this.camera.zoom,4/this.camera.zoom]);ctx.stroke();ctx.setLineDash([]);}
     drawSpeciesMark(ctx,e,this.camera.zoom);
     drawGrowthPulse(ctx,e,this.camera.zoom);
     if(e!==this.player||!this.touchAim)drawPlayerDirection(ctx,e,this.camera.zoom);

@@ -1,3 +1,4 @@
+import {beginGrowthMotion} from './growthMotion.js';
 import {angleTo,wrap} from './topology.js';
 import { explorationDestination } from './exploration.js';
 import { attackReach } from './abilities.js';
@@ -40,6 +41,7 @@ export class AIEntity extends Entity {
   }
 
   addGrowth(amount, balance) {
+    beginGrowthMotion(this);
     this.growth += amount;
     const newSize = sizeFromGrowth(this.growth, this.baseSize, balance.growth.growthToSizeRatio,balance.growth);
     const newMaxHp = newSize * 5;
@@ -79,6 +81,7 @@ export function updateAI(ai, dt, game, balance) {
   // (A duplicate call here previously made every AI regenerate stacks at 2x the configured
   // rate, which is what made enemies look like they could attack almost nonstop.)
 
+  if(ai.beingAbsorbedByRef&&canStartDodge(ai)&&!ai.frozen){ai.escapeAbsorber=ai.beingAbsorbedByRef;startDodge(ai,angleTo(ai.beingAbsorbedByRef,ai),balance);return;}
   if(game.era.warDecision(ai)){
     if(ai.attackState==='READY'&&ai.dodgeState!=='DODGING'){game.abilities.considerAI(ai);moveAI(ai,dt,balance,game);}return;
   }

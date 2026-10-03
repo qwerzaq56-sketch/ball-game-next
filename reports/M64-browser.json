@@ -1,0 +1,16 @@
+{
+  "result": "PASS",
+  "E": "cyan-shield",
+  "R": "cyan-burst",
+  "shield": 150,
+  "fields": 1,
+  "frozen": 1.2,
+  "apex": "최상위 포식자",
+  "growth": {
+    "start": 200,
+    "partial": 206.81963557687615,
+    "target": 244,
+    "final": 244
+  },
+  "errors": []
+}

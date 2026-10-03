@@ -174,7 +174,7 @@ export class UI {
     const special=document.getElementById('special-text');
     if(special)special.textContent=['E','R'].filter(slot=>game.abilities.unlocked(player,slot)).map(slot=>`${slot} ${game.abilities.skill(player,slot).name} · ${player.specialCast?.slot===slot?'시전 중':game.abilities.cooldown(player,slot)>0?Math.ceil(game.abilities.cooldown(player,slot))+'s':game.abilities.canCast(player,slot)?'준비':'행동 후 사용'}`).join(' / ');
     const roleText=document.getElementById("role-text");
-    if(roleText)roleText.textContent=({prey:"프레이",forager:"포레이저",predator:"프레데터"})[player.role] ?? "";
+    if(roleText)roleText.textContent=player.apex?"최상위 포식자":({prey:"프레이",forager:"포레이저",predator:"프레데터"})[player.role] ?? "";
 
     this.allyAbsorbText.textContent = player.allyAbsorptionEnabled ? 'ON' : 'OFF';
     this.allyAbsorbText.className = player.allyAbsorptionEnabled ? 'ally-on' : 'ally-off';

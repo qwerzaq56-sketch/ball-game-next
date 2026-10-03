@@ -270,7 +270,8 @@
     }
   ],
   "ecology": {
-    "maxApex": 5
+    "maxApex": 5,
+    "minLargestSizeFraction": 0.5
   },
   "evaluation": {
     "encounterSeconds": 5,
@@ -310,8 +311,8 @@
     "territoryMultiplier": 1,
     "loadout": {
       "cyan": {
-        "E": "cyan-chill",
-        "R": "cyan-freeze"
+        "E": "cyan-shield",
+        "R": "cyan-burst"
       },
       "blue": {
         "E": "blue-ripple",

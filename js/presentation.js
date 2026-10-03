@@ -45,6 +45,7 @@ export function layoutNameLabels(candidates, width, height, reserved = []) {
 export const ROLE_LABELS = {prey:'프레이',forager:'포레이저',predator:'프레데터'};
 export const RELATIONSHIP_LABELS = {subordinate:'종속',challenger:'도전',independent:'독립'};
 export function debugRoleLabel(entity) {
+  if(entity.apex)return '★ 최상위 포식자';
   const role=ROLE_LABELS[entity.role] ?? '-';
   const relationship=entity.role==='predator' ? RELATIONSHIP_LABELS[entity.relationship] : null;
   return `${entity.apex ? '★ ' : ''}${role}${relationship ? ' · '+relationship : ''}`;

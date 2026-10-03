@@ -74,7 +74,7 @@ test('debug roles show predator relationships only while the role is predator',(
   assert.equal(debugRoleLabel({role:'prey',relationship:'challenger'}),'프레이');
   assert.equal(debugRoleLabel({role:'forager',relationship:'subordinate'}),'포레이저');
   for(const [relationship,label] of [['subordinate','종속'],['challenger','도전'],['independent','독립']])assert.equal(debugRoleLabel({role:'predator',relationship}),`프레데터 · ${label}`);
-  assert.equal(debugRoleLabel({role:'predator',apex:true}),'★ 프레데터');
+  assert.equal(debugRoleLabel({role:'predator',apex:true}),'★ 최상위 포식자');
 });
 test('debug drawing includes player role and AI role/state as separate lines without changing gameplay',()=>{
   const g=createGame(5),a=g.entities.find(e=>e.behavior==='ai');a.role='predator';a.relationship='challenger';
