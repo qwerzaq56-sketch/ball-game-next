@@ -648,3 +648,18 @@ html, body {
   #touch-actions button[data-state="ready"] { border-color:rgba(255,255,255,.65); }
   #touch-actions button[data-state="cooldown"] { opacity:.65; }
 }
+
+#era-status { --era-color:#86efac; display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px; min-width:118px; border:1px solid var(--era-color); padding:6px 9px; }
+#era-status[data-phase="competition"] { --era-color:#fbbf24; }
+#era-status[data-phase="war"] { --era-color:#fb7185; }
+#era-status[data-phase="decline"] { --era-color:#c4b5fd; }
+#era-status[data-phase="off"] { --era-color:#94a3b8; }
+#era-phase-name { font-size:12px; font-weight:700; color:var(--era-color); }
+#era-countdown { margin-left:auto; font:11px ui-monospace,monospace; color:#e2e8f0; }
+.era-progress { flex-basis:100%; height:2px; border-radius:2px; overflow:hidden; background:rgba(255,255,255,.12); }
+#era-progress-fill { height:100%; background:var(--era-color); }
+#era-status[data-transition="true"] { box-shadow:0 0 12px color-mix(in srgb,var(--era-color) 40%,transparent); }
+@media (pointer:coarse) {
+  body.mobile-minimal #hud > #era-status { display:flex; flex-shrink:0; padding:4px 7px; }
+  #era-phase-name { font-size:11px; }
+}

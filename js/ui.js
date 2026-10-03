@@ -1,5 +1,6 @@
 // HUD rendering (DOM overlay) + live-editable Debug/Balance panel.
 
+import { ERA_PHASES } from './era.js';
 import { submitScore } from './storage.js';
 import { EcologyUI } from './ecologyUI.js';
 import {nextSkillGoal} from './progression.js';
@@ -109,6 +110,22 @@ export class UI {
 
   // v0.6: takes the whole Game instance now (was just `player`) so it can also read
   // lives/score/ally-absorption state, all of which live on Game, not Player/HUD-local state.
+  updateEraBadge(game){
+    const era=game.era,badge=document.getElementById('era-status');
+    if(this.observedEra!==era){this.observedEra=era;this.lastEraPhase=era.phase.id;this.eraChangedAt=-Infinity;}
+    if(this.lastEraPhase!==era.phase.id){this.lastEraPhase=era.phase.id;this.eraChangedAt=game.gameTime;}
+    const index=ERA_PHASES.indexOf(era.phase),duration=era.phase.end-(ERA_PHASES[index-1]?.end??0),remaining=Math.max(0,Math.ceil(era.remaining));
+    const time=`${Math.floor(remaining/60)}:${String(remaining%60).padStart(2,'0')}`;
+    document.getElementById('era-phase-name').textContent=era.enabled?era.phase.name:'Era OFF';
+    document.getElementById('era-countdown').textContent=era.enabled?time:'';
+    document.getElementById('era-progress-fill').style.width=`${era.enabled?Math.max(0,Math.min(100,(1-era.remaining/duration)*100)):0}%`;
+    badge.dataset.phase=era.enabled?era.phase.id:'off';
+    badge.dataset.transition=String(era.enabled&&game.gameTime-this.eraChangedAt<3);
+    const next=ERA_PHASES[(index+1)%ERA_PHASES.length].name;
+    badge.title=era.enabled?`${era.cycle+1}번째 주기 · 다음 ${next} · 전환까지 ${time}`:'시대 시스템 OFF';
+    badge.setAttribute('aria-label',era.enabled?`${era.phase.name}, ${time} 후 ${next}`:'시대 시스템 OFF');
+  }
+
   update(dt, game) {
     this.ecologyUI.update(game);
     this.game = game; // debug-panel checkbox handlers read this
@@ -116,6 +133,7 @@ export class UI {
     document.getElementById('player-identity').textContent = player.displayName;
     document.getElementById('region-text').textContent=game.biomes.status(player);
     const field=game.era.apocalypse;document.getElementById('era-text').textContent=game.era.status()+(field?field.active?' · 파멸 위험':' · 파멸 전조':'');
+    this.updateEraBadge(game);
     const neighbors=game.allyLinks.neighbors(player).length;
     const group=game.allyLinks.groups.get(player.companionGroup);
     document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${group?` · ${group.members.size}명 대열 동행 · 공격 쉬는 중`:''}`;

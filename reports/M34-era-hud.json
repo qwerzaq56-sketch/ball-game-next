@@ -1,0 +1,40 @@
+{
+  "status": "PASS",
+  "visibleInMinimalAndFull": true,
+  "phaseTransitions": true,
+  "remainingTime": true,
+  "mobileLayouts": true,
+  "phases": [
+    {
+      "time": 90,
+      "id": "abundance",
+      "text": "영양기\n1:30",
+      "label": "영양기, 1:30 후 경쟁기"
+    },
+    {
+      "time": 270,
+      "id": "competition",
+      "text": "경쟁기\n1:30",
+      "label": "경쟁기, 1:30 후 전쟁기"
+    },
+    {
+      "time": 420,
+      "id": "war",
+      "text": "전쟁기\n1:00",
+      "label": "전쟁기, 1:00 후 쇠퇴기"
+    },
+    {
+      "time": 510,
+      "id": "decline",
+      "text": "쇠퇴기\n0:30",
+      "label": "쇠퇴기, 0:30 후 영양기"
+    },
+    {
+      "time": 540,
+      "id": "abundance",
+      "text": "영양기\n3:00",
+      "label": "영양기, 3:00 후 경쟁기"
+    }
+  ],
+  "errors": []
+}

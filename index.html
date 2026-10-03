@@ -12,7 +12,7 @@
 <body>
   <div id="player-info" style="position:fixed;bottom:12px;left:12px;color:#aaa;z-index:2;font:12px sans-serif">NEXT · <span id="player-identity"></span> · <span id="era-text"></span> · <span id="region-text"></span> · <span id="role-text"></span> · <span id="special-text"></span></div>
   <canvas id="game-canvas" tabindex="-1"></canvas>
-  <div id="build-id">NEXT · M33</div>
+  <div id="build-id">NEXT · M34</div>
 
   <dialog id="player-setup" aria-labelledby="player-setup-title">
     <form id="player-setup-form">
@@ -57,6 +57,7 @@
       </div>
       <div id="relic-text" hidden></div><div id="growth-goal-text"></div><div class="growth-goal-track"><div id="growth-goal-fill"></div></div>
     </div>
+    <div class="hud-block" id="era-status" aria-label="현재 시대"><span id="era-phase-name"></span><span id="era-countdown"></span><div class="era-progress"><div id="era-progress-fill"></div></div></div>
     <div class="hud-block hud-controls">
       <button id="mute-btn" class="hud-btn" type="button">SOUND: ON</button>
       <button id="names-toggle" class="hud-btn" type="button" aria-pressed="true">이름: ON</button>
