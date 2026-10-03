@@ -39,6 +39,8 @@ export function startAbsorption(absorber, target, balance, game) {
   target.absorptionProgress = 0;
   target.absorptionRequired = resistanceTimeFor(target, balance);
   target.absorptionHealthPaid=0;
+  const c=balance.absorption,ratio=target.size/absorber.size,t=Math.max(0,Math.min(1,(ratio-(c.nearEqualRefundStartRatio??.6))/Math.max(.01,(c.nearEqualRefundFullRatio??.9)-(c.nearEqualRefundStartRatio??.6))));
+  target.absorptionSuccessRefundFraction=Math.max(0,Math.min(1,(c.successHealthRefundFraction??1)+((c.nearEqualHealthRefundFraction??.9)-(c.successHealthRefundFraction??1))*t));
   target.absorptionHealthCost=absorber.maxHp*absorptionHealthFraction(absorber,target,balance);
   if (game && (absorber === game.player || target === game.player)) game.audio.absorbStart();
 }
@@ -67,7 +69,7 @@ function completeAbsorption(absorber, target, game, balance) {
   absorber.addGrowth(gained, balance);
   // Absorption growth raises capacity; it does not erase the intended health risk.
   absorber.hp=Math.max(absorber.maxHp*(balance.absorption.healthFloorFraction??.01),Math.min(beforeGrowth.hp,absorber.maxHp));
-  const recovery=Math.min(Math.max(0,-(target.absorptionHealthCost??0))+(target.absorptionHealthPaid??0)*(balance.absorption.successHealthRefundFraction??.25),Math.max(0,absorber.maxHp-absorber.hp));absorber.hp+=recovery;target.absorptionHealthRecovered=recovery;
+  const recovery=Math.min(Math.max(0,-(target.absorptionHealthCost??0))+(target.absorptionHealthPaid??0)*(target.absorptionSuccessRefundFraction??1),Math.max(0,absorber.maxHp-absorber.hp));absorber.hp+=recovery;target.absorptionHealthRecovered=recovery;
   if(recovery>0)game.spawnFloatingText(absorber.x,absorber.y,`+${Math.round(recovery)} HP`,'#86efac');
   if(target.behavior!=='orb')game.balanceLog?.absorb({...beforeGrowth,maxHp:absorber.maxHp},target,gained);
   game.awardScore(absorber, gained);

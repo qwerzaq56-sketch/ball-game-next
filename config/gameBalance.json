@@ -107,7 +107,10 @@
     "maxAbsorptionSpeed": 5,
     "pullForce": 1,
     "healthCostProgressFraction": 1,
-    "successHealthRefundFraction": 0.25,
+    "successHealthRefundFraction": 1,
+    "nearEqualRefundStartRatio": 0.6,
+    "nearEqualRefundFullRatio": 0.9,
+    "nearEqualHealthRefundFraction": 0.9,
     "healthFloorFraction": 0.01,
     "healthRatioCurve": [
       {
