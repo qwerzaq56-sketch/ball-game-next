@@ -1,3 +1,4 @@
+import {worldView,boxInView,segmentInView} from './renderVisibility.js';
 import { clampEntity } from './worldBounds.js';
 import { Autoplay } from './autoplay.js';
 import { RunMetrics } from './runMetrics.js';
@@ -783,9 +784,11 @@ export class Game {
   // v0.5 spec §13-14: the connection line's strength now also reflects distance — thin and
   // faint near the edge of maintainDistance, strong and pulsing once the balls are touching.
   drawAbsorptionLinks(ctx) {
+    const view=worldView(this.canvas,this.camera);
     for (const target of this.entities) {
       if (!target.alive || !target.beingAbsorbedByRef) continue;
       const absorber = target.beingAbsorbedByRef;
+      if(!segmentInView(view,target,absorber,6/this.camera.zoom))continue;
       const t = target.absorptionRequired > 0 ? Math.min(1, target.absorptionProgress / target.absorptionRequired) : 1;
       const maintainDistance = maintainDistanceFor(absorber, this.balance);
       const d = Math.hypot(target.x - absorber.x, target.y - absorber.y);
@@ -812,8 +815,8 @@ export class Game {
   }
 
   isRoughlyVisible(e) {
-    const halfW = this.canvas.width / 2 / this.camera.zoom + 100;
-    const halfH = this.canvas.height / 2 / this.camera.zoom + 100;
+    const halfW = this.canvas.width / 2 / this.camera.zoom + Math.max(100,e.size/2+20);
+    const halfH = this.canvas.height / 2 / this.camera.zoom + Math.max(100,e.size/2+20);
     return Math.abs(e.x - this.camera.x) < halfW && Math.abs(e.y - this.camera.y) < halfH;
   }
 
@@ -956,7 +959,10 @@ export class Game {
   }
 
   drawParticles(ctx) {
+    const view=worldView(this.canvas,this.camera);
     for (const p of this.particles) {
+      const extent=p.type==='ring'?p.size*4+2:p.size;
+      if(!boxInView(view,p.x-extent,p.y-extent,p.x+extent,p.y+extent))continue;
       const alpha = Math.max(0, p.life / p.maxLife);
       ctx.beginPath();
       ctx.fillStyle = this.withAlpha(p.color, alpha);

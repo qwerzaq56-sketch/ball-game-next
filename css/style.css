@@ -640,3 +640,11 @@ html, body {
   body:not(.mobile-minimal) #live-ranking { max-height:calc(100dvh - 198px); overflow-y:auto; }
   #mobile-ui-toggle { right:max(12px,env(safe-area-inset-right)); }
 }
+@media (pointer:coarse) {
+  #touch-actions button { position:relative; transition:border-color .12s,background-color .12s; }
+  #touch-actions button[data-charges]:not([data-charges=""])::after { content:attr(data-charges); position:absolute; top:5px; left:0; width:100%; font-size:9px; font-weight:400; color:#cbd5e1; }
+  #touch-actions button[data-charges]:not([data-charges=""])::before { content:''; position:absolute; left:23%; right:23%; bottom:9px; height:2px; border-radius:2px; background:linear-gradient(to right,#fff var(--recharge,0%),rgba(255,255,255,.15) var(--recharge,0%)); }
+  #touch-actions button.aiming { border-color:#fff; background-color:rgba(255,255,255,.12); }
+  #touch-actions button[data-state="ready"] { border-color:rgba(255,255,255,.65); }
+  #touch-actions button[data-state="cooldown"] { opacity:.65; }
+}

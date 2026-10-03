@@ -1,3 +1,4 @@
+import {worldView,segmentInView} from './renderVisibility.js';
 import { boundCenter } from './worldBounds.js';
 import {dist,isHostile,canAbsorb} from './collision.js';
 import {random} from './random.js';
@@ -102,8 +103,8 @@ export class AllyLinks {
   const route=this.game.biomes.routePoint(e,point),d=dist(e,route),angle=Math.atan2(route.y-e.y,route.x-e.x),speed=Math.min(e.moveSpeed*1.25,d/Math.max(dt,1e-8));
   e.facing=lead.facing;e.x+=Math.cos(angle)*speed*dt;e.y+=Math.sin(angle)*speed*dt;return true;
  }
- draw(ctx,zoom){ctx.save();ctx.lineWidth=2/zoom;for(const [a,b]of this.edges.values()){
-  if(!this.connected(a,b))continue;const d=dist(a,b);if(d<1||d<=(a.size+b.size)/2)continue;
+ draw(ctx,zoom){const view=worldView(this.game.canvas,this.game.camera);ctx.save();ctx.lineWidth=2/zoom;for(const [a,b]of this.edges.values()){
+  if(!segmentInView(view,a,b,2/zoom)||!this.connected(a,b))continue;const d=dist(a,b);if(d<1||d<=(a.size+b.size)/2)continue;
   const dx=(b.x-a.x)/d,dy=(b.y-a.y)/d;ctx.beginPath();ctx.moveTo(a.x+dx*a.size/2,a.y+dy*a.size/2);ctx.lineTo(b.x-dx*b.size/2,b.y-dy*b.size/2);
   ctx.strokeStyle=this.game.withAlpha(a.colorHex,a.companionGroup && a.companionGroup===b.companionGroup ? .7 : .3);ctx.stroke();
  }ctx.restore();}

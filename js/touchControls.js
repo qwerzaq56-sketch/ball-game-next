@@ -1,4 +1,4 @@
-import {canStartDodge} from './combat.js';
+import {touchActionFeedback} from './touchFeedback.js';
 // Pointer Events allow independent movement and attack fingers; cancellation never sticks.
 export class TouchControls {
   constructor(game,input,canvas) {
@@ -78,17 +78,18 @@ export class TouchControls {
     this.lastHistory=this.game.apexHistory;this.wasPaused=this.game.paused;
     const gesture=this.gestures.values().next().value;if(gesture)this.showAim(gesture.angle);
     const p=this.game.player,blocked=this.blocked();
-    this.attack.disabled=blocked||!p.attackUnlocked||!!p.companionGroup;
-    this.dodge.disabled=blocked||!p.dodgeUnlocked||!canStartDodge(p);
-    this.special.disabled=blocked||!this.game.abilities.canCast(p);
-    const attackAt=this.game.balance.skills.attackStackThresholds.find(t=>t.maxStack>0)?.size??40;
-    const dodgeAt=this.game.balance.skills.dodgeStackThresholds.find(t=>t.maxStack>0)?.size??50;
-    const labels=[
-      [this.attack,p.companionGroup?'동행 중\n공격 불가':!p.attackUnlocked?`크기 ${attackAt}\n공격 해금`:p.frozen>0?'빙결 중\n공격':p.attackStack<=0?'충전 중\n공격':'조준\n공격'],
-      [this.dodge,!p.dodgeUnlocked?`크기 ${dodgeAt}\n회피 해금`:p.frozen>0?'빙결 중':p.dodgeStack<=0?'회피 충전':'조준\n회피'],
-      [this.special,!p.apex?'최상위\nE 해금':p.companionGroup?'동행 중\nE 불가':p.specialCast?'E 시전 중':(p.specialCooldown??0)>0?`E ${Math.ceil(p.specialCooldown)}s`:p.frozen>0?'빙결 중':p.attackState!=='READY'||p.dodgeState==='DODGING'?'행동 중':'E 스킬']
-    ];
-    for(const [button,label]of labels)if(button.textContent!==label)button.textContent=label;
+    for(const [button,kind]of [[this.attack,'attack'],[this.dodge,'dodge'],[this.special,'special']]){
+      const feedback=touchActionFeedback(this.game,kind);
+      button.disabled=feedback.disabled;
+      if(button.textContent!==feedback.label)button.textContent=feedback.label;
+      if(button.dataset.state!==feedback.state)button.dataset.state=feedback.state;
+      if(button.dataset.charges!==feedback.charges)button.dataset.charges=feedback.charges;
+      const progress=String(Math.round(feedback.progress*100));
+      if(button.dataset.progress!==progress){button.dataset.progress=progress;button.style.setProperty('--recharge',`${progress}%`);}
+      button.classList.toggle('aiming',[...this.pointers.values()].includes(kind));
+      const label=`${feedback.label.replace('\n',' ')}${feedback.charges?' · 충전 '+feedback.charges:''}${!feedback.disabled&&kind!=='special'?' · 드래그 후 손을 떼면 실행':''}`;
+      if(button.getAttribute('aria-label')!==label)button.setAttribute('aria-label',label);
+    }
     this.stick.setAttribute('aria-disabled',String(blocked));
   }
 }

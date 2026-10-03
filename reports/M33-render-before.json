@@ -1,0 +1,16 @@
+{
+  "scene": "deterministic synthetic stress: 1000 ally edges, 4000 particles, mostly offscreen; paused rendering only",
+  "stats": {
+    "effects": {
+      "p50Ms": 3,
+      "p95Ms": 4.399999998509884
+    },
+    "render": {
+      "p50Ms": 3.100000001490116,
+      "p95Ms": 3.600000001490116
+    }
+  },
+  "strokes": 2041,
+  "arcs": 4018,
+  "imageHash": "ff0f27b5a1bf70ec728e22ca9c8f9ae127f700badc36bf324c79626867643e42"
+}

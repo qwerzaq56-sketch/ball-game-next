@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "charges": true,
+  "rechargeProgress": true,
+  "accessibleLabels": true,
+  "cooldownFrozenBusyPeace": true,
+  "specialCountdown": true,
+  "errors": []
+}
