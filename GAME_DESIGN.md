@@ -1,3 +1,7 @@
+## M62 — 대형 처치 보상 밀집
+
+Size300 이상 처치 드롭은 개수의90% 이상을 사망한 캐릭터 중심에서 그 직경0.9배 반경 안에 생성한다. 최대10%(개수 내림)만0.9~2.25배 반경으로 퍼진다. 기본 먹이 크기까지 고려해 직경2배 바깥에 걸치는 개수도 최대10%다. Size300 미만은 기존 분산을 유지한다. 드롭 개수·개별 크기·총 성장치·난수 소비는 변경하지 않는다. `killReward.compactDropMinSize/compactDropRadiusDiameters/compactDropOuterFraction/compactDropOuterRadiusDiameters`로 조절한다.
+
 ## M61 — 스킬 사용 빈도·충전 공격·크기별 흡수 위험 (최신 규칙)
 
 이 절은 아래 이전 단계의 충전 시간, 선딜, 범위, 흡수 비용 설명을 대체한다.

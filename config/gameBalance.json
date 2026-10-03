@@ -215,6 +215,10 @@
     "orbSizeGrowthPerEnemySize": 0.25,
     "orbSpreadBase": 20,
     "orbSpreadMultiplier": 2.0,
+    "compactDropMinSize": 300,
+    "compactDropRadiusDiameters": 0.9,
+    "compactDropOuterFraction": 0.1,
+    "compactDropOuterRadiusDiameters": 2.25,
     "retainedGrowthFraction": 0.9,
     "growthPerSize": 4,
     "retainBodyCapital": false

@@ -1,3 +1,7 @@
+## M62 — 대형 처치 보상 밀집
+
+Size300 이상 처치 드롭은 개수의90% 이상을 사망한 캐릭터 중심에서 그 직경0.9배 반경 안에 생성한다. 최대10%(개수 내림)만0.9~2.25배 반경으로 퍼진다. 기본 먹이 크기까지 고려해 직경2배 바깥에 걸치는 개수도 최대10%다. Size300 미만은 기존 분산을 유지한다. 드롭 개수·개별 크기·총 성장치·난수 소비는 변경하지 않는다. `killReward.compactDropMinSize/compactDropRadiusDiameters/compactDropOuterFraction/compactDropOuterRadiusDiameters`로 조절한다.
+
 ## M61 — 신규 조절 변수와 검증 범위
 
 - 공격: 수동 완충0.9초, AI 충전비율0.75, 최소 피해0.35배/완충2배, 최소 거리3%/완충100%, 추가 선딜0. 각 값은 `attack`/`combatScaling` 설정에서 조정한다.

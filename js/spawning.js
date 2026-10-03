@@ -86,8 +86,8 @@ export function spawnAI(balance, colorDef, pos = null, playerSize = 20) {
 // Now each orb's size is randomized like a field orb, but the *range* it's drawn from widens
 // with the killed entity's Size — a bigger kill drops both more AND individually bigger/more
 // valuable orbs, so total reward keeps climbing well past the point where orb count alone caps
-// out (§ see BALANCE_NOTES for the math). Spread radius also scales more aggressively with Size
-// so a big kill's reward visibly fans out across the field instead of clumping on one spot.
+// out (§ see BALANCE_NOTES for the math). Large kills keep most drops near the body,
+// with a bounded minority scattered farther out for a visible spray.
 export function spawnDeathOrbs(deadEntity, balance) {
   const kr = balance.killReward;
   const w = balance.world;
@@ -96,9 +96,16 @@ export function spawnDeathOrbs(deadEntity, balance) {
   const naturalSpread = w.maxOrbSize - w.minOrbSize;
   const sizeSpread = Math.max(naturalSpread, deadEntity.size * kr.orbSizeGrowthPerEnemySize);
   const spreadRadius = deadEntity.size * kr.orbSpreadMultiplier + kr.orbSpreadBase;
+  const compact = deadEntity.size >= (kr.compactDropMinSize ?? 300);
+  const outerCount = compact ? Math.floor(count * Math.max(0, Math.min(1, kr.compactDropOuterFraction ?? .1))) : 0;
   for (let i = 0; i < count; i++) {
     const angle = random('world') * Math.PI * 2;
-    const dist = random('world') * spreadRadius;
+    const radial = random('world');
+    const innerRadius = deadEntity.size * (kr.compactDropRadiusDiameters ?? .9);
+    const outerRadius = deadEntity.size * (kr.compactDropOuterRadiusDiameters ?? 2.25);
+    const dist = !compact ? radial * spreadRadius : i < count - outerCount
+      ? Math.sqrt(radial) * innerRadius
+      : innerRadius + radial * Math.max(0, outerRadius - innerRadius);
     const size = w.minOrbSize + random('world') * sizeSpread;
     const growthValue = Math.round(5 + (size - w.minOrbSize) * 2); // same value-density formula as a natural orb
     const orb = new Entity({
