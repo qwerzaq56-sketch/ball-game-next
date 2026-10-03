@@ -15,8 +15,8 @@ test('mobile charge feedback follows combat availability and reads recharge time
 });
 test('mobile feedback distinguishes unlock, peace, pause and special cooldown',()=>{
  const g=createGame(7),p=g.player;assert.equal(touchActionFeedback(g,'attack').state,'locked');
- p.attackUnlocked=true;p.attackStack=2;p.companionGroup=1;assert.equal(touchActionFeedback(g,'attack').state,'peace');
- p.apex=true;assert.equal(touchActionFeedback(g,'special').state,'peace');p.companionGroup=null;p.specialCooldown=2.4;
+ p.attackUnlocked=true;p.attackStack=2;p.companionGroup=1;assert.equal(touchActionFeedback(g,'attack').state,'ready');
+ p.apex=true;assert.equal(touchActionFeedback(g,'special').state,'ready');p.companionGroup=null;p.specialCooldown=2.4;
  assert.equal(touchActionFeedback(g,'special').label,'E 3s');p.attackState='READY';p.dodgeState='READY';g.paused=true;assert.equal(touchActionFeedback(g,'attack').disabled,true);
 });
 test('render bounds keep crossing segments and effect extents while rejecting fully outside objects',()=>{

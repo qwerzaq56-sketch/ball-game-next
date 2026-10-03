@@ -4,9 +4,12 @@ export class TouchControls {
   constructor(game,input,canvas) {
     this.game=game;this.input=input;this.canvas=canvas;this.pointers=new Map();this.gestures=new Map();
     const toggle=document.getElementById('mobile-ui-toggle');
-    let minimal=true;try{minimal=localStorage.getItem('ball-mobile-minimal')!=='false';}catch{}
+    const coarse=window.matchMedia('(pointer:coarse)').matches,key=coarse?'ball-mobile-minimal':'ball-desktop-minimal';
+    let minimal=coarse;try{const saved=localStorage.getItem(key);if(saved!==null)minimal=saved==='true';}catch{}
     const apply=()=>{document.body.classList.toggle('mobile-minimal',minimal);toggle.textContent=minimal?'전체 UI':'최소 UI';toggle.setAttribute('aria-pressed',String(minimal));};
-    apply();toggle.addEventListener('click',()=>{minimal=!minimal;apply();try{localStorage.setItem('ball-mobile-minimal',String(minimal));}catch{}});
+    const switchUI=()=>{minimal=!minimal;apply();try{localStorage.setItem(key,String(minimal));}catch{}};
+    apply();toggle.addEventListener('click',switchUI);
+    window.addEventListener('keydown',e=>{if(e.code==='KeyU'&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!['INPUT','TEXTAREA','SELECT'].includes(e.target?.tagName)&&!document.querySelector('dialog[open]')){e.preventDefault();switchUI();}});
     this.root=document.getElementById('touch-controls');
     this.stick=document.getElementById('touch-stick');this.knob=document.getElementById('touch-knob');
     this.attack=document.getElementById('touch-attack');this.dodge=document.getElementById('touch-dodge');this.special=document.getElementById('touch-special');
@@ -19,7 +22,7 @@ export class TouchControls {
       button.addEventListener('pointerdown',e=>{
         if(e.pointerType==='mouse'||this.blocked()||button.disabled||(kind!=='special'&&this.gestures.size))return;
         e.preventDefault();button.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,kind);
-        if(kind==='attack'||kind==='dodge'){this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing});this.aim(e);}
+        if(kind==='attack'||kind==='dodge'){this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,kind});this.aim(e);}
         if(kind==='special')input._specialQueued=true;
       });
     }
@@ -29,9 +32,9 @@ export class TouchControls {
     window.addEventListener('pointerup',e=>{if(this.gestures.has(e.pointerId))this.aim(e);this.release(e.pointerId,true);});
     for(const event of ['pointercancel','lostpointercapture'])window.addEventListener(event,e=>this.release(e.pointerId));
     canvas.addEventListener('pointerdown',e=>{
-      if(e.pointerType!=='touch'||this.blocked()||!game.player.attackUnlocked||game.player.companionGroup||this.gestures.size)return;
+      if(e.pointerType!=='touch'||this.blocked()||!game.player.attackUnlocked||this.gestures.size)return;
       e.preventDefault();canvas.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,'attack');
-      this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,canvas:true});this.aim(e);
+      this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,canvas:true,kind:"attack"});this.aim(e);
     });
     window.addEventListener('blur',()=>this.clear());
     window.addEventListener('resize',()=>this.clear());
@@ -50,12 +53,12 @@ export class TouchControls {
     const gesture=this.gestures.get(e.pointerId);if(!gesture)return;
     const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
     if(Math.hypot(dx,dy)>=8){gesture.angle=Math.atan2(dy,dx);gesture.dragged=true;}
-    this.showAim(gesture.angle);
+    this.showAim(gesture.angle,gesture.kind);
   }
-  showAim(angle){
+  showAim(angle,kind){
     const p=this.game.worldToScreen(this.game.player.x,this.game.player.y);
     this.input.mouseX=p.x+Math.cos(angle)*180;this.input.mouseY=p.y+Math.sin(angle)*180;
-    this.game.touchAim={angle};
+    this.game.touchAim={angle,kind};
   }
   release(id,fire=false){
     const kind=this.pointers.get(id);if(!kind)return;this.pointers.delete(id);
@@ -76,7 +79,7 @@ export class TouchControls {
     const fresh=this.lastHistory!==this.game.apexHistory;
     if(fresh||(!this.wasPaused&&this.game.paused))this.clear();
     this.lastHistory=this.game.apexHistory;this.wasPaused=this.game.paused;
-    const gesture=this.gestures.values().next().value;if(gesture)this.showAim(gesture.angle);
+    const gesture=this.gestures.values().next().value;if(gesture)this.showAim(gesture.angle,gesture.kind);
     const p=this.game.player,blocked=this.blocked();
     for(const [button,kind]of [[this.attack,'attack'],[this.dodge,'dodge'],[this.special,'special']]){
       const feedback=touchActionFeedback(this.game,kind);

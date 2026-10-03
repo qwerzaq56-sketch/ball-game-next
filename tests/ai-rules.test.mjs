@@ -162,10 +162,10 @@ test('sand escape holds to 420 and releases when the field expires',()=>{
  t.g.abilities.fields=[];assert.equal(t.run([a],a),'search');
 });
 
-test('contact defense lets cautious prey answer contact but never pursue distant equals',()=>{
+test('cautious prey can engage similar enemies in sensing range',()=>{
  const t=setup(), a=victim(t,'prey','cautious'), foe=t.unit(100,'red',1120);
  assert.equal(t.run([a,foe],a),'chase_fight');assert.equal(a.target,foe);
- foe.x=1250;assert.notEqual(t.run([a,foe],a),'chase_fight');
+ foe.x=1250;assert.equal(t.run([a,foe],a),'chase_fight');
 });
 test('contact defense flees without a stack and still yields to recovery',()=>{
  const t=setup(), a=victim(t), foe=t.unit(100,'red',1120);

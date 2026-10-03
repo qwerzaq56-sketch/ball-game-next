@@ -201,7 +201,8 @@ export class Game {
     // v0.5: charge distance now scales with attack range (see combat.js), so the candidate
     // scan radius has to cover that instead of the old fixed chargeSpeed*duration distance.
     const c = this.balance.combatScaling;
-    const range = attackRangeForSize(entity.size, this.balance) * c.chargeDistanceMultiplier + entity.size + 40;
+    const largest=this.entities.reduce((n,e)=>e.alive&&isHostile(entity,e)?Math.max(n,e.size/2):n,0);
+    const range = attackRangeForSize(entity.size, this.balance) * c.chargeDistanceMultiplier + entity.size/2 + largest;
     return this.getNearbyEntities(entity, range).filter((o) => isHostile(entity, o));
   }
 
@@ -875,6 +876,12 @@ export class Game {
       }
     }
 
+    const aiming=e===this.player&&this.touchAim?.kind==='attack'&&e.attackUnlocked&&e.attackState==='READY';
+    if(aiming||e.attackState==='TELEGRAPH'||e.attackState==='CHARGING'){
+      const direction=aiming?this.touchAim.angle:e.attackDir;
+      const remaining=aiming?attackRangeForSize(e.size,this.balance)*this.balance.combatScaling.chargeDistanceMultiplier*(e.apex?.7:1):e.attackState==='TELEGRAPH'?e.currentChargeDistance:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
+      ctx.save();ctx.translate(e.x,e.y);ctx.rotate(direction);ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(remaining,-r);ctx.arc(remaining,0,r,-Math.PI/2,Math.PI/2);ctx.lineTo(0,r);ctx.arc(0,0,r,Math.PI/2,Math.PI*1.5);ctx.closePath();ctx.fillStyle='rgba(255,255,255,.055)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1/this.camera.zoom;ctx.stroke();ctx.restore();
+    }
     // telegraph indicator
     if (e.attackState === 'TELEGRAPH') {
       const progress = e.attackTimer / e.currentTelegraphTime;
@@ -895,6 +902,8 @@ export class Game {
       ctx.restore();
     }
 
+    if(e.regionReward==='snow'&&e.behavior==='orb'){ctx.save();ctx.strokeStyle='#e0f2fe';ctx.lineWidth=1/this.camera.zoom;ctx.beginPath();for(let i=0;i<6;i++){const angle=i*Math.PI/3;ctx.moveTo(e.x,e.y);ctx.lineTo(e.x+Math.cos(angle)*(r+5),e.y+Math.sin(angle)*(r+5));}ctx.stroke();ctx.restore();}
+    if(e.attackState==='CHARGING'){ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.strokeStyle='#ffffff';ctx.lineWidth=4/this.camera.zoom;ctx.stroke();}
     // shadow
     ctx.beginPath();
     ctx.fillStyle = 'rgba(0,0,0,0.35)';
@@ -908,7 +917,7 @@ export class Game {
     ctx.fill();
 
     ctx.lineWidth = Math.max(1.5, r * 0.08);
-    ctx.strokeStyle = e.behavior === 'player' ? '#ffffff' : (beingAbsorbed ? '#ffffff' : 'rgba(0,0,0,0.45)');
+    ctx.strokeStyle = e.attackState==='CHARGING' ? '#ffffff' : e.behavior === 'player' ? '#ffffff' : (beingAbsorbed ? '#ffffff' : 'rgba(0,0,0,0.45)');
     ctx.stroke();
     // Canvas save/restore does not restore the current path. Stroke the body before
     // decorative helpers replace it with their marks, pulse circles or arrow triangles.

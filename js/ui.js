@@ -136,7 +136,7 @@ export class UI {
     this.updateEraBadge(game);
     const neighbors=game.allyLinks.neighbors(player).length;
     const group=game.allyLinks.groups.get(player.companionGroup);
-    document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${group?` · ${group.members.size}명 대열 동행 · 공격 쉬는 중`:''}`;
+    document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${group?` · ${group.members.size}명 대열 · ${({challenge:"도전형",opportunity:"기회형",avoidance:"회피형"})[game.allyLinks.personality(group)]}`:''}`;
     document.getElementById('companion-leave').disabled=game.paused||!player.companionGroup;
     document.getElementById('ally-links-toggle').textContent=`연결선: ${game.showAllyLinks===false?'OFF':'ON'}`;
     document.getElementById('ally-links-toggle').setAttribute('aria-pressed',String(game.showAllyLinks!==false));
@@ -150,7 +150,7 @@ export class UI {
     this.lifeText.textContent = Math.max(0, game.lives);
     const names={cyan:'냉기 휘두르기',blue:'삼중 파도',green:'사기 진작',red:'전투 집결',yellow:'모래바람'};
     const special=document.getElementById('special-text');
-    if(special)special.textContent=player.apex?`E ${names[player.color]} · ${group?'동행 중 사용 불가':player.specialCast?'시전 중':player.specialCooldown>0?Math.ceil(player.specialCooldown)+'s':player.frozen>0?'빙결 중':player.attackState!=='READY'||player.dodgeState==='DODGING'?'행동 후 사용':'준비'}`:'';
+    if(special)special.textContent=player.apex?`E ${names[player.color]} · ${player.specialCast?'시전 중':player.specialCooldown>0?Math.ceil(player.specialCooldown)+'s':player.frozen>0?'빙결 중':player.attackState!=='READY'||player.dodgeState==='DODGING'?'행동 후 사용':'준비'}`:'';
     const roleText=document.getElementById("role-text");
     if(roleText)roleText.textContent=({prey:"프레이",forager:"포레이저",predator:"프레데터"})[player.role] ?? "";
 
@@ -244,6 +244,7 @@ export class UI {
         ['mediumSizeMin', 1], ['mediumSizeMax', 1],
         ['largeSizeMin', 1], ['largeSizeMax', 1],
       ] },
+      { label: 'Ecology', key: 'ecology', fields: [['maxApex', 1]] },
       { label: 'World', key: 'world', fields: [
         ['minOrbSize', 1], ['maxOrbSize', 1],
       ] },
@@ -287,10 +288,12 @@ export class UI {
         input.type = 'number';
         input.step = step;
         input.value = this.balance[section.key][field];
+        if(section.key==='ecology'){input.min=0;input.max=50;span.textContent='최상위 포식자 최대 수';}
         input.addEventListener('input', () => {
           const v = parseFloat(input.value);
           if (Number.isFinite(v)) {
-            this.balance[section.key][field] = v;
+            this.balance[section.key][field] = section.key==='ecology'?Math.max(0,Math.min(50,Math.floor(v))):v;
+            if(section.key==='ecology'&&this.game)this.game.ecology.timer=0;
             this.onBalanceChange(section.key, field, v);
           }
         });

@@ -45,6 +45,10 @@ try{
  await touch('touchStart',[point(6,attack)]);await page.locator('#pause-btn').click();await touch('touchEnd',[]);await page.locator('#pause-btn').click();await page.waitForTimeout(100);assert.equal(await page.evaluate(()=>window.__game.player.attackStack),3);
  await touch('touchStart',[point(7,attack)]);await page.setViewportSize({width:844,height:390});await touch('touchEnd',[]);await page.waitForTimeout(100);assert.equal(await page.evaluate(()=>window.__game.player.attackStack),3);
  assert((await page.locator('#hud').boundingBox()).height<100);await page.screenshot({path:`${prefix}-mobile-landscape.png`});
+ await prepare();await page.waitForTimeout(100);
+ await page.evaluate(async()=>{const g=window.__game,{AIEntity}=await import('./js/ai.js'),p=g.player;const ally=new AIEntity({x:p.x-80,y:p.y,color:p.color,colorHex:p.colorHex,startSize:40,balance:g.balance});g.entities.push(ally);g.allyLinks.refresh();g.allyLinks.join(ally,p);g.allyLinks.timer=10000;});
+ await touch('touchStart',[point(80,{x:360,y:180})]);await touch('touchMove',[point(80,{x:410,y:180})]);await touch('touchEnd',[]);await page.waitForTimeout(70);assert.equal(await page.evaluate(()=>window.__game.player.attackStack),2);
+ assert(await page.evaluate(()=>!!window.__game.player.companionGroup));
  await page.reload();await page.waitForFunction(()=>window.__game);assert.equal(await page.locator('body').evaluate(e=>e.classList.contains('mobile-minimal')),true);
- assert.deepEqual(errors,[]);const result={status:'PASS',genuineTouch:true,minimalUI:true,persisted:true,multitouchMovement:true,attackOnRelease:true,dodgeOnRelease:true,canvasAttackOnRelease:true,singleAttack:true,cancelPauseResizeNoFire:true,screenTapNoAttack:true,errors};writeFileSync(`${prefix}-mobile-release.json`,JSON.stringify(result,null,2));console.log(JSON.stringify(result));
+ assert.deepEqual(errors,[]);const result={status:'PASS',genuineTouch:true,minimalUI:true,persisted:true,multitouchMovement:true,attackOnRelease:true,dodgeOnRelease:true,canvasAttackOnRelease:true,companionCanvasAttack:true,singleAttack:true,cancelPauseResizeNoFire:true,screenTapNoAttack:true,errors};writeFileSync(`${prefix}-mobile-release.json`,JSON.stringify(result,null,2));console.log(JSON.stringify(result));
 }finally{await browser.close();}

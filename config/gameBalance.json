@@ -80,14 +80,14 @@
     "absorptionDetectionRange": 400,
     "absorptionPriorityRatio": 1.5,
     "highPriorityAbsorptionRatio": 2.0,
-    "attackCooldown": 2.5,
+    "attackCooldown": 1.8,
     "absorptionAttemptChance": 0.6,
     "lowHealthAttackChance": 0.15
   },
   "world": {
     "wrap": true,
-    "worldWidth": 5000,
-    "worldHeight": 5000,
+    "worldWidth": 8000,
+    "worldHeight": 8000,
     "minOrbSize": 8,
     "maxOrbSize": 16,
     "colorCount": 5
@@ -149,5 +149,6 @@
     { "id": "green", "color": "#22C55E" },
     { "id": "yellow", "color": "#EAB308" },
     { "id": "cyan", "color": "#22D3EE" }
-  ]
+  ],
+  "ecology": { "maxApex": 5 }
 }

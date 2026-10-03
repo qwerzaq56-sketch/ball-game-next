@@ -10,7 +10,6 @@ export function touchActionFeedback(game,kind){
  const progress=special?0:count>=max?1:clamp((attack?p.attackStackTimer:p.dodgeStackTimer)/(attack?b.attack.attackCooldown:b.dodge.dodgeCooldown));
  let state='ready',label=action;
  if(!unlocked){state='locked';const at=(attack?b.skills.attackStackThresholds:b.skills.dodgeStackThresholds).find(t=>t.maxStack>0)?.size;label=special?'최상위\nE 해금':`크기 ${at}\n${action} 해금`;}
- else if((special||attack)&&p.companionGroup){state='peace';label=`동행 중\n${action} 불가`;}
  else if(p.frozen>0){state='frozen';label='빙결 중';}
  else if(special&&p.specialCast){state='busy';label='E 시전 중';}
  else if(special&&(p.specialCooldown??0)>0){state='cooldown';label=`E ${Math.ceil(p.specialCooldown)}s`;}

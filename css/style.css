@@ -603,8 +603,25 @@ html, body {
 #run-metrics-chart { display:block; width:100%; height:90px; }
 #run-metrics-summary { font-size:11px; line-height:1.5; color:#cbd5e1; }
 
+/* Shared compact HUD for desktop and touch. U toggles on desktop. */
+#mobile-ui-toggle { display:block;position:fixed;right:12px;top:8px;z-index:25;padding:8px 12px; }
+  body.mobile-minimal #hud { display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; width:calc(100vw - 110px); max-width:300px; gap:4px; }
+  body.mobile-minimal #hud > .hud-block { display:none; }
+  body.mobile-minimal #hud > .hud-block:first-child { display:block; width:105px; padding:4px; }
+  body.mobile-minimal #hud .hp-bar-outer { width:100%; height:8px; }
+  body.mobile-minimal #hud .hp-text { font-size:10px; }
+  body.mobile-minimal #hud > .hud-block:nth-child(3) { display:block; padding:4px; font-size:11px; }
+  body.mobile-minimal #hud > .hud-block:nth-child(3) > div:nth-child(2) { display:none; }
+  body.mobile-minimal #hud > .hud-controls { display:block; padding:0; max-height:none; }
+  body.mobile-minimal .hud-controls > button { display:none; }
+  body.mobile-minimal .hud-controls > #pause-btn { display:block; min-height:36px; }
+  body.mobile-minimal #live-ranking, body.mobile-minimal #ecology-panel, body.mobile-minimal #minimap-panel,
+  body.mobile-minimal #player-info, body.mobile-minimal #build-id, body.mobile-minimal #ai-inspector, body.mobile-minimal #debug-panel { display:none !important; }
+
+body.mobile-minimal #hud > #era-status {display:flex;}
+
 /* Mobile minimal mode preserves health, lives, pause and playable touch controls. */
-#mobile-ui-toggle { display:none; }
+#mobile-ui-toggle { display:block; }
 @media (pointer:coarse) {
   #mobile-ui-toggle { display:block; position:fixed; right:max(8px,env(safe-area-inset-right)); top:max(8px,env(safe-area-inset-top)); z-index:25; min-height:40px; padding:8px 12px; }
   body.mobile-minimal #hud { display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; width:calc(100vw - 110px); max-width:300px; gap:4px; }
@@ -663,3 +680,5 @@ html, body {
   body.mobile-minimal #hud > #era-status { display:flex; flex-shrink:0; padding:4px 7px; }
   #era-phase-name { font-size:11px; }
 }
+
+@media (pointer:fine) { body:not(.mobile-minimal) #live-ranking {top:54px;} }

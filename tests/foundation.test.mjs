@@ -9,7 +9,7 @@ test('presentation random consumption leaves gameplay stream intact',()=>{
 });
 test('oversized viewport stays centered and coordinate mapping roundtrips',()=>{
  const g=createGame(1);g.canvas.width=20000;g.canvas.height=18000;g.updateCamera(1);
- assert.equal(g.camera.x,2500);assert.equal(g.camera.y,2500);
+ assert.equal(g.camera.x,g.balance.world.worldWidth/2);assert.equal(g.camera.y,g.balance.world.worldHeight/2);
  const s=g.worldToScreen(123,456);const w=g.screenToWorld(s.x,s.y);assert.ok(Math.abs(w.x-123)<1e-8&&Math.abs(w.y-456)<1e-8);
 });
 test('new storage never writes or deletes legacy records',()=>{

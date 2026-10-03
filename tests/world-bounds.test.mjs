@@ -8,7 +8,7 @@ test('oversized bodies keep their size and center in each constrained dimension'
 });
 test('enemy births account for growing bodies and terminate on maps without safe space',()=>{
  const g=createGame(7);g.player.size=1800;g.pickSafeSpawnPos=()=>({x:g.player.x+350,y:g.player.y});
- const e=g.createSafeEnemy(g.balance.colors[0]);assert(Math.hypot(e.x-g.player.x,e.y-g.player.y)>=Math.max(350,(e.size+g.player.size)/2+80));assert(e.x>=e.size/2&&e.x<=5000-e.size/2);
+ const e=g.createSafeEnemy(g.balance.colors[0]);assert(Math.hypot(e.x-g.player.x,e.y-g.player.y)>=Math.max(350,(e.size+g.player.size)/2+80));assert(e.x>=e.size/2&&e.x<=g.balance.world.worldWidth-e.size/2);
  g.balance.world.worldWidth=30;g.balance.world.worldHeight=30;g.player.x=g.player.y=15;const trapped=g.createSafeEnemy(g.balance.colors[0]);assert(trapped.x>=0&&trapped.x<=30&&trapped.y>=0&&trapped.y<=30);assert(trapped.size>0);
 });
 test('wave displacement and remembered exploration obey oversized rectangular bounds',async()=>{

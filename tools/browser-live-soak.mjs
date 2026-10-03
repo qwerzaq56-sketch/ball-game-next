@@ -26,10 +26,10 @@ try {
    original.call(this,dt);const s=window.__soak;if(this.paused)return;s.frames++;
    const units=this.entities.filter(e=>e.alive&&e.behavior!=='orb');
    const apex=units.filter(e=>e.apex).length;s.maxApex=Math.max(s.maxApex,apex);s.maxGroups=Math.max(s.maxGroups,this.allyLinks.groups.size);
-   if(apex>3)s.violation=`apex cap ${apex}`;
+   if(apex>this.balance.ecology.maxApex)s.violation=`apex cap ${apex}`;
    for(const group of this.allyLinks.groups.values()){
     if(group.members.size<2||group.members.size>6||!group.members.has(group.leader))s.violation='group membership';
-    for(const e of group.members)if(!e.alive||e.color!==group.color||e.companionGroup!==group.id||e.attackState!=='READY'||e.specialCast)s.violation=`peaceful member #${e.id}`;
+    for(const e of group.members)if(!e.alive||e.color!==group.color||e.companionGroup!==group.id)s.violation=`invalid member #${e.id}`;
    }
    if(this.gameTime-s.lastCheck>=1){s.lastCheck=this.gameTime;for(const e of units){s.checks++;s.maxSize=Math.max(s.maxSize,e.size);for(const k of ['x','y','size','hp','maxHp','moveSpeed','facing'])if(!Number.isFinite(e[k]))s.violation=`nonfinite ${k} #${e.id}`;if(!(e.hp>0&&e.hp<=e.maxHp+1e-6))s.violation=`health #${e.id}`;if(e.companionGroup&&!this.allyLinks.groups.has(e.companionGroup))s.violation=`orphan #${e.id}`;}}
   };

@@ -15,10 +15,10 @@ test('large units are not missed by grid range and bonuses cap at three direct a
  const {g,a,make}=fixture();a.size=800;const allies=Array.from({length:5},(_,i)=>make(1450+i));g.entities=[a,...allies];g.allyLinks.refresh();assert.equal(g.allyLinks.neighbors(a).length,5);assert(Math.abs(g.allyLinks.bonus(a)-.15)<1e-8);
  allies.forEach(e=>e.alive=false);assert.equal(g.allyLinks.bonus(a),0);
 });
-test('joining blocks all aggression and leaves free movement/attacks available after departure',()=>{
+test('joining permits hostile attacks and protects same-color allies and leaves free movement/attacks available after departure',()=>{
  const {g,a,b,c}=fixture();a.size=100;a.attackUnlocked=true;a.attackStack=2;g.allyLinks.refresh();assert(g.allyLinks.join(a,b));
- assert.equal(canStartAttack(a),false);assert.equal(canAbsorb(a,c),false);a.apex=true;a.specialCooldown=0;assert.equal(g.abilities.canCast(a),false);
- c.color='red';const hp=c.hp;assert.equal(applyDamage(c,100,g,a,g.balance),false);assert.equal(c.hp,hp);
+ assert.equal(canStartAttack(a),true);assert.equal(canAbsorb(a,c),false);a.apex=true;a.specialCooldown=0;assert.equal(g.abilities.canCast(a),true);
+ c.color='red';const hp=c.hp;assert.equal(applyDamage(b,100,g,a,g.balance),false);assert.equal(applyDamage(c,100,g,a,g.balance),true);assert(c.hp<hp);
  g.allyLinks.leave(a);assert.equal(a.companionGroup,null);assert.equal(b.companionGroup,null);assert.equal(canStartAttack(a),true);
 });
 test('followers form up without combat and group dissolves when separated or dead',()=>{
@@ -64,7 +64,7 @@ test('sand escape holds to 420 after entering at 360; joining removes maintained
  g.allyLinks.move(a,0);assert.equal(a.state,'flee');g.abilities.fields[0].x=1419;g.allyLinks.move(a,0);assert.equal(a.state,'flee');
  g.abilities.fields[0].x=1421;g.allyLinks.move(a,0);assert.equal(a.state,'companion');
  g.allyLinks.leave(a);g.abilities.fields.push({owner:a,x:1000,y:1000,time:0,tick:0});b.beingAbsorbedByRef=a;
- g.allyLinks.enter(a,{id:99});assert(!g.abilities.fields.some(f=>f.owner===a));assert.equal(b.beingAbsorbedByRef,null);
+ g.allyLinks.enter(a,{id:99});assert(g.abilities.fields.some(f=>f.owner===a));assert.equal(b.beingAbsorbedByRef,null);
 });
 
 test('leaders steer back from borders and command skills skip peaceful companions',()=>{

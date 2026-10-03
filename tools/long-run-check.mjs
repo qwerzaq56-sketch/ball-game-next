@@ -9,11 +9,11 @@ for(const seed of seeds){
  const g=createGame(seed);g.options.collect=false;g.ecology.collect=false;g.autoplay.setEnabled(true);
  let checks=0,frames=0,maxApex=0,maxGroups=0,maxSize=0,firstPlayerApex=null;
  for(;frames<seconds*fps&&!g.gameOver;frames++){
-  g.update(1/fps);const units=g.entities.filter(e=>e.alive&&e.behavior!=='orb');const apex=units.filter(e=>e.apex).length;maxApex=Math.max(maxApex,apex);assert(apex<=3,'apex cap');maxGroups=Math.max(maxGroups,g.allyLinks.groups.size);
+  g.update(1/fps);const units=g.entities.filter(e=>e.alive&&e.behavior!=='orb');const apex=units.filter(e=>e.apex).length;maxApex=Math.max(maxApex,apex);assert(apex<=g.balance.ecology.maxApex,'apex cap');maxGroups=Math.max(maxGroups,g.allyLinks.groups.size);
   if(g.player.apex&&firstPlayerApex===null)firstPlayerApex=g.gameTime;
   for(const group of g.allyLinks.groups.values()){
    assert(group.members.size>=2&&group.members.size<=6&&group.members.has(group.leader),'group structure');
-   for(const e of group.members){assert(e.alive&&units.includes(e)&&e.color===group.color&&e.companionGroup===group.id,'group member');assert(!canStartAttack(e)&&!g.abilities.canCast(e)&&!e.specialCast,'peaceful actions');assert(!units.some(t=>t.beingAbsorbedByRef===e),'peaceful outgoing absorption');}
+   for(const e of group.members){assert(e.alive&&units.includes(e)&&e.color===group.color&&e.companionGroup===group.id,'group member');assert([...group.members].every(t=>t.color===e.color),'friendly group');assert(!units.some(t=>t.beingAbsorbedByRef===e),'peaceful outgoing absorption');}
   }
   if(frames%fps===0){
    for(const e of units){checks++;maxSize=Math.max(maxSize,e.size);for(const key of ['x','y','size','hp','maxHp','moveSpeed','facing'])assert(Number.isFinite(e[key]),`${key} finite #${e.id}`);assert(e.hp>0&&e.hp<=e.maxHp+1e-6,'health');assert(e.x>=0&&e.x<=g.balance.world.worldWidth&&e.y>=0&&e.y<=g.balance.world.worldHeight,'world center');if(e.companionGroup)assert(g.allyLinks.groups.has(e.companionGroup),'orphan');}

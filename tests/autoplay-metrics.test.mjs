@@ -9,10 +9,10 @@ test('autoplay defaults off, chooses local food and escapes threats without extr
  resetRandom(99);const expected=random('ai');resetRandom(99);g.autoplay.update(.1);assert(g.autoplay.action.move.x>0);assert.equal(g.autoplay.action.attack,false);assert.equal(random('ai'),expected);
  const enemy=new AIEntity({x:p.x+200,y:p.y,color:'red',colorHex:'#f00',startSize:100,balance:g.balance});g.entities.push(enemy);g.buildGrid();g.autoplay.update(.1);assert(g.autoplay.action.move.x<0);assert.match(g.autoplay.reason,/도주/);
 });
-test('peaceful companion autoplay cannot attack or cast and reset returns it off',()=>{
+test('companion autoplay can attack and cast and reset returns it off',()=>{
  const g=createGame(11),p=g.player;p.size=100;p._recomputeStacks(g.balance,true);p.apex=true;p.specialCooldown=0;
  const ally=new AIEntity({x:p.x+80,y:p.y,color:p.color,colorHex:p.colorHex,startSize:40,balance:g.balance}),enemy=new AIEntity({x:p.x+100,y:p.y,color:'red',colorHex:'#f00',startSize:50,balance:g.balance});g.entities=[p,ally,enemy];g.buildGrid();g.allyLinks.refresh();g.allyLinks.join(ally,p);g.autoplay.setEnabled(true);g.autoplay.update(.1);
- assert.equal(g.autoplay.action.attack,false);assert.equal(g.autoplay.action.special,false);g.reset();assert.equal(g.autoplay.enabled,false);assert.equal(g.runMetrics.samples.length,0);
+ assert.equal(g.autoplay.action.attack,true);assert.equal(g.autoplay.action.special,true);g.reset();assert.equal(g.autoplay.enabled,false);assert.equal(g.runMetrics.samples.length,0);
 });
 test('autoplay uses ordinary lives and produces no action at game over',()=>{
  const g=createGame(11);g.autoplay.setEnabled(true);for(let i=0;i<3;i++)g.handlePlayerDefeat('test');assert.equal(g.lives,0);assert.equal(g.gameOver,true);g.autoplay.update(.1);assert.equal(g.autoplay.action,null);assert.equal(g.autoplay.reason,'게임 종료');

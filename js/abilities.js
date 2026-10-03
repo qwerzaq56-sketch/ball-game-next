@@ -13,7 +13,7 @@ export function blueWaveDirections(dir) {
   const radians = Math.PI / 180;
   return [dir, dir + (-120 + random('ai') * 80) * radians, dir + (40 + random('ai') * 80) * radians];
 }
-export function attackReach(e,b){return Math.max(20,b.combatScaling.baseAttackRange*Math.pow(e.size/b.combatScaling.referenceSize,b.combatScaling.attackRangeGrowthExponent))*(e.apex?.7:1);}
+export function attackReach(e,b){return Math.max(20,b.combatScaling.baseAttackRange*Math.pow(e.size/b.combatScaling.referenceSize,b.combatScaling.attackRangeGrowthExponent))*b.combatScaling.chargeDistanceMultiplier*(e.apex?.7:1);}
 export function inCone(origin,target,dir,radius,angle=Math.PI*2/3){
   const d=dist(origin,target);return d<=radius && Math.abs(Math.atan2(Math.sin(angleTo(origin,target)-dir),Math.cos(angleTo(origin,target)-dir)))<=angle/2;
 }
@@ -34,7 +34,7 @@ export class Abilities {
  }
  endCommand(e,reason){if(!e.command)return;this.log('command-end',e,{kind:e.command.kind,reason});e.command=null;e.commandLock=3;e.target=null;e.state='search';e.decisionTimer=0;}
  redTarget(owner,dir){return this.units().filter(e=>isHostile(owner,e)&&dist(owner,e)<=500).sort((a,b)=>angleDelta(angleTo(owner,a),dir)-angleDelta(angleTo(owner,b),dir)||dist(owner,a)-dist(owner,b)||a.id-b.id)[0];}
- canCast(e){return this.enabled&&!e.companionGroup&&e.alive&&e.apex&&(e.specialCooldown??0)<=0&&!e.specialCast&&!(e.frozen>0)&&e.attackState==='READY'&&e.dodgeState!=='DODGING';}
+ canCast(e){return this.enabled&&e.alive&&e.apex&&(e.specialCooldown??0)<=0&&!e.specialCast&&!(e.frozen>0)&&e.attackState==='READY'&&e.dodgeState!=='DODGING';}
  start(e,dir,point,seenTarget){
   if(!this.canCast(e)||!ABILITIES[e.color])return false;
   const target=e.color==='red'?(seenTarget??this.redTarget(e,dir)):null;if(e.color==='red'&&!target)return false;
@@ -70,7 +70,7 @@ export class Abilities {
   }
   if(e.color==='green'){
     for(const t of units)if(t.color===e.color&&dist(e,t)<=350){t.morale??=new Map();t.morale.set(e.id,Math.max(t.morale.get(e.id)??0,5));}
-    this.command(e,'harvest',5,350,cast);
+    for(const t of units.filter(t=>(t.behavior==='ai'||t.behavior==='player')&&t!==e&&t.color===e.color&&dist(e,t)<=350&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id))this.game.allyLinks.recruit(e,t);
   }
   if(e.color==='red'){cast.targetPoint=cast.target?.alive?{x:cast.target.x,y:cast.target.y}:cast.targetPoint;this.command(e,'rally',4,450,cast);}
   if(e.color==='yellow'){this.fields=this.fields.filter(f=>f.owner!==e);this.fields.push({owner:e,...cast.point,time:0,tick:0});}

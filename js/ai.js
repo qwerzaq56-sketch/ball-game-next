@@ -78,7 +78,12 @@ export function updateAI(ai, dt, game, balance) {
   // (A duplicate call here previously made every AI regenerate stacks at 2x the configured
   // rate, which is what made enemies look like they could attack almost nonstop.)
 
-  if(ai.companionGroup){if(ai.dodgeState!=='DODGING')game.allyLinks.move(ai,dt);return;}
+  if(ai.companionGroup){
+    if(ai.attackState!=='READY'||ai.dodgeState==='DODGING')return;
+    reactToThreats(ai,game,balance);if(ai.dodgeState==='DODGING')return;
+    if(game.allyLinks.combat(ai)){if(ai.attackState==='READY')moveAI(ai,dt,balance,game);}
+    else game.allyLinks.move(ai,dt);return;
+  }
 
   // Committed to an attack or dodge animation: no fresh decisions, but charging already
   // moves the entity inside updateAttack/updateDodge.
@@ -184,6 +189,10 @@ export function decideAI(ai, game, balance) {
     heldThreat!==duel && dist(ai,heldThreat)<400 ? heldThreat : null;
   const fleeFrom=threat ?? heldDanger;
   ai.fleeThreat=!risk ? fleeFrom : null;
+  if(fleeFrom && !risk && hp>.4 && canStartAttack(ai) && fleeFrom.size<=ai.size*1.8 &&
+    fleeFrom.attackState==='RECOVERY' && dist(ai,fleeFrom)<=attackReach(ai,balance)+(ai.size+fleeFrom.size)/2 && game.gameTime>(ai.nextHarass??0)){
+    ai.nextHarass=game.gameTime+3;ai.state='chase_fight';ai.target=fleeFrom;return;
+  }
   if(fleeFrom && !risk){game.abilities?.endCommand(ai,'threat');ai.state='flee';ai.target=fleeFrom;return;}
   if(ai.state==='flee'){ai.state='search';ai.target=null;}
   if(ai.recovering){game.abilities?.endCommand(ai,'recovery');ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
@@ -215,8 +224,8 @@ export function decideAI(ai, game, balance) {
   const absorb=closest(nearby.filter(e=>dist(ai,e)<=cfg.absorptionDetectionRange&&canAbsorb(ai,e)&&
     acceptsAbsorption(ai,e,balance)&&
     (ai.personality!=='cautious'||(e.size<=ai.size*(ai.role==='prey'?.7:.8)&&safe(e)))));
-  const huntAllowed=ai.role==='predator'||(ai.role==='forager'&&ai.personality==='growth'&&hp>=.6);
-  const hunt=huntAllowed && ai.attackUnlocked ? closest(within.filter(e=>isHostile(ai,e)&&e.size<=ai.size*.8&&
+  const huntAllowed=hp>.4&&ai.attackUnlocked&&canStartAttack(ai);
+  const hunt=huntAllowed && ai.attackUnlocked ? closest(within.filter(e=>isHostile(ai,e)&&e.size<=ai.size*1.15&&
     (ai.personality!=='cautious'||safe(e)))) : null;
   const orb=closest(food.filter(e=>safe(e)||risk));
   if(rich && (safe(rich)||risk) && (ai.personality==='growth'||(ai.role==='predator'&&ai.size>=70&&hp>.5))){ai.state='chase_eat';ai.target=rich;return;}
@@ -225,7 +234,7 @@ export function decideAI(ai, game, balance) {
     (huntAllowed&&counter.size<=ai.size*.8&&(ai.personality!=='cautious'||safe(counter)));
   if(counterAllowed){ai.state='chase_fight';ai.target=counter;ai.counterattacker=null;return;}
   const choices=[orb&&{target:orb,state:'chase_eat'},absorb&&{target:absorb,state:'chase_eat'},hunt&&{target:hunt,state:'chase_fight'}].filter(Boolean);
-  if(choices.length){const c=chooseGeneral(ai,choices,game.era.enabled&&game.era.phase.id==='war'?1.5:1);ai.state=c.state;ai.target=c.target;return;}
+  if(choices.length){const c=chooseGeneral(ai,choices,game.era.enabled&&game.era.phase.id==='war'?3:2);ai.state=c.state;ai.target=c.target;return;}
   // Relationship sensing is the approved 600 exception; combat sensing remains 320.
   if(ai.role==='predator'&&!ai.apex&&ai.relationship!=='independent'){
     if(duel){ai.challengeTarget=duel;ai.state='chase_fight';ai.target=duel;return;}
@@ -289,7 +298,7 @@ function moveAI(ai, dt, balance,game) {
   } else if (ai.state === 'chase_fight' && ai.target && ai.target.alive) {
     const d = dist(ai, ai.target);
     targetAngle = angleTo(ai,ai.target);
-    if (d <= attackReach(ai, balance) && canStartAttack(ai)) {
+    if (d <= attackReach(ai, balance)+(ai.size+ai.target.size)/2 && canStartAttack(ai)) {
       startAttack(ai, targetAngle, balance);
       return;
     }

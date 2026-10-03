@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "desktopToggle": true,
+  "shortcut": true,
+  "shortcutIgnoresInput": true,
+  "apexBalanceInput": true,
+  "greenRecruitment": {
+    "size": 4,
+    "leader": true,
+    "kind": "challenge"
+  },
+  "terrain": {
+    "width": 8000,
+    "tiles": 1600,
+    "biomes": [
+      "grassland",
+      "forest",
+      "lake",
+      "volcano",
+      "desert",
+      "snow"
+    ],
+    "riverPoints": 46
+  },
+  "errors": []
+}

@@ -1,5 +1,4 @@
-import {dist} from './collision.js';
-import {angleTo} from './topology.js';
+import {angleTo,delta} from './topology.js';
 // Shared attack (telegraph -> charge -> recovery) and dodge (instant -> invincible burst)
 // state machines. Both Player and AI entities use the exact same functions so the two
 // systems behave identically wherever they can.
@@ -68,7 +67,7 @@ export function dodgeDistanceForSize(size, balance) {
 }
 
 export function canStartAttack(entity) {
-  if (entity.companionGroup || entity.frozen>0 || entity.specialCast || entity.attackStack <= 0 || entity.attackState !== 'READY' || entity.dodgeState === 'DODGING') return false;
+  if (entity.frozen>0 || entity.specialCast || entity.attackStack <= 0 || entity.attackState !== 'READY' || entity.dodgeState === 'DODGING') return false;
   if (entity.behavior === 'ai' && entity.aiAttackGateTimer > 0) return false;
   return true;
 }
@@ -104,23 +103,26 @@ export function updateAttack(entity, dt, balance, hostiles, game) {
       break;
     }
     case 'CHARGING': {
+      const used=Math.min(dt,Math.max(0,entity.currentChargeDuration-entity.attackTimer));
+      const previous={x:entity.x,y:entity.y};
       entity.attackTimer += dt;
       // v0.5 fix: speed is derived from the range-scaled charge distance so a bigger attack
       // range always means the dash actually travels further, not just a wider hit padding.
       // v0.6: the duration it's spread over now also scales with Size independently (see
       // attackChargeDurationForSize) — a bigger ball's dash covers more ground but takes longer.
       const speed = entity.currentChargeDistance / entity.currentChargeDuration;
-      entity.x += Math.cos(entity.attackDir) * speed * dt;
-      entity.y += Math.sin(entity.attackDir) * speed * dt;
+      entity.x += Math.cos(entity.attackDir) * speed * used;
+      entity.y += Math.sin(entity.attackDir) * speed * used;
       entity.trail.push({ x: entity.x, y: entity.y });
       if (entity.trail.length > 8) entity.trail.shift();
 
-      const hitPadding = entity.currentAttackRange * 0.2;
+      const dx=entity.x-previous.x,dy=entity.y-previous.y,length=dx*dx+dy*dy;
       const rawDamage = attackDamageForSize(entity.size, balance) * (game?.abilities?.damageMultiplier(entity) ?? 1);
       for (const target of hostiles) {
         if (!target.alive || entity.attackHitSet.has(target.id)) continue;
-        const d = dist(entity,target);
-        if (d <= entity.size / 2 + target.size / 2 + hitPadding) {
+        const relative=delta(previous,target,entity._world),t=length?Math.max(0,Math.min(1,(relative.x*dx+relative.y*dy)/length)):0;
+        const d=Math.hypot(relative.x-dx*t,relative.y-dy*t);
+        if (d <= entity.size / 2 + target.size / 2) {
           applyDamage(target, rawDamage, game, entity, balance);
           entity.attackHitSet.add(target.id);
         }
@@ -179,7 +181,7 @@ export const RETALIATION_MEMORY = 3; // seconds an AI remembers its last attacke
 
 // v0.5: applyDamage now runs raw damage through Defense (spec §3) before it touches HP.
 export function applyDamage(target, rawDamage, game, attacker, balance, options = {}) {
-  if (attacker?.companionGroup || target.invincible || !target.alive) return false;
+  if ((attacker && attacker.color===target.color) || target.invincible || !target.alive) return false;
   if(options.kind!=='field' && game?.abilities?.miss(target)){game.spawnFloatingText(target.x,target.y-target.size/2,"MISS","#eab308");return false;}
   const bal = balance || (game && game.balance);
   const dmg = bal ? applyDefense(rawDamage, target.size, bal) : rawDamage;

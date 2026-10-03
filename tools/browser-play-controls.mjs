@@ -24,7 +24,7 @@ try {
  await page.locator('#ally-links-toggle').click();assert.equal(await page.locator('#ally-links-toggle').getAttribute('aria-pressed'),'false');
  await page.reload();await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();assert.equal(await page.evaluate(()=>window.__game.showAllyLinks),false);
  await page.evaluate(()=>{const g=window.__game;g.paused=true;const p=g.player,a=g.entities.find(e=>e.behavior==='ai');g.entities=[p,a];a.color=p.color;a.x=p.x+80;a.y=p.y;g.allyLinks.refresh();g.allyLinks.join(a,p);p.apex=true;p.specialCooldown=0;});await page.waitForTimeout(150);
- assert.match(await page.locator('#ally-link-status').innerText(),/2명 대열 동행 · 공격 쉬는 중/);assert.match(await page.locator('#special-text').innerText(),/동행 중 사용 불가/);
+ assert.match(await page.locator('#ally-link-status').innerText(),/2명 대열/);assert.match(await page.locator('#special-text').innerText(),/E /);
  await page.setViewportSize({width:390,height:844});await page.waitForTimeout(350);
  const rect=await page.locator('#hud').boundingBox();assert(rect.x>=0&&rect.x+rect.width<=390&&rect.y+rect.height<800);await page.screenshot({path:`${prefix}-mobile-hud.png`});
  await page.locator('#help-btn').click();await page.waitForTimeout(100);const help=await page.locator('#play-help').boundingBox();assert(help.x>=0&&help.y>=0&&help.x+help.width<=390&&help.y+help.height<=844);await page.screenshot({path:`${prefix}-mobile-help.png`});

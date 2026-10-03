@@ -24,7 +24,8 @@ export class Minimap {
   render(game) {
     this.layout();const ctx=this.ctx,w=game.balance.world,scaleX=this.canvas.width/w.worldWidth,scaleY=this.canvas.height/w.worldHeight;
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.fillStyle='#0b1422';ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
-    for(const r of game.biomes.regions){ctx.beginPath();ctx.ellipse(r.x*scaleX,r.y*scaleY,r.radius*scaleX,r.radius*scaleY,0,0,Math.PI*2);ctx.fillStyle=r.color;ctx.fill();if(r.hotRadius){ctx.beginPath();ctx.ellipse(r.x*scaleX,r.y*scaleY,r.hotRadius*scaleX,r.hotRadius*scaleY,0,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();}}
+    for(const t of game.biomes.tiles){ctx.fillStyle=t.region.color;ctx.fillRect(t.x*scaleX,t.y*scaleY,game.biomes.tile*scaleX+.5,game.biomes.tile*scaleY+.5);}
+    for(const h of game.biomes.rivers){ctx.beginPath();ctx.ellipse(h.x*scaleX,h.y*scaleY,h.hotRadius*scaleX,h.hotRadius*scaleY,0,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();}
     for(const item of game.relics.items){ctx.fillStyle='#fde68a';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('★',item.x*scaleX,item.y*scaleY+3);}
     const field=game.era.apocalypse;if(field){ctx.beginPath();ctx.ellipse(field.x*scaleX,field.y*scaleY,field.radius*scaleX,field.radius*scaleY,0,0,Math.PI*2);ctx.strokeStyle=field.active?'#ef4444':'#fbbf24';ctx.lineWidth=2;ctx.stroke();}
     for(const p of game.era.fronts()){ctx.strokeStyle=p.color;ctx.lineWidth=1.5;ctx.strokeRect(p.x*scaleX-3,p.y*scaleY-3,6,6);}

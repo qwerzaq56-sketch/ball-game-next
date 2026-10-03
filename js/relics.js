@@ -5,8 +5,7 @@ export class Relics {
  constructor(game){
   this.game=game;this.enabled=game.balance.relics?.enabled!==false;this.items=[];this.timer=60;this.nextId=1;this.pickups=0;
   const w=game.balance.world,r=Math.min(w.worldWidth,w.worldHeight)*.09;
-  if(this.enabled&&game.biomes.enabled)game.biomes.regions.push({id:'grassland',name:'초원',x:w.worldWidth*.38,y:w.worldHeight*.5,radius:r,color:'#4a6834',reward:1.25},{id:'desert',name:'사막',x:w.worldWidth*.62,y:w.worldHeight*.5,radius:r,color:'#9a7541',reward:1.5});
-  for(const region of game.biomes.regions)Object.defineProperty(region,'_world',{value:w});
+
  }
  effect(e){return e.relic&&e.relic.expires>this.game.gameTime?e.relic:null;}
  damageBonus(e){return this.effect(e)?.kind==='combat'?.1:0;}
@@ -17,7 +16,8 @@ export class Relics {
   if(!this.enabled||this.items.filter(e=>e.alive).length>=3)return null;
   const w=this.game.balance.world,region=this.game.biomes.regions.find(r=>r.id==='desert')??{x:w.worldWidth*.62,y:w.worldHeight*.5,radius:Math.min(w.worldWidth,w.worldHeight)*.09};
   const angle=random('world')*Math.PI*2,d=region.radius*(.2+random('world')*.45),kind=Object.keys(RELIC_KINDS)[Math.floor(random('world')*3)];
-  const item={id:`relic-${this.nextId++}`,x:region.x+Math.cos(angle)*d,y:region.y+Math.sin(angle)*d,size:24,behavior:'relic',kind,expires:this.game.gameTime+90,alive:true};Object.defineProperty(item,'_world',{value:w});this.items.push(item);return item;
+  const point=this.game.biomes.enabled?this.game.biomes.sample(region):{x:region.x+Math.cos(angle)*d,y:region.y+Math.sin(angle)*d};
+  const item={id:`relic-${this.nextId++}`,x:point.x,y:point.y,size:24,behavior:'relic',kind,expires:this.game.gameTime+90,alive:true};Object.defineProperty(item,'_world',{value:w});this.items.push(item);return item;
  }
  update(dt){
   if(!this.enabled)return;const now=this.game.gameTime;

@@ -15,8 +15,8 @@ test('pickup replaces one effect, expires at sixty seconds and leaves no stale i
  const g=fixture(),p=g.player;item(g);g.relics.update(0);item(g,'regen');g.relics.update(0);assert.equal(p.relic.kind,'regen');g.gameTime=60;g.relics.update(0);assert.equal(p.relic,null);
  const r=item(g,'growth',3000,2500);g.gameTime=r.expires;g.relics.update(0);assert.equal(r.alive,false);assert(!g.relics.items.includes(r));
 });
-test('combat relic adds to ally/morale bonuses without granting peaceful attack rights',()=>{
- const g=fixture(),p=g.player;p.relic={kind:'combat',expires:60};assert.equal(g.abilities.damageMultiplier(p),1.1);p.morale=new Map([[999,5]]);assert.equal(g.abilities.damageMultiplier(p),1.25);p.companionGroup=1;p.apex=true;p.specialCooldown=0;assert.equal(g.abilities.canCast(p),false);
+test('combat relic adds to ally/morale bonuses while allowing companion attacks',()=>{
+ const g=fixture(),p=g.player;p.relic={kind:'combat',expires:60};assert.equal(g.abilities.damageMultiplier(p),1.1);p.morale=new Map([[999,5]]);assert.equal(g.abilities.damageMultiplier(p),1.25);p.companionGroup=1;p.apex=true;p.specialCooldown=0;assert.equal(g.abilities.canCast(p),true);
 });
 test('growth relic increases pickup growth only; score and edibility remain independent',()=>{
  const g=fixture(),p=g.player;p.relic={kind:'growth',expires:60};const orb=new Entity({x:p.x,y:p.y,size:10,color:'red',growthValue:10});const huge=new Entity({x:p.x,y:p.y,size:100,color:'red',growthValue:100});g.entities.push(orb,huge);g.buildGrid();g.resolveConsumption();assert.equal(p.growth,12);assert.equal(p.score,10);assert.equal(huge.alive,true);
@@ -30,5 +30,5 @@ test('death, life defeat and reset clear relics while spawn count remains bounde
 });
 test('AI seeks only safe visible relics after other targets and disabled relics add no regions/items',()=>{
  const g=fixture(),a=new AIEntity({x:2500,y:2500,color:'red',colorHex:'#f00',startSize:40,balance:g.balance});a.role='forager';a.personality='growth';g.entities=[a];const r=item(g,'growth',a.x+250,a.y);g.buildGrid();decideAI(a,g,g.balance);assert.equal(a.target,r);r.x=a.x+500;decideAI(a,g,g.balance);assert.equal(a.target,null);
- g.balance.relics.enabled=false;g.reset();assert.equal(g.relics.items.length,0);assert.equal(g.biomes.regions.length,4);assert.equal(g.relics.desired(g.player,()=>true),null);
+ g.balance.relics.enabled=false;g.reset();assert.equal(g.relics.items.length,0);assert.equal(g.biomes.regions.length,6);assert.equal(g.relics.desired(g.player,()=>true),null);
 });

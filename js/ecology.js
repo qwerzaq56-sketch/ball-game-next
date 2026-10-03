@@ -37,7 +37,8 @@ export class Ecology {
     const units=game.entities.filter(e=>e.alive&&e.behavior!=='orb');
     const sizes=ordered(units,'size',this.sizeOrder), scores=ordered(units,'score',this.scoreOrder);
     this.sizeOrder=sizes.map(e=>e.id);this.scoreOrder=scores.map(e=>e.id);
-    const titles=new Set(sizes.slice(0,3).filter(e=>e.size>=100).map(e=>e.id));
+    const cap=Math.max(0,Math.min(50,Math.floor(game.balance?.ecology?.maxApex??5)));
+    const titles=new Set(sizes.slice(0,cap).filter(e=>e.size>=100).map(e=>e.id));
     sizes.forEach((e,i)=>{
       assignPersonality(e);
       const role=units.length<5?'forager':i<Math.floor(units.length*.2)?'predator':i>=units.length-Math.floor(units.length*.4)?'prey':'forager';
@@ -47,7 +48,7 @@ export class Ecology {
       commitCandidate(e,'apex',titles.has(e.id),(this.initial||e.apex===undefined)&&!e._titleNeedsConfirmation);
     });
     // Retained titles and newly confirmed replacements may overlap; enforce the hard cap.
-    const excess=sizes.filter(e=>e.apex).slice(3);
+    const excess=sizes.filter(e=>e.apex).slice(cap);
     for(const e of excess){e.apex=false;e._apexCandidate=false;e._apexCount=0;}
     for(const e of sizes){
       if(Boolean(e.apex)!==Boolean(e._apexBefore)){this.log({time:game.gameTime,type:e.apex?'apex-gain':'apex-loss',id:e.id});if(e.apex)e._titleNeedsConfirmation=false;}

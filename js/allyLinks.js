@@ -1,3 +1,5 @@
+import {canStartAttack,startAttack} from './combat.js';
+import {attackReach} from './abilities.js';
 import {delta,angleTo,near} from './topology.js';
 import {worldView,segmentInView} from './renderVisibility.js';
 import { boundCenter } from './worldBounds.js';
@@ -29,13 +31,39 @@ export class AllyLinks {
    for(const e of [...group.members])if(e.companionGroup===group.id&&(!unit(e)||e.color!==group.color||!units.includes(e)))this.leave(e,'invalid');
    if(!this.groups.has(group.id))continue;
    if(!group.members.has(group.leader))group.leader=this.leader([...group.members]);
-   for(const e of [...group.members])if(this.groups.has(group.id)&&e!==group.leader&&!this.path(e,group.leader,group.members))this.leave(e,'disconnected');
+   for(const e of [...group.members])if(this.groups.has(group.id)&&e!==group.leader&&!(e.recruitedUntil>this.game.gameTime)&&!this.path(e,group.leader,group.members))this.leave(e,'disconnected');
   }
  }
  path(a,b,members){const seen=new Set([a]),queue=[a];while(queue.length){const e=queue.shift();if(e===b)return true;for(const n of this.neighbors(e))if(members.has(n)&&!seen.has(n)){seen.add(n);queue.push(n);}}return false;}
  leader(members){return members.find(e=>e.behavior==='player')??[...members].sort((a,b)=>b.size-a.size||a.id-b.id)[0];}
  log(type,e,reason){if(type==='join')this.stats.joins++;if(type==='leave')this.stats.leaves++;this.events.push({time:this.game.gameTime,type,id:e.id,reason});if(this.events.length>100)this.events.shift();}
- peaceful(e){return !!e.companionGroup;}
+ profile(group){
+  const weights={challenge:0,opportunity:0,avoidance:0},map={growth:'challenge',opportunist:'opportunity',cautious:'avoidance'};
+  for(const m of [...group.members].filter(unit))weights[map[m.personality]??'opportunity']+=1+(m===group.leader?2:0);
+  return {personality:Object.keys(weights).sort((a,b)=>weights[b]-weights[a]||a.localeCompare(b))[0],weights};
+ }
+ personality(group){return this.profile(group).personality;}
+ combat(e){
+  const g=this.groups.get(e.companionGroup);if(!g)return false;e.state='companion';e.target=null;
+  if(this.game.biomes.danger(e,!!e.environmentThreat)||e.beingAbsorbedByRef||e.escapeAbsorber||this.game.abilities.fields.some(f=>f.owner.color!==e.color&&dist(e,f)<420))return false;
+  const kind=this.personality(g);
+  const allies=[...g.members].filter(m=>unit(m)&&dist(e,m)<320);
+  const power=Math.sqrt(allies.reduce((n,m)=>n+m.size*m.size*(m.hp/m.maxHp),0));
+  const targets=this.game.getNearbyEntities(e,320).filter(t=>unit(t)&&isHostile(e,t)&&dist(e,t)<320).sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id);
+  const target=targets.find(t=>t.size<=power*(kind==='challenge'?1.25:kind==='opportunity'?1:.7)&&e.hp/e.maxHp>.3&&(!e.beingAbsorbedByRef));
+  if(!target)return false;e.companionThreat=null;e.state='chase_fight';e.target=target;
+  const angle=angleTo(e,target);e.facing=angle;
+  this.game.abilities.considerAI(e);
+  if(dist(e,target)<=attackReach(e,this.game.balance)+(e.size+target.size)/2&&canStartAttack(e))startAttack(e,angle,this.game.balance);
+  return true;
+ }
+ recruit(owner,target){
+  if(target===owner||target.companionGroup||!unit(target)||target.color!==owner.color)return false;
+  let group=this.groups.get(owner.companionGroup);
+  if(group&&group.members.size>=ALLY_RULES.maxGroup)return false;
+  if(!group){group={id:this.nextGroup++,color:owner.color,leader:owner,members:new Set([owner])};this.groups.set(group.id,group);this.enter(owner,group);}
+  group.members.add(target);this.enter(target,group);target.recruitedUntil=this.game.gameTime+5;group.leader=owner;this.personality(group);return true;
+ }
  join(a,b){
   if(a.companionGroup||!this.connected(a,b)||a.beingAbsorbedByRef||b.beingAbsorbedByRef)return false;
   let group=this.groups.get(b.companionGroup);
@@ -49,7 +77,6 @@ export class AllyLinks {
   cancelAbsorption(e);
   for(const target of this.game.entities)if(target.beingAbsorbedByRef===e)cancelAbsorption(target);
   this.game.abilities.endCommand(e,'companionship');
-  this.game.abilities.release(e); // Maintained fields cannot continue aggression while accompanying.
   if(e.behavior==='ai'){e.state='companion';e.target=null;}this.log('join',e);
  }
  leave(e,reason='choice'){
@@ -78,7 +105,7 @@ export class AllyLinks {
   e.companionVelocity={x:0,y:0};
   const environment=this.game.biomes.danger(e,!!e.environmentThreat);e.environmentThreat=environment;
   if(environment){const angle=angleTo(environment,e);e.state='flee';e.facing=angle;e.x+=Math.cos(angle)*e.moveSpeed*1.3*dt;e.y+=Math.sin(angle)*e.moveSpeed*1.3*dt;return true;}
-  // Survival escape takes priority, but never starts an attack or a cast.
+  // Survival movement follows only when no collective engagement is selected.
   if(e.beingAbsorbedByRef)e.escapeAbsorber=e.beingAbsorbedByRef;
   if(!e.beingAbsorbedByRef&&e.escapeAbsorber&&(!unit(e.escapeAbsorber)||!canAbsorb(e.escapeAbsorber,e)||dist(e,e.escapeAbsorber)>maintainDistanceFor(e.escapeAbsorber,this.game.balance)+80))e.escapeAbsorber=null;
   const fields=this.game.abilities.fields;
