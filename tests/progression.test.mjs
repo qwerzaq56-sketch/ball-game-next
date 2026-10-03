@@ -1,3 +1,4 @@
+import {growthFromSize} from '../js/entity.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame} from '../tools/headless.mjs';
@@ -10,7 +11,7 @@ test('initial growth immediately sets size, HP and skill capacity before the fir
  p.addGrowth(0,g.balance);assert.equal(p.size,52);assert.equal(p.hp,260);
 });
 test('capacity reductions clamp empty or partly spent player/AI stacks and increases award only new slots',()=>{
- const g=createGame(1),p=g.player,a=new AIEntity({x:1000,y:1000,startSize:120,color:'red',colorHex:'#f00',balance:g.balance});p.addGrowth(4000,g.balance);
+ const g=createGame(1),p=g.player,a=new AIEntity({x:1000,y:1000,startSize:120,color:'red',colorHex:'#f00',balance:g.balance});p.addGrowth(growthFromSize(120,p.baseSize,g.balance.growth.growthToSizeRatio,g.balance.growth),g.balance);
  for(const e of [p,a]){e.attackStack=0;e.dodgeStack=1;}
  g.balance.skills.attackStackThresholds[1].size=200;g.balance.skills.dodgeStackThresholds[1].size=200;
  p._recomputeStacks(g.balance,false);a._recomputeStacks(g.balance);

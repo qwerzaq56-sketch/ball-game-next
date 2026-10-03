@@ -390,6 +390,7 @@ export class Game {
           if (!canEatOrb(eater, target, b)) continue;
           if (!circlesOverlap(eater, target)) continue;
           target.alive = false;
+          this.balanceLog?.pickup(target,eater);
           eater.addGrowth(target.growthValue*this.relics.growthMultiplier(eater), b);
           eater.scalePulseTimer=Math.max(eater.scalePulseTimer,.2);
           this.awardScore(eater, target.growthValue);
@@ -484,7 +485,9 @@ export class Game {
     this.orbSpawnTimer = s.orbSpawnInterval;
 
     const orbCount = this.entities.reduce((n, e) => n + (e.alive && e.behavior === 'orb' ? 1 : 0), 0);
-    if (orbCount < s.maxOrbCount) this.entities.push(spawnOrb(this.balance));
+    const floor=(s.minimumOrbDensity??0)*this.balance.world.worldWidth*this.balance.world.worldHeight/1e6;
+    const batch=Math.min(s.maximumReplenishBatch??1,1+Math.ceil(Math.max(0,floor-orbCount)/200),Math.max(0,s.maxOrbCount-orbCount));
+    for(let i=0;i<batch;i++)this.entities.push(spawnOrb(this.balance));
   }
 
   // v0.3 spec §2: enemies are no longer a fixed one-time population — the world keeps
@@ -552,6 +555,8 @@ export class Game {
 
     if (entity.behavior === 'ai') {
       const orbs = spawnDeathOrbs(entity, this.balance);
+      const kr=this.balance.killReward,direct=attacker?.alive?kr.baseReward*Math.pow(entity.size/kr.referenceSize,kr.growthExponent)*kr.growthRewardMultiplier:0;
+      this.balanceLog?.drop(entity,orbs,direct);
       this.entities.push(...orbs);
     }
   }

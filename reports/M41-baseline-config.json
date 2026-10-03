@@ -1,15 +1,7 @@
 {
-  "relics": {
-    "enabled": true
-  },
-  "era": {
-    "enabled": true
-  },
-  "biomes": {
-    "enabled": true,
-    "redLavaResistancePerSize": 0.002,
-    "maxRedLavaResistance": 0.85
-  },
+  "relics": { "enabled": true },
+  "era": { "enabled": true },
+  "biomes": { "enabled": true },
   "player": {
     "startingSize": 20,
     "startingGrowth": 0,
@@ -19,10 +11,7 @@
   },
   "growth": {
     "growthToSizeRatio": 1.6,
-    "minEatSizeDifference": 0,
-    "lateThreshold": 25,
-    "lateMultiplier": 1.4,
-    "lateTransition": 50
+    "minEatSizeDifference": 0
   },
   "attack": {
     "attackCooldown": 1.5,
@@ -38,24 +27,12 @@
   },
   "skills": {
     "attackStackThresholds": [
-      {
-        "size": 40,
-        "maxStack": 1
-      },
-      {
-        "size": 100,
-        "maxStack": 2
-      }
+      { "size": 40, "maxStack": 1 },
+      { "size": 100, "maxStack": 2 }
     ],
     "dodgeStackThresholds": [
-      {
-        "size": 50,
-        "maxStack": 1
-      },
-      {
-        "size": 70,
-        "maxStack": 2
-      }
+      { "size": 50, "maxStack": 1 },
+      { "size": 70, "maxStack": 2 }
     ]
   },
   "absorption": {
@@ -117,14 +94,12 @@
     "colorCount": 5
   },
   "spawning": {
-    "initialOrbCount": 1800,
-    "maxOrbCount": 2400,
-    "orbSpawnInterval": 0.06,
+    "initialOrbCount": 450,
+    "maxOrbCount": 600,
+    "orbSpawnInterval": 0.25,
     "initialEnemyCount": 60,
     "maxEnemyCount": 80,
-    "enemySpawnInterval": 2.0,
-    "minimumOrbDensity": 12.5,
-    "maximumReplenishBatch": 6
+    "enemySpawnInterval": 2.0
   },
   "enemySpawn": {
     "smallSizeRatio": 0.6,
@@ -151,10 +126,7 @@
     "orbMaxCount": 40,
     "orbSizeGrowthPerEnemySize": 0.25,
     "orbSpreadBase": 20,
-    "orbSpreadMultiplier": 2.0,
-    "retainedGrowthFraction": 0.9,
-    "growthPerSize": 4,
-    "retainBodyCapital": false
+    "orbSpreadMultiplier": 2.0
   },
   "lives": {
     "maxLives": 3
@@ -173,60 +145,12 @@
     "deathVolume": 0.8
   },
   "colors": [
-    {
-      "id": "blue",
-      "color": "#3B82F6"
-    },
-    {
-      "id": "red",
-      "color": "#EF4444"
-    },
-    {
-      "id": "green",
-      "color": "#22C55E"
-    },
-    {
-      "id": "yellow",
-      "color": "#EAB308"
-    },
-    {
-      "id": "cyan",
-      "color": "#22D3EE"
-    }
+    { "id": "blue", "color": "#3B82F6" },
+    { "id": "red", "color": "#EF4444" },
+    { "id": "green", "color": "#22C55E" },
+    { "id": "yellow", "color": "#EAB308" },
+    { "id": "cyan", "color": "#22D3EE" }
   ],
-  "ecology": {
-    "maxApex": 5
-  },
-  "evaluation": {
-    "encounterSeconds": 5,
-    "minimumSizeGain": 0.5,
-    "minimumGrowthRatio": 0.01,
-    "clusterRadius": 120,
-    "targetSizes": [
-      {
-        "seconds": 0,
-        "size": 20
-      },
-      {
-        "seconds": 60,
-        "size": 55
-      },
-      {
-        "seconds": 180,
-        "size": 140
-      },
-      {
-        "seconds": 300,
-        "size": 190
-      },
-      {
-        "seconds": 600,
-        "size": 300
-      },
-      {
-        "seconds": 900,
-        "size": 450
-      }
-    ]
-  }
+  "ecology": { "maxApex": 5 },
+  "evaluation": { "encounterSeconds": 5, "minimumSizeGain": 0.5, "minimumGrowthRatio": 0.01, "clusterRadius": 120 }
 }

@@ -1,3 +1,4 @@
+export function lavaResistance(e,balance){const c=balance.biomes;return e.color==='red'?Math.min(Math.max(0,c.maxRedLavaResistance??.85),.95,Math.max(0,e.size*(c.redLavaResistancePerSize??0))):0;}
 import {delta,angleTo,wrap} from './topology.js';
 import {dist} from './collision.js';
 import { boundCenter } from './worldBounds.js';
@@ -71,7 +72,7 @@ export class Biomes {
   while(this.damageTimer>=.5-1e-8){this.damageTimer-=.5;
    for(const e of this.game.entities){if(!e.alive||e.behavior==='orb')continue;
     const hot=this.lavaAt(e);
-    if(hot)applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false});
+    if(hot){const resistance=lavaResistance(e,this.game.balance),beforeRatio=e.damageHpRatio??0;applyDamage(e,e.maxHp*.16,this.game,null,this.game.balance,{kind:'field',knockback:false,postDefenseMultiplier:1-resistance});const log=this.game.lavaLog??=([]);const entry={time:this.game.gameTime,size:e.size,color:e.color,region:'volcano',resistance,hpRatio:(e.damageHpRatio??0)-beforeRatio};log.push(entry);this.game.balanceLog?.lava.push(entry);if(log.length>1000)log.shift();}
    }
   }
   if(this.encounterTimer<=0){this.encounterTimer+=this.game.era?.encounterInterval??45;this.spawnEncounter();}

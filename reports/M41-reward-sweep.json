@@ -1,0 +1,113 @@
+{
+  "policy": "100 identical RNG samples per victim size/base; theoretical drops, not collected rewards",
+  "results": [
+    {
+      "size": 20,
+      "baseSize": 20,
+      "storedGrowth": 0,
+      "oldMean": 65.91,
+      "newMean": 80.35,
+      "linearFloor": 80,
+      "absorption80Growth": 61.22530560042651
+    },
+    {
+      "size": 40,
+      "baseSize": 20,
+      "storedGrowth": 156.24999999999972,
+      "oldMean": 106.96,
+      "newMean": 160,
+      "linearFloor": 160,
+      "absorption80Growth": 244.91098707802303
+    },
+    {
+      "size": 80,
+      "baseSize": 20,
+      "storedGrowth": 1280.7995525699723,
+      "oldMean": 283.08,
+      "newMean": 1126.3294390975198,
+      "linearFloor": 320,
+      "absorption80Growth": 979.7987033801037
+    },
+    {
+      "size": 80,
+      "baseSize": 55,
+      "storedGrowth": 244.14062499999957,
+      "oldMean": 283.08,
+      "newMean": 323.65,
+      "linearFloor": 320,
+      "absorption80Growth": 979.7987033801037
+    },
+    {
+      "size": 160,
+      "baseSize": 20,
+      "storedGrowth": 4169.613764330738,
+      "oldMean": 871.53,
+      "newMean": 3692.0237252372476,
+      "linearFloor": 640,
+      "absorption80Growth": 3921.5806968416146
+    },
+    {
+      "size": 160,
+      "baseSize": 55,
+      "storedGrowth": 2816.1816733198375,
+      "oldMean": 871.53,
+      "newMean": 2473.934843327441,
+      "linearFloor": 640,
+      "absorption80Growth": 3921.5806968416146
+    },
+    {
+      "size": 300,
+      "baseSize": 20,
+      "storedGrowth": 15624.999999999982,
+      "oldMean": 2673.73,
+      "newMean": 13933.592105430933,
+      "linearFloor": 1200,
+      "absorption80Growth": 13811.779030895661
+    },
+    {
+      "size": 300,
+      "baseSize": 55,
+      "storedGrowth": 11962.890624999987,
+      "oldMean": 2673.73,
+      "newMean": 10637.69366793091,
+      "linearFloor": 1200,
+      "absorption80Growth": 13811.779030895661
+    },
+    {
+      "size": 400,
+      "baseSize": 20,
+      "storedGrowth": 28778.698979591805,
+      "oldMean": 4248.4,
+      "newMean": 25718.772661330026,
+      "linearFloor": 1600,
+      "absorption80Growth": 24594.889620873888
+    },
+    {
+      "size": 400,
+      "baseSize": 55,
+      "storedGrowth": 23721.500318877526,
+      "oldMean": 4248.4,
+      "newMean": 21167.293866687203,
+      "linearFloor": 1600,
+      "absorption80Growth": 24594.889620873888
+    },
+    {
+      "size": 600,
+      "baseSize": 20,
+      "storedGrowth": 67044.00510204077,
+      "oldMean": 6272.66,
+      "newMean": 60043.452018961376,
+      "linearFloor": 2400,
+      "absorption80Growth": 55536.632391297055
+    },
+    {
+      "size": 600,
+      "baseSize": 55,
+      "storedGrowth": 59196.6278698979,
+      "oldMean": 6272.66,
+      "newMean": 52980.81251003286,
+      "linearFloor": 2400,
+      "absorption80Growth": 55536.632391297055
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import {growthFromSize} from './entity.js';
 import {dist} from './collision.js';
 import {delta} from './topology.js';
 // Absorption system for same-color Player/AI hierarchy.
@@ -43,11 +44,12 @@ export function cancelAbsorption(target) {
 export function absorptionGrowthFor(absorber,target,balance){
  const ratio=balance.growth.growthToSizeRatio,efficiency=balance.absorption.areaEfficiency??.8;
  const size=Math.sqrt(absorber.size*absorber.size+target.size*target.size*efficiency);
- return Math.max(0,Math.pow(Math.max(0,size-absorber.baseSize)/ratio,2)-absorber.growth);
+ return Math.max(0,growthFromSize(size,absorber.baseSize,ratio,balance.growth)-absorber.growth);
 }
 
 function completeAbsorption(absorber, target, game, balance) {
   const gained = target.behavior === 'orb' ? target.growthValue : absorptionGrowthFor(absorber,target,balance);
+  if(target.behavior!=='orb')game.balanceLog?.absorb(absorber,target,gained);
   absorber.addGrowth(gained, balance);
   game.awardScore(absorber, gained);
   game.spawnAbsorptionParticles(target.x, target.y, target.colorHex);

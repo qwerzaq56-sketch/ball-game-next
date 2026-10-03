@@ -1,0 +1,13 @@
+{
+  "result": "PASS",
+  "minimalPopups": true,
+  "rankingCycle": true,
+  "playTime": true,
+  "feedbackSaved": true,
+  "targetsEdited": true,
+  "charts": 9,
+  "filters": true,
+  "observationImport": true,
+  "feedbackImport": true,
+  "errors": []
+}

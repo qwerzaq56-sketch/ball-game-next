@@ -1,3 +1,4 @@
+import {growthFromSize} from '../js/entity.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame} from '../tools/headless.mjs';
@@ -21,7 +22,7 @@ test('opportunity assessment is read-only, uses attainable clusters and accounts
  const enemy=new AIEntity({x:4100,y:4000,startSize:80,color:p.color==='red'?'blue':'red',colorHex:'#f00',balance:g.balance});g.entities.push(enemy);g.buildGrid();const dangerous=assessGameplay(g);assert(dangerous.crisis);assert(dangerous.crisisSeverity>0);assert.equal(dangerous.growthOpportunity,false);
 });
 test('assessment targets scale with current size and insufficient resources stay below threshold',()=>{
- const g=createGame(7),p=g.player;p.growth=Math.pow((160-p.baseSize)/g.balance.growth.growthToSizeRatio,2);p.refreshFromGrowth(g.balance);const food=spawnOrb(g.balance,{x:p.x+100,y:p.y});food.growthValue=5;g.entities=[p,food];g.buildGrid();const row=assessGameplay(g);assert.equal(row.growthNeeded,1.6);assert.equal(row.growthOpportunity,false);
+ const g=createGame(7),p=g.player;p.growth=growthFromSize(160,p.baseSize,g.balance.growth.growthToSizeRatio,g.balance.growth);p.refreshFromGrowth(g.balance);const food=spawnOrb(g.balance,{x:p.x+100,y:p.y});food.growthValue=5;g.entities=[p,food];g.buildGrid();const row=assessGameplay(g);assert(Math.abs(row.growthNeeded-1.6)<1e-10);assert.equal(row.growthOpportunity,false);
 });
 test('continuous opportunity counts as covered windows; missing encounters are retained, not dropped',()=>{
  const rows=Array.from({length:15},(_,i)=>({time:i+1,size:30,defeats:0,purposeful:true,growthOpportunity:i<5,potentialSizeGain:1,crisis:false,crisisSeverity:0}));const s=evaluationSummary(rows,{encounterSeconds:5});assert.equal(s.growth.longestDrySeconds,10);assert.equal(s.growth.unfinishedWaitSeconds,10);assert.equal(s.crisis.encounters,0);assert.equal(s.crisis.meanSeconds,null);assert.equal(s.crisis.longestDrySeconds,15);assert.equal(s.growth.qualifiedWindows,11);assert(s.growth.coverage>0&&s.growth.coverage<1);

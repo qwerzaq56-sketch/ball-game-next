@@ -40,7 +40,7 @@ export class AIEntity extends Entity {
 
   addGrowth(amount, balance) {
     this.growth += amount;
-    const newSize = sizeFromGrowth(this.growth, this.baseSize, balance.growth.growthToSizeRatio);
+    const newSize = sizeFromGrowth(this.growth, this.baseSize, balance.growth.growthToSizeRatio,balance.growth);
     const newMaxHp = newSize * 5;
     this.hp = Math.min(this.hp + Math.max(0, newMaxHp - this.maxHp), newMaxHp);
     this.size = newSize;

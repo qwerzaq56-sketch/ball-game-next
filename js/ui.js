@@ -135,6 +135,7 @@ export class UI {
     document.getElementById('region-text').textContent=game.biomes.status(player);
     const field=game.era.apocalypse;document.getElementById('era-text').textContent=game.era.status()+(field?field.active?' · 파멸 위험':' · 파멸 전조':'');
     this.updateEraBadge(game);
+    document.getElementById('play-time').textContent=`플레이 ${Math.floor(game.gameTime/60)}:${String(Math.floor(game.gameTime%60)).padStart(2,'0')}`;
     const invitation=document.getElementById('companion-invite'),wait=Math.ceil(Math.max(0,(player.inviteReadyAt??0)-game.gameTime));
     invitation.textContent=game.allyLinks.truceUntil>game.gameTime?`동행 Q · 축제 ${Math.ceil(game.allyLinks.truceUntil-game.gameTime)}s`:wait?`동행 제안 ${wait}s`:'동행 제안 (Q)';invitation.disabled=game.paused||game.gameOver||wait>0||player.frozen>0||!!player.specialCast||player.attackState!=='READY'||player.dodgeState==='DODGING'||!!player.beingAbsorbedByRef;
     const neighbors=game.allyLinks.neighbors(player).length;
@@ -186,7 +187,7 @@ export class UI {
         ['startingSize', 1], ['startingGrowth', 1], ['startingHp', 1], ['moveSpeed', 1], ['hpPerGrowth', 0.01],
       ] },
       { label: 'Growth', key: 'growth', fields: [
-        ['growthToSizeRatio', 0.05], ['minEatSizeDifference', 1],
+        ['growthToSizeRatio', 0.05], ['lateThreshold',5], ['lateTransition',5], ['lateMultiplier',.1], ['minEatSizeDifference', 1],
       ] },
       { label: 'Absorption', key: 'absorption', fields: [
         ['baseResistanceTime', 0.02], ['resistancePerSize', 0.005],
@@ -227,7 +228,7 @@ export class UI {
         ['attackCooldown', 0.1], ['absorptionAttemptChance', 0.05], ['lowHealthAttackChance', 0.05],
       ] },
       { label: 'Spawning', key: 'spawning', fields: [
-        ['maxOrbCount', 10], ['orbSpawnInterval', 0.05],
+        ['maxOrbCount', 10], ['orbSpawnInterval', 0.05], ['minimumOrbDensity',1], ['maximumReplenishBatch',1],
         ['maxEnemyCount', 2], ['enemySpawnInterval', 0.1],
       ] },
       { label: 'Enemy Scaling (vs Player Size)', key: 'enemyScaling', fields: [
@@ -237,7 +238,7 @@ export class UI {
       // fields (a bigger kill drops noticeably more orbs, see spawning.js#spawnDeathOrbs), plus
       // the reduced direct-growth multiplier.
       { label: 'Kill Reward', key: 'killReward', fields: [
-        ['baseReward', 1], ['referenceSize', 1], ['growthExponent', 0.05], ['growthRewardMultiplier', 0.05],
+        ['baseReward', 1], ['referenceSize', 1], ['growthExponent', 0.05], ['growthRewardMultiplier', 0.05], ['retainedGrowthFraction',.05], ['growthPerSize',1],
         ['orbBaseCount', 1], ['orbPerEnemySize', 0.01], ['orbMaxCount', 1],
         ['orbSizeGrowthPerEnemySize', 0.01], ['orbSpreadBase', 1], ['orbSpreadMultiplier', 0.1],
       ] },
@@ -247,6 +248,7 @@ export class UI {
         ['mediumSizeMin', 1], ['mediumSizeMax', 1],
         ['largeSizeMin', 1], ['largeSizeMax', 1],
       ] },
+      {label:'용암 저항',key:'biomes',fields:[['redLavaResistancePerSize',.0005],['maxRedLavaResistance',.05]]},
       { label: '플레이 평가 기준', key:'evaluation', fields:[['encounterSeconds',1],['minimumSizeGain',.1],['minimumGrowthRatio',.005],['clusterRadius',10]] },
       { label: 'Ecology', key: 'ecology', fields: [['maxApex', 1]] },
       { label: 'World', key: 'world', fields: [

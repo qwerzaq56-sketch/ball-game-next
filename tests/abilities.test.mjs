@@ -29,7 +29,7 @@ test('invincibility blocks damage and freeze without consuming miss RNG',()=>{
  const {g,p,t}=fixture();t.invincible=true;g.abilities.start(p,0);ticks(g,36);assert.equal(t.hp,1000);assert.equal(t.frozen??0,0);
 });
 test('blue wave hits once and pushes 120 over .2 seconds, then immunity',()=>{
- const {g,p,t}=fixture('blue');g.abilities.start(p,0);ticks(g,36);ticks(g,12);const before=t.hp;assert.equal(before,965);ticks(g,30);assert.equal(t.hp,before);assert.ok(Math.abs(t.x-(p.x+220))<1e-6);assert.ok(t.waveImmune>0);
+ const {g,p,t}=fixture('blue');g.abilities.start(p,0);p.specialCast.directions=[0];ticks(g,36);ticks(g,12);const before=t.hp;assert.equal(before,965);ticks(g,30);assert.equal(t.hp,before);assert.ok(Math.abs(t.x-(p.x+220))<1e-6);assert.ok(t.waveImmune>0);
 });
 test('green apex buffs and recruits at most five followers, retaining player control',()=>{
  const {g,p}=fixture('green');for(let i=0;i<6;i++)g.entities.push(new AIEntity({x:p.x+i*10,y:p.y+50,color:'green',colorHex:'#0f0',balance:g.balance,startSize:50}));

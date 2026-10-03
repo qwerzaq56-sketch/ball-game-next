@@ -21,7 +21,7 @@
     "growthToSizeRatio": 1.6,
     "minEatSizeDifference": 0,
     "lateThreshold": 25,
-    "lateMultiplier": 1.4,
+    "lateMultiplier": 1.5,
     "lateTransition": 50
   },
   "attack": {
@@ -122,9 +122,7 @@
     "orbSpawnInterval": 0.06,
     "initialEnemyCount": 60,
     "maxEnemyCount": 80,
-    "enemySpawnInterval": 2.0,
-    "minimumOrbDensity": 12.5,
-    "maximumReplenishBatch": 6
+    "enemySpawnInterval": 2.0
   },
   "enemySpawn": {
     "smallSizeRatio": 0.6,

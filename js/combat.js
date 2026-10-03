@@ -184,9 +184,14 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   if ((attacker && (attacker.color===target.color||attacker.companionGroup&&attacker.companionGroup===target.companionGroup)) || target.invincible || !target.alive) return false;
   if(options.kind!=='field' && game?.abilities?.miss(target)){game.spawnFloatingText(target.x,target.y-target.size/2,"MISS","#eab308");return false;}
   const bal = balance || (game && game.balance);
-  const dmg = bal ? applyDefense(rawDamage, target.size, bal) : rawDamage;
+  const defended = bal ? applyDefense(rawDamage, target.size, bal) : rawDamage;
+  const dmg = Math.max(bal?.combatScaling?.minimumDamage??1,defended*Math.max(0,Math.min(1,options.postDefenseMultiplier??1)));
   const cfg = game ? game.balance.combat : null;
 
+  const lost=Math.min(Math.max(0,target.hp),dmg);
+  game?.balanceLog?.hit(target,lost,target.maxHp);
+  target.damageReceived=(target.damageReceived??0)+lost;
+  target.damageHpRatio=(target.damageHpRatio??0)+lost/Math.max(1,target.maxHp);
   target.hp -= dmg;
   target.hitFlash = cfg ? cfg.hitFlashDuration : 0.08;
   target.regenTimer = 0; // taking a hit resets the HP regen delay

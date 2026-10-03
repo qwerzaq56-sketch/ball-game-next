@@ -1,9 +1,11 @@
+import {attachBalanceFeedback} from './balanceFeedback.js';
 import {evaluationSummary} from './gameplayEvaluation.js';
 import { observationCSV } from './observationCSV.js';
 export class DiagnosticsUI {
  constructor(game,ui,{requestSeedReset}={}){
   this.game=game;this.ui=ui;this.last=0;this.root=document.createElement('section');this.root.className='debug-section';this.root.id='observation-tools';
   this.root.innerHTML='<h3>자동 플레이 · 관찰</h3><label class="debug-row"><span>자동 플레이 (실험)</span><input id="autoplay-toggle" type="checkbox"></label><p id="autoplay-status" class="hint"></p><p class="hint">직접 이동/공격/터치하면 수동으로 돌아옵니다. Life와 피해는 일반 플레이 규칙을 따릅니다.</p><p id="run-metrics-summary"></p><p id="evaluation-summary" class="hint"></p><canvas id="run-metrics-chart" width="280" height="90" aria-label="최근 플레이어와 가장 큰 AI의 크기 변화"></canvas><p class="hint">파랑: 내 크기 · 초록: 가장 큰 AI</p><button id="metrics-export" class="hud-btn" type="button">관찰 JSON 저장</button><p id="run-seed" class="hint"></p>';
+  attachBalanceFeedback(game,this.root);
   const phaseTable=document.createElement('div');phaseTable.id='phase-observation';this.root.insertBefore(phaseTable,this.root.querySelector('#metrics-export'));
   this.csvButton=document.createElement('button');this.csvButton.id='metrics-csv-export';this.csvButton.className='hud-btn';this.csvButton.type='button';this.csvButton.textContent='최근 샘플 CSV 저장';this.csvButton.disabled=true;this.root.querySelector('#metrics-export').after(this.csvButton);
   const seedControls=document.createElement('div');seedControls.innerHTML='<label class="debug-row"><span>재시작 시드</span><input id="run-seed-input" type="number" min="0" max="9007199254740991" step="1"></label><button id="seed-restart" class="hud-btn" type="button">이 시드로 재시작</button><p id="seed-reset-hint" class="hint" aria-live="polite">같은 시드로 시작 배치를 다시 살펴볼 수 있습니다.</p>';this.root.append(seedControls);

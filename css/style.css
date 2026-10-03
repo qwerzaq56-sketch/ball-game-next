@@ -615,8 +615,8 @@ html, body {
   body.mobile-minimal #hud > .hud-controls { display:block; padding:0; max-height:none; }
   body.mobile-minimal .hud-controls > button { display:none; }
   body.mobile-minimal .hud-controls > #pause-btn { display:block; min-height:36px; }
-  body.mobile-minimal #live-ranking, body.mobile-minimal #ecology-panel, body.mobile-minimal #minimap-panel,
-  body.mobile-minimal #player-info, body.mobile-minimal #build-id, body.mobile-minimal #ai-inspector, body.mobile-minimal #debug-panel { display:none !important; }
+  body.mobile-minimal #live-ranking:not(.minimal-open),
+  body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !important; }
 
 body.mobile-minimal #hud > #era-status {display:flex;}
 
@@ -634,8 +634,8 @@ body.mobile-minimal #hud > #era-status {display:flex;}
   body.mobile-minimal #hud > .hud-controls { display:block; padding:0; max-height:none; }
   body.mobile-minimal .hud-controls > button { display:none; }
   body.mobile-minimal .hud-controls > #pause-btn { display:block; min-height:36px; }
-  body.mobile-minimal #live-ranking, body.mobile-minimal #ecology-panel, body.mobile-minimal #minimap-panel,
-  body.mobile-minimal #player-info, body.mobile-minimal #build-id, body.mobile-minimal #ai-inspector, body.mobile-minimal #debug-panel { display:none !important; }
+  body.mobile-minimal #live-ranking:not(.minimal-open),
+  body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !important; }
   body:not(.mobile-minimal) #live-ranking { top:56px; }
 }
 
@@ -687,3 +687,18 @@ body.mobile-minimal .hud-controls > #companion-invite {display:block;font-size:1
 /* Keep invitation outside the compact HUD's row flow. */
 body.mobile-minimal .hud-controls > #companion-invite {position:fixed;right:max(8px,env(safe-area-inset-right));top:calc(max(8px,env(safe-area-inset-top)) + 44px);max-width:110px;pointer-events:auto;}
 body.mobile-minimal #hud > .hud-controls {backdrop-filter:none;-webkit-backdrop-filter:none;}
+
+#minimal-tools{position:fixed;left:12px;bottom:12px;z-index:8;display:flex;gap:5px;align-items:center;background:#101b2ce8;border:1px solid #334155;border-radius:10px;padding:5px;color:#cbd5e1;font:11px system-ui}
+#minimal-tools button,#ranking-layout{background:#1e293b;color:#cbd5e1;border:1px solid #475569;border-radius:6px;padding:5px;cursor:pointer}
+body:not(.mobile-minimal) #minimal-tools{bottom:42px}
+#live-ranking[data-layout="bar"] ol,#live-ranking[data-layout="bar"] .ranking-modes{display:none}
+#live-ranking[data-layout="bar"]{width:200px}
+#live-ranking[data-layout="compact"]{width:200px}
+#live-ranking[data-layout="compact"] .rank-name{display:none}
+#live-ranking[data-layout="compact"] .rank-secondary{display:none}
+#live-ranking[data-layout="compact"] .rank-row{padding:2px 4px;min-height:20px}
+@media(pointer:coarse){#minimal-tools{left:50%;transform:translateX(-50%);bottom:6px;max-width:90vw;white-space:nowrap}#ecology-panel,#debug-panel,#ai-inspector{max-height:65dvh;overflow:auto}}
+
+@media(pointer:coarse) and (orientation:portrait){#minimal-tools{bottom:154px}}
+body.mobile-minimal #ecology-panel,body.mobile-minimal #live-ranking.minimal-open{top:88px;max-height:calc(100dvh - 138px);overflow:auto}
+body.mobile-minimal #debug-panel{z-index:20}

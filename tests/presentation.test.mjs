@@ -51,10 +51,10 @@ test('presentation preferences tolerate unavailable and malformed storage, prese
   const old=globalThis.localStorage;
   try {
     globalThis.localStorage={getItem(){throw Error()},setItem(){throw Error()}};
-    assert.deepEqual(loadPresentationPreferences(),{names:true,ranking:true,ecology:false,allyLinks:true,minimap:false,rankingMode:'score'});assert.doesNotThrow(()=>savePresentationPreferences({names:false}));
+    assert.deepEqual(loadPresentationPreferences(),{names:true,ranking:true,ecology:false,allyLinks:true,minimap:false,rankingMode:'score',rankingLayout:'full'});assert.doesNotThrow(()=>savePresentationPreferences({names:false}));
     const data=new Map([['ballgame_scoreboard_v1','keep'],['ballgamenext_presentation_v1','{"names":false,"ranking":"no","ecology":true}']]);
     globalThis.localStorage={getItem:k=>data.get(k),setItem:(k,v)=>data.set(k,v)};
-    assert.deepEqual(loadPresentationPreferences(),{names:false,ranking:true,ecology:true,allyLinks:true,minimap:false,rankingMode:'score'});
+    assert.deepEqual(loadPresentationPreferences(),{names:false,ranking:true,ecology:true,allyLinks:true,minimap:false,rankingMode:'score',rankingLayout:'full'});
     savePresentationPreferences({names:true,ranking:false,ecology:false});assert.equal(data.get('ballgame_scoreboard_v1'),'keep');
     data.set('ballgamenext_presentation_v1','[');assert.equal(loadPresentationPreferences().ranking,true);
   } finally {globalThis.localStorage=old;}

@@ -11,8 +11,16 @@ import { assignDisplayName } from './presentation.js';
 let nextId = 1;
 export function resetEntityIds() { nextId = 1; }
 
-export function sizeFromGrowth(growth, baseSize, growthToSizeRatio) {
-  return baseSize + Math.sqrt(Math.max(growth, 0)) * growthToSizeRatio;
+export function sizeFromGrowth(growth, baseSize, growthToSizeRatio, settings = {}) {
+  const root=Math.sqrt(Math.max(growth,0)),threshold=Math.max(1,settings.lateThreshold??25),transition=Math.max(1,settings.lateTransition??50),t=Math.min(1,Math.max(0,(root-threshold)/transition));
+  const boost=Math.max(0,(settings.lateMultiplier??1)-1)*root*t*t*(3-2*t);
+  return baseSize+(root+boost)*growthToSizeRatio;
+}
+
+export function growthFromSize(size,base,ratio,settings={}) {
+ let lo=0,hi=Math.pow(Math.max(0,size-base)/ratio,2);
+ for(let i=0;i<48;i++){const mid=(lo+hi)/2;if(sizeFromGrowth(mid,base,ratio,settings)<size)lo=mid;else hi=mid;}
+ return (lo+hi)/2;
 }
 
 // v0.5: generic threshold-list lookup shared by attack/dodge stack capacity. Thresholds are

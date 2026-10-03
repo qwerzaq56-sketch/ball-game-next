@@ -1,8 +1,9 @@
+import {growthFromSize} from '../js/entity.js';
 import {createGame} from './headless.mjs';
 import {evaluationSummary} from '../js/gameplayEvaluation.js';
 const seconds=Number(process.argv[2]??60),results=[];
 for(const size of [20,40,80,160])for(const seed of [7,11,23]){
- const g=createGame(seed),p=g.player;p.growth=Math.pow(Math.max(0,size-p.baseSize)/g.balance.growth.growthToSizeRatio,2);p.refreshFromGrowth(g.balance);p._recomputeStacks(g.balance,false);g.autoplay.setEnabled(true);
+ const g=createGame(seed),p=g.player;p.growth=growthFromSize(size,p.baseSize,g.balance.growth.growthToSizeRatio,g.balance.growth);p.refreshFromGrowth(g.balance);p._recomputeStacks(g.balance,false);g.autoplay.setEnabled(true);
  const initialSize=p.size;
  for(let i=0;i<seconds*30&&!g.gameOver;i++)g.update(1/30);
  const summary=evaluationSummary(g.runMetrics.samples,g.balance.evaluation);

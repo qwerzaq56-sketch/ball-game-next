@@ -47,6 +47,11 @@ export class EcologyUI {
       if (e.key === 'F4') {e.preventDefault(); if (!e.repeat) this.toggle('ecology');}
       if (e.key === 'F5') {e.preventDefault(); if (!e.repeat) this.toggle('minimap');}
     });
+    document.getElementById('ranking-layout').addEventListener('click',()=>{const modes=['bar','compact','full'];this.preferences.rankingLayout=modes[(modes.indexOf(this.preferences.rankingLayout)+1)%3];savePresentationPreferences(this.preferences);this.apply();});
+    document.getElementById('quick-map').addEventListener('click',()=>this.toggle('minimap'));
+    document.getElementById('quick-ecology').addEventListener('click',()=>this.toggle('ecology'));
+    document.getElementById('quick-ranking').addEventListener('click',()=>{this.ranking.classList.toggle('minimal-open');this.toggle('ranking',true);});
+    document.getElementById('quick-balance').addEventListener('click',()=>{ui.debugVisible=!ui.debugVisible;ui.debugPanel.style.display=ui.debugVisible?'block':'none';});
     this.apply();
     this.lastUpdate = -Infinity;
   }
@@ -55,6 +60,7 @@ export class EcologyUI {
     savePresentationPreferences(this.preferences); this.apply(); this.lastUpdate = -Infinity;
   }
   apply() {
+    this.ranking.dataset.layout=this.preferences.rankingLayout;document.getElementById('ranking-layout').textContent={bar:'바',compact:'축약',full:'풀'}[this.preferences.rankingLayout];
     this.ranking.hidden = !this.preferences.ranking;
     this.ecology.hidden = !this.preferences.ecology;
     this.minimap.root.hidden=!this.preferences.minimap;
@@ -83,7 +89,7 @@ export class EcologyUI {
       if (this.preferences.ecology) this.renderEcology(game);
       if (this.preferences.minimap) this.minimap.render(game);
       // In screen pixels: name labels reserve occupied panels, including existing debug UI.
-      this.ui.overlayRects = ['hud','live-ranking','ecology-panel','debug-panel','ai-inspector','controls-hint','build-id','touch-stick','touch-actions','minimap-panel']
+      this.ui.overlayRects = ['hud','minimal-tools','live-ranking','ecology-panel','debug-panel','ai-inspector','controls-hint','build-id','touch-stick','touch-actions','minimap-panel']
         .map(id=>document.getElementById(id)).filter(n=>n && n.getClientRects().length)
         .map(n=>n.getBoundingClientRect()).filter(r=>r.width && r.height)
         .map(r=>({left:r.left-4,top:r.top-4,right:r.right+4,bottom:r.bottom+4}));

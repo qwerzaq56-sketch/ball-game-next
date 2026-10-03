@@ -14,7 +14,7 @@ export class Minimap {
   }
   layout() {
     const w=window.innerWidth,h=window.innerHeight,r=this.root.getBoundingClientRect();
-    const obstacles=['hud','live-ranking','ecology-panel','touch-stick','touch-actions','player-info'].map(id=>document.getElementById(id)).filter(n=>n?.getClientRects().length).map(n=>n.getBoundingClientRect());
+    const obstacles=['hud','minimal-tools','live-ranking','ecology-panel','touch-stick','touch-actions','player-info'].map(id=>document.getElementById(id)).filter(n=>n?.getClientRects().length).map(n=>n.getBoundingClientRect());
     const hud=document.getElementById('hud').getBoundingClientRect(),ranking=document.getElementById('live-ranking').getBoundingClientRect();
     const positions=[[w-r.width-14,h-r.height-28],[14,h-r.height-28],[w-r.width-14,ranking.bottom+12],[14,hud.bottom+12],[(w-r.width)/2,h-r.height-16]];
     const fit=positions.find(([x,y])=>x>=8&&y>=8&&x+r.width<=w-8&&y+r.height<=h-8&&!obstacles.some(b=>overlaps({left:x-4,top:y-4,right:x+r.width+4,bottom:y+r.height+4},b)));

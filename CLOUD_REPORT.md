@@ -1,3 +1,7 @@
+## NEXT M41 — 밸런스 그래프·회수 보상·UI
+
+[밸런스 그래프](balance.html)에서 시간/크기/성향/지역별 크기·기회·위기·실제 HP 손실을 비교합니다. 플레이 시간, 최소 UI 팝업과 순위3단계, 먹이 밀도 보충·후반 성장·Size 기반 사냥 드롭/축적 Growth90% 회수·붉은 공 용암 저항을 적용했습니다. [기획](BALANCING_LAB_DESIGN.md) · [측정과 한계](reports/M41-development.md).
+
 ## NEXT M40 — 눈보라 시야·플레이 평가
 
 설원 무늬를 고정하고 정적 안개로 플레이어 시야를 제한했습니다. 실제 지형에 바이옴 이름을 배치하며, F1에서 5초 기준을 수정하고 F1 관찰에서 성장 기회·위기·크기별 성장을 확인합니다. [평가 기획](GAMEPLAY_EVALUATION_DESIGN.md) · [검증 및 현재 밸런스 한계](reports/M40-development.md).

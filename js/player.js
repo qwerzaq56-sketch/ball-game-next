@@ -39,7 +39,7 @@ export class Player extends Entity {
   refreshFromGrowth(balance) {
     const g = balance.growth;
     const p = balance.player;
-    this.size = sizeFromGrowth(this.growth, this.baseSize, g.growthToSizeRatio);
+    this.size = sizeFromGrowth(this.growth, this.baseSize, g.growthToSizeRatio,g);
     const newMaxHp = p.startingHp + this.growth * (p.hpPerGrowth ?? 0);
     this.hp = Math.min(this.hp + Math.max(0, newMaxHp - this.maxHp), newMaxHp);
     this.maxHp = newMaxHp;

@@ -1,4 +1,5 @@
 import { random } from './random.js';
+import {growthFromSize} from './entity.js';
 import { Entity } from './entity.js';
 import { AIEntity } from './ai.js';
 
@@ -112,6 +113,13 @@ export function spawnDeathOrbs(deadEntity, balance) {
       maxHp: 1,
     });
     orbs.push(orb);
+  }
+  const fraction=Math.min(1,Math.max(0,kr.retainedGrowthFraction??0));
+  if(fraction>0||(kr.growthPerSize??0)>0){
+    const capital=Math.max(0,deadEntity.growth??0)+(kr.retainBodyCapital===false?0:growthFromSize(deadEntity.baseSize??deadEntity.size,balance.player.startingSize,balance.growth.growthToSizeRatio,balance.growth));
+    const direct=kr.baseReward*Math.pow(deadEntity.size/kr.referenceSize,kr.growthExponent)*kr.growthRewardMultiplier;
+    const current=orbs.reduce((sum,o)=>sum+o.growthValue,0),desired=Math.max(current,deadEntity.size*Math.max(0,kr.growthPerSize??0),capital*fraction-direct);
+    for(const orb of orbs){orb.growthValue*=desired/Math.max(1,current);orb.rewardSource=deadEntity.id;}
   }
   return orbs;
 }
