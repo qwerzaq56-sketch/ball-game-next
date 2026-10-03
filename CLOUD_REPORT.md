@@ -1,3 +1,7 @@
+## M72 완료 — 고정 최신 플레이 링크
+
+`play.html`은 새로고침마다 개발 브랜치 최신SHA를 확인하고 해당 게임을 같은 페이지 안에 불러온다. [고정 링크](https://raw.githack.com/qwerzaq56-sketch/ball-game-next/codex/cloud-next-m4/play.html). Chromium 모의API로 동일URL 새로고침 시 새SHA 전환/실패 재시도 검증 통과. 공개URL 접근은 클라우드 프록시 제한으로 직접 검증하지 못했다.
+
 ## M71 완료
 
 흡수성공 중간크기전액복구/비슷한크기90%복구/작은크기3%회복 적용. 진행중위험·실패복구없음·비치명생존선유지.
