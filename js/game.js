@@ -320,9 +320,10 @@ export class Game {
     const inp = this.input;
     p.companionVelocity={x:0,y:0};
 
+    const releasedUltimate=inp._ultimateQueued;inp._ultimateQueued=false;
     const releasedAttack=inp._attackQueued;inp._attackQueued=null;
     const releasedDodgeAngle=inp._dodgeAngle;inp._dodgeAngle=null;
-    if(p.frozen>0){if(releasedDodgeAngle!=null)inp.consumeDodge();return;}
+    if(p.frozen>0){if(releasedDodgeAngle!=null)inp.consumeDodge();inp.consumeSpecial?.();return;}
     updateAttack(p, dt, b, this.hostileTargetsFor(p), this);
     updateDodge(p, dt, b);
 
@@ -360,7 +361,7 @@ export class Game {
 
     const special=auto?auto.special:inp.consumeSpecial?.();if(auto)auto.special=false;
     if(special)this.abilities.start(p,aimAngle,mouseWorld,null,auto?(auto.skillSlot??(p.apex?'R':'E')):'E');
-    if(inp._ultimateQueued&&!auto){inp._ultimateQueued=false;this.abilities.start(p,aimAngle,mouseWorld,null,'R');}
+    if(releasedUltimate&&!auto)this.abilities.start(p,Number.isFinite(releasedUltimate.angle)?releasedUltimate.angle:aimAngle,releasedUltimate.point??mouseWorld,null,'R');
     if ((auto?auto.attack:(inp.mouseDown||releasedAttack!=null)) && p.attackUnlocked && canStartAttack(p)) {
       startAttack(p, !auto&&releasedAttack!=null?releasedAttack:aimAngle, b);
       this.audio.telegraph();
@@ -758,6 +759,7 @@ export class Game {
   drawTouchAim(ctx) {
     if(!this.touchAim||!this.player.alive||this.paused||this.gameOver)return;
     const p=this.player,z=this.camera.zoom,length=p.size/2+28/z,head=8/z;
+    if(this.touchAim.kind==='ultimate'&&this.touchAim.point&&['red','yellow'].includes(p.color)){const point=near(p,this.touchAim.point,this.balance.world),cfg=this.abilities.skill(p,'R');ctx.save();ctx.beginPath();ctx.arc(point.x,point.y,cfg.radius,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.04)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=1.5/z;ctx.setLineDash([6/z,4/z]);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(point.x-6/z,point.y);ctx.lineTo(point.x+6/z,point.y);ctx.moveTo(point.x,point.y-6/z);ctx.lineTo(point.x,point.y+6/z);ctx.stroke();ctx.restore();}
     ctx.save();ctx.translate(p.x,p.y);ctx.rotate(this.touchAim.angle);
     ctx.strokeStyle='#ffffff';ctx.lineWidth=2/z;ctx.lineCap='round';ctx.lineJoin='round';
     ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(length,0);

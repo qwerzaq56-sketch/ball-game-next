@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "genuineTouch": true,
+  "movementWhileAiming": true,
+  "noCastOnPress": true,
+  "releaseDirectionAndPoint": true,
+  "yellowField": true,
+  "redMark": true,
+  "cancelPauseResizeNoCooldown": true,
+  "greenTapRetained": true,
+  "errors": []
+}

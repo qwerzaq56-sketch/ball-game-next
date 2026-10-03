@@ -22,12 +22,11 @@ export class TouchControls {
       button.addEventListener('pointerdown',e=>{
         if(e.pointerType==='mouse'||this.blocked()||button.disabled||(kind!=='special'&&this.gestures.size))return;
         e.preventDefault();button.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,kind);
-        if(kind==='attack'||kind==='dodge'){this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,kind});this.aim(e);}
+        if(kind==='attack'||kind==='dodge'||kind==='ultimate'){this.gestures.set(e.pointerId,{x:e.clientX,y:e.clientY,angle:game.player.facing,kind});this.aim(e);}
         if(kind==='special')input._specialQueued=true;
-        if(kind==='ultimate')input._ultimateQueued=true;
       });
     }
-    for(const button of [this.attack,this.dodge,canvas])button.addEventListener('pointermove',e=>{
+    for(const button of [this.attack,this.dodge,this.ultimate,canvas])button.addEventListener('pointermove',e=>{
       if(!this.gestures.has(e.pointerId)||this.blocked())return;e.preventDefault();this.aim(e);
     });
     window.addEventListener('pointerup',e=>{if(this.gestures.has(e.pointerId))this.aim(e);this.release(e.pointerId,true);});
@@ -53,18 +52,21 @@ export class TouchControls {
   aim(e){
     const gesture=this.gestures.get(e.pointerId);if(!gesture)return;
     const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
-    if(Math.hypot(dx,dy)>=8){gesture.angle=Math.atan2(dy,dx);gesture.dragged=true;}
-    this.showAim(gesture.angle,gesture.kind);
+    gesture.distance=Math.hypot(dx,dy);
+    if(gesture.distance>=8){gesture.angle=Math.atan2(dy,dx);gesture.dragged=true;}
+    this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180);
   }
-  showAim(angle,kind){
+  showAim(angle,kind,distance=180){
     const p=this.game.worldToScreen(this.game.player.x,this.game.player.y);
     this.input.mouseX=p.x+Math.cos(angle)*180;this.input.mouseY=p.y+Math.sin(angle)*180;
     this.game.touchAim={angle,kind};
+    if(kind==='ultimate'){const player=this.game.player,point=this.game.abilities.aimPoint(player,angle,{x:player.x+Math.cos(angle)*distance/this.game.camera.zoom,y:player.y+Math.sin(angle)*distance/this.game.camera.zoom}),screen=this.game.worldToScreen(point.x,point.y);this.input.mouseX=screen.x;this.input.mouseY=screen.y;this.game.touchAim.point=point;}
   }
   release(id,fire=false){
     const kind=this.pointers.get(id);if(!kind)return;this.pointers.delete(id);
     const gesture=this.gestures.get(id);this.gestures.delete(id);
     if(gesture&&fire&&!this.blocked()&&(!gesture.canvas||gesture.dragged)){
+      if(kind==='ultimate'&&!touchActionFeedback(this.game,kind).disabled)this.input._ultimateQueued={angle:gesture.angle,point:{...this.game.touchAim.point}};
       if(kind==='attack')this.input._attackQueued=gesture.angle;
       if(kind==='dodge'){this.input._dodgeAngle=gesture.angle;this.input._dodgeQueued=true;}
     }
@@ -80,7 +82,7 @@ export class TouchControls {
     const fresh=this.lastHistory!==this.game.apexHistory;
     if(fresh||(!this.wasPaused&&this.game.paused))this.clear();
     this.lastHistory=this.game.apexHistory;this.wasPaused=this.game.paused;
-    const gesture=this.gestures.values().next().value;if(gesture)this.showAim(gesture.angle,gesture.kind);
+    const gesture=this.gestures.values().next().value;if(gesture)this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180);
     const p=this.game.player,blocked=this.blocked();
     for(const [button,kind]of [[this.attack,'attack'],[this.dodge,'dodge'],[this.special,'special'],[this.ultimate,'ultimate']]){
       const feedback=touchActionFeedback(this.game,kind);
