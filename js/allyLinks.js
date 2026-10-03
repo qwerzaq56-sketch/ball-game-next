@@ -67,11 +67,12 @@ export class AllyLinks {
   return true;
  }
  inviteRange(owner){return Math.max(280,this.game.balance.ai.detectionRange*.65+Math.max(0,owner.size-40)*.65);}
+ acceptChance(owner,target,base=affinity(target).accept){return Math.min(.95,base+(owner.apex?.2:0));}
  offer(owner){
   if(this.game.paused||this.game.gameOver||!unit(owner)||owner.frozen>0||owner.attackState!=='READY'||owner.dodgeState==='DODGING'||owner.specialCast||owner.beingAbsorbedByRef||(owner.inviteReadyAt??0)>this.game.gameTime)return false;
   owner.inviteReadyAt=this.game.gameTime+5;owner.inviteFlashUntil=this.game.gameTime+.8;let accepted=0;const range=this.inviteRange(owner);
   for(const target of this.game.getNearbyEntities(owner,range).filter(t=>unit(t)&&t!==owner&&!t.companionGroup&&!t.beingAbsorbedByRef&&dist(owner,t)<=range&&(t.color===owner.color||this.truceUntil>this.game.gameTime)).sort((a,b)=>dist(owner,a)-dist(owner,b)||a.id-b.id).slice(0,3)){
-   if(random('ai')<affinity(target).accept&&this.recruit(owner,target,target.color!==owner.color))accepted++;
+   if(random('ai')<this.acceptChance(owner,target)&&this.recruit(owner,target,target.color!==owner.color))accepted++;
   }
   this.game.spawnFloatingText(owner.x,owner.y-owner.size/2-30,accepted?`동행 제안 · ${accepted}명 수락`:'동행 제안 · 수락 없음','#c4b5fd');return true;
  }

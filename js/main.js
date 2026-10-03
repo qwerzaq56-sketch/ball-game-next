@@ -70,11 +70,12 @@ async function main() {
     if(k==='r'&&!e.repeat&&!window.__game?.paused)input._ultimateQueued=true;
     if (k === ' ') {
       e.preventDefault();
-      if (!e.repeat&&!window.__game?.paused) input._dodgeQueued = true;
+      if (!e.repeat&&!window.__game?.paused) input.spaceHeldSeconds=0;
     }
     if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) e.preventDefault();
   });
   window.addEventListener('keyup', (e) => {
+    if(e.key===' '&&input.keys.has(' ')&&(input.spaceHeldSeconds??0)<.18&&!window.__game?.paused)input._dodgeQueued=true;
     input.keys.delete(e.key.toLowerCase());
   });
   canvas.addEventListener('mousemove', (e) => {

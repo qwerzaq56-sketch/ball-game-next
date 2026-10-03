@@ -307,7 +307,7 @@ function moveAI(ai, dt, balance,game) {
   if(ai.state==='flee'&&ai.guardMode&&ai.target){
     const gap=dist(ai,ai.target)-(ai.size+ai.target.size)/2;
     if(gap<=0&&ai.hp/ai.maxHp>.4&&canStartAttack(ai)&&ai.target.size<=ai.size*2.8){startAttack(ai,angleTo(ai,ai.target),balance);return;}
-    targetAngle=angleTo(ai.target,ai);speed*=gap<(balance.ai.guardSurfaceDistance??140)?1.3:0;
+    targetAngle=angleTo(ai.target,ai);speed*=gap<(balance.ai.guardSurfaceDistance??140)?1.3:.75;
   } else if (ai.state === 'flee' && ai.target) {
     targetAngle = angleTo(ai.target,ai);
     // v0.3: fleeing a low-HP threat gets a burst of speed, but fleeing an absorption grab

@@ -353,8 +353,9 @@ export class Game {
     dx+=inp.touchMove?.x??0;dy+=inp.touchMove?.y??0;
     }
 
+    inp.spaceHeldSeconds=inp.keys.has(' ')?(inp.spaceHeldSeconds??0)+dt:0;
     const moving = dx !== 0 || dy !== 0;
-    const sprintMultiplier=updateSprint(p,dt,b,{held:!auto&&(inp.keys.has(' ')||inp.sprintHeld),moving});
+    const sprintMultiplier=updateSprint(p,dt,b,{held:!auto&&((inp.keys.has(' ')&&(inp.spaceHeldSeconds??0)>=.18)||inp.sprintHeld),moving});
     const moveSpeed=p.moveSpeed*this.abilities.speedMultiplier(p)*this.biomes.moveMultiplier(p)*sprintMultiplier;
     const moveAngle = moving ? Math.atan2(dy, dx) : p.facing;
     const dragAngle=this.touchAim?.dragged?this.touchAim.angle:Number.isFinite(releasedAttack?.angle)?releasedAttack.angle:Number.isFinite(releasedDodgeAngle)?releasedDodgeAngle:null;
@@ -375,7 +376,7 @@ export class Game {
 
     const special=auto?auto.special:inp.consumeSpecial?.();if(auto)auto.special=false;
     if(special)this.abilities.start(p,aimAngle,mouseWorld,null,auto?(auto.skillSlot??(p.apex?'R':'E')):'E');
-    if(releasedUltimate&&!auto)this.abilities.start(p,Number.isFinite(releasedUltimate.angle)?releasedUltimate.angle:aimAngle,releasedUltimate.point??mouseWorld,null,'R');
+    if(releasedUltimate&&!auto)this.abilities.start(p,Number.isFinite(releasedUltimate.angle)?releasedUltimate.angle:aimAngle,releasedUltimate.point??this.screenToWorld(inp.mouseX,inp.mouseY),null,'R');
     const autoLevel=b.attack.aiChargeFraction??.75;
     if(auto&&auto.attack&&canStartAttack(p))p.autoChargeSeconds=(p.autoChargeSeconds??0)+dt;else p.autoChargeSeconds=0;
     const autoReleased=!!auto&&p.autoChargeSeconds>=(b.attack.manualChargeSeconds??.9)*autoLevel;
@@ -933,14 +934,14 @@ export class Game {
     const minimumCharge=this.balance.attack.minChargeDistanceFraction??.03;
     const chargePreview=e.currentChargeDistance*(minimumCharge+(1-minimumCharge)*(e.attackHoldProgress??0))/(minimumCharge+(1-minimumCharge)*(e.currentAttackCharge??.75));
     const aiming=e===this.player&&(this.touchAim?.kind==='attack'||this.input.mouseDown||e.autoChargeSeconds>0)&&e.attackUnlocked&&e.attackState==='READY';
-    if(aiming||e.attackState==='TELEGRAPH'||e.attackState==='CHARGING'){
+    if(aiming||(e===this.player&&e.attackState==='TELEGRAPH')||e.attackState==='CHARGING'){
       const hitRadius=e.size/2;
       const direction=aiming?(this.touchAim?.angle??angleTo(e,this.autoplay.action?.aim??this.screenToWorld(this.input.mouseX,this.input.mouseY))):e.attackDir;
       const remaining=aiming?attackChargeDistanceForSize(e.size,this.balance,e.apex)*((this.balance.attack.minChargeDistanceFraction??.03)+(1-(this.balance.attack.minChargeDistanceFraction??.03))*(e.attackHoldProgress??0)):e.attackState==='TELEGRAPH'?chargePreview:e.currentChargeDistance*Math.max(0,1-e.attackTimer/e.currentChargeDuration);
       ctx.save();ctx.translate(e.x,e.y);ctx.rotate(direction);ctx.beginPath();ctx.moveTo(0,-hitRadius);ctx.lineTo(remaining,-hitRadius);ctx.arc(remaining,0,hitRadius,-Math.PI/2,Math.PI/2);ctx.lineTo(0,hitRadius);ctx.arc(0,0,hitRadius,Math.PI/2,Math.PI*1.5);ctx.closePath();ctx.fillStyle='rgba(255,255,255,.055)';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1/this.camera.zoom;ctx.stroke();ctx.restore();
     }
     // telegraph indicator
-    if (e.attackState === 'TELEGRAPH') {
+    if (e===this.player&&e.attackState === 'TELEGRAPH') {
       const reach = chargePreview;
       ctx.save();
       ctx.strokeStyle = 'rgba(255,255,255,0.85)';
@@ -974,9 +975,10 @@ export class Game {
     // decorative helpers replace it with their marks, pulse circles or arrow triangles.
     if((e.shieldHp??0)>0){ctx.beginPath();ctx.arc(e.x,e.y,r+7/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#a5f3fc';ctx.lineWidth=3/this.camera.zoom;ctx.stroke();}
     if(this.abilities.frostMarks.some(m=>m.target===e)){ctx.beginPath();ctx.arc(e.x,e.y,r+12/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#67e8f9';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([5/this.camera.zoom,4/this.camera.zoom]);ctx.stroke();ctx.setLineDash([]);}
+    if((e.frostbiteRemaining??0)>0||(this.biomes.enabled&&this.biomes.regionAt(e)?.id==='lake')){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.fillStyle=(e.frostbiteRemaining??0)>0?'rgba(185,225,255,.42)':'rgba(25,110,230,.30)';ctx.fill();ctx.restore();}
     drawSpeciesMark(ctx,e,this.camera.zoom);
     drawGrowthPulse(ctx,e,this.camera.zoom);
-    if(e!==this.player||!this.touchAim)drawPlayerDirection(ctx,e,this.camera.zoom);
+    if((e===this.player||e.attackState!=='TELEGRAPH')&&(e!==this.player||!this.touchAim))drawPlayerDirection(ctx,e,this.camera.zoom);
 
     if (beingAbsorbed) {
       // absorption progress ring, pulsing as it nears completion

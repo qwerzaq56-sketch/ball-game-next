@@ -8,7 +8,7 @@ test('green E provides solo attack and real defense, stacks to cap, then expires
  const before=p.hp;applyDamage(p,500,g,null,g.balance,{knockback:false});assert.equal(before-p.hp,187.5);g.gameTime=31;g.abilities.update(0);assert.equal(g.abilities.defenseMultiplier(p),1);assert.equal(g.abilities.damageMultiplier(p),1);
 });
 test('80 percent E acceptance ignores personality and buffs accepted and existing companions',()=>{
- const {g,p,unit}=setup(),ally=unit(100);ally.companionAffinity='independent';resetRandom(884);let accepted=0;
+ const {g,p,unit}=setup(),ally=unit(100);p.apex=false;ally.companionAffinity='independent';resetRandom(884);let accepted=0;
  for(let i=0;i<300;i++){g.allyLinks.groups.clear();g.allyLinks.edges.clear();p.companionGroup=ally.companionGroup=null;p.inviteBuffs=ally.inviteBuffs=[];g.entities=[p,ally];invite(g,p);if(ally.companionGroup){accepted++;assert.equal(g.abilities.invitePower(ally,'damage'),.05);}}
  assert(accepted>=220&&accepted<=260,`accepted ${accepted}/300`);g.allyLinks.groups.clear();p.companionGroup=ally.companionGroup=null;g.allyLinks.recruit(p,ally);p.inviteBuffs=ally.inviteBuffs=[];ally.x=5500;invite(g,p);assert.equal(g.abilities.invitePower(ally,'defense'),.05);
 });

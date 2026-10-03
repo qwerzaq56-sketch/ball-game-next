@@ -43,7 +43,7 @@ export class Abilities {
  skill(e,slot='R'){return scaledSkill(this.game.balance,e,slot);}
  unlocked(e,slot='R'){return e.behavior!=='orb'&&!e.summoned&&(slot==='R'?!!e.apex:e.apex||e.size>=(this.game.balance.abilitySkills?.unlockSize??100));}
  cooldown(e,slot='R'){return slot==='R'?(e.specialCooldown??0):(e.normalSkillCooldown??0);}
- canCast(e,slot='R'){return this.enabled&&e.alive&&this.unlocked(e,slot)&&this.cooldown(e,slot)<=0&&!e.specialCast&&!(e.frozen>0)&&!e.beingAbsorbedByRef&&e.attackState==='READY'&&e.dodgeState!=='DODGING';}
+ canCast(e,slot='R'){return this.enabled&&e.alive&&this.unlocked(e,slot)&&this.cooldown(e,slot)<=0&&!e.specialCast&&!(e.frozen>0)&&!e.beingAbsorbedByRef;}
  instantGeometry(e,cast){
   if(!(cast.slot==='E'&&['chill','ripple'].includes(cast.skill?.effect)||cast.slot==='R'&&e.color==='cyan'))return null;
   const hostiles=this.units().filter(t=>isHostile(e,t));return {hostiles,targets:hostiles.filter(t=>inCone(e,t,cast.dir,cast.skill.radius))};
@@ -120,7 +120,7 @@ export class Abilities {
    for(const t of units.filter(t=>t!==e&&(!t.companionGroup||t.companionGroup!==e.companionGroup)&&t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b))) {
     const group=this.game.allyLinks.groups.get(e.companionGroup);if(group?.members.size>=6)break;
     if(t.companionGroup){if(attemptedGroups.has(t.companionGroup))continue;attemptedGroups.add(t.companionGroup);}
-    if(random('ai')<(cfg.acceptChance??.8)&&this.game.allyLinks.merge(e,t))this.metrics.count(e,cast,'recruits');
+    if(random('ai')<this.game.allyLinks.acceptChance(e,t,cfg.acceptChance??.8)&&this.game.allyLinks.merge(e,t))this.metrics.count(e,cast,'recruits');
    }
    const group=this.game.allyLinks.groups.get(e.companionGroup),recipients=group?[...group.members]:[e];
    for(const t of recipients)if(t.alive&&!isHostile(e,t)){

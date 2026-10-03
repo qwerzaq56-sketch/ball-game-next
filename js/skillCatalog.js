@@ -15,9 +15,9 @@ export const SKILL_CATALOG = {
  'green-summon':{color:'green',slot:'R',name:'숲의 부름',effect:'summon',windup:.5,cooldown:18,radius:350,summonCount:2,summonAbsorbDelay:30,summonSizeFraction:.16,summonSizeVariation:.2,summonSizeCapFraction:.2,summonAttackInheritance:.5,buffDuration:5,buffDamage:.15},
  'green-morale':{color:'green',slot:'R',name:'사기 진작 (복구 후보)',effect:'legacy',windup:.5,cooldown:12,radius:350,buffDuration:5,buffDamage:.15},
  'red-rally':{color:'red',slot:'R',name:'사냥 지휘',effect:'legacy',windup:.8,cooldown:12,radius:250,castRange:350,buffRadius:450,buffDuration:6,buffDamage:.3,buffSpeed:1.25},
- 'yellow-storm':{color:'yellow',slot:'R',name:'모래바람',effect:'legacy',windup:.8,cooldown:14,radius:216,castRange:350,fieldDuration:5,tickInterval:.25,hpFraction:.1,missChance:.25},
+ 'yellow-storm':{color:'yellow',slot:'R',name:'모래바람',effect:'legacy',windup:.8,cooldown:14,radius:259.2,castRange:350,fieldDuration:5,tickInterval:.25,hpFraction:.1,missChance:.25},
 };
-export const DEFAULT_SKILLS={cyan:{E:'cyan-shield',R:'cyan-burst'},blue:{E:'blue-ripple',R:'blue-trident'},green:{E:'green-invite',R:'green-summon'},red:{E:'red-embers',R:'red-muster'},yellow:{E:'yellow-dust',R:'yellow-storm'}};
+export const DEFAULT_SKILLS={cyan:{E:'cyan-shield',R:'cyan-freeze'},blue:{E:'blue-ripple',R:'blue-trident'},green:{E:'green-invite',R:'green-summon'},red:{E:'red-embers',R:'red-muster'},yellow:{E:'yellow-dust',R:'yellow-storm'}};
 export function selectedSkill(balance,color,slot){const selected=balance.abilitySkills?.loadout?.[color]?.[slot]??DEFAULT_SKILLS[color]?.[slot],valid=SKILL_CATALOG[selected]?.color===color&&SKILL_CATALOG[selected]?.slot===slot,id=valid?selected:DEFAULT_SKILLS[color]?.[slot],base=SKILL_CATALOG[id];return {...base,...skillOverrides(id,balance.abilitySkills?.overrides?.[id],base),id};}
 export function apexTerritoryRadius(e,balance){if(e.color==='red')return e.size*(balance.abilitySkills?.redTerritoryRadiusMultiplier??.6)*(balance.abilitySkills?.territoryMultiplier??1);return 900*Math.sqrt(Math.max(100,e.size)/100)*(balance.abilitySkills?.territoryMultiplier??1);}
 

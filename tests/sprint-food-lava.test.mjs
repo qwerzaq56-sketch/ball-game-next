@@ -1,19 +1,19 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createGame} from '../tools/headless.mjs';import {updateSprint} from '../js/sprint.js';import {AIEntity,decideAI,updateAI} from '../js/ai.js';import {Entity} from '../js/entity.js';import {startAttack,updateAttack} from '../js/combat.js';
 const actor=(g,color='green',x=4000,size=200)=>new AIEntity({balance:g.balance,x,y:4000,startSize:size,color,colorHex:'#fff'});
-test('sprint unlock, depleted dodge gate, stamina exhaustion and release recovery',()=>{
+test('sprint unlock, available dodge independence, stamina exhaustion and release recovery',()=>{
  const g=createGame(7),p=g.player;p.size=149;p.dodgeMaxStack=2;p.dodgeStack=0;
  assert.equal(updateSprint(p,.5,g.balance,{held:true,moving:true}),1);p.size=150;
  assert.equal(updateSprint(p,1,g.balance,{held:true,moving:true}),1.5);assert.equal(p.sprintGauge,2);
- p.dodgeStack=1;assert.equal(updateSprint(p,.1,g.balance,{held:true,moving:true}),1);p.dodgeStack=0;
+ p.dodgeStack=1;assert.equal(updateSprint(p,.1,g.balance,{held:true,moving:true}),1.5);p.dodgeStack=0;
  updateSprint(p,2,g.balance,{held:true,moving:true});assert.equal(p.sprintGauge,0);assert(p.sprintExhausted);
  assert.equal(updateSprint(p,.5,g.balance,{held:true,moving:true}),1);assert.equal(p.sprintGauge,0);
  updateSprint(p,1,g.balance,{held:false,moving:true});assert.equal(p.sprintGauge,.6);assert(!p.sprintExhausted);
  assert.equal(updateSprint(p,.1,g.balance,{held:true,moving:true}),1.5);
  p.attackState='CHARGING';assert.equal(updateSprint(p,.1,g.balance,{held:true,moving:true}),1);
 });
-test('sprint increases actual player movement only with all dodges depleted',()=>{
- const g=createGame(7),p=g.player;g.entities=[p];g.biomes.enabled=false;p.size=200;p.dodgeMaxStack=2;p.dodgeStack=0;p.x=4000;p.y=4000;g.input.keys=new Set(['d',' ']);g.updatePlayer(.1);assert.equal(p.x,4037.5);assert(p.sprinting);g.input.keys.delete(' ');g.updatePlayer(.1);assert.equal(p.x,4062.5);
+test('sprint increases actual player movement after hold threshold with dodges available',()=>{
+ const g=createGame(7),p=g.player;g.entities=[p];g.biomes.enabled=false;p.size=200;p.dodgeMaxStack=2;p.dodgeStack=0;p.x=4000;p.y=4000;p.dodgeStack=2;g.input.spaceHeldSeconds=.18;g.input.keys=new Set(['d',' ']);g.updatePlayer(.1);assert.equal(p.x,4037.5);assert(p.sprinting);g.input.keys.delete(' ');g.updatePlayer(.1);assert.equal(p.x,4062.5);
 });
 test('lava damages body overlap with an endpoint and the middle of a river while center stays outside',()=>{
  const g=createGame(7),p=g.player;g.entities=[p];g.biomes.enabled=true;g.biomes.sandstormTimer=1000;g.biomes.rivers=[{x:4000,y:4000,hotRadius:20},{x:4100,y:4000,hotRadius:20}];p.size=300;p.color='blue';p.x=4050;p.y=4160;p.maxHp=p.hp=1000;p.invincible=false;
