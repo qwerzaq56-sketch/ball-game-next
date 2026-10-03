@@ -24,6 +24,7 @@ import {
   canStartAttack, startAttack, canStartDodge, startDodge,
 } from './combat.js';
 import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
+import {apexTerritoryRadius} from './skillCatalog.js';
 import { startAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
 import { AudioManager } from './audio.js';
 
@@ -257,7 +258,7 @@ export class Game {
     this.era.observeDuels();
     this.runMetrics.observe(this,dt);
     this.apexHistory.observe(this.entities, dt, this.gameTime);
-    for(const e of this.entities)if(!e.apex&&e._specialApex){this.abilities.release(e);e._specialApex=false;}
+    for(const e of this.entities)if(!e.apex&&e._specialApex){this.abilities.loseApex(e);}
     if (this.options.collect && Math.floor(this.gameTime + 1e-8) > this.telemetry.length) this.telemetry.push(this.snapshot());
   }
 
@@ -357,7 +358,8 @@ export class Game {
     }
 
     const special=auto?auto.special:inp.consumeSpecial?.();if(auto)auto.special=false;
-    if(special)this.abilities.start(p,aimAngle,mouseWorld);
+    if(special)this.abilities.start(p,aimAngle,mouseWorld,null,auto?(p.apex?'R':'E'):'E');
+    if(inp._ultimateQueued&&!auto){inp._ultimateQueued=false;this.abilities.start(p,aimAngle,mouseWorld,null,'R');}
     if ((auto?auto.attack:(inp.mouseDown||releasedAttack!=null)) && p.attackUnlocked && canStartAttack(p)) {
       startAttack(p, !auto&&releasedAttack!=null?releasedAttack:aimAngle, b);
       this.audio.telegraph();
@@ -534,6 +536,7 @@ export class Game {
       return;
     }
     this.spawnDeathParticles(entity.x, entity.y, entity.colorHex);
+    if(entity.summoned){this.allyLinks.leave(entity,'summon-death');return;}
 
     // v0.4 spec §31-36 / v0.6 spec §10-12: a direct, size-scaled growth reward for whoever
     // landed the killing attack, but cut down by `growthRewardMultiplier` — the bulk of a kill's
@@ -779,7 +782,7 @@ export class Game {
   drawTerritories(ctx) {
     ctx.save();ctx.beginPath();ctx.rect(0,0,this.balance.world.worldWidth,this.balance.world.worldHeight);if(!this.balance.world.wrap)ctx.clip();
     for(const e of this.entities){if(!e.alive||!e.apex)continue;
-      ctx.beginPath();ctx.arc(e.x,e.y,600,0,Math.PI*2);
+      ctx.beginPath();ctx.arc(e.x,e.y,apexTerritoryRadius(e,this.balance),0,Math.PI*2);
       ctx.fillStyle=this.withAlpha(e.colorHex,.025);ctx.fill();
       ctx.strokeStyle=this.withAlpha(e.colorHex,.3);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();
     }ctx.restore();
@@ -855,6 +858,13 @@ export class Game {
     // v0.4 spec §23: a short outward "grew bigger" pulse plays on a successful absorption.
 
     const r = e.size / 2;
+    if(e.behavior!=='orb'&&this.abilities.unlocked(e,'E')){
+      ctx.save();ctx.font=`bold ${12/this.camera.zoom}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3/this.camera.zoom;ctx.strokeStyle='#0f172a';
+      for(const [i,slot] of ['E','R'].entries())if(this.abilities.unlocked(e,slot)){
+        const ready=this.abilities.canCast(e,slot),label=e.specialCast?.slot===slot?`${slot} …`:this.abilities.cooldown(e,slot)>0?`${slot} ${Math.ceil(this.abilities.cooldown(e,slot))}`:ready?`${slot} ◆`:`${slot} ◇`;
+        const x=e.x+(e.apex?(i?1:-1)*32/this.camera.zoom:0),y=e.y-r-22/this.camera.zoom;ctx.strokeText(label,x,y);ctx.fillStyle=ready?'#fff':'#94a3b8';ctx.fillText(label,x,y);
+      }ctx.restore();
+    }
     if(e.apex){ctx.beginPath();ctx.arc(e.x,e.y,r+8,0,Math.PI*2);ctx.strokeStyle=this.withAlpha(e.colorHex,(e.specialCooldown??0)>0?.3:.65);ctx.lineWidth=2/this.camera.zoom;ctx.stroke();}
 
     // dodge afterimages — each fades independently over dodge.effectLifetime, then is pruned

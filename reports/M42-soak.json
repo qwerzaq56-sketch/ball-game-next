@@ -1,0 +1,1189 @@
+{
+  "result": "PASS",
+  "results": [
+    {
+      "seed": 7,
+      "fps": 30,
+      "policy": "local-survival-v2",
+      "lifePolicy": "ordinary lives; no replenishment",
+      "requestedSeconds": 300,
+      "actualSeconds": 300,
+      "stop": "duration",
+      "frames": 9000,
+      "unitChecks": 23818,
+      "maxApex": 5,
+      "maxGroups": 10,
+      "maxSize": 219.20406229820085,
+      "player": {
+        "size": 199.07686346578427,
+        "score": 6690,
+        "lives": 2,
+        "defeats": 1,
+        "firstApexSeconds": 241.99999999998883
+      },
+      "era": {
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relicPickupsAllUnits": 4,
+      "apex": {
+        "current": [
+          {
+            "id": 7204,
+            "name": "\ubd89\uc740 \ud45c\ubc94 7204",
+            "color": "#3B82F6",
+            "since": 235.99999999998917,
+            "seconds": 64.00000000003385
+          },
+          {
+            "id": 10432,
+            "name": "\uc0c8\ubcbd \uc5ec\uc6b0 10432",
+            "color": "#22D3EE",
+            "since": 274.00000000000233,
+            "seconds": 26.00000000002069
+          },
+          {
+            "id": 8473,
+            "name": "\ud669\uae08 \uae4c\ub9c8\uadc0 8473",
+            "color": "#3B82F6",
+            "since": 282.0000000000087,
+            "seconds": 18.000000000014325
+          },
+          {
+            "id": 1855,
+            "name": "\uadf8\ub298 \uacf0 1855",
+            "color": "#22D3EE",
+            "since": 288.0000000000135,
+            "seconds": 12.00000000000955
+          },
+          {
+            "id": 2797,
+            "name": "\ud669\uae08 \ub291\ub300 2797",
+            "color": "#EAB308",
+            "since": 290.00000000001506,
+            "seconds": 10.000000000007958
+          }
+        ],
+        "recent": [
+          {
+            "id": 2797,
+            "name": "\ud669\uae08 \ub291\ub300 2797",
+            "color": "#EAB308",
+            "since": 290.00000000001506,
+            "type": "gain",
+            "time": 290.00000000001506
+          },
+          {
+            "id": 1,
+            "name": "\ub098",
+            "color": "#3B82F6",
+            "since": 241.99999999998883,
+            "endedAt": 290.00000000001506,
+            "seconds": 48.00000000002623,
+            "type": "loss",
+            "time": 290.00000000001506
+          },
+          {
+            "id": 1855,
+            "name": "\uadf8\ub298 \uacf0 1855",
+            "color": "#22D3EE",
+            "since": 288.0000000000135,
+            "type": "gain",
+            "time": 288.0000000000135
+          },
+          {
+            "id": 1808,
+            "name": "\uc7bf\ube5b \ub291\ub300 1808",
+            "color": "#3B82F6",
+            "since": 55.99999999999938,
+            "endedAt": 288.0000000000135,
+            "seconds": 232.0000000000141,
+            "type": "loss",
+            "time": 288.0000000000135
+          },
+          {
+            "id": 8473,
+            "name": "\ud669\uae08 \uae4c\ub9c8\uadc0 8473",
+            "color": "#3B82F6",
+            "since": 282.0000000000087,
+            "type": "gain",
+            "time": 282.0000000000087
+          },
+          {
+            "id": 3614,
+            "name": "\uace0\uc694\ud55c \ud638\ub791\uc774 3614",
+            "color": "#3B82F6",
+            "since": 259.9999999999912,
+            "endedAt": 282.0000000000087,
+            "seconds": 22.000000000017508,
+            "type": "loss",
+            "time": 282.0000000000087
+          },
+          {
+            "id": 10432,
+            "name": "\uc0c8\ubcbd \uc5ec\uc6b0 10432",
+            "color": "#22D3EE",
+            "since": 274.00000000000233,
+            "type": "gain",
+            "time": 274.00000000000233
+          },
+          {
+            "id": 1851,
+            "name": "\ubcc4\ube5b \uacf0 1851",
+            "color": "#22D3EE",
+            "since": 121.99999999999564,
+            "endedAt": 274.00000000000233,
+            "seconds": 152.0000000000067,
+            "type": "loss",
+            "time": 274.00000000000233
+          },
+          {
+            "id": 3614,
+            "name": "\uace0\uc694\ud55c \ud638\ub791\uc774 3614",
+            "color": "#3B82F6",
+            "since": 259.9999999999912,
+            "type": "gain",
+            "time": 259.9999999999912
+          },
+          {
+            "id": 1831,
+            "name": "\ubd89\uc740 \uc0ac\uc2b4 1831",
+            "color": "#22C55E",
+            "since": 215.9999999999903,
+            "endedAt": 259.9999999999912,
+            "seconds": 44.00000000000088,
+            "type": "loss",
+            "time": 259.9999999999912
+          },
+          {
+            "id": 1,
+            "name": "\ub098",
+            "color": "#3B82F6",
+            "since": 241.99999999998883,
+            "type": "gain",
+            "time": 241.99999999998883
+          },
+          {
+            "id": 8473,
+            "name": "\ud669\uae08 \uae4c\ub9c8\uadc0 8473",
+            "color": "#3B82F6",
+            "since": 227.99999999998963,
+            "endedAt": 241.99999999998883,
+            "seconds": 13.999999999999204,
+            "type": "loss",
+            "time": 241.99999999998883
+          },
+          {
+            "id": 7204,
+            "name": "\ubd89\uc740 \ud45c\ubc94 7204",
+            "color": "#3B82F6",
+            "since": 235.99999999998917,
+            "type": "gain",
+            "time": 235.99999999998917
+          },
+          {
+            "id": 2797,
+            "name": "\ud669\uae08 \ub291\ub300 2797",
+            "color": "#EAB308",
+            "since": 55.99999999999938,
+            "endedAt": 235.99999999998917,
+            "seconds": 179.9999999999898,
+            "type": "loss",
+            "time": 235.99999999998917
+          },
+          {
+            "id": 8473,
+            "name": "\ud669\uae08 \uae4c\ub9c8\uadc0 8473",
+            "color": "#3B82F6",
+            "since": 227.99999999998963,
+            "type": "gain",
+            "time": 227.99999999998963
+          },
+          {
+            "id": 1852,
+            "name": "\uace0\uc694\ud55c \uacf0 1852",
+            "color": "#22D3EE",
+            "since": 221.99999999998997,
+            "endedAt": 227.99999999998963,
+            "seconds": 5.999999999999659,
+            "type": "loss",
+            "time": 227.99999999998963
+          },
+          {
+            "id": 1852,
+            "name": "\uace0\uc694\ud55c \uacf0 1852",
+            "color": "#22D3EE",
+            "since": 221.99999999998997,
+            "type": "gain",
+            "time": 221.99999999998997
+          },
+          {
+            "id": 7831,
+            "name": "\uc0c8\ubcbd \uace0\ub798 7831",
+            "color": "#3B82F6",
+            "since": 197.99999999999133,
+            "endedAt": 221.99999999998997,
+            "seconds": 23.999999999998636,
+            "type": "loss",
+            "time": 221.99999999998997
+          },
+          {
+            "id": 1831,
+            "name": "\ubd89\uc740 \uc0ac\uc2b4 1831",
+            "color": "#22C55E",
+            "since": 215.9999999999903,
+            "type": "gain",
+            "time": 215.9999999999903
+          },
+          {
+            "id": 3614,
+            "name": "\uace0\uc694\ud55c \ud638\ub791\uc774 3614",
+            "color": "#3B82F6",
+            "since": 97.999999999997,
+            "endedAt": 215.9999999999903,
+            "seconds": 117.9999999999933,
+            "type": "loss",
+            "time": 215.9999999999903
+          },
+          {
+            "id": 7831,
+            "name": "\uc0c8\ubcbd \uace0\ub798 7831",
+            "color": "#3B82F6",
+            "since": 197.99999999999133,
+            "type": "gain",
+            "time": 197.99999999999133
+          },
+          {
+            "id": 6625,
+            "name": "\ubcc4\ube5b \ud45c\ubc94 6625",
+            "color": "#22D3EE",
+            "since": 163.99999999999326,
+            "endedAt": 197.99999999999133,
+            "seconds": 33.99999999999807,
+            "type": "loss",
+            "time": 197.99999999999133
+          },
+          {
+            "id": 6625,
+            "name": "\ubcc4\ube5b \ud45c\ubc94 6625",
+            "color": "#22D3EE",
+            "since": 163.99999999999326,
+            "type": "gain",
+            "time": 163.99999999999326
+          },
+          {
+            "id": 1840,
+            "name": "\ubc14\ub78c \uc0b4\ucfa1\uc774 1840",
+            "color": "#EAB308",
+            "since": 153.99999999999383,
+            "endedAt": 163.99999999999326,
+            "seconds": 9.999999999999432,
+            "type": "loss",
+            "time": 163.99999999999326
+          }
+        ],
+        "completed": [
+          {
+            "id": 1,
+            "name": "\ub098",
+            "color": "#3B82F6",
+            "since": 241.99999999998883,
+            "endedAt": 290.00000000001506,
+            "seconds": 48.00000000002623
+          },
+          {
+            "id": 1808,
+            "name": "\uc7bf\ube5b \ub291\ub300 1808",
+            "color": "#3B82F6",
+            "since": 55.99999999999938,
+            "endedAt": 288.0000000000135,
+            "seconds": 232.0000000000141
+          },
+          {
+            "id": 3614,
+            "name": "\uace0\uc694\ud55c \ud638\ub791\uc774 3614",
+            "color": "#3B82F6",
+            "since": 259.9999999999912,
+            "endedAt": 282.0000000000087,
+            "seconds": 22.000000000017508
+          },
+          {
+            "id": 1851,
+            "name": "\ubcc4\ube5b \uacf0 1851",
+            "color": "#22D3EE",
+            "since": 121.99999999999564,
+            "endedAt": 274.00000000000233,
+            "seconds": 152.0000000000067
+          },
+          {
+            "id": 1831,
+            "name": "\ubd89\uc740 \uc0ac\uc2b4 1831",
+            "color": "#22C55E",
+            "since": 215.9999999999903,
+            "endedAt": 259.9999999999912,
+            "seconds": 44.00000000000088
+          },
+          {
+            "id": 8473,
+            "name": "\ud669\uae08 \uae4c\ub9c8\uadc0 8473",
+            "color": "#3B82F6",
+            "since": 227.99999999998963,
+            "endedAt": 241.99999999998883,
+            "seconds": 13.999999999999204
+          },
+          {
+            "id": 2797,
+            "name": "\ud669\uae08 \ub291\ub300 2797",
+            "color": "#EAB308",
+            "since": 55.99999999999938,
+            "endedAt": 235.99999999998917,
+            "seconds": 179.9999999999898
+          },
+          {
+            "id": 1852,
+            "name": "\uace0\uc694\ud55c \uacf0 1852",
+            "color": "#22D3EE",
+            "since": 221.99999999998997,
+            "endedAt": 227.99999999998963,
+            "seconds": 5.999999999999659
+          },
+          {
+            "id": 7831,
+            "name": "\uc0c8\ubcbd \uace0\ub798 7831",
+            "color": "#3B82F6",
+            "since": 197.99999999999133,
+            "endedAt": 221.99999999998997,
+            "seconds": 23.999999999998636
+          },
+          {
+            "id": 3614,
+            "name": "\uace0\uc694\ud55c \ud638\ub791\uc774 3614",
+            "color": "#3B82F6",
+            "since": 97.999999999997,
+            "endedAt": 215.9999999999903,
+            "seconds": 117.9999999999933
+          },
+          {
+            "id": 6625,
+            "name": "\ubcc4\ube5b \ud45c\ubc94 6625",
+            "color": "#22D3EE",
+            "since": 163.99999999999326,
+            "endedAt": 197.99999999999133,
+            "seconds": 33.99999999999807
+          },
+          {
+            "id": 1840,
+            "name": "\ubc14\ub78c \uc0b4\ucfa1\uc774 1840",
+            "color": "#EAB308",
+            "since": 153.99999999999383,
+            "endedAt": 163.99999999999326,
+            "seconds": 9.999999999999432
+          }
+        ],
+        "gains": 19,
+        "losses": 14,
+        "secondsByCount": {
+          "absent": 55.96666666666605,
+          "solo": 0,
+          "coexist": 244.03333333332205
+        },
+        "longestTenure": 232.0000000000141,
+        "longestSolo": 0
+      },
+      "historySizes": {
+        "abilities": 256,
+        "ecology": 33,
+        "era": 1,
+        "ally": 100,
+        "samples": 300
+      }
+    },
+    {
+      "seed": 11,
+      "fps": 30,
+      "policy": "local-survival-v2",
+      "lifePolicy": "ordinary lives; no replenishment",
+      "requestedSeconds": 300,
+      "actualSeconds": 300,
+      "stop": "duration",
+      "frames": 9000,
+      "unitChecks": 23620,
+      "maxApex": 5,
+      "maxGroups": 10,
+      "maxSize": 319.7700904935065,
+      "player": {
+        "size": 297.21527588009667,
+        "score": 15950,
+        "lives": 3,
+        "defeats": 0,
+        "firstApexSeconds": 73.99999999999837
+      },
+      "era": {
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relicPickupsAllUnits": 5,
+      "apex": {
+        "current": [
+          {
+            "id": 1,
+            "name": "\ub098",
+            "color": "#3B82F6",
+            "since": 73.99999999999837,
+            "seconds": 226.00000000002467
+          },
+          {
+            "id": 6807,
+            "name": "\ubd89\uc740 \uae4c\ub9c8\uadc0 6807",
+            "color": "#EF4444",
+            "since": 161.99999999999338,
+            "seconds": 138.00000000002964
+          },
+          {
+            "id": 10037,
+            "name": "\ub2ec\ube5b \uc218\ub2ec 10037",
+            "color": "#EAB308",
+            "since": 251.99999999998826,
+            "seconds": 48.00000000003476
+          },
+          {
+            "id": 11093,
+            "name": "\uadf8\ub298 \ub291\ub300 11093",
+            "color": "#22D3EE",
+            "since": 280.0000000000071,
+            "seconds": 20.000000000015916
+          },
+          {
+            "id": 7930,
+            "name": "\uadf8\ub298 \uc0ac\uc2b4 7930",
+            "color": "#EAB308",
+            "since": 284.0000000000103,
+            "seconds": 16.000000000012733
+          }
+        ],
+        "recent": [
+          {
+            "id": 7930,
+            "name": "\uadf8\ub298 \uc0ac\uc2b4 7930",
+            "color": "#EAB308",
+            "since": 284.0000000000103,
+            "type": "gain",
+            "time": 284.0000000000103
+          },
+          {
+            "id": 7022,
+            "name": "\uadf8\ub298 \ud45c\ubc94 7022",
+            "color": "#22D3EE",
+            "since": 167.99999999999304,
+            "endedAt": 284.0000000000103,
+            "seconds": 116.00000000001725,
+            "type": "loss",
+            "time": 284.0000000000103
+          },
+          {
+            "id": 11093,
+            "name": "\uadf8\ub298 \ub291\ub300 11093",
+            "color": "#22D3EE",
+            "since": 280.0000000000071,
+            "type": "gain",
+            "time": 280.0000000000071
+          },
+          {
+            "id": 7930,
+            "name": "\uadf8\ub298 \uc0ac\uc2b4 7930",
+            "color": "#EAB308",
+            "since": 245.9999999999886,
+            "endedAt": 280.0000000000071,
+            "seconds": 34.0000000000185,
+            "type": "loss",
+            "time": 280.0000000000071
+          },
+          {
+            "id": 10037,
+            "name": "\ub2ec\ube5b \uc218\ub2ec 10037",
+            "color": "#EAB308",
+            "since": 251.99999999998826,
+            "type": "gain",
+            "time": 251.99999999998826
+          },
+          {
+            "id": 6728,
+            "name": "\ud669\uae08 \uc0ac\uc2b4 6728",
+            "color": "#EF4444",
+            "since": 229.9999999999895,
+            "endedAt": 251.99999999998826,
+            "seconds": 21.99999999999875,
+            "type": "loss",
+            "time": 251.99999999998826
+          },
+          {
+            "id": 7930,
+            "name": "\uadf8\ub298 \uc0ac\uc2b4 7930",
+            "color": "#EAB308",
+            "since": 245.9999999999886,
+            "type": "gain",
+            "time": 245.9999999999886
+          },
+          {
+            "id": 1825,
+            "name": "\ubc14\ub78c \ub291\ub300 1825",
+            "color": "#EF4444",
+            "since": 223.99999999998985,
+            "endedAt": 245.9999999999886,
+            "seconds": 21.99999999999875,
+            "type": "loss",
+            "time": 245.9999999999886
+          },
+          {
+            "id": 6728,
+            "name": "\ud669\uae08 \uc0ac\uc2b4 6728",
+            "color": "#EF4444",
+            "since": 229.9999999999895,
+            "type": "gain",
+            "time": 229.9999999999895
+          },
+          {
+            "id": 6323,
+            "name": "\uace0\uc694\ud55c \ud45c\ubc94 6323",
+            "color": "#EF4444",
+            "since": 223.99999999998985,
+            "endedAt": 229.9999999999895,
+            "seconds": 5.999999999999659,
+            "type": "loss",
+            "time": 229.9999999999895
+          },
+          {
+            "id": 6323,
+            "name": "\uace0\uc694\ud55c \ud45c\ubc94 6323",
+            "color": "#EF4444",
+            "since": 223.99999999998985,
+            "type": "gain",
+            "time": 223.99999999998985
+          },
+          {
+            "id": 1825,
+            "name": "\ubc14\ub78c \ub291\ub300 1825",
+            "color": "#EF4444",
+            "since": 223.99999999998985,
+            "type": "gain",
+            "time": 223.99999999998985
+          },
+          {
+            "id": 7930,
+            "name": "\uadf8\ub298 \uc0ac\uc2b4 7930",
+            "color": "#EAB308",
+            "since": 193.99999999999156,
+            "endedAt": 223.99999999998985,
+            "seconds": 29.999999999998295,
+            "type": "loss",
+            "time": 223.99999999998985
+          },
+          {
+            "id": 6728,
+            "name": "\ud669\uae08 \uc0ac\uc2b4 6728",
+            "color": "#EF4444",
+            "since": 159.9999999999935,
+            "endedAt": 223.99999999998985,
+            "seconds": 63.99999999999636,
+            "type": "loss",
+            "time": 223.99999999998985
+          },
+          {
+            "id": 7930,
+            "name": "\uadf8\ub298 \uc0ac\uc2b4 7930",
+            "color": "#EAB308",
+            "since": 193.99999999999156,
+            "type": "gain",
+            "time": 193.99999999999156
+          },
+          {
+            "id": 6323,
+            "name": "\uace0\uc694\ud55c \ud45c\ubc94 6323",
+            "color": "#EF4444",
+            "since": 149.99999999999406,
+            "endedAt": 193.99999999999156,
+            "seconds": 43.9999999999975,
+            "type": "loss",
+            "time": 193.99999999999156
+          },
+          {
+            "id": 7022,
+            "name": "\uadf8\ub298 \ud45c\ubc94 7022",
+            "color": "#22D3EE",
+            "since": 167.99999999999304,
+            "type": "gain",
+            "time": 167.99999999999304
+          },
+          {
+            "id": 5033,
+            "name": "\uadf8\ub298 \uc0b4\ucfa1\uc774 5033",
+            "color": "#EAB308",
+            "since": 113.99999999999609,
+            "endedAt": 167.99999999999304,
+            "seconds": 53.999999999996945,
+            "type": "loss",
+            "time": 167.99999999999304
+          },
+          {
+            "id": 6807,
+            "name": "\ubd89\uc740 \uae4c\ub9c8\uadc0 6807",
+            "color": "#EF4444",
+            "since": 161.99999999999338,
+            "type": "gain",
+            "time": 161.99999999999338
+          },
+          {
+            "id": 1858,
+            "name": "\ud478\ub978 \ud638\ub791\uc774 1858",
+            "color": "#22D3EE",
+            "since": 153.99999999999383,
+            "endedAt": 161.99999999999338,
+            "seconds": 7.999999999999545,
+            "type": "loss",
+            "time": 161.99999999999338
+          },
+          {
+            "id": 6728,
+            "name": "\ud669\uae08 \uc0ac\uc2b4 6728",
+            "color": "#EF4444",
+            "since": 159.9999999999935,
+            "type": "gain",
+            "time": 159.9999999999935
+          },
+          {
+            "id": 2746,
+            "name": "\uc0c8\ubcbd \uc5ec\uc6b0 2746",
+            "color": "#22D3EE",
+            "since": 123.99999999999552,
+            "endedAt": 157.9999999999936,
+            "seconds": 33.99999999999808,
+            "type": "loss",
+            "time": 157.9999999999936
+          },
+          {
+            "id": 1858,
+            "name": "\ud478\ub978 \ud638\ub791\uc774 1858",
+            "color": "#22D3EE",
+            "since": 153.99999999999383,
+            "type": "gain",
+            "time": 153.99999999999383
+          },
+          {
+            "id": 1956,
+            "name": "\uace0\uc694\ud55c \ud638\ub791\uc774 1956",
+            "color": "#EAB308",
+            "since": 111.9999999999962,
+            "endedAt": 153.99999999999383,
+            "seconds": 41.99999999999763,
+            "type": "loss",
+            "time": 153.99999999999383
+          }
+        ],
+        "completed": [
+          {
+            "id": 7022,
+            "name": "\uadf8\ub298 \ud45c\ubc94 7022",
+            "color": "#22D3EE",
+            "since": 167.99999999999304,
+            "endedAt": 284.0000000000103,
+            "seconds": 116.00000000001725
+          },
+          {
+            "id": 7930,
+            "name": "\uadf8\ub298 \uc0ac\uc2b4 7930",
+            "color": "#EAB308",
+            "since": 245.9999999999886,
+            "endedAt": 280.0000000000071,
+            "seconds": 34.0000000000185
+          },
+          {
+            "id": 6728,
+            "name": "\ud669\uae08 \uc0ac\uc2b4 6728",
+            "color": "#EF4444",
+            "since": 229.9999999999895,
+            "endedAt": 251.99999999998826,
+            "seconds": 21.99999999999875
+          },
+          {
+            "id": 1825,
+            "name": "\ubc14\ub78c \ub291\ub300 1825",
+            "color": "#EF4444",
+            "since": 223.99999999998985,
+            "endedAt": 245.9999999999886,
+            "seconds": 21.99999999999875
+          },
+          {
+            "id": 6323,
+            "name": "\uace0\uc694\ud55c \ud45c\ubc94 6323",
+            "color": "#EF4444",
+            "since": 223.99999999998985,
+            "endedAt": 229.9999999999895,
+            "seconds": 5.999999999999659
+          },
+          {
+            "id": 7930,
+            "name": "\uadf8\ub298 \uc0ac\uc2b4 7930",
+            "color": "#EAB308",
+            "since": 193.99999999999156,
+            "endedAt": 223.99999999998985,
+            "seconds": 29.999999999998295
+          },
+          {
+            "id": 6728,
+            "name": "\ud669\uae08 \uc0ac\uc2b4 6728",
+            "color": "#EF4444",
+            "since": 159.9999999999935,
+            "endedAt": 223.99999999998985,
+            "seconds": 63.99999999999636
+          },
+          {
+            "id": 6323,
+            "name": "\uace0\uc694\ud55c \ud45c\ubc94 6323",
+            "color": "#EF4444",
+            "since": 149.99999999999406,
+            "endedAt": 193.99999999999156,
+            "seconds": 43.9999999999975
+          },
+          {
+            "id": 5033,
+            "name": "\uadf8\ub298 \uc0b4\ucfa1\uc774 5033",
+            "color": "#EAB308",
+            "since": 113.99999999999609,
+            "endedAt": 167.99999999999304,
+            "seconds": 53.999999999996945
+          },
+          {
+            "id": 1858,
+            "name": "\ud478\ub978 \ud638\ub791\uc774 1858",
+            "color": "#22D3EE",
+            "since": 153.99999999999383,
+            "endedAt": 161.99999999999338,
+            "seconds": 7.999999999999545
+          },
+          {
+            "id": 2746,
+            "name": "\uc0c8\ubcbd \uc5ec\uc6b0 2746",
+            "color": "#22D3EE",
+            "since": 123.99999999999552,
+            "endedAt": 157.9999999999936,
+            "seconds": 33.99999999999808
+          },
+          {
+            "id": 1956,
+            "name": "\uace0\uc694\ud55c \ud638\ub791\uc774 1956",
+            "color": "#EAB308",
+            "since": 111.9999999999962,
+            "endedAt": 153.99999999999383,
+            "seconds": 41.99999999999763
+          }
+        ],
+        "gains": 21,
+        "losses": 16,
+        "secondsByCount": {
+          "absent": 73.96666666666503,
+          "solo": 9.999999999999975,
+          "coexist": 216.03333333332364
+        },
+        "longestTenure": 226.00000000002467,
+        "longestSolo": 9.999999999999432
+      },
+      "historySizes": {
+        "abilities": 256,
+        "ecology": 37,
+        "era": 1,
+        "ally": 100,
+        "samples": 300
+      }
+    },
+    {
+      "seed": 23,
+      "fps": 30,
+      "policy": "local-survival-v2",
+      "lifePolicy": "ordinary lives; no replenishment",
+      "requestedSeconds": 300,
+      "actualSeconds": 300,
+      "stop": "duration",
+      "frames": 9000,
+      "unitChecks": 23807,
+      "maxApex": 5,
+      "maxGroups": 12,
+      "maxSize": 283.9088562496667,
+      "player": {
+        "size": 284.4122107751593,
+        "score": 14635,
+        "lives": 3,
+        "defeats": 0,
+        "firstApexSeconds": 97.999999999997
+      },
+      "era": {
+        "cycle": 0,
+        "apocalypses": 0,
+        "duels": 0
+      },
+      "relicPickupsAllUnits": 4,
+      "apex": {
+        "current": [
+          {
+            "id": 1,
+            "name": "\ub098",
+            "color": "#3B82F6",
+            "since": 97.999999999997,
+            "seconds": 202.00000000002603
+          },
+          {
+            "id": 1859,
+            "name": "\ubd89\uc740 \uc0b4\ucfa1\uc774 1859",
+            "color": "#22D3EE",
+            "since": 211.99999999999054,
+            "seconds": 88.00000000003249
+          },
+          {
+            "id": 10175,
+            "name": "\ubcc4\ube5b \uace0\ub798 10175",
+            "color": "#EAB308",
+            "since": 259.9999999999912,
+            "seconds": 40.00000000003183
+          },
+          {
+            "id": 10635,
+            "name": "\ubd89\uc740 \ub291\ub300 10635",
+            "color": "#EF4444",
+            "since": 278.0000000000055,
+            "seconds": 22.000000000017508
+          },
+          {
+            "id": 2154,
+            "name": "\ubcc4\ube5b \ub3c5\uc218\ub9ac 2154",
+            "color": "#EAB308",
+            "since": 284.0000000000103,
+            "seconds": 16.000000000012733
+          }
+        ],
+        "recent": [
+          {
+            "id": 2154,
+            "name": "\ubcc4\ube5b \ub3c5\uc218\ub9ac 2154",
+            "color": "#EAB308",
+            "since": 284.0000000000103,
+            "type": "gain",
+            "time": 284.0000000000103
+          },
+          {
+            "id": 1894,
+            "name": "\uace0\uc694\ud55c \ud45c\ubc94 1894",
+            "color": "#3B82F6",
+            "since": 203.999999999991,
+            "endedAt": 282.0000000000087,
+            "seconds": 78.0000000000177,
+            "type": "loss",
+            "time": 282.0000000000087
+          },
+          {
+            "id": 10635,
+            "name": "\ubd89\uc740 \ub291\ub300 10635",
+            "color": "#EF4444",
+            "since": 278.0000000000055,
+            "type": "gain",
+            "time": 278.0000000000055
+          },
+          {
+            "id": 7343,
+            "name": "\uc548\uac1c \ud45c\ubc94 7343",
+            "color": "#EF4444",
+            "since": 181.99999999999224,
+            "endedAt": 278.0000000000055,
+            "seconds": 96.00000000001327,
+            "type": "loss",
+            "time": 278.0000000000055
+          },
+          {
+            "id": 10175,
+            "name": "\ubcc4\ube5b \uace0\ub798 10175",
+            "color": "#EAB308",
+            "since": 259.9999999999912,
+            "type": "gain",
+            "time": 259.9999999999912
+          },
+          {
+            "id": 2154,
+            "name": "\ubcc4\ube5b \ub3c5\uc218\ub9ac 2154",
+            "color": "#EAB308",
+            "since": 247.9999999999885,
+            "endedAt": 259.9999999999912,
+            "seconds": 12.0000000000027,
+            "type": "loss",
+            "time": 259.9999999999912
+          },
+          {
+            "id": 2154,
+            "name": "\ubcc4\ube5b \ub3c5\uc218\ub9ac 2154",
+            "color": "#EAB308",
+            "since": 247.9999999999885,
+            "type": "gain",
+            "time": 247.9999999999885
+          },
+          {
+            "id": 6188,
+            "name": "\uc740\ube5b \uc5ec\uc6b0 6188",
+            "color": "#22C55E",
+            "since": 147.99999999999417,
+            "endedAt": 247.9999999999885,
+            "seconds": 99.99999999999432,
+            "type": "loss",
+            "time": 247.9999999999885
+          },
+          {
+            "id": 1859,
+            "name": "\ubd89\uc740 \uc0b4\ucfa1\uc774 1859",
+            "color": "#22D3EE",
+            "since": 211.99999999999054,
+            "type": "gain",
+            "time": 211.99999999999054
+          },
+          {
+            "id": 1856,
+            "name": "\uc7bf\ube5b \uae4c\ub9c8\uadc0 1856",
+            "color": "#22D3EE",
+            "since": 181.99999999999224,
+            "endedAt": 211.99999999999054,
+            "seconds": 29.999999999998295,
+            "type": "loss",
+            "time": 211.99999999999054
+          },
+          {
+            "id": 1894,
+            "name": "\uace0\uc694\ud55c \ud45c\ubc94 1894",
+            "color": "#3B82F6",
+            "since": 203.999999999991,
+            "type": "gain",
+            "time": 203.999999999991
+          },
+          {
+            "id": 1859,
+            "name": "\ubd89\uc740 \uc0b4\ucfa1\uc774 1859",
+            "color": "#22D3EE",
+            "since": 125.99999999999541,
+            "endedAt": 203.999999999991,
+            "seconds": 77.99999999999558,
+            "type": "loss",
+            "time": 203.999999999991
+          },
+          {
+            "id": 7343,
+            "name": "\uc548\uac1c \ud45c\ubc94 7343",
+            "color": "#EF4444",
+            "since": 181.99999999999224,
+            "type": "gain",
+            "time": 181.99999999999224
+          },
+          {
+            "id": 1856,
+            "name": "\uc7bf\ube5b \uae4c\ub9c8\uadc0 1856",
+            "color": "#22D3EE",
+            "since": 181.99999999999224,
+            "type": "gain",
+            "time": 181.99999999999224
+          },
+          {
+            "id": 2154,
+            "name": "\ubcc4\ube5b \ub3c5\uc218\ub9ac 2154",
+            "color": "#EAB308",
+            "since": 87.99999999999757,
+            "endedAt": 181.99999999999224,
+            "seconds": 93.99999999999467,
+            "type": "loss",
+            "time": 181.99999999999224
+          },
+          {
+            "id": 2018,
+            "name": "\ud478\ub978 \uae4c\ub9c8\uadc0 2018",
+            "color": "#3B82F6",
+            "since": 71.99999999999848,
+            "endedAt": 181.99999999999224,
+            "seconds": 109.99999999999376,
+            "type": "loss",
+            "time": 181.99999999999224
+          },
+          {
+            "id": 6188,
+            "name": "\uc740\ube5b \uc5ec\uc6b0 6188",
+            "color": "#22C55E",
+            "since": 147.99999999999417,
+            "type": "gain",
+            "time": 147.99999999999417
+          },
+          {
+            "id": 3053,
+            "name": "\ubd89\uc740 \uc5ec\uc6b0 3053",
+            "color": "#22D3EE",
+            "since": 61.99999999999904,
+            "endedAt": 147.99999999999417,
+            "seconds": 85.99999999999514,
+            "type": "loss",
+            "time": 147.99999999999417
+          },
+          {
+            "id": 1859,
+            "name": "\ubd89\uc740 \uc0b4\ucfa1\uc774 1859",
+            "color": "#22D3EE",
+            "since": 125.99999999999541,
+            "type": "gain",
+            "time": 125.99999999999541
+          },
+          {
+            "id": 1817,
+            "name": "\ud478\ub978 \ub291\ub300 1817",
+            "color": "#EF4444",
+            "since": 105.99999999999655,
+            "endedAt": 125.99999999999541,
+            "seconds": 19.999999999998863,
+            "type": "loss",
+            "time": 125.99999999999541
+          },
+          {
+            "id": 1817,
+            "name": "\ud478\ub978 \ub291\ub300 1817",
+            "color": "#EF4444",
+            "since": 105.99999999999655,
+            "type": "gain",
+            "time": 105.99999999999655
+          },
+          {
+            "id": 1835,
+            "name": "\ud669\uae08 \uace0\ub798 1835",
+            "color": "#22C55E",
+            "since": 95.99999999999712,
+            "endedAt": 105.99999999999655,
+            "seconds": 9.999999999999432,
+            "type": "loss",
+            "time": 105.99999999999655
+          },
+          {
+            "id": 1,
+            "name": "\ub098",
+            "color": "#3B82F6",
+            "since": 97.999999999997,
+            "type": "gain",
+            "time": 97.999999999997
+          },
+          {
+            "id": 1835,
+            "name": "\ud669\uae08 \uace0\ub798 1835",
+            "color": "#22C55E",
+            "since": 95.99999999999712,
+            "type": "gain",
+            "time": 95.99999999999712
+          }
+        ],
+        "completed": [
+          {
+            "id": 1894,
+            "name": "\uace0\uc694\ud55c \ud45c\ubc94 1894",
+            "color": "#3B82F6",
+            "since": 203.999999999991,
+            "endedAt": 282.0000000000087,
+            "seconds": 78.0000000000177
+          },
+          {
+            "id": 7343,
+            "name": "\uc548\uac1c \ud45c\ubc94 7343",
+            "color": "#EF4444",
+            "since": 181.99999999999224,
+            "endedAt": 278.0000000000055,
+            "seconds": 96.00000000001327
+          },
+          {
+            "id": 2154,
+            "name": "\ubcc4\ube5b \ub3c5\uc218\ub9ac 2154",
+            "color": "#EAB308",
+            "since": 247.9999999999885,
+            "endedAt": 259.9999999999912,
+            "seconds": 12.0000000000027
+          },
+          {
+            "id": 6188,
+            "name": "\uc740\ube5b \uc5ec\uc6b0 6188",
+            "color": "#22C55E",
+            "since": 147.99999999999417,
+            "endedAt": 247.9999999999885,
+            "seconds": 99.99999999999432
+          },
+          {
+            "id": 1856,
+            "name": "\uc7bf\ube5b \uae4c\ub9c8\uadc0 1856",
+            "color": "#22D3EE",
+            "since": 181.99999999999224,
+            "endedAt": 211.99999999999054,
+            "seconds": 29.999999999998295
+          },
+          {
+            "id": 1859,
+            "name": "\ubd89\uc740 \uc0b4\ucfa1\uc774 1859",
+            "color": "#22D3EE",
+            "since": 125.99999999999541,
+            "endedAt": 203.999999999991,
+            "seconds": 77.99999999999558
+          },
+          {
+            "id": 2154,
+            "name": "\ubcc4\ube5b \ub3c5\uc218\ub9ac 2154",
+            "color": "#EAB308",
+            "since": 87.99999999999757,
+            "endedAt": 181.99999999999224,
+            "seconds": 93.99999999999467
+          },
+          {
+            "id": 2018,
+            "name": "\ud478\ub978 \uae4c\ub9c8\uadc0 2018",
+            "color": "#3B82F6",
+            "since": 71.99999999999848,
+            "endedAt": 181.99999999999224,
+            "seconds": 109.99999999999376
+          },
+          {
+            "id": 3053,
+            "name": "\ubd89\uc740 \uc5ec\uc6b0 3053",
+            "color": "#22D3EE",
+            "since": 61.99999999999904,
+            "endedAt": 147.99999999999417,
+            "seconds": 85.99999999999514
+          },
+          {
+            "id": 1817,
+            "name": "\ud478\ub978 \ub291\ub300 1817",
+            "color": "#EF4444",
+            "since": 105.99999999999655,
+            "endedAt": 125.99999999999541,
+            "seconds": 19.999999999998863
+          },
+          {
+            "id": 1835,
+            "name": "\ud669\uae08 \uace0\ub798 1835",
+            "color": "#22C55E",
+            "since": 95.99999999999712,
+            "endedAt": 105.99999999999655,
+            "seconds": 9.999999999999432
+          }
+        ],
+        "gains": 16,
+        "losses": 11,
+        "secondsByCount": {
+          "absent": 61.96666666666571,
+          "solo": 9.999999999999975,
+          "coexist": 228.03333333332296
+        },
+        "longestTenure": 202.00000000002603,
+        "longestSolo": 9.999999999999439
+      },
+      "historySizes": {
+        "abilities": 256,
+        "ecology": 27,
+        "era": 1,
+        "ally": 100,
+        "samples": 300
+      }
+    }
+  ]
+}

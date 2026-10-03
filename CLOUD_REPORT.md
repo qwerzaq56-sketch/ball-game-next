@@ -1,3 +1,7 @@
+# NEXT M42 — 성장 E / 최상위 R와 스킬 후보 보존
+
+종족별 일반 E(Size100)와 최상위 R, 초록 동족 소환, 캐릭터 준비 표시, Size 연동 영역 및 큰 몸 공격 시간 완화를 구현했다. F1에서 초록 소환 없는 이전 능력을 교체/복구할 수 있다. 전체 세부 규칙과 미적용 구상은 [스킬 후보 기획](SKILL_CATALOG_DESIGN.md)에 보존한다. 검증: 테스트207개, Chromium E/R 키·터치·후보 복구 및 기존 모바일 조작, 3시드 각300초 정상 Life 시뮬레이션 통과. [M42 결과](reports/M42-development.md). 작업/푸시는 codex/cloud-next-m4만 수행한다.
+
 ## NEXT M41 — 밸런스 그래프·회수 보상·UI
 
 [밸런스 그래프](balance.html)에서 시간/크기/성향/지역별 크기·기회·위기·실제 HP 손실을 비교합니다. 플레이 시간, 최소 UI 팝업과 순위3단계, 먹이 밀도 보충·후반 성장·Size 기반 사냥 드롭/축적 Growth90% 회수·붉은 공 용암 저항을 적용했습니다. [기획](BALANCING_LAB_DESIGN.md) · [측정과 한계](reports/M41-development.md).

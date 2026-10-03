@@ -40,7 +40,7 @@ export class Ecology {
     const sizes=ordered(units,'size',this.sizeOrder), scores=ordered(units,'score',this.scoreOrder);
     this.sizeOrder=sizes.map(e=>e.id);this.scoreOrder=scores.map(e=>e.id);
     const cap=Math.max(0,Math.min(50,Math.floor(game.balance?.ecology?.maxApex??5)));
-    const titles=new Set(sizes.slice(0,cap).filter(e=>e.size>=100).map(e=>e.id));
+    const titles=new Set(sizes.filter(e=>!e.summoned).slice(0,cap).filter(e=>e.size>=100).map(e=>e.id));
     sizes.forEach((e,i)=>{
       assignPersonality(e);
       const role=units.length<5?'forager':i<Math.floor(units.length*.2)?'predator':i>=units.length-Math.floor(units.length*.4)?'prey':'forager';

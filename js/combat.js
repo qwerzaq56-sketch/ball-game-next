@@ -49,7 +49,7 @@ export function attackRangeForSize(size, balance) {
 // see startAttack for how the two combine into an actual dash speed.
 export function attackChargeDurationForSize(size, balance) {
   const c = balance.combatScaling;
-  return Math.max(0.05, c.attackChargeDurationBase + size * c.attackChargeDurationPerSize);
+  return Math.max(0.05, c.attackChargeDurationBase + size * (c.attackTimingSizeScale ?? 1) * c.attackChargeDurationPerSize);
 }
 
 // v0.6 balance pass: Telegraph time used to be a flat constant (0.4s for every size) — now it
@@ -57,7 +57,7 @@ export function attackChargeDurationForSize(size, balance) {
 // visible warning before it commits, not just a longer wind-up once it's already charging.
 export function attackTelegraphTimeForSize(size, balance) {
   const c = balance.combatScaling;
-  return Math.max(0.05, c.attackTelegraphTimeBase + size * c.attackTelegraphTimePerSize);
+  return Math.max(0.05, c.attackTelegraphTimeBase + size * (c.attackTimingSizeScale ?? 1) * c.attackTelegraphTimePerSize);
 }
 
 // v0.6 spec §6: linear instead of v0.5's exponential curve — Base(100) + Size × Growth(0.8).

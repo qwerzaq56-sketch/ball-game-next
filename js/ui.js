@@ -1,5 +1,6 @@
 // HUD rendering (DOM overlay) + live-editable Debug/Balance panel.
 
+import {SKILL_CATALOG,DEFAULT_SKILLS} from './skillCatalog.js';
 import { ERA_PHASES } from './era.js';
 import { submitScore } from './storage.js';
 import { EcologyUI } from './ecologyUI.js';
@@ -35,6 +36,13 @@ export class UI {
     this.debugPanel = document.getElementById('debug-panel');
     this.debugVisible = false;
     this.buildDebugPanel();
+    const skillSection=document.createElement('details');skillSection.innerHTML='<summary>E/R 스킬 후보 교체</summary>';
+    for(const color of balance.colors)for(const slot of ['E','R']){
+      const label=document.createElement('label');label.textContent=`${color.id} ${slot} `;const select=document.createElement('select');select.dataset.skillSlot=`${color.id}-${slot}`;
+      for(const [id,cfg] of Object.entries(SKILL_CATALOG))if(cfg.color===color.id&&cfg.slot===slot){const option=document.createElement('option');option.value=id;option.textContent=cfg.name;select.append(option);}
+      select.value=balance.abilitySkills?.loadout?.[color.id]?.[slot]??DEFAULT_SKILLS[color.id][slot];
+      select.addEventListener('change',()=>{balance.abilitySkills??={};balance.abilitySkills.loadout??={};balance.abilitySkills.loadout[color.id]??={};balance.abilitySkills.loadout[color.id][slot]=select.value;});label.append(select);skillSection.append(label,document.createElement('br'));
+    }this.debugPanel.append(skillSection);
     this.ecologyUI = new EcologyUI(this);
     document.getElementById('companion-invite').addEventListener('click',()=>{if(this.game&&!this.game.paused&&!this.game.gameOver){this.game.autoplay.setEnabled(false);this.game.allyLinks.offer(this.game.player);}});
     document.getElementById('companion-leave').addEventListener('click',()=>{if(this.game&&!this.game.paused&&this.game.player.companionGroup){this.game.autoplay.setEnabled(false);this.game.allyLinks.leave(this.game.player,'player-choice');}});
@@ -154,7 +162,7 @@ export class UI {
     this.lifeText.textContent = Math.max(0, game.lives);
     const names={cyan:'냉기 휘두르기',blue:'삼중 파도',green:'사기 진작',red:'사냥 지휘',yellow:'모래바람'};
     const special=document.getElementById('special-text');
-    if(special)special.textContent=player.apex?`E ${names[player.color]} · ${player.specialCast?'시전 중':player.specialCooldown>0?Math.ceil(player.specialCooldown)+'s':player.frozen>0?'빙결 중':player.attackState!=='READY'||player.dodgeState==='DODGING'?'행동 후 사용':'준비'}`:'';
+    if(special)special.textContent=['E','R'].filter(slot=>game.abilities.unlocked(player,slot)).map(slot=>`${slot} ${game.abilities.skill(player,slot).name} · ${player.specialCast?.slot===slot?'시전 중':game.abilities.cooldown(player,slot)>0?Math.ceil(game.abilities.cooldown(player,slot))+'s':game.abilities.canCast(player,slot)?'준비':'행동 후 사용'}`).join(' / ');
     const roleText=document.getElementById("role-text");
     if(roleText)roleText.textContent=({prey:"프레이",forager:"포레이저",predator:"프레데터"})[player.role] ?? "";
 

@@ -4,6 +4,7 @@ import { attackReach } from './abilities.js';
 import { assignPersonality } from './ecology.js';
 import { acceptsAbsorption, pruneEncounters, chooseGeneral } from './species.js';
 import { random } from './random.js';
+import {apexTerritoryRadius} from './skillCatalog.js';
 import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
 import { canAbsorb, canEatOrb, isHostile, dist } from './collision.js';
 import { canStartAttack, startAttack, updateAttack, canStartDodge, startDodge, updateDodge, attackRangeForSize, attackDamageForSize, applyDefense } from './combat.js';
@@ -101,7 +102,7 @@ export function updateAI(ai, dt, game, balance) {
     return;
   }
 
-  if(ai.state==='relationship' && ai.relationshipOwner && (ai.role!=='predator'||ai.apex||!ai.relationshipOwner.alive||!ai.relationshipOwner.apex||dist(ai,ai.relationshipOwner)>600)){ai.target=null;ai.state='search';ai.decisionTimer=0;}
+  if(ai.state==='relationship' && ai.relationshipOwner && (ai.role!=='predator'||ai.apex||!ai.relationshipOwner.alive||!ai.relationshipOwner.apex||dist(ai,ai.relationshipOwner)>apexTerritoryRadius(ai.relationshipOwner,balance))){ai.target=null;ai.state='search';ai.decisionTimer=0;}
   if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && ai.state!=="command_move" && ai.state!=="war_move" && (!ai.target.alive || dist(ai,ai.target)>game.biomes.sensingRange(ai,ai.state==="chase_eat" && (ai.target.behavior!=="orb"&&ai.target.behavior!=="relic") ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
   ai.decisionTimer -= dt;
   if (ai.decisionTimer <= 0) {
@@ -236,18 +237,18 @@ export function decideAI(ai, game, balance) {
   if(counterAllowed){ai.state='chase_fight';ai.target=counter;ai.counterattacker=null;return;}
   const choices=[orb&&{target:orb,state:'chase_eat'},absorb&&{target:absorb,state:'chase_eat'},hunt&&{target:hunt,state:'chase_fight'}].filter(Boolean);
   if(choices.length){const c=chooseGeneral(ai,choices,game.era.enabled&&game.era.phase.id==='war'?3:2);ai.state=c.state;ai.target=c.target;return;}
-  // Relationship sensing is the approved 600 exception; combat sensing remains 320.
+  // Relationship sensing follows the visible size-scaled territory; combat sensing stays local.
   if(ai.role==='predator'&&!ai.apex&&ai.relationship!=='independent'){
     if(duel){ai.challengeTarget=duel;ai.state='chase_fight';ai.target=duel;return;}
-    const owners=game.getNearbyEntities(ai,600).filter(e=>e.alive&&e.apex&&dist(ai,e)<=600&&
+    const owners=game.entities.filter(e=>e.alive&&e.apex&&dist(ai,e)<=apexTerritoryRadius(e,balance)&&
       (ai.relationship==='subordinate'?e.color===ai.color:e.color!==ai.color));
     const owner=closest(owners);
     if(owner){
       const gap=balance.absorption.baseMaintainDistance+owner.size*balance.absorption.maintainDistancePerSize+80;
-      if(ai.relationship==='subordinate'&&gap>600){ai.state='search';ai.target=null;return;}
+      if(ai.relationship==='subordinate'&&gap>apexTerritoryRadius(owner,balance)){ai.state='search';ai.target=null;return;}
       const d=dist(ai,owner), desired=ai.relationship==='subordinate'?Math.max(450,gap):450;
       const angle=d>0?angleTo(owner,ai):ai.facing;
-      const radius=Math.min(600,Math.max(desired,525));
+      const radius=Math.min(apexTerritoryRadius(owner,balance),Math.max(desired,apexTerritoryRadius(owner,balance)*.875));
       const point={x:owner.x+Math.cos(angle)*radius,y:owner.y+Math.sin(angle)*radius,alive:true};
       const w=balance.world;
       if(w.wrap){point.x=wrap(point.x,w.worldWidth);point.y=wrap(point.y,w.worldHeight);}

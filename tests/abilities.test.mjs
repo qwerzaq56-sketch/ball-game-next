@@ -32,7 +32,7 @@ test('blue wave hits once and pushes 120 over .2 seconds, then immunity',()=>{
  const {g,p,t}=fixture('blue');g.abilities.start(p,0);p.specialCast.directions=[0];ticks(g,36);ticks(g,12);const before=t.hp;assert.equal(before,965);ticks(g,30);assert.equal(t.hp,before);assert.ok(Math.abs(t.x-(p.x+220))<1e-6);assert.ok(t.waveImmune>0);
 });
 test('green apex buffs and recruits at most five followers, retaining player control',()=>{
- const {g,p}=fixture('green');for(let i=0;i<6;i++)g.entities.push(new AIEntity({x:p.x+i*10,y:p.y+50,color:'green',colorHex:'#0f0',balance:g.balance,startSize:50}));
+ const {g,p}=fixture('green');g.balance.abilitySkills.loadout.green.R='green-morale';for(let i=0;i<6;i++)g.entities.push(new AIEntity({x:p.x+i*10,y:p.y+50,color:'green',colorHex:'#0f0',balance:g.balance,startSize:50}));
  g.abilities.start(p,0);ticks(g,30);assert(Math.abs(g.abilities.damageMultiplier(p)-1.30)<1e-8);assert.equal(p.command,undefined);
  const group=g.allyLinks.groups.get(p.companionGroup);assert.equal(group.members.size,6);assert.equal(group.leader,p);assert.equal(g.entities.filter(e=>e.command).length,0);
  const follower=[...group.members].find(e=>e!==p);g.abilities.release(p);assert(Math.abs(g.abilities.damageMultiplier(follower)-1.15)<1e-8);

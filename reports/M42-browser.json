@@ -1,0 +1,18 @@
+{
+  "result": "PASS",
+  "normalUnlock": true,
+  "characterReadyCue": true,
+  "keyboardE": true,
+  "keyboardR": true,
+  "touchR": true,
+  "independentCooldowns": true,
+  "summons": 2,
+  "candidateRestore": true,
+  "portraitActionBounds": {
+    "x": 190,
+    "y": 720,
+    "width": 186,
+    "height": 104
+  },
+  "errors": []
+}

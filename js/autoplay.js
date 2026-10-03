@@ -4,7 +4,7 @@ import {canEatOrb,canAbsorb,isHostile,dist} from './collision.js';
 import {canStartAttack,canStartDodge} from './combat.js';
 export class Autoplay {
  constructor(game){this.game=game;this.enabled=false;this.timer=0;this.dodgeWait=0;this.action=null;this.reason='OFF';this.policy='local-survival-v2';this.explorationPoint=null;this.explorationRecent=[];this.explorationIndex=0;}
- setEnabled(value){this.enabled=!!value;this.timer=0;this.dodgeWait=0;this.action=null;this.explorationPoint=null;this.explorationRecent=[];this.explorationIndex=0;this.reason=this.enabled?'탐색 준비':'OFF';if(value){const input=this.game.input;input.keys.clear();input.mouseDown=false;input.touchMove=null;input._specialQueued=false;input._dodgeQueued=false;}}
+ setEnabled(value){this.enabled=!!value;this.timer=0;this.dodgeWait=0;this.action=null;this.explorationPoint=null;this.explorationRecent=[];this.explorationIndex=0;this.reason=this.enabled?'탐색 준비':'OFF';if(value){const input=this.game.input;input.keys.clear();input.mouseDown=false;input.touchMove=null;input._specialQueued=false;input._ultimateQueued=false;input._dodgeQueued=false;}}
  explore(){
   const g=this.game,p=g.player,held=this.explorationPoint;
   if(held&&g.gameTime<held.expires&&dist(p,held)>40)return held;
@@ -37,6 +37,6 @@ export class Autoplay {
   target={x:boundCenter(target.x,p.size,w.worldWidth,w.wrap),y:boundCenter(target.y,p.size,w.worldHeight,w.wrap)};
   const {x:dx,y:dy}=delta(p,target),length=Math.hypot(dx,dy),enemy=candidates.filter(e=>isHostile(p,e)&&dist(p,e)<=350).sort((a,b)=>dist(p,a)-dist(p,b)||a.id-b.id)[0];
   const dodge=escape&&this.dodgeWait<=0&&canStartDodge(p);if(dodge)this.dodgeWait=.8;
-  this.action={move:length>8?{x:dx/length,y:dy/length}:{x:0,y:0},aim:enemy??target,attack:!escape&&p.hp/p.maxHp>.3&&!!enemy&&canStartAttack(p),dodge,special:!escape&&!!enemy&&g.abilities.canCast(p)};
+  this.action={move:length>8?{x:dx/length,y:dy/length}:{x:0,y:0},aim:enemy??target,attack:!escape&&p.hp/p.maxHp>.3&&!!enemy&&canStartAttack(p),dodge,special:!escape&&!!enemy&&g.abilities.canCast(p,p.apex?'R':'E')};
  }
 }

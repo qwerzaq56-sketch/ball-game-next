@@ -702,3 +702,12 @@ body:not(.mobile-minimal) #minimal-tools{bottom:42px}
 @media(pointer:coarse) and (orientation:portrait){#minimal-tools{bottom:154px}}
 body.mobile-minimal #ecology-panel,body.mobile-minimal #live-ranking.minimal-open{top:88px;max-height:calc(100dvh - 138px);overflow:auto}
 body.mobile-minimal #debug-panel{z-index:20}
+
+/* Four actions occupy the existing two-row mobile footprint. */
+@media (pointer:coarse) {
+ #touch-actions { grid-template-columns:52px 52px 66px; }
+ #touch-ultimate { grid-column:2;grid-row:1; }
+ #touch-special { grid-column:1;grid-row:1; }
+ #touch-dodge { grid-column:1 / span 2;grid-row:2;min-height:48px!important;border-radius:28px!important; }
+ #touch-attack { grid-column:3;grid-row:1 / span 2; }
+}

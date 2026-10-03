@@ -87,7 +87,8 @@
     "baseDefense": 0,
     "defensePerSize": 0.5,
     "minimumDamage": 1,
-    "knockbackForce": 500
+    "knockbackForce": 500,
+    "attackTimingSizeScale": 0.5714285714285714
   },
   "healthRegen": {
     "delay": 5.0,
@@ -228,5 +229,31 @@
         "size": 450
       }
     ]
+  },
+  "abilitySkills": {
+    "unlockSize": 100,
+    "territoryMultiplier": 1,
+    "loadout": {
+      "cyan": {
+        "E": "cyan-chill",
+        "R": "cyan-freeze"
+      },
+      "blue": {
+        "E": "blue-ripple",
+        "R": "blue-trident"
+      },
+      "green": {
+        "E": "green-invite",
+        "R": "green-summon"
+      },
+      "red": {
+        "E": "red-vigor",
+        "R": "red-rally"
+      },
+      "yellow": {
+        "E": "yellow-dust",
+        "R": "yellow-storm"
+      }
+    }
   }
 }
