@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "controlledEscape": true,
+  "controlledInvulnerability": true,
+  "F1": true,
+  "observationImport": true,
+  "legacyHidden": true,
+  "errors": []
+}

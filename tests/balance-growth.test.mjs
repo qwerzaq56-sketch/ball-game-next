@@ -21,3 +21,7 @@ test('density replenishment sustains its target under continuous consumption wit
  g.balance.spawning.maxOrbCount=target-1;g.orbSpawnTimer=0;g.orbSpawnLoop(.1);assert.equal(count(),target);
  g.entities.splice(1,3);g.orbSpawnTimer=0;g.orbSpawnLoop(.1);assert.equal(count(),target-1);
 });
+
+test('natural food Growth can be tuned independently of food shape, RNG, hunting drops and density',async()=>{
+ const {spawnOrb,spawnDeathOrbs}=await import('../js/spawning.js'),{resetRandom}=await import('../js/random.js'),g=createGame(7),b=g.balance;const spawn=()=>Array.from({length:20},()=>spawnOrb(b));resetRandom(817);const before=spawn();b.spawning.naturalFoodGrowthMultiplier=2;resetRandom(817);const after=spawn();for(let i=0;i<before.length;i++){for(const key of ['x','y','size','color'])assert.equal(before[i][key],after[i][key]);assert.equal(after[i].growthValue,before[i].growthValue*2);}const dead={x:1000,y:1000,size:100,baseSize:20,growth:2000,color:'red',colorHex:'#f00',id:900};resetRandom(834);const drops=spawnDeathOrbs(dead,b).map(o=>o.growthValue);b.spawning.naturalFoodGrowthMultiplier=1;resetRandom(834);assert.deepEqual(spawnDeathOrbs(dead,b).map(o=>o.growthValue),drops);b.spawning.naturalFoodGrowthMultiplier=-2;assert(spawnOrb(b).growthValue>0);b.spawning.naturalFoodGrowthMultiplier=Infinity;resetRandom(817);assert.equal(spawnOrb(b).growthValue,before[0].growthValue);
+});

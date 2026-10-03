@@ -43,6 +43,10 @@ export class Abilities {
  unlocked(e,slot='R'){return e.behavior!=='orb'&&!e.summoned&&(slot==='R'?!!e.apex:e.apex||e.size>=(this.game.balance.abilitySkills?.unlockSize??100));}
  cooldown(e,slot='R'){return slot==='R'?(e.specialCooldown??0):(e.normalSkillCooldown??0);}
  canCast(e,slot='R'){return this.enabled&&e.alive&&this.unlocked(e,slot)&&this.cooldown(e,slot)<=0&&!e.specialCast&&!(e.frozen>0)&&!e.beingAbsorbedByRef&&e.attackState==='READY'&&e.dodgeState!=='DODGING';}
+ instantGeometry(e,cast){
+  if(!(cast.slot==='E'&&['chill','ripple'].includes(cast.skill?.effect)||cast.slot==='R'&&e.color==='cyan'))return null;
+  const hostiles=this.units().filter(t=>isHostile(e,t));return {hostiles,targets:hostiles.filter(t=>inCone(e,t,cast.dir,cast.skill.radius))};
+ }
  aimPoint(e,dir,point=null,cfg=this.skill(e,'R')){
   const w=this.game.balance.world,castRange=cfg.castRange??350;let p=point??{x:e.x+Math.cos(dir)*350,y:e.y+Math.sin(dir)*350};const d=dist(e,p);
   if(d>castRange){const toward=delta(e,p);p={x:e.x+toward.x*castRange/d,y:e.y+toward.y*castRange/d};}
@@ -50,14 +54,14 @@ export class Abilities {
  }
  start(e,dir,point,seenTarget,slot='R'){
   if(!this.canCast(e,slot)||!ABILITIES[e.color])return false;
-  if(slot==='E'){const cfg=this.skill(e,slot);e.normalSkillCooldown=cfg.cooldown;e.specialCast={id:++this.castId,time:0,dir,point:{x:e.x,y:e.y},slot,skill:cfg};this.metrics.start(e,e.specialCast);this.log('special-start',e,{slot,skill:cfg.id,cast:e.specialCast.id});return true;}
+  if(slot==='E'){const cfg=this.skill(e,slot);e.normalSkillCooldown=cfg.cooldown;e.specialCast={id:++this.castId,time:0,dir,point:{x:e.x,y:e.y},slot,skill:cfg};this.metrics.start(e,e.specialCast,this.instantGeometry(e,e.specialCast));this.log('special-start',e,{slot,skill:cfg.id,cast:e.specialCast.id});return true;}
   const target=e.color==='red'?(seenTarget??this.redTarget(e,dir)):null;if(e.color==='red'&&!target&&!point)return false;
   const cfg=this.skill(e,slot),w=this.game.balance.world;
   const p=this.aimPoint(e,dir,point??(target?{x:target.x,y:target.y}:null),cfg);
   if(e.color==='red'&&!this.units().some(t=>isHostile(e,t)&&dist({...p,_world:w},t)<=cfg.radius))return false;
   const directions=e.color==='blue'?blueWaveDirections(dir):null;
   e.specialCooldown=cfg.cooldown;e.specialCast={slot,skill:cfg,directions,id:++this.castId,time:0,dir,point:p,target,targetPoint:target?{x:target.x,y:target.y}:null};
-  this.metrics.start(e,e.specialCast);this.log('special-start',e,{color:e.color,slot,skill:cfg.id,cast:e.specialCast.id});return true;
+  this.metrics.start(e,e.specialCast,this.instantGeometry(e,e.specialCast));this.log('special-start',e,{color:e.color,slot,skill:cfg.id,cast:e.specialCast.id});return true;
  }
  damage(owner,target,multiplier,kind='direct',cast=null){
   const life=target.defeatSerial??0;
@@ -71,7 +75,7 @@ export class Abilities {
  }
  fire(e,cast){
   const cfg=cast.skill??this.skill(e,cast.slot??'R');
-  this.metrics.fire(e,cast);
+  this.metrics.fire(e,cast,this.instantGeometry(e,cast));
   if(cast.slot==='E'){this.fireNormal(e,cast);return;}
   if(cast.skill?.effect==='summon')this.summon(e,cast);
   this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,directions:cast.directions ? [...cast.directions] : null,point:{...cast.point},remaining:.75,skill:cast.skill});

@@ -1,0 +1,33 @@
+{
+  "seed": 7,
+  "seconds": 300,
+  "sameTimelineAsM50": true,
+  "instant": {
+    "E": {
+      "instantStarts": 4,
+      "emptyInstantStarts": 1,
+      "instantFires": 4,
+      "emptyInstantFires": 3,
+      "geometryTargets": 1,
+      "escapedTargets": 2,
+      "invalidatedTargets": 0,
+      "invulnerableTargets": 0,
+      "originTravel": 227.35479423383575,
+      "hits": 1,
+      "damage": 28.90874179051231
+    },
+    "R": {
+      "instantStarts": 8,
+      "emptyInstantStarts": 1,
+      "instantFires": 8,
+      "emptyInstantFires": 8,
+      "geometryTargets": 0,
+      "escapedTargets": 8,
+      "invalidatedTargets": 0,
+      "invulnerableTargets": 0,
+      "originTravel": 1031.3985801805766,
+      "hits": 0,
+      "damage": 0
+    }
+  }
+}

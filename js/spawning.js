@@ -21,7 +21,8 @@ export function spawnOrb(balance, pos = null) {
   const c = randomColor(balance);
   const size = balance.world.minOrbSize + random('world') * (balance.world.maxOrbSize - balance.world.minOrbSize);
   const { x, y } = pos || randomWorldPos(balance);
-  const growthValue = Math.round(5 + (size - balance.world.minOrbSize) * 2);
+  const configured=Number(balance.spawning?.naturalFoodGrowthMultiplier??1),multiplier=Number.isFinite(configured)?Math.max(.1,Math.min(10,configured)):1;
+  const growthValue=Math.round(Math.round(5+(size-balance.world.minOrbSize)*2)*multiplier);
   return new Entity({
     world:balance.world,
     x,

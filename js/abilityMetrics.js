@@ -1,3 +1,4 @@
+import {dist} from './collision.js';
 import {sizeBand} from './balanceMetrics.js';
 // Lifetime totals retain no dead actor references. Only current windups enter pending.
 export class AbilityMetrics {
@@ -6,13 +7,13 @@ export class AbilityMetrics {
   if(cast?.metricKey)return {key:cast.metricKey};
   const skill=cast?.skill,id=skill?.id??`${owner.color}-legacy`,slot=cast?.slot??'R';
   const dims={skill:id,slot,color:owner.color,type:owner.behavior,band:sizeBand(owner.size),personality:owner.personality??'survival-player',region:this.game?.biomes?.regionAt(owner)?.id??'none'},key=JSON.stringify(dims);
-  if(!this.rows.has(key))this.rows.set(key,{...dims,starts:0,fires:0,cancelled:0,hits:0,damage:0,hpRatio:0,recruits:0,summons:0,buffs:0,marks:0});
+  if(!this.rows.has(key))this.rows.set(key,{...dims,starts:0,fires:0,cancelled:0,hits:0,damage:0,hpRatio:0,recruits:0,summons:0,buffs:0,marks:0,instantMeasured:false,instantStarts:0,emptyInstantStarts:0,instantFires:0,emptyInstantFires:0,geometryTargets:0,invulnerableTargets:0,escapedTargets:0,invalidatedTargets:0,originTravel:0});
   const row=this.rows.get(key),settings=Object.fromEntries(Object.entries(skill??{}).filter(([,value])=>typeof value==='number'));if(!row.settings)row.settings=settings;else if(JSON.stringify(row.settings)!==JSON.stringify(settings))row.mixedSettings=true;
   if(cast)cast.metricKey=key;return {key};
  }
  row(token){return this.rows.get(token?.key);}
- start(owner,cast){const token=this.token(owner,cast);this.row(token).starts++;this.pending.set(cast.id,{owner,cast,token});}
- fire(owner,cast){this.row(this.token(owner,cast)).fires++;this.pending.delete(cast.id);}
+ start(owner,cast,geometry=null){const token=this.token(owner,cast),row=this.row(token);row.starts++;if(geometry){row.instantMeasured=true;row.instantStarts++;row.emptyInstantStarts+=+!geometry.targets.length;cast.aimDiagnostic={origin:{x:owner.x,y:owner.y},initialTargets:geometry.targets.map(t=>t.id)};}this.pending.set(cast.id,{owner,cast,token});}
+ fire(owner,cast,geometry=null){const row=this.row(this.token(owner,cast));row.fires++;if(geometry&&cast.aimDiagnostic){const initial=cast.aimDiagnostic.initialTargets,inside=new Set(geometry.targets.map(t=>t.id)),hostile=new Set(geometry.hostiles.map(t=>t.id));row.instantFires++;row.emptyInstantFires+=+!inside.size;row.geometryTargets+=inside.size;row.invulnerableTargets+=geometry.targets.filter(t=>t.invincible).length;row.invalidatedTargets+=initial.filter(id=>!hostile.has(id)).length;row.escapedTargets+=initial.filter(id=>hostile.has(id)&&!inside.has(id)).length;row.originTravel+=dist(owner,cast.aimDiagnostic.origin);}this.pending.delete(cast.id);}
  count(owner,cast,kind,count=1){const row=this.row(this.token(owner,cast));if(row&&['recruits','summons','buffs','marks'].includes(kind))row[kind]+=count;}
  hit(token,lost,maxHp){const row=this.row(token);if(!row)return;row.hits++;row.damage+=lost;row.hpRatio+=lost/Math.max(1,maxHp);}
  reconcile(){for(const [id,p] of this.pending)if(!p.owner.alive||p.owner.specialCast!==p.cast){this.row(p.token).cancelled++;this.pending.delete(id);}}

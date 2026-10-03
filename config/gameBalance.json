@@ -125,6 +125,7 @@
     "maxEnemyCount": 80,
     "enemySpawnInterval": 2.0,
     "minimumOrbDensity": 12.5,
+    "naturalFoodGrowthMultiplier": 1,
     "maximumReplenishBatch": 6
   },
   "enemySpawn": {

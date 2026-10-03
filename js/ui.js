@@ -230,7 +230,7 @@ export class UI {
         ['attackCooldown', 0.1], ['absorptionAttemptChance', 0.05], ['lowHealthAttackChance', 0.05],
       ] },
       { label: 'Spawning', key: 'spawning', fields: [
-        ['maxOrbCount', 10], ['orbSpawnInterval', 0.05], ['minimumOrbDensity',1], ['maximumReplenishBatch',1],
+        ['maxOrbCount', 10], ['orbSpawnInterval', 0.05], ['minimumOrbDensity',1], ['maximumReplenishBatch',1], ['naturalFoodGrowthMultiplier',.1],
         ['maxEnemyCount', 2], ['enemySpawnInterval', 0.1],
       ] },
       { label: 'Enemy Scaling (vs Player Size)', key: 'enemyScaling', fields: [
@@ -297,10 +297,12 @@ export class UI {
         input.step = step;
         input.value = this.balance[section.key][field];
         if(section.key==='ecology'){input.min=0;input.max=50;span.textContent='최상위 포식자 최대 수';}
+        const foodMultiplier=section.key==='spawning'&&field==='naturalFoodGrowthMultiplier';
+        if(foodMultiplier){input.min=.1;input.max=10;span.textContent='자연 먹이 Growth 배율';input.addEventListener('change',()=>{input.value=this.balance.spawning.naturalFoodGrowthMultiplier;});}
         input.addEventListener('input', () => {
           const v = parseFloat(input.value);
           if (Number.isFinite(v)) {
-            this.balance[section.key][field] = section.key==='ecology'?Math.max(0,Math.min(50,Math.floor(v))):v;
+            this.balance[section.key][field] = section.key==='ecology'?Math.max(0,Math.min(50,Math.floor(v))):foodMultiplier?Math.max(.1,Math.min(10,v)):v;
             if(section.key==='ecology'&&this.game)this.game.ecology.timer=0;
             this.onBalanceChange(section.key, field, v);
           }

@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "editable": true,
+  "newFoodOnly": true,
+  "configExport": true,
+  "bounded": true,
+  "defaultRestored": true,
+  "fixture": "paused controlled spawn, not a balance simulation",
+  "errors": []
+}
