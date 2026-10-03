@@ -8,7 +8,7 @@ export class Minimap {
       const game=ui.game;if(!game||!ui.inspector?.visible)return;
       const r=this.canvas.getBoundingClientRect(),w=game.balance.world;
       const x=(e.clientX-r.left)/r.width*w.worldWidth,y=(e.clientY-r.top)/r.height*w.worldHeight;
-      const candidates=game.entities.filter(t=>t.alive&&t.behavior==='ai').map(t=>({t,d:Math.hypot(delta({x,y},t,w).x/w.worldWidth*r.width,delta({x,y},t,w).y/w.worldHeight*r.height)})).filter(v=>v.d<=7).sort((a,b)=>a.d-b.d||a.t.id-b.t.id);
+      const candidates=game.entities.filter(t=>t.alive&&t.behavior==='ai'&&game.biomes.playerCanSee(t)).map(t=>({t,d:Math.hypot(delta({x,y},t,w).x/w.worldWidth*r.width,delta({x,y},t,w).y/w.worldHeight*r.height)})).filter(v=>v.d<=7).sort((a,b)=>a.d-b.d||a.t.id-b.t.id);
       if(candidates.length)ui.inspector.select(candidates[0].t.id);
     });
   }
@@ -26,11 +26,11 @@ export class Minimap {
     ctx.clearRect(0,0,this.canvas.width,this.canvas.height);ctx.fillStyle='#0b1422';ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
     for(const t of game.biomes.tiles){ctx.fillStyle=t.region.color;ctx.fillRect(t.x*scaleX,t.y*scaleY,game.biomes.tile*scaleX+.5,game.biomes.tile*scaleY+.5);}
     for(const h of game.biomes.rivers){ctx.beginPath();ctx.ellipse(h.x*scaleX,h.y*scaleY,h.hotRadius*scaleX,h.hotRadius*scaleY,0,0,Math.PI*2);ctx.fillStyle='#f97316';ctx.fill();}
-    for(const item of game.relics.items){ctx.fillStyle='#fde68a';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('★',item.x*scaleX,item.y*scaleY+3);}
+    for(const item of game.relics.items){if(!game.biomes.playerCanSee(item))continue;ctx.fillStyle='#fde68a';ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.fillText('★',item.x*scaleX,item.y*scaleY+3);}
     const field=game.era.apocalypse;if(field){ctx.beginPath();ctx.ellipse(field.x*scaleX,field.y*scaleY,field.radius*scaleX,field.radius*scaleY,0,0,Math.PI*2);ctx.strokeStyle=field.active?'#ef4444':'#fbbf24';ctx.lineWidth=2;ctx.stroke();}
     for(const p of game.era.fronts()){ctx.strokeStyle=p.color;ctx.lineWidth=1.5;ctx.strokeRect(p.x*scaleX-3,p.y*scaleY-3,6,6);}
     document.getElementById('minimap-era').textContent=game.era.phase.name+(game.era.fronts().length?' · □ 전선':'');
-    for(const e of game.entities){if(!e.alive)continue;const x=e.x*scaleX,y=e.y*scaleY;
+    for(const e of game.entities){if(!e.alive||!game.biomes.playerCanSee(e))continue;const x=e.x*scaleX,y=e.y*scaleY;
       ctx.beginPath();ctx.arc(x,y,e.behavior==='orb'?.7:e.behavior==='player'?3:Math.min(3,1.2+e.size/100),0,Math.PI*2);ctx.fillStyle=e.behavior==='orb'?'rgba(148,163,184,.35)':e.colorHex;ctx.fill();
       if(e.apex){ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.strokeStyle='#facc15';ctx.lineWidth=1;ctx.stroke();}
       if(e===game.player){ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(e.facing)*7,y+Math.sin(e.facing)*7);ctx.stroke();}

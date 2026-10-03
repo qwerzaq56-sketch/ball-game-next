@@ -1,0 +1,657 @@
+{
+  "policy": "controlled initial sizes; local survival autoplay; normal lives; no replenishment",
+  "requestedSeconds": 60,
+  "results": [
+    {
+      "seed": 7,
+      "initialSize": 20,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 55.57617180079948,
+      "netSizeGain": 35.57617180079948,
+      "netSizeGainPerSecond": 0.5929361966799996,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 7,
+          "meanSeconds": 5.857142857142857,
+          "overTarget": 1,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 22,
+          "unfinishedWaitSeconds": 3,
+          "coveredWindows": 37,
+          "qualifiedWindows": 56,
+          "coverage": 0.6607142857142857
+        },
+        "crisis": {
+          "encounters": 3,
+          "meanSeconds": 8.666666666666666,
+          "overTarget": 2,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 14,
+          "unfinishedWaitSeconds": 5,
+          "coveredWindows": 41,
+          "qualifiedWindows": 56,
+          "coverage": 0.7321428571428571
+        },
+        "buckets": {
+          "20–39": {
+            "seconds": 11,
+            "opportunitySeconds": 9,
+            "crisisSeconds": 0,
+            "potentialGain": 21.266474873522807,
+            "severity": 0,
+            "meanPotentialSizeGain": 1.9333158975929825,
+            "meanCrisisSeverity": 0,
+            "meanEncounterCrisisSeverity": null,
+            "realizedSizeGain": 21.82109071517737,
+            "realizedSeconds": 11,
+            "realizedSizeGainPerSecond": 1.9837355195615791
+          },
+          "40–79": {
+            "seconds": 49,
+            "opportunitySeconds": 14,
+            "crisisSeconds": 32,
+            "potentialGain": 14.327431642848516,
+            "severity": 15.000581285323596,
+            "meanPotentialSizeGain": 0.29239656413976567,
+            "meanCrisisSeverity": 0.3061343119453795,
+            "meanEncounterCrisisSeverity": 0.4687681651663624,
+            "realizedSizeGain": 13.755081085622109,
+            "realizedSeconds": 48,
+            "realizedSizeGainPerSecond": 0.28656418928379396
+          }
+        }
+      }
+    },
+    {
+      "seed": 11,
+      "initialSize": 20,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 50.146309890266835,
+      "netSizeGain": 30.146309890266835,
+      "netSizeGainPerSecond": 0.502438498171121,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 8,
+          "meanSeconds": 5.375,
+          "overTarget": 3,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 9,
+          "unfinishedWaitSeconds": 0,
+          "coveredWindows": 42,
+          "qualifiedWindows": 56,
+          "coverage": 0.75
+        },
+        "crisis": {
+          "encounters": 1,
+          "meanSeconds": 59,
+          "overTarget": 1,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 58,
+          "unfinishedWaitSeconds": 0,
+          "coveredWindows": 2,
+          "qualifiedWindows": 56,
+          "coverage": 0.03571428571428571
+        },
+        "buckets": {
+          "20–39": {
+            "seconds": 11,
+            "opportunitySeconds": 10,
+            "crisisSeconds": 0,
+            "potentialGain": 12.837619915073361,
+            "severity": 0,
+            "meanPotentialSizeGain": 1.16705635591576,
+            "meanCrisisSeverity": 0,
+            "meanEncounterCrisisSeverity": null,
+            "realizedSizeGain": 11.670147462187636,
+            "realizedSeconds": 11,
+            "realizedSizeGainPerSecond": 1.0609224965625124
+          },
+          "40–79": {
+            "seconds": 49,
+            "opportunitySeconds": 15,
+            "crisisSeconds": 2,
+            "potentialGain": 13.058483844614614,
+            "severity": 0.8146578300130328,
+            "meanPotentialSizeGain": 0.26649967029825744,
+            "meanCrisisSeverity": 0.016625670000265977,
+            "meanEncounterCrisisSeverity": 0.4073289150065164,
+            "realizedSizeGain": 9.284862193618352,
+            "realizedSeconds": 48,
+            "realizedSizeGainPerSecond": 0.19343462903371567
+          }
+        }
+      }
+    },
+    {
+      "seed": 23,
+      "initialSize": 20,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 57.38662862575335,
+      "netSizeGain": 37.38662862575335,
+      "netSizeGainPerSecond": 0.623110477095898,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 10,
+          "meanSeconds": 2.9,
+          "overTarget": 0,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 4,
+          "unfinishedWaitSeconds": 4,
+          "coveredWindows": 56,
+          "qualifiedWindows": 56,
+          "coverage": 1
+        },
+        "crisis": {
+          "encounters": 1,
+          "meanSeconds": 24,
+          "overTarget": 1,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 34,
+          "unfinishedWaitSeconds": 34,
+          "coveredWindows": 7,
+          "qualifiedWindows": 56,
+          "coverage": 0.125
+        },
+        "buckets": {
+          "20–39": {
+            "seconds": 11,
+            "opportunitySeconds": 10,
+            "crisisSeconds": 0,
+            "potentialGain": 18.343074051619787,
+            "severity": 0,
+            "meanPotentialSizeGain": 1.6675521865108898,
+            "meanCrisisSeverity": 0,
+            "meanEncounterCrisisSeverity": null,
+            "realizedSizeGain": 14.253058989241925,
+            "realizedSeconds": 11,
+            "realizedSizeGainPerSecond": 1.2957326353856295
+          },
+          "40–79": {
+            "seconds": 49,
+            "opportunitySeconds": 27,
+            "crisisSeconds": 3,
+            "potentialGain": 26.233491991946522,
+            "severity": 1.4635063133551545,
+            "meanPotentialSizeGain": 0.5353773875907454,
+            "meanCrisisSeverity": 0.029867475782758255,
+            "meanEncounterCrisisSeverity": 0.4878354377850515,
+            "realizedSizeGain": 15.801448524582085,
+            "realizedSeconds": 48,
+            "realizedSizeGainPerSecond": 0.32919684426212675
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "initialSize": 40,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 57.10654928715416,
+      "netSizeGain": 17.10654928715416,
+      "netSizeGainPerSecond": 0.28510915478590665,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 10,
+          "meanSeconds": 3,
+          "overTarget": 1,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 18,
+          "unfinishedWaitSeconds": 18,
+          "coveredWindows": 38,
+          "qualifiedWindows": 56,
+          "coverage": 0.6785714285714286
+        },
+        "crisis": {
+          "encounters": 2,
+          "meanSeconds": 8.5,
+          "overTarget": 1,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 28,
+          "unfinishedWaitSeconds": 28,
+          "coveredWindows": 23,
+          "qualifiedWindows": 56,
+          "coverage": 0.4107142857142857
+        },
+        "buckets": {
+          "40–79": {
+            "seconds": 60,
+            "opportunitySeconds": 22,
+            "crisisSeconds": 17,
+            "potentialGain": 24.612041729915667,
+            "severity": 7.073756519604724,
+            "meanPotentialSizeGain": 0.41020069549859445,
+            "meanCrisisSeverity": 0.11789594199341207,
+            "meanEncounterCrisisSeverity": 0.41610332468263084,
+            "realizedSizeGain": 17.10654928715416,
+            "realizedSeconds": 59,
+            "realizedSizeGainPerSecond": 0.2899415133415959
+          }
+        }
+      }
+    },
+    {
+      "seed": 11,
+      "initialSize": 40,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 54.659486435895154,
+      "netSizeGain": 14.659486435895154,
+      "netSizeGainPerSecond": 0.24432477393158936,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 7,
+          "meanSeconds": 6,
+          "overTarget": 3,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 14,
+          "unfinishedWaitSeconds": 0,
+          "coveredWindows": 38,
+          "qualifiedWindows": 56,
+          "coverage": 0.6785714285714286
+        },
+        "crisis": {
+          "encounters": 2,
+          "meanSeconds": 20,
+          "overTarget": 2,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 29,
+          "unfinishedWaitSeconds": 4,
+          "coveredWindows": 26,
+          "qualifiedWindows": 56,
+          "coverage": 0.4642857142857143
+        },
+        "buckets": {
+          "40–79": {
+            "seconds": 60,
+            "opportunitySeconds": 25,
+            "crisisSeconds": 18,
+            "potentialGain": 21.65456616316729,
+            "severity": 7.666443117290166,
+            "meanPotentialSizeGain": 0.36090943605278814,
+            "meanCrisisSeverity": 0.1277740519548361,
+            "meanEncounterCrisisSeverity": 0.42591350651612037,
+            "realizedSizeGain": 12.648580048378982,
+            "realizedSeconds": 59,
+            "realizedSizeGainPerSecond": 0.21438271268438952
+          }
+        }
+      }
+    },
+    {
+      "seed": 23,
+      "initialSize": 40,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 60.35839441801421,
+      "netSizeGain": 20.358394418014207,
+      "netSizeGainPerSecond": 0.3393065736335749,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 11,
+          "meanSeconds": 3.090909090909091,
+          "overTarget": 1,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 20,
+          "unfinishedWaitSeconds": 20,
+          "coveredWindows": 34,
+          "qualifiedWindows": 56,
+          "coverage": 0.6071428571428571
+        },
+        "crisis": {
+          "encounters": 2,
+          "meanSeconds": 19.5,
+          "overTarget": 2,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 21,
+          "unfinishedWaitSeconds": 0,
+          "coveredWindows": 27,
+          "qualifiedWindows": 56,
+          "coverage": 0.48214285714285715
+        },
+        "buckets": {
+          "40–79": {
+            "seconds": 60,
+            "opportunitySeconds": 17,
+            "crisisSeconds": 23,
+            "potentialGain": 25.572932545618322,
+            "severity": 8.05196772828412,
+            "meanPotentialSizeGain": 0.426215542426972,
+            "meanCrisisSeverity": 0.1341994621380687,
+            "meanEncounterCrisisSeverity": 0.35008555340365743,
+            "realizedSizeGain": 19.05675128890325,
+            "realizedSeconds": 59,
+            "realizedSizeGainPerSecond": 0.3229957845576822
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "initialSize": 80,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 93.19278652982136,
+      "netSizeGain": 13.192786529821362,
+      "netSizeGainPerSecond": 0.2198797754970258,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 1,
+          "meanSeconds": 17,
+          "overTarget": 1,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 42,
+          "unfinishedWaitSeconds": 42,
+          "coveredWindows": 6,
+          "qualifiedWindows": 56,
+          "coverage": 0.10714285714285714
+        },
+        "crisis": {
+          "encounters": 4,
+          "meanSeconds": 12.75,
+          "overTarget": 3,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 24,
+          "unfinishedWaitSeconds": 0,
+          "coveredWindows": 22,
+          "qualifiedWindows": 56,
+          "coverage": 0.39285714285714285
+        },
+        "buckets": {
+          "80–159": {
+            "seconds": 60,
+            "opportunitySeconds": 2,
+            "crisisSeconds": 13,
+            "potentialGain": 14.011428420822895,
+            "severity": 0.4225866604595128,
+            "meanPotentialSizeGain": 0.23352380701371492,
+            "meanCrisisSeverity": 0.007043111007658547,
+            "meanEncounterCrisisSeverity": 0.032506666189193296,
+            "realizedSizeGain": 13.192786529821362,
+            "realizedSeconds": 59,
+            "realizedSizeGainPerSecond": 0.22360655135290444
+          }
+        }
+      }
+    },
+    {
+      "seed": 11,
+      "initialSize": 80,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 86.6501312826914,
+      "netSizeGain": 6.6501312826914045,
+      "netSizeGainPerSecond": 0.11083552137819164,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 0,
+          "meanSeconds": null,
+          "overTarget": 0,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 60,
+          "unfinishedWaitSeconds": 60,
+          "coveredWindows": 0,
+          "qualifiedWindows": 56,
+          "coverage": 0
+        },
+        "crisis": {
+          "encounters": 2,
+          "meanSeconds": 18,
+          "overTarget": 2,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 25,
+          "unfinishedWaitSeconds": 23,
+          "coveredWindows": 11,
+          "qualifiedWindows": 56,
+          "coverage": 0.19642857142857142
+        },
+        "buckets": {
+          "80–159": {
+            "seconds": 60,
+            "opportunitySeconds": 0,
+            "crisisSeconds": 3,
+            "potentialGain": 12.129346017113406,
+            "severity": 0.21810444884018937,
+            "meanPotentialSizeGain": 0.2021557669518901,
+            "meanCrisisSeverity": 0.0036350741473364897,
+            "meanEncounterCrisisSeverity": 0.07270148294672979,
+            "realizedSizeGain": 5.9502136550702005,
+            "realizedSeconds": 59,
+            "realizedSizeGainPerSecond": 0.10085107889949492
+          }
+        }
+      }
+    },
+    {
+      "seed": 23,
+      "initialSize": 80,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 93.18155821291957,
+      "netSizeGain": 13.181558212919569,
+      "netSizeGainPerSecond": 0.21969263688199592,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 1,
+          "meanSeconds": 37,
+          "overTarget": 1,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 36,
+          "unfinishedWaitSeconds": 23,
+          "coveredWindows": 5,
+          "qualifiedWindows": 56,
+          "coverage": 0.08928571428571429
+        },
+        "crisis": {
+          "encounters": 7,
+          "meanSeconds": 7,
+          "overTarget": 2,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 20,
+          "unfinishedWaitSeconds": 0,
+          "coveredWindows": 29,
+          "qualifiedWindows": 56,
+          "coverage": 0.5178571428571429
+        },
+        "buckets": {
+          "80–159": {
+            "seconds": 60,
+            "opportunitySeconds": 1,
+            "crisisSeconds": 18,
+            "potentialGain": 12.378712374295333,
+            "severity": 0.9444132644141227,
+            "meanPotentialSizeGain": 0.2063118729049222,
+            "meanCrisisSeverity": 0.015740221073568712,
+            "meanEncounterCrisisSeverity": 0.05246740357856237,
+            "realizedSizeGain": 12.73521837335609,
+            "realizedSeconds": 59,
+            "realizedSizeGainPerSecond": 0.2158511588704422
+          }
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "initialSize": 160,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 167.58404325590286,
+      "netSizeGain": 7.584043255902856,
+      "netSizeGainPerSecond": 0.12640072093171603,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 0,
+          "meanSeconds": null,
+          "overTarget": 0,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 60,
+          "unfinishedWaitSeconds": 60,
+          "coveredWindows": 0,
+          "qualifiedWindows": 56,
+          "coverage": 0
+        },
+        "crisis": {
+          "encounters": 0,
+          "meanSeconds": null,
+          "overTarget": 0,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 60,
+          "unfinishedWaitSeconds": 60,
+          "coveredWindows": 0,
+          "qualifiedWindows": 56,
+          "coverage": 0
+        },
+        "buckets": {
+          "160+": {
+            "seconds": 60,
+            "opportunitySeconds": 0,
+            "crisisSeconds": 0,
+            "potentialGain": 6.278736362519908,
+            "severity": 0,
+            "meanPotentialSizeGain": 0.10464560604199846,
+            "meanCrisisSeverity": 0,
+            "meanEncounterCrisisSeverity": null,
+            "realizedSizeGain": 7.31002570454018,
+            "realizedSeconds": 59,
+            "realizedSizeGainPerSecond": 0.12389874075491832
+          }
+        }
+      }
+    },
+    {
+      "seed": 11,
+      "initialSize": 160,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 165.30159655764604,
+      "netSizeGain": 5.301596557646036,
+      "netSizeGainPerSecond": 0.08835994262743518,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 0,
+          "meanSeconds": null,
+          "overTarget": 0,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 60,
+          "unfinishedWaitSeconds": 60,
+          "coveredWindows": 0,
+          "qualifiedWindows": 56,
+          "coverage": 0
+        },
+        "crisis": {
+          "encounters": 3,
+          "meanSeconds": 17.333333333333332,
+          "overTarget": 3,
+          "unfinishedOverTarget": false,
+          "longestDrySeconds": 18,
+          "unfinishedWaitSeconds": 2,
+          "coveredWindows": 19,
+          "qualifiedWindows": 56,
+          "coverage": 0.3392857142857143
+        },
+        "buckets": {
+          "160+": {
+            "seconds": 60,
+            "opportunitySeconds": 0,
+            "crisisSeconds": 9,
+            "potentialGain": 2.923099620808813,
+            "severity": 1.007280663307961,
+            "meanPotentialSizeGain": 0.048718327013480216,
+            "meanCrisisSeverity": 0.01678801105513268,
+            "meanEncounterCrisisSeverity": 0.11192007370088455,
+            "realizedSizeGain": 5.000206685699283,
+            "realizedSeconds": 59,
+            "realizedSizeGainPerSecond": 0.08474926585930988
+          }
+        }
+      }
+    },
+    {
+      "seed": 23,
+      "initialSize": 160,
+      "actualSeconds": 59.999999999999154,
+      "finalSize": 167.44965857979295,
+      "netSizeGain": 7.449658579792953,
+      "netSizeGainPerSecond": 0.12416097632988429,
+      "defeats": 0,
+      "summary": {
+        "scope": "retained samples; purposeful autoplay only",
+        "targetSeconds": 5,
+        "qualifiedSeconds": 60,
+        "growth": {
+          "encounters": 0,
+          "meanSeconds": null,
+          "overTarget": 0,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 60,
+          "unfinishedWaitSeconds": 60,
+          "coveredWindows": 0,
+          "qualifiedWindows": 56,
+          "coverage": 0
+        },
+        "crisis": {
+          "encounters": 0,
+          "meanSeconds": null,
+          "overTarget": 0,
+          "unfinishedOverTarget": true,
+          "longestDrySeconds": 60,
+          "unfinishedWaitSeconds": 60,
+          "coveredWindows": 0,
+          "qualifiedWindows": 56,
+          "coverage": 0
+        },
+        "buckets": {
+          "160+": {
+            "seconds": 60,
+            "opportunitySeconds": 0,
+            "crisisSeconds": 0,
+            "potentialGain": 6.926170531761187,
+            "severity": 0,
+            "meanPotentialSizeGain": 0.11543617552935312,
+            "meanCrisisSeverity": 0,
+            "meanEncounterCrisisSeverity": null,
+            "realizedSizeGain": 7.257790056686389,
+            "realizedSeconds": 59,
+            "realizedSizeGainPerSecond": 0.12301339079129472
+          }
+        }
+      }
+    }
+  ]
+}

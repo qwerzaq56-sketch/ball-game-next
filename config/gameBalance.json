@@ -151,5 +151,6 @@
     { "id": "yellow", "color": "#EAB308" },
     { "id": "cyan", "color": "#22D3EE" }
   ],
-  "ecology": { "maxApex": 5 }
+  "ecology": { "maxApex": 5 },
+  "evaluation": { "encounterSeconds": 5, "minimumSizeGain": 0.5, "minimumGrowthRatio": 0.01, "clusterRadius": 120 }
 }

@@ -22,6 +22,7 @@ export class Biomes {
    const region=this.classify({x:x+this.tile/2,y:y+this.tile/2});
    if(region){this.tiles.push({x,y,region});this.cells.set(`${x}:${y}`,region);}
   }
+  this.labels=this.regions.map(region=>{const own=this.tiles.filter(t=>t.region===region),inner=own.filter(t=>[-200,0,200].every(dx=>[-200,0,200].every(dy=>this.regionAt({x:t.x+100+dx,y:t.y+100+dy})===region)));const tile=(inner.length?inner:own).sort((a,b)=>dist({x:a.x+100,y:a.y+100,_world:w},region)-dist({x:b.x+100,y:b.y+100,_world:w},region))[0];return {...region,x:tile?tile.x+100:region.x,y:tile?tile.y+100:region.y};});
   const volcano=this.regions.find(r=>r.id==='volcano');
   if(volcano)for(let offset=-volcano.radius*.9;offset<=volcano.radius*.9;offset+=70){
     const x=volcano.x+offset,y=volcano.y+Math.sin(offset/420)*320+Math.sin(offset/170)*65;
@@ -49,6 +50,13 @@ export class Biomes {
   }return null;
  }
  blizzard(){return this.enabled&&this.game.gameTime%24>=16;}
+ playerSightRadius(){return this.regionAt(this.game.player)?.id==='snow'&&this.blizzard()?Math.max(this.game.player.size/2+40,this.game.balance.ai.detectionRange*.65):Infinity;}
+ playerCanSee(e){return e===this.game.player||dist(this.game.player,e)-(e.size??0)/2<=this.playerSightRadius();}
+ drawBlizzardOverlay(ctx){
+  const radius=this.playerSightRadius();if(!Number.isFinite(radius))return;const g=this.game,p=g.worldToScreen(g.player.x,g.player.y),r=radius*g.camera.zoom;
+  const fog=ctx.createRadialGradient(p.x,p.y,r*.65,p.x,p.y,r);fog.addColorStop(0,'rgba(224,235,247,.03)');fog.addColorStop(.75,'rgba(148,169,190,.16)');fog.addColorStop(1,'#273747');
+  ctx.save();ctx.fillStyle=fog;ctx.fillRect(0,0,g.canvas.width,g.canvas.height);ctx.restore();
+ }
  sensingRange(e,base=this.game.balance.ai.detectionRange){return this.regionAt(e)?.id==='snow'&&this.blizzard()?base*.65:base;}
  hazards(){return [...this.rivers,...(this.game.era?.apocalypse?[this.game.era.apocalypse]:[])];}
  danger(e,held=false){return this.hazards().find(r=>r.hotRadius&&dist(e,r)<=r.hotRadius+e.size/2+(held?120:80))??null;}
@@ -101,8 +109,7 @@ export class Biomes {
    const r=tile.region;ctx.fillStyle=r.color+'88';ctx.fillRect(tile.x,tile.y,this.tile,this.tile);
    ctx.strokeStyle=r.id==='snow'?'rgba(235,248,255,.45)':r.color;ctx.lineWidth=1.5/zoom;
    for(let i=0;i<3;i++){const x=tile.x+32+i*57,y=tile.y+40+(i*53)%130;ctx.beginPath();
-    if(r.id==='snow'&&this.blizzard()){const drift=(time*130+i*60+tile.y)%this.tile;ctx.moveTo(tile.x+drift,y);ctx.lineTo(tile.x+drift-32,y+12);}
-    else if(r.id==='forest'){ctx.moveTo(x-12,y+15);ctx.lineTo(x,y-17);ctx.lineTo(x+12,y+15);}
+    if(r.id==='forest'){ctx.moveTo(x-12,y+15);ctx.lineTo(x,y-17);ctx.lineTo(x+12,y+15);}
     else if(r.id==='lake'){ctx.arc(x,y,18,0,Math.PI);}
     else {ctx.moveTo(x-9,y+5);ctx.lineTo(x,y-6);ctx.lineTo(x+9,y+5);}ctx.stroke();
    }
@@ -113,7 +120,7 @@ export class Biomes {
    path();ctx.strokeStyle='#f97316';ctx.lineWidth=86;ctx.stroke();
    path();ctx.strokeStyle='#ffcc68';ctx.lineWidth=20;ctx.setLineDash([32,60]);ctx.lineDashOffset=-time*90;ctx.stroke();ctx.setLineDash([]);
   }
-  for(const r of this.regions){ctx.fillStyle='#e2e8f0';ctx.font=`bold ${20/zoom}px system-ui`;ctx.textAlign='center';ctx.fillText(r.name+(r.id==='snow'&&this.blizzard()?' · 눈보라 · 얼음꽃 개화':''),r.x,r.y);}
+  for(const r of this.labels){ctx.fillStyle='#e2e8f0';ctx.font=`bold ${Math.min(20/zoom,60)}px system-ui`;ctx.textAlign='center';ctx.fillText(r.name,r.x,r.y);}
   ctx.restore();
  }
 }

@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "radius": 208,
+  "near": true,
+  "far": false,
+  "labels": true,
+  "static": true,
+  "clear": true,
+  "mobile": true,
+  "errors": []
+}

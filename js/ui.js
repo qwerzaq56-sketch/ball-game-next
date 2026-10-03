@@ -247,6 +247,7 @@ export class UI {
         ['mediumSizeMin', 1], ['mediumSizeMax', 1],
         ['largeSizeMin', 1], ['largeSizeMax', 1],
       ] },
+      { label: '플레이 평가 기준', key:'evaluation', fields:[['encounterSeconds',1],['minimumSizeGain',.1],['minimumGrowthRatio',.005],['clusterRadius',10]] },
       { label: 'Ecology', key: 'ecology', fields: [['maxApex', 1]] },
       { label: 'World', key: 'world', fields: [
         ['minOrbSize', 1], ['maxOrbSize', 1],

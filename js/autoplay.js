@@ -18,14 +18,15 @@ export class Autoplay {
   if(!this.enabled)return;const g=this.game,p=g.player;
   if(g.gameOver||!p.alive){this.action=null;this.reason='게임 종료';return;}
   this.timer-=dt;this.dodgeWait=Math.max(0,this.dodgeWait-dt);if(this.timer>0)return;this.timer=.1;
-  const candidates=g.getNearbyEntities(p,800).filter(e=>e.alive&&dist(p,e)<=800);
+  const range=Math.min(800,g.biomes.playerSightRadius());
+  const candidates=g.getNearbyEntities(p,range).filter(e=>e.alive&&dist(p,e)<=range);
   const threats=candidates.filter(e=>e.behavior!=='orb'&&dist(p,e)<360&&(isHostile(p,e)&&e.size>=p.size*1.2||canAbsorb(e,p)));
   const sand=g.abilities.fields.find(f=>f.owner.alive&&f.owner.apex&&isHostile(p,f.owner)&&dist(p,f)<420);
   const environment=g.biomes.danger(p);const danger=p.beingAbsorbedByRef??environment??sand??threats.sort((a,b)=>dist(p,a)-dist(p,b)||a.id-b.id)[0];
   let target,escape=!!danger;
   if(danger){const away=delta(danger,p);target={x:p.x+away.x,y:p.y+away.y};if(target.x===p.x&&target.y===p.y)target.x+=100;this.reason=`도주 · ${environment?.name??(sand?'모래바람':'위협')}`;}
   else {
-   const safe=e=>threats.every(t=>dist(e,t)>180)&&!g.biomes.danger(e);
+   const safe=e=>g.biomes.playerCanSee(e)&&threats.every(t=>dist(e,t)>180)&&!g.biomes.danger(e);
    const relic=g.relics.desired(p,safe);
    const food=candidates.filter(e=>canEatOrb(p,e,g.balance)&&safe(e)).sort((a,b)=>b.growthValue/(dist(p,b)+60)-a.growthValue/(dist(p,a)+60)||a.id-b.id)[0];
    target=relic??food;this.reason=relic?'유물 수집':food?'먹이 탐색':'월드 탐색';

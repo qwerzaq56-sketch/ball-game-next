@@ -740,6 +740,7 @@ export class Game {
     this.renderCamera=null;
     ctx.restore();
     this.drawNames(ctx);
+    this.biomes.drawBlizzardOverlay(ctx);
   }
 
   drawTouchAim(ctx) {
@@ -757,7 +758,7 @@ export class Game {
     const ctxFont = "bold 12px system-ui, sans-serif";
     ctx.save(); ctx.font = ctxFont; ctx.textAlign = "center"; ctx.textBaseline = "bottom";
     const candidates = scoreRanking(this.entities, this.ecology.scoreOrder).slice(0,20)
-      .filter(e => this.isRoughlyVisible(this.balance.world.wrap?near(this.camera,e,this.balance.world):e)).map(e => {
+      .filter(e => this.biomes.playerCanSee(e)&&this.isRoughlyVisible(this.balance.world.wrap?near(this.camera,e,this.balance.world):e)).map(e => {
         const point = this.worldToScreen(e.x, e.y-e.size/2);
         const text = `${e.apex ? "★ " : ""}${e.displayName}`;
         return {id:e.id, text, color:e.colorHex, x:point.x, y:point.y-(this.showAILabels ? 50 : 18), textWidth:ctx.measureText(text).width};
@@ -829,7 +830,7 @@ export class Game {
 
   drawEntities(ctx) {
     const visible = this.entities
-      .filter((e) => e.alive && this.isRoughlyVisible(e))
+      .filter((e) => e.alive && this.biomes.playerCanSee(e) && this.isRoughlyVisible(e))
       .sort((a, b) => a.size - b.size);
 
     for (const e of visible) this.drawEntity(ctx, e);
