@@ -1,3 +1,4 @@
+import {SkillInfluenceUI} from './skillInfluenceUI.js';
 import {BiomeObjectUI} from './biomeObjectUI.js';
 // HUD rendering (DOM overlay) + live-editable Debug/Balance panel.
 
@@ -45,7 +46,7 @@ export class UI {
     this.debugPanel = document.getElementById('debug-panel');
     this.debugVisible = false;
     this.buildDebugPanel();
-    this.skillTuning=new SkillTuningUI(balance,this.debugPanel);this.objectTuning=new BiomeObjectUI(balance,this.debugPanel);
+    this.skillTuning=new SkillTuningUI(balance,this.debugPanel);this.objectTuning=new BiomeObjectUI(balance,this.debugPanel);this.skillInfluence=new SkillInfluenceUI(this,this.debugPanel);
     this.ecologyUI = new EcologyUI(this);
     document.getElementById('companion-invite').addEventListener('click',()=>{if(this.game&&!this.game.paused&&!this.game.gameOver){this.game.autoplay.setEnabled(false);this.game.allyLinks.offer(this.game.player);}});
     document.getElementById('companion-leave').addEventListener('click',()=>{if(this.game&&!this.game.paused&&this.game.player.companionGroup){this.game.autoplay.setEnabled(false);this.game.allyLinks.leave(this.game.player,'player-choice');}});
@@ -139,6 +140,7 @@ export class UI {
   }
 
   update(dt, game) {
+    this.skillInfluence.update(dt,game);
     this.ecologyUI.update(game);
     this.game = game; // debug-panel checkbox handlers read this
     const player = game.player;

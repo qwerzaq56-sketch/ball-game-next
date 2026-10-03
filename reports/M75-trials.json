@@ -1,0 +1,6991 @@
+{
+  "meaning": "Nonselected numeric presets and complete matchup summaries; superseded raw rows omitted. Use retained release files for final raw trials.",
+  "trials": [
+    {
+      "file": "M75-duels-after.json",
+      "protocol": {
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23,
+          71,
+          101
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {
+        "red-embers": {
+          "damage": 0.4,
+          "radius": 240
+        },
+        "blue-ripple": {
+          "damage": 0.65
+        },
+        "blue-trident": {
+          "damage": 0.85,
+          "length": 440,
+          "width": 200
+        },
+        "cyan-freeze": {
+          "damage": 0.7
+        },
+        "yellow-storm": {
+          "hpFraction": 0.11
+        }
+      },
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 4,
+          "draws": 4,
+          "score": 0.25,
+          "decisiveWinRate": 0,
+          "meanSeconds": 70.04166666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 1,
+          "draws": 7,
+          "score": 0.4375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 81.60833333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 74.95
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 83.25833333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 2,
+          "draws": 3,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6,
+          "meanSeconds": 65.75
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 84.60416666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 83.9875
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 1,
+          "draws": 7,
+          "score": 0.4375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 83.23333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 89.875
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 2,
+          "draws": 6,
+          "score": 0.375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 73.93333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 2,
+          "draws": 5,
+          "score": 0.4375,
+          "decisiveWinRate": 0.3333333333333333,
+          "meanSeconds": 76.85416666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 80.74583333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 29.562499999999996
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 1,
+          "draws": 3,
+          "score": 0.6875,
+          "decisiveWinRate": 0.8,
+          "meanSeconds": 67.02499999999999
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 1,
+          "draws": 5,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6666666666666666,
+          "meanSeconds": 75.47083333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 3,
+          "draws": 5,
+          "score": 0.3125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 72.67916666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 0,
+          "draws": 5,
+          "score": 0.6875,
+          "decisiveWinRate": 1,
+          "meanSeconds": 81.60833333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 1,
+          "draws": 7,
+          "score": 0.4375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 81.925
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 5,
+          "losses": 2,
+          "draws": 1,
+          "score": 0.6875,
+          "decisiveWinRate": 0.7142857142857143,
+          "meanSeconds": 36.358333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 1,
+          "draws": 4,
+          "score": 0.625,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 59.987500000000004
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 2,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 69.47083333333333
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 96,
+          "wins": 20,
+          "losses": 12,
+          "draws": 64,
+          "score": 0.5416666666666666
+        },
+        {
+          "color": "blue",
+          "n": 96,
+          "wins": 4,
+          "losses": 10,
+          "draws": 82,
+          "score": 0.46875
+        },
+        {
+          "color": "green",
+          "n": 96,
+          "wins": 25,
+          "losses": 12,
+          "draws": 59,
+          "score": 0.5677083333333334
+        },
+        {
+          "color": "red",
+          "n": 96,
+          "wins": 8,
+          "losses": 19,
+          "draws": 69,
+          "score": 0.4427083333333333
+        },
+        {
+          "color": "yellow",
+          "n": 96,
+          "wins": 7,
+          "losses": 11,
+          "draws": 78,
+          "score": 0.4791666666666667
+        }
+      ]
+    },
+    {
+      "file": "M75-duels-candidate.json",
+      "protocol": {
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23,
+          71,
+          101
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {
+        "red-embers": {
+          "damage": 0.3
+        },
+        "blue-ripple": {
+          "damage": 0.65
+        },
+        "blue-trident": {
+          "damage": 0.8
+        },
+        "cyan-freeze": {
+          "damage": 0.7
+        },
+        "yellow-storm": {
+          "hpFraction": 0.12
+        }
+      },
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 4,
+          "draws": 4,
+          "score": 0.25,
+          "decisiveWinRate": 0,
+          "meanSeconds": 70.04166666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 4,
+          "draws": 4,
+          "score": 0.25,
+          "decisiveWinRate": 0,
+          "meanSeconds": 64.50833333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 80.175
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 84.2125
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 2,
+          "draws": 3,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6,
+          "meanSeconds": 65.75
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 82.9375
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 85.525
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 1,
+          "draws": 7,
+          "score": 0.4375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 83.19583333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 81.75416666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 4,
+          "draws": 3,
+          "score": 0.3125,
+          "decisiveWinRate": 0.2,
+          "meanSeconds": 48.20833333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 4,
+          "draws": 4,
+          "score": 0.25,
+          "decisiveWinRate": 0,
+          "meanSeconds": 70.18333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 0,
+          "draws": 5,
+          "score": 0.6875,
+          "decisiveWinRate": 1,
+          "meanSeconds": 77.45833333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 29.562499999999996
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 1,
+          "draws": 3,
+          "score": 0.6875,
+          "decisiveWinRate": 0.8,
+          "meanSeconds": 67.91666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 1,
+          "draws": 6,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 80.10833333333332
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 3,
+          "draws": 4,
+          "score": 0.375,
+          "decisiveWinRate": 0.25,
+          "meanSeconds": 68.19583333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 77.05416666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 3,
+          "draws": 5,
+          "score": 0.3125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 79.72916666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 2,
+          "draws": 2,
+          "score": 0.625,
+          "decisiveWinRate": 0.6666666666666666,
+          "meanSeconds": 38.891666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 3,
+          "draws": 3,
+          "score": 0.4375,
+          "decisiveWinRate": 0.4,
+          "meanSeconds": 51.75
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 4,
+          "draws": 4,
+          "score": 0.25,
+          "decisiveWinRate": 0,
+          "meanSeconds": 70.55416666666667
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 96,
+          "wins": 19,
+          "losses": 12,
+          "draws": 65,
+          "score": 0.5364583333333334
+        },
+        {
+          "color": "blue",
+          "n": 96,
+          "wins": 4,
+          "losses": 15,
+          "draws": 77,
+          "score": 0.4427083333333333
+        },
+        {
+          "color": "green",
+          "n": 96,
+          "wins": 27,
+          "losses": 17,
+          "draws": 52,
+          "score": 0.5520833333333334
+        },
+        {
+          "color": "red",
+          "n": 96,
+          "wins": 7,
+          "losses": 22,
+          "draws": 67,
+          "score": 0.421875
+        },
+        {
+          "color": "yellow",
+          "n": 96,
+          "wins": 15,
+          "losses": 6,
+          "draws": 75,
+          "score": 0.546875
+        }
+      ]
+    },
+    {
+      "file": "M75-duels-selected.json",
+      "protocol": {
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23,
+          71,
+          101
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {
+        "red-embers": {
+          "damage": 0.43,
+          "radius": 240
+        },
+        "blue-ripple": {
+          "damage": 0.65
+        },
+        "blue-trident": {
+          "damage": 0.85,
+          "length": 440,
+          "width": 200
+        },
+        "cyan-freeze": {
+          "damage": 0.7
+        },
+        "yellow-storm": {
+          "hpFraction": 0.11
+        },
+        "green-invite": {
+          "buffDamage": 0.04
+        },
+        "green-summon": {
+          "summonAttackInheritance": 0.45
+        }
+      },
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 4,
+          "draws": 4,
+          "score": 0.25,
+          "decisiveWinRate": 0,
+          "meanSeconds": 71.94166666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 74.825
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 83.25833333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 2,
+          "draws": 3,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6,
+          "meanSeconds": 65.975
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 2,
+          "draws": 6,
+          "score": 0.375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 81.78333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 83.9875
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 1,
+          "draws": 6,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 77.41666666666667
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 1,
+          "draws": 7,
+          "score": 0.4375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 81.20833333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 2,
+          "draws": 5,
+          "score": 0.4375,
+          "decisiveWinRate": 0.3333333333333333,
+          "meanSeconds": 69.83333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 86.55
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 2,
+          "draws": 5,
+          "score": 0.4375,
+          "decisiveWinRate": 0.3333333333333333,
+          "meanSeconds": 77.20416666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 80.74583333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 3,
+          "draws": 1,
+          "score": 0.5625,
+          "decisiveWinRate": 0.5714285714285714,
+          "meanSeconds": 34.09583333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 2,
+          "draws": 3,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6,
+          "meanSeconds": 67.63749999999999
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 1,
+          "draws": 5,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6666666666666666,
+          "meanSeconds": 75.47083333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 3,
+          "draws": 4,
+          "score": 0.375,
+          "decisiveWinRate": 0.25,
+          "meanSeconds": 66.68333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 2,
+          "draws": 6,
+          "score": 0.375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 76.1
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 1,
+          "draws": 7,
+          "score": 0.4375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 81.925
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 3,
+          "draws": 1,
+          "score": 0.5625,
+          "decisiveWinRate": 0.5714285714285714,
+          "meanSeconds": 36.3875
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 1,
+          "draws": 5,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6666666666666666,
+          "meanSeconds": 68.51666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 1,
+          "draws": 5,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6666666666666666,
+          "meanSeconds": 78.58333333333333
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 96,
+          "wins": 17,
+          "losses": 14,
+          "draws": 65,
+          "score": 0.515625
+        },
+        {
+          "color": "blue",
+          "n": 96,
+          "wins": 2,
+          "losses": 12,
+          "draws": 82,
+          "score": 0.4479166666666667
+        },
+        {
+          "color": "green",
+          "n": 96,
+          "wins": 23,
+          "losses": 15,
+          "draws": 58,
+          "score": 0.5416666666666666
+        },
+        {
+          "color": "red",
+          "n": 96,
+          "wins": 15,
+          "losses": 11,
+          "draws": 70,
+          "score": 0.5208333333333334
+        },
+        {
+          "color": "yellow",
+          "n": 96,
+          "wins": 6,
+          "losses": 11,
+          "draws": 79,
+          "score": 0.4739583333333333
+        }
+      ]
+    },
+    {
+      "file": "M75-duels-validation.json",
+      "protocol": {
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          131,
+          149,
+          173,
+          211
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {
+        "red-embers": {
+          "damage": 0.43,
+          "radius": 240
+        },
+        "blue-ripple": {
+          "damage": 0.65
+        },
+        "blue-trident": {
+          "damage": 0.85,
+          "length": 440,
+          "width": 200
+        },
+        "cyan-freeze": {
+          "damage": 0.7
+        },
+        "yellow-storm": {
+          "hpFraction": 0.11
+        },
+        "green-invite": {
+          "buffDamage": 0.04
+        },
+        "green-summon": {
+          "summonAttackInheritance": 0.45
+        }
+      },
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 5,
+          "draws": 3,
+          "score": 0.1875,
+          "decisiveWinRate": 0,
+          "meanSeconds": 61.354166666666664
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 2,
+          "draws": 6,
+          "score": 0.375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 75.66666666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 0,
+          "draws": 5,
+          "score": 0.6875,
+          "decisiveWinRate": 1,
+          "meanSeconds": 71.82083333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 77.50416666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 2,
+          "draws": 5,
+          "score": 0.4375,
+          "decisiveWinRate": 0.3333333333333333,
+          "meanSeconds": 76.025
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 70.60000000000001
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 2,
+          "draws": 6,
+          "score": 0.375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 78.93333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 1,
+          "draws": 7,
+          "score": 0.4375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 81.875
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 2,
+          "draws": 6,
+          "score": 0.375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 84.24583333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 5,
+          "draws": 3,
+          "score": 0.1875,
+          "decisiveWinRate": 0,
+          "meanSeconds": 54.887499999999996
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 1,
+          "draws": 6,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 81.10833333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 75.57083333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 75.31666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 5,
+          "losses": 3,
+          "draws": 0,
+          "score": 0.625,
+          "decisiveWinRate": 0.625,
+          "meanSeconds": 33.3125
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 84.15416666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 2,
+          "draws": 5,
+          "score": 0.4375,
+          "decisiveWinRate": 0.3333333333333333,
+          "meanSeconds": 79.1875
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 3,
+          "draws": 3,
+          "score": 0.4375,
+          "decisiveWinRate": 0.4,
+          "meanSeconds": 55.01666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 1,
+          "draws": 5,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6666666666666666,
+          "meanSeconds": 72.16666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 3,
+          "draws": 4,
+          "score": 0.375,
+          "decisiveWinRate": 0.25,
+          "meanSeconds": 73.475
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 2,
+          "draws": 3,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6,
+          "meanSeconds": 58.1125
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 4,
+          "draws": 3,
+          "score": 0.3125,
+          "decisiveWinRate": 0.2,
+          "meanSeconds": 59.60833333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 1,
+          "draws": 4,
+          "score": 0.625,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 66.50833333333333
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 96,
+          "wins": 16,
+          "losses": 12,
+          "draws": 68,
+          "score": 0.5208333333333334
+        },
+        {
+          "color": "blue",
+          "n": 96,
+          "wins": 5,
+          "losses": 18,
+          "draws": 73,
+          "score": 0.4322916666666667
+        },
+        {
+          "color": "green",
+          "n": 96,
+          "wins": 25,
+          "losses": 20,
+          "draws": 51,
+          "score": 0.5260416666666666
+        },
+        {
+          "color": "red",
+          "n": 96,
+          "wins": 14,
+          "losses": 11,
+          "draws": 71,
+          "score": 0.515625
+        },
+        {
+          "color": "yellow",
+          "n": 96,
+          "wins": 13,
+          "losses": 12,
+          "draws": 71,
+          "score": 0.5052083333333334
+        }
+      ]
+    },
+    {
+      "file": "M75-final-normal-validation.json",
+      "protocol": {
+        "war": false,
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          131,
+          149,
+          173,
+          211
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {},
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 2,
+          "draws": 6,
+          "score": 0.375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 83.7875
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 0,
+          "draws": 5,
+          "score": 0.6875,
+          "decisiveWinRate": 1,
+          "meanSeconds": 73.14166666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 78.2875
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 2,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 71.36250000000001
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 0,
+          "draws": 5,
+          "score": 0.6875,
+          "decisiveWinRate": 1,
+          "meanSeconds": 77.98333333333332
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 1,
+          "draws": 6,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 76.71666666666667
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 87.4375
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 2,
+          "draws": 6,
+          "score": 0.375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 84.01666666666667
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 5,
+          "draws": 3,
+          "score": 0.1875,
+          "decisiveWinRate": 0,
+          "meanSeconds": 54.887499999999996
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 1,
+          "draws": 7,
+          "score": 0.4375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 83.50833333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 3,
+          "draws": 5,
+          "score": 0.3125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 75.92083333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 75.78333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 33.52916666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 84.15416666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 2,
+          "draws": 6,
+          "score": 0.375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 81.7125
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 72.51666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 6,
+          "losses": 0,
+          "draws": 2,
+          "score": 0.875,
+          "decisiveWinRate": 1,
+          "meanSeconds": 63.09166666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 3,
+          "draws": 4,
+          "score": 0.375,
+          "decisiveWinRate": 0.25,
+          "meanSeconds": 72
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 2,
+          "draws": 3,
+          "score": 0.5625,
+          "decisiveWinRate": 0.6,
+          "meanSeconds": 58.1125
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 6,
+          "draws": 1,
+          "score": 0.1875,
+          "decisiveWinRate": 0.14285714285714285,
+          "meanSeconds": 36.38333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 2,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 67.875
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 96,
+          "wins": 14,
+          "losses": 10,
+          "draws": 72,
+          "score": 0.5208333333333334
+        },
+        {
+          "color": "blue",
+          "n": 96,
+          "wins": 13,
+          "losses": 10,
+          "draws": 73,
+          "score": 0.515625
+        },
+        {
+          "color": "green",
+          "n": 96,
+          "wins": 16,
+          "losses": 25,
+          "draws": 55,
+          "score": 0.453125
+        },
+        {
+          "color": "red",
+          "n": 96,
+          "wins": 9,
+          "losses": 19,
+          "draws": 68,
+          "score": 0.4479166666666667
+        },
+        {
+          "color": "yellow",
+          "n": 96,
+          "wins": 19,
+          "losses": 7,
+          "draws": 70,
+          "score": 0.5625
+        }
+      ]
+    },
+    {
+      "file": "M75-final-normal.json",
+      "protocol": {
+        "war": false,
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23,
+          71,
+          101
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {},
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 3,
+          "draws": 5,
+          "score": 0.3125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 74.6375
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 89.84166666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 0,
+          "draws": 7,
+          "score": 0.5625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 84.73333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 4,
+          "draws": 2,
+          "score": 0.375,
+          "decisiveWinRate": 0.3333333333333333,
+          "meanSeconds": 68.4125
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 2,
+          "draws": 6,
+          "score": 0.375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 81.78333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 80.58333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 74.54583333333332
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 2,
+          "draws": 5,
+          "score": 0.4375,
+          "decisiveWinRate": 0.3333333333333333,
+          "meanSeconds": 69.83333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 1,
+          "draws": 7,
+          "score": 0.4375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 88.82083333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 4,
+          "draws": 4,
+          "score": 0.25,
+          "decisiveWinRate": 0,
+          "meanSeconds": 71.82916666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 1,
+          "draws": 6,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 79.9125
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 32.7125
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 2,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 74.725
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 2,
+          "draws": 5,
+          "score": 0.4375,
+          "decisiveWinRate": 0.3333333333333333,
+          "meanSeconds": 76.6
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 5,
+          "losses": 1,
+          "draws": 2,
+          "score": 0.75,
+          "decisiveWinRate": 0.8333333333333334,
+          "meanSeconds": 54.5375
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 3,
+          "losses": 0,
+          "draws": 5,
+          "score": 0.6875,
+          "decisiveWinRate": 1,
+          "meanSeconds": 72.23333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 1,
+          "draws": 7,
+          "score": 0.4375,
+          "decisiveWinRate": 0,
+          "meanSeconds": 81.45416666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 3,
+          "draws": 1,
+          "score": 0.5625,
+          "decisiveWinRate": 0.5714285714285714,
+          "meanSeconds": 36.3875
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 3,
+          "draws": 5,
+          "score": 0.3125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 68.20416666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 3,
+          "draws": 4,
+          "score": 0.375,
+          "decisiveWinRate": 0.25,
+          "meanSeconds": 69.51666666666667
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 96,
+          "wins": 11,
+          "losses": 18,
+          "draws": 67,
+          "score": 0.4635416666666667
+        },
+        {
+          "color": "blue",
+          "n": 96,
+          "wins": 13,
+          "losses": 4,
+          "draws": 79,
+          "score": 0.546875
+        },
+        {
+          "color": "green",
+          "n": 96,
+          "wins": 18,
+          "losses": 22,
+          "draws": 56,
+          "score": 0.4791666666666667
+        },
+        {
+          "color": "red",
+          "n": 96,
+          "wins": 10,
+          "losses": 19,
+          "draws": 67,
+          "score": 0.453125
+        },
+        {
+          "color": "yellow",
+          "n": 96,
+          "wins": 14,
+          "losses": 3,
+          "draws": 79,
+          "score": 0.5572916666666666
+        }
+      ]
+    },
+    {
+      "file": "M75-final-war-validation.json",
+      "protocol": {
+        "war": true,
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          131,
+          149,
+          173,
+          211
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {},
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 87.98333333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 38.77916666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 6,
+          "draws": 2,
+          "score": 0.125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 67.75
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 54.645833333333336
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 22.933333333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 30.51666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 58.56666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 5,
+          "losses": 1,
+          "draws": 2,
+          "score": 0.75,
+          "decisiveWinRate": 0.8333333333333334,
+          "meanSeconds": 75.75416666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 30.76666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 61.43333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 7,
+          "draws": 1,
+          "score": 0.0625,
+          "decisiveWinRate": 0,
+          "meanSeconds": 58.045833333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 31.233333333333327
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.75,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 41.920833333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 32.76666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 53.77499999999999
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 34
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 6,
+          "draws": 0,
+          "score": 0.25,
+          "decisiveWinRate": 0.25,
+          "meanSeconds": 53.650000000000006
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 27.875000000000004
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 31.73333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.75,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 42.99999999999999
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 18.599999999999998
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 12.766666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 6,
+          "draws": 0,
+          "score": 0.25,
+          "decisiveWinRate": 0.25,
+          "meanSeconds": 20.733333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 16.233333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.75,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 22.754166666666663
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 19.958333333333336
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 96,
+          "wins": 34,
+          "losses": 29,
+          "draws": 33,
+          "score": 0.5260416666666666
+        },
+        {
+          "color": "blue",
+          "n": 96,
+          "wins": 30,
+          "losses": 60,
+          "draws": 6,
+          "score": 0.34375
+        },
+        {
+          "color": "green",
+          "n": 96,
+          "wins": 42,
+          "losses": 43,
+          "draws": 11,
+          "score": 0.4947916666666667
+        },
+        {
+          "color": "red",
+          "n": 96,
+          "wins": 38,
+          "losses": 34,
+          "draws": 24,
+          "score": 0.5208333333333334
+        },
+        {
+          "color": "yellow",
+          "n": 96,
+          "wins": 53,
+          "losses": 31,
+          "draws": 12,
+          "score": 0.6145833333333334
+        }
+      ]
+    },
+    {
+      "file": "M75-final-war.json",
+      "protocol": {
+        "war": true,
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23,
+          71,
+          101
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {},
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 0,
+          "draws": 6,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 87.98333333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 7,
+          "draws": 1,
+          "score": 0.0625,
+          "decisiveWinRate": 0,
+          "meanSeconds": 51.45833333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 47.46666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 22.558333333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 30.26666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 58.56666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 74.39583333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 30.76666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 61.43333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 54.17500000000001
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.75,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 48.54166666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.75,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 41.84166666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 32.76666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 7,
+          "losses": 0,
+          "draws": 1,
+          "score": 0.9375,
+          "decisiveWinRate": 1,
+          "meanSeconds": 59.9375
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 34
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 2,
+          "losses": 6,
+          "draws": 0,
+          "score": 0.25,
+          "decisiveWinRate": 0.25,
+          "meanSeconds": 53.7875
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.75,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 27.2375
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 31.73333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 41.25833333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 18.599999999999998
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 12.766666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.75,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 20.591666666666665
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 16.233333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 21.491666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.75,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 19.433333333333334
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 96,
+          "wins": 30,
+          "losses": 27,
+          "draws": 39,
+          "score": 0.515625
+        },
+        {
+          "color": "blue",
+          "n": 96,
+          "wins": 40,
+          "losses": 50,
+          "draws": 6,
+          "score": 0.4479166666666667
+        },
+        {
+          "color": "green",
+          "n": 96,
+          "wins": 38,
+          "losses": 44,
+          "draws": 14,
+          "score": 0.46875
+        },
+        {
+          "color": "red",
+          "n": 96,
+          "wins": 40,
+          "losses": 32,
+          "draws": 24,
+          "score": 0.5416666666666666
+        },
+        {
+          "color": "yellow",
+          "n": 96,
+          "wins": 40,
+          "losses": 35,
+          "draws": 21,
+          "score": 0.5260416666666666
+        }
+      ]
+    },
+    {
+      "file": "M75-war-after.json",
+      "protocol": {
+        "war": true,
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23,
+          71,
+          101
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {},
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 81.93333333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 6,
+          "draws": 2,
+          "score": 0.125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 64.01666666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 85.90833333333335
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 49.75833333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 22.558333333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 79.09166666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 58.56666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 7,
+          "losses": 0,
+          "draws": 1,
+          "score": 0.9375,
+          "decisiveWinRate": 1,
+          "meanSeconds": 56.854166666666664
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 40
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 61.699999999999996
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 42.733333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 85.825
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 21.858333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 22.108333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 1,
+          "losses": 4,
+          "draws": 3,
+          "score": 0.3125,
+          "decisiveWinRate": 0.2,
+          "meanSeconds": 76.94166666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 0,
+          "draws": 8,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 7,
+          "losses": 0,
+          "draws": 1,
+          "score": 0.9375,
+          "decisiveWinRate": 1,
+          "meanSeconds": 59.95
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 39.63333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 31.199999999999996
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 8,
+          "wins": 6,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.75,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 27.258333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 30.73333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 40.833333333333336
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 19.666666666666668
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 12.766666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 4,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 24.483333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 8,
+          "wins": 0,
+          "losses": 8,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 16.233333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 21.4
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 8,
+          "wins": 8,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 19.733333333333334
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 96,
+          "wins": 54,
+          "losses": 16,
+          "draws": 26,
+          "score": 0.6979166666666666
+        },
+        {
+          "color": "blue",
+          "n": 96,
+          "wins": 9,
+          "losses": 80,
+          "draws": 7,
+          "score": 0.13020833333333334
+        },
+        {
+          "color": "green",
+          "n": 96,
+          "wins": 62,
+          "losses": 22,
+          "draws": 12,
+          "score": 0.7083333333333334
+        },
+        {
+          "color": "red",
+          "n": 96,
+          "wins": 64,
+          "losses": 8,
+          "draws": 24,
+          "score": 0.7916666666666666
+        },
+        {
+          "color": "yellow",
+          "n": 96,
+          "wins": 8,
+          "losses": 71,
+          "draws": 17,
+          "score": 0.171875
+        }
+      ]
+    },
+    {
+      "file": "M75-war-balanced.json",
+      "protocol": {
+        "war": true,
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {
+        "red-embers": {
+          "damage": 0.43,
+          "radius": 240
+        },
+        "blue-ripple": {
+          "damage": 0.78
+        },
+        "blue-trident": {
+          "damage": 1.05,
+          "length": 440,
+          "width": 205
+        },
+        "cyan-freeze": {
+          "damage": 0.62
+        },
+        "yellow-storm": {
+          "hpFraction": 0.125
+        },
+        "green-invite": {
+          "buffDamage": 0.04
+        },
+        "green-summon": {
+          "summonAttackInheritance": 0.4
+        }
+      },
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 0,
+          "draws": 2,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 85.96666666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 3,
+          "draws": 1,
+          "score": 0.125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 55.15
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 41
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 22.933333333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 30.766666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 58.56666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 1,
+          "losses": 0,
+          "draws": 3,
+          "score": 0.625,
+          "decisiveWinRate": 1,
+          "meanSeconds": 86.55
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 30.766666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 61.43333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 3,
+          "draws": 1,
+          "score": 0.125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 61.16666666666667
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 56.11666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 48.974999999999994
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 32.766666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 0,
+          "draws": 2,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 65.66666666666667
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 34
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 61.41666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 27.433333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 31.733333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 40.18333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 18.6
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 12.766666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 20.46666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 16.233333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 20.616666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 18.433333333333334
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 48,
+          "wins": 16,
+          "losses": 12,
+          "draws": 20,
+          "score": 0.5416666666666666
+        },
+        {
+          "color": "blue",
+          "n": 48,
+          "wins": 24,
+          "losses": 22,
+          "draws": 2,
+          "score": 0.5208333333333334
+        },
+        {
+          "color": "green",
+          "n": 48,
+          "wins": 13,
+          "losses": 24,
+          "draws": 11,
+          "score": 0.3854166666666667
+        },
+        {
+          "color": "red",
+          "n": 48,
+          "wins": 18,
+          "losses": 18,
+          "draws": 12,
+          "score": 0.5
+        },
+        {
+          "color": "yellow",
+          "n": 48,
+          "wins": 20,
+          "losses": 15,
+          "draws": 13,
+          "score": 0.5520833333333334
+        }
+      ]
+    },
+    {
+      "file": "M75-war-candidate.json",
+      "protocol": {
+        "war": true,
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {
+        "red-embers": {
+          "damage": 0.25,
+          "radius": 240
+        },
+        "blue-ripple": {
+          "damage": 1.2
+        },
+        "blue-trident": {
+          "damage": 1.8,
+          "length": 440,
+          "width": 240
+        },
+        "cyan-freeze": {
+          "damage": 0.55
+        },
+        "yellow-storm": {
+          "hpFraction": 0.2
+        },
+        "green-invite": {
+          "buffDamage": 0.03
+        },
+        "green-summon": {
+          "summonAttackInheritance": 0.25
+        }
+      },
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 25.03333333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 2,
+          "draws": 2,
+          "score": 0.25,
+          "decisiveWinRate": 0,
+          "meanSeconds": 81.64166666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 69.83333333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 15.833333333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 10.666666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 10.666666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 4.8
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 35.56666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 5.3
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 5.066666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 73.35
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 78.1
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 32.13333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 17
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 10.666666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 15.6
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 38.31666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 15.833333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 15.6
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 18
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 29.216666666666665
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 27.7
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 30.333333333333332
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 10.7
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 10.666666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 11.183333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 35.483333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 15.6
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 15.333333333333334
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 48,
+          "wins": 12,
+          "losses": 30,
+          "draws": 6,
+          "score": 0.3125
+        },
+        {
+          "color": "blue",
+          "n": 48,
+          "wins": 36,
+          "losses": 8,
+          "draws": 4,
+          "score": 0.7916666666666666
+        },
+        {
+          "color": "green",
+          "n": 48,
+          "wins": 10,
+          "losses": 36,
+          "draws": 2,
+          "score": 0.22916666666666666
+        },
+        {
+          "color": "red",
+          "n": 48,
+          "wins": 12,
+          "losses": 36,
+          "draws": 0,
+          "score": 0.25
+        },
+        {
+          "color": "yellow",
+          "n": 48,
+          "wins": 44,
+          "losses": 4,
+          "draws": 0,
+          "score": 0.9166666666666666
+        }
+      ]
+    },
+    {
+      "file": "M75-war-fine.json",
+      "protocol": {
+        "war": true,
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {
+        "red-embers": {
+          "damage": 0.39,
+          "radius": 240
+        },
+        "blue-ripple": {
+          "damage": 0.8
+        },
+        "blue-trident": {
+          "damage": 1.1,
+          "length": 440,
+          "width": 210
+        },
+        "cyan-freeze": {
+          "damage": 0.67
+        },
+        "yellow-storm": {
+          "hpFraction": 0.122
+        },
+        "green-invite": {
+          "buffDamage": 0.038
+        },
+        "green-summon": {
+          "summonAttackInheritance": 0.4
+        }
+      },
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 0,
+          "draws": 2,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 86.73333333333335
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 38.775000000000006
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 72.33333333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 33.06666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 30.9
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 30.5
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 48.71666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 3,
+          "losses": 0,
+          "draws": 1,
+          "score": 0.875,
+          "decisiveWinRate": 1,
+          "meanSeconds": 69.16666666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 31.333333333333332
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 61.699999999999996
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 2,
+          "draws": 2,
+          "score": 0.25,
+          "decisiveWinRate": 0,
+          "meanSeconds": 79.33333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 81.76666666666667
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 0,
+          "draws": 2,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 85.83333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 41
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 25.03333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 41.1
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 43.68333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 0,
+          "draws": 2,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 81.82499999999999
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 45.53333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 34.06666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 27.433333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 30.733333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 39.15
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 17
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 21.133333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 21.299999999999997
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 17.933333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 20.616666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 20.433333333333334
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 48,
+          "wins": 26,
+          "losses": 12,
+          "draws": 10,
+          "score": 0.6458333333333334
+        },
+        {
+          "color": "blue",
+          "n": 48,
+          "wins": 36,
+          "losses": 10,
+          "draws": 2,
+          "score": 0.7708333333333334
+        },
+        {
+          "color": "green",
+          "n": 48,
+          "wins": 21,
+          "losses": 22,
+          "draws": 5,
+          "score": 0.4895833333333333
+        },
+        {
+          "color": "red",
+          "n": 48,
+          "wins": 8,
+          "losses": 40,
+          "draws": 0,
+          "score": 0.16666666666666666
+        },
+        {
+          "color": "yellow",
+          "n": 48,
+          "wins": 16,
+          "losses": 23,
+          "draws": 9,
+          "score": 0.4270833333333333
+        }
+      ]
+    },
+    {
+      "file": "M75-war-mid.json",
+      "protocol": {
+        "war": true,
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {
+        "red-embers": {
+          "damage": 0.34,
+          "radius": 240
+        },
+        "blue-ripple": {
+          "damage": 0.9
+        },
+        "blue-trident": {
+          "damage": 1.3,
+          "length": 440,
+          "width": 220
+        },
+        "cyan-freeze": {
+          "damage": 0.65
+        },
+        "yellow-storm": {
+          "hpFraction": 0.145
+        },
+        "green-invite": {
+          "buffDamage": 0.035
+        },
+        "green-summon": {
+          "summonAttackInheritance": 0.35
+        }
+      },
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 66.05
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 61.883333333333326
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 72.96666666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 32
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 32
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 20.933333333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 16.833333333333332
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 46.68333333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 19.666666666666668
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 17.6
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 61.6
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 3,
+          "draws": 1,
+          "score": 0.125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 61.79166666666667
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 87.26666666666667
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 60.333333333333336
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 25.03333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 20.866666666666667
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 19.616666666666667
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 45.93333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 34
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 29.766666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 25.1
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 27.433333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 31.733333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 36.233333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 15.066666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 12.983333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 18.68333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 17.933333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 19.35
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 18.833333333333332
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 48,
+          "wins": 22,
+          "losses": 25,
+          "draws": 1,
+          "score": 0.46875
+        },
+        {
+          "color": "blue",
+          "n": 48,
+          "wins": 34,
+          "losses": 14,
+          "draws": 0,
+          "score": 0.7083333333333334
+        },
+        {
+          "color": "green",
+          "n": 48,
+          "wins": 13,
+          "losses": 34,
+          "draws": 1,
+          "score": 0.28125
+        },
+        {
+          "color": "red",
+          "n": 48,
+          "wins": 8,
+          "losses": 40,
+          "draws": 0,
+          "score": 0.16666666666666666
+        },
+        {
+          "color": "yellow",
+          "n": 48,
+          "wins": 42,
+          "losses": 6,
+          "draws": 0,
+          "score": 0.875
+        }
+      ]
+    },
+    {
+      "file": "M75-war-refined.json",
+      "protocol": {
+        "war": true,
+        "dt": 0.03333333333333333,
+        "seconds": 90,
+        "seeds": [
+          7,
+          23
+        ],
+        "sizes": [
+          200,
+          400,
+          800
+        ],
+        "policy": "native opportunist AI; identical speed and size; mirrored starts; alternating update order; flat world; skill summons allowed, no external allies; draw is timeout or double defeat"
+      },
+      "overrides": {
+        "red-embers": {
+          "damage": 0.44,
+          "radius": 240
+        },
+        "blue-ripple": {
+          "damage": 0.75
+        },
+        "blue-trident": {
+          "damage": 0.98,
+          "length": 440,
+          "width": 200
+        },
+        "cyan-freeze": {
+          "damage": 0.62
+        },
+        "yellow-storm": {
+          "hpFraction": 0.125
+        },
+        "green-invite": {
+          "buffDamage": 0.038
+        },
+        "green-summon": {
+          "summonAttackInheritance": 0.4
+        }
+      },
+      "matches": [
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 0,
+          "draws": 2,
+          "score": 0.75,
+          "decisiveWinRate": 1,
+          "meanSeconds": 85.96666666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 2,
+          "draws": 2,
+          "score": 0.25,
+          "decisiveWinRate": 0,
+          "meanSeconds": 64.35
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 44.13333333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 52.38333333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 21.933333333333334
+        },
+        {
+          "size": 200,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 30.766666666666666
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 49.03333333333333
+        },
+        {
+          "size": 200,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 3,
+          "losses": 1,
+          "draws": 0,
+          "score": 0.75,
+          "decisiveWinRate": 0.75,
+          "meanSeconds": 76.54166666666667
+        },
+        {
+          "size": 200,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 33.800000000000004
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 61.43333333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 3,
+          "draws": 1,
+          "score": 0.125,
+          "decisiveWinRate": 0,
+          "meanSeconds": 74.10833333333333
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 54.9
+        },
+        {
+          "size": 400,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 41.9
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 21.433333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 32.766666666666666
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 0,
+          "draws": 4,
+          "score": 0.5,
+          "decisiveWinRate": null,
+          "meanSeconds": 90
+        },
+        {
+          "size": 400,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 54.233333333333334
+        },
+        {
+          "size": 400,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 45.516666666666666
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "blue"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 31.2
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 27.433333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "red"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 31.733333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "cyan",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 40.18333333333333
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "green"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 20.625
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 10.966666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "blue",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 20.733333333333334
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "red"
+          ],
+          "n": 4,
+          "wins": 0,
+          "losses": 4,
+          "draws": 0,
+          "score": 0,
+          "decisiveWinRate": 0,
+          "meanSeconds": 14.5
+        },
+        {
+          "size": 800,
+          "colors": [
+            "green",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 4,
+          "losses": 0,
+          "draws": 0,
+          "score": 1,
+          "decisiveWinRate": 1,
+          "meanSeconds": 20.616666666666667
+        },
+        {
+          "size": 800,
+          "colors": [
+            "red",
+            "yellow"
+          ],
+          "n": 4,
+          "wins": 2,
+          "losses": 2,
+          "draws": 0,
+          "score": 0.5,
+          "decisiveWinRate": 0.5,
+          "meanSeconds": 18.483333333333334
+        }
+      ],
+      "overall": [
+        {
+          "color": "cyan",
+          "n": 48,
+          "wins": 20,
+          "losses": 15,
+          "draws": 13,
+          "score": 0.5520833333333334
+        },
+        {
+          "color": "blue",
+          "n": 48,
+          "wins": 10,
+          "losses": 36,
+          "draws": 2,
+          "score": 0.22916666666666666
+        },
+        {
+          "color": "green",
+          "n": 48,
+          "wins": 20,
+          "losses": 21,
+          "draws": 7,
+          "score": 0.4895833333333333
+        },
+        {
+          "color": "red",
+          "n": 48,
+          "wins": 32,
+          "losses": 12,
+          "draws": 4,
+          "score": 0.7083333333333334
+        },
+        {
+          "color": "yellow",
+          "n": 48,
+          "wins": 21,
+          "losses": 19,
+          "draws": 8,
+          "score": 0.5208333333333334
+        }
+      ]
+    }
+  ]
+}

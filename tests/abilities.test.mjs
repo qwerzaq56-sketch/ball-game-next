@@ -21,15 +21,15 @@ test('initial/reacquired cooldown minimum and death release',()=>{
  const {g,p}=fixture();p._specialApex=false;g.abilities.update(0);assert.equal(p.specialCooldown,5);p.specialCooldown=8;p.apex=false;g.abilities.update(0);p.apex=true;g.abilities.update(0);assert.equal(p.specialCooldown,8);
  p.specialCooldown=0;g.abilities.start(p,0);g.abilities.release(p);assert.equal(p.specialCast,null);
 });
-test('cyan windup then half-damage defense, one second freeze and immunity',()=>{
- const {g,p,t}=fixture();g.abilities.start(p,0);ticks(g,35);assert.equal(t.hp,1000);ticks(g,1);assert.equal(t.hp,965);assert.ok(t.frozen>.98);
+test('cyan windup then tuned damage and defense, one second freeze and immunity',()=>{
+ const {g,p,t}=fixture();g.abilities.start(p,0);ticks(g,35);assert.equal(t.hp,1000);ticks(g,1);assert.equal(t.hp,951.8);assert.ok(t.frozen>.98);
  ticks(g,60);assert.equal(t.frozen,0);assert.ok(t.freezeImmune>1.9);
 });
 test('invincibility blocks damage and freeze without consuming miss RNG',()=>{
  const {g,p,t}=fixture();t.invincible=true;g.abilities.start(p,0);ticks(g,36);assert.equal(t.hp,1000);assert.equal(t.frozen??0,0);
 });
 test('blue wave hits once and pushes 120 over .2 seconds, then immunity',()=>{
- const {g,p,t}=fixture('blue');g.abilities.start(p,0);p.specialCast.directions=[0];ticks(g,36);ticks(g,12);const before=t.hp;assert.equal(before,965);ticks(g,30);assert.equal(t.hp,before);assert.ok(Math.abs(t.x-(p.x+220))<1e-6);assert.ok(t.waveImmune>0);
+ const {g,p,t}=fixture('blue');g.abilities.start(p,0);p.specialCast.directions=[0];ticks(g,36);ticks(g,12);const before=t.hp;assert.equal(before,901.2);ticks(g,30);assert.equal(t.hp,before);assert.ok(Math.abs(t.x-(p.x+220))<1e-6);assert.ok(t.waveImmune>0);
 });
 test('green apex buffs and recruits at most five followers, retaining player control',()=>{
  const {g,p}=fixture('green');g.balance.abilitySkills.loadout.green.R='green-morale';for(let i=0;i<6;i++)g.entities.push(new AIEntity({x:p.x+i*10,y:p.y+50,color:'green',colorHex:'#0f0',balance:g.balance,startSize:50}));
@@ -92,9 +92,9 @@ test('cast flash captures origin and expires independently of damage/cooldown',(
  g.abilities.start(p,0);ticks(g,36);
  assert.equal(g.abilities.flashes.length,1);
  const f=g.abilities.flashes[0];assert.equal(f.x,x);assert.equal(f.y,y);
- assert.equal(f.color,'cyan');assert.equal(t.hp,965);
+ assert.equal(f.color,'cyan');assert.equal(t.hp,951.8);
  p.x+=200;assert.equal(f.x,x);
- ticks(g,46);assert.equal(g.abilities.flashes.length,0);assert.equal(t.hp,965);
+ ticks(g,46);assert.equal(g.abilities.flashes.length,0);assert.equal(t.hp,951.8);
  assert(p.specialCooldown>8);
 });
 
@@ -119,15 +119,15 @@ test('overlapping blue lanes cannot triple damage, knockback or consume multiple
   p.specialCast.directions=[0,-Math.PI/3,Math.PI/3];
   let hits=0;const damage=g.abilities.damage.bind(g.abilities);
   g.abilities.damage=(...args)=>{hits++;return damage(...args)};
-  ticks(g,36);ticks(g,12);assert.equal(hits,1);assert.equal(t.hp,965);
-  assert(Math.abs(t.x-(p.x+130))<1e-6);ticks(g,30);assert.equal(t.hp,965);assert.equal(hits,1);
+  ticks(g,36);ticks(g,12);assert.equal(hits,1);assert.equal(t.hp,901.2);
+  assert(Math.abs(t.x-(p.x+130))<1e-6);ticks(g,30);assert.equal(t.hp,901.2);assert.equal(hits,1);
 });
 test('blue side lanes hit separate targets, behind-caster target stays untouched',()=>{
   const {g,p,t}=fixture('blue');t.x=p.x+200;
   const targets=[-Math.PI/3,Math.PI/3,Math.PI].map(dir=>{
     const a=new AIEntity({x:p.x+200*Math.cos(dir),y:p.y+200*Math.sin(dir),color:'red',colorHex:'#f00',balance:g.balance,startSize:40});a.hp=a.maxHp=1000;return a;
   });g.entities.push(...targets);g.abilities.start(p,0);p.specialCast.directions=[0,-Math.PI/3,Math.PI/3];ticks(g,70);
-  assert.equal(t.hp,965);assert.equal(targets[0].hp,965);assert.equal(targets[1].hp,965);assert.equal(targets[2].hp,1000);
+  assert.equal(t.hp,901.2);assert.equal(targets[0].hp,901.2);assert.equal(targets[1].hp,901.2);assert.equal(targets[2].hp,1000);
 });
 test('dodging a blue windup cancels all three lanes without refund or fire event',()=>{
   const {g,p}=fixture('blue');g.abilities.start(p,0);startDodge(p,0,g.balance);ticks(g,40);
