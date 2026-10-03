@@ -49,7 +49,7 @@ export class AllyLinks {
  personality(group){return this.profile(group).personality;}
  combat(e){
   const g=this.groups.get(e.companionGroup);if(!g)return false;e.state='companion';e.target=null;
-  if(this.game.biomes.danger(e,!!e.environmentThreat)||e.beingAbsorbedByRef||e.escapeAbsorber||this.game.abilities.fields.some(f=>isHostile(e,f.owner)&&dist(e,f)<420))return false;
+  if(this.game.biomes.danger(e,!!e.environmentThreat)||e.beingAbsorbedByRef||e.escapeAbsorber||this.game.abilities.fields.some(f=>isHostile(e,f.owner)&&dist(e,f)<(f.radius??360)+60))return false;
   const kind=this.personality(g);
   const allies=[...g.members].filter(m=>unit(m)&&dist(e,m)<320);
   const power=Math.sqrt(allies.reduce((n,m)=>n+m.size*m.size*(m.hp/m.maxHp),0));

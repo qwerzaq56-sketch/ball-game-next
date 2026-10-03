@@ -172,3 +172,14 @@ test('contact defense flees without a stack and still yields to recovery',()=>{
  a.attackStack=0;assert.equal(t.run([a,foe],a),'flee');
  a.attackStack=2;a.hp=a.maxHp*.3;assert.notEqual(t.run([a,foe],a),'chase_fight');
 });
+
+test('sand avoidance enters and releases using the active field radius while preserving its margin',()=>{
+ const t=setup(),a=victim(t),owner=t.unit(200,'red',1000),field={owner,x:1080,y:1000,radius:100};t.g.abilities.fields=[field];
+ assert.equal(t.run([a],a),'flee');field.x=1159;assert.equal(t.run([a],a),'flee');field.x=1160;assert.equal(t.run([a],a),'search');
+ field.x=1500;field.radius=800;assert.equal(t.run([a],a),'flee');field.radius=100;assert.equal(t.run([a],a),'search');
+});
+test('companion command and combat guards follow custom sand radius instead of a fixed 420',()=>{
+ const t=setup(),a=victim(t),owner=t.unit(200,'red',1000),field={owner,x:1300,y:1000,radius:100};t.g.entities=[a];t.g.buildGrid();t.g.abilities.fields=[field];a.companionGroup=999;a.state='search';
+ let commands=0,combats=0;t.g.biomes.danger=()=>null;t.g.abilities.commandDecision=()=>{commands++;return true;};t.g.allyLinks.move=()=>{};t.g.allyLinks.combat=()=>{combats++;return false;};
+ updateAI(a,.01,t.g,t.b);assert.equal(commands,1);assert.equal(combats,0);field.x=1500;field.radius=800;updateAI(a,.01,t.g,t.b);assert.equal(commands,1);assert.equal(combats,1);
+});

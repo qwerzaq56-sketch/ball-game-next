@@ -82,7 +82,7 @@ export function updateAI(ai, dt, game, balance) {
   if(ai.companionGroup){
     if(ai.attackState!=='READY'||ai.dodgeState==='DODGING')return;
     reactToThreats(ai,game,balance);if(ai.dodgeState==='DODGING')return;
-    if(!game.biomes.danger(ai)&&!ai.beingAbsorbedByRef&&!ai.escapeAbsorber&&!game.abilities.fields.some(f=>isHostile(ai,f.owner)&&dist(ai,f)<420)&&game.abilities.commandDecision(ai)){moveAI(ai,dt,balance,game);return;}
+    if(!game.biomes.danger(ai)&&!ai.beingAbsorbedByRef&&!ai.escapeAbsorber&&!game.abilities.fields.some(f=>isHostile(ai,f.owner)&&dist(ai,f)<(f.radius??360)+60)&&game.abilities.commandDecision(ai)){moveAI(ai,dt,balance,game);return;}
     if(game.allyLinks.combat(ai)){if(ai.attackState==='READY')moveAI(ai,dt,balance,game);}
     else game.allyLinks.move(ai,dt);return;
   }
@@ -156,8 +156,8 @@ export function decideAI(ai, game, balance) {
   ai.escapeAbsorber=null;
   const fields=(game.abilities?.fields ?? []).filter(f=>isHostile(ai,f.owner));
   const heldField=ai.fleeField;
-  const danger=fields.find(f=>f.owner.color!==ai.color&&dist(ai,f)<=360) ??
-    (fields.includes(heldField)&&heldField.owner.color!==ai.color&&dist(ai,heldField)<420 ? heldField : null);
+  const danger=fields.find(f=>f.owner.color!==ai.color&&dist(ai,f)<=(f.radius??360)) ??
+    (fields.includes(heldField)&&heldField.owner.color!==ai.color&&dist(ai,heldField)<(heldField.radius??360)+60 ? heldField : null);
   ai.fleeField=danger;
   if(danger){game.abilities.endCommand(ai,'sand-danger');ai.state='flee';ai.target={x:danger.x,y:danger.y,alive:true};return;}
 

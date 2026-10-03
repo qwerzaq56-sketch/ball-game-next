@@ -105,3 +105,9 @@ test('a player-led spring formation keeps up through consecutive simulation fram
  assert(Math.abs(p.x-start-p.moveSpeed*3)<1e-6);assert.equal(g.allyLinks.groups.size,1);assert.equal(g.allyLinks.groups.get(p.companionGroup).members.size,3);
  for(const e of [p,a,b])assert(Number.isFinite(e.x)&&Number.isFinite(e.y));
 });
+
+test('formation combat respects the actual configurable sand field and its escape margin',()=>{
+ const {g,a,b,make}=fixture(),foe=make(1120,35,'red'),owner=make(1900,200,'yellow');g.entities=[a,b,foe];g.biomes.danger=()=>null;g.allyLinks.refresh();assert(g.allyLinks.join(a,b));g.buildGrid();
+ const field={owner,x:1300,y:1000,radius:100};g.abilities.fields=[field];assert.equal(g.allyLinks.combat(a),true);
+ field.x=1500;field.radius=800;assert.equal(g.allyLinks.combat(a),false);field.radius=100;assert.equal(g.allyLinks.combat(a),true);
+});
