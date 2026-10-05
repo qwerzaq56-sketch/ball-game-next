@@ -1,0 +1,38 @@
+✔ growth prey: risk starts at HP 60% but not 59% (26.5501ms)
+✔ growth prey: once started, risk continues until HP 50% (21.9992ms)
+✔ growth prey: risk stops when cluster value drops below 80 (18.482ms)
+✔ growth prey: the two threat limits override continuing risk (12.0946ms)
+✔ challenger: eligible weak apex is dueled instead of fled from (9.977ms)
+✔ challenger: ineligible apex still triggers normal flee (8.1688ms)
+✔ challenger: any other big threat still wins over the duel (7.8784ms)
+✔ challenger: personality gates are kept (8.1796ms)
+✔ retaliation: a hit prey fights back against an equal-size attacker (10.1931ms)
+✔ retaliation: survival still wins over it (big attacker, low HP, no stack) (8.8105ms)
+✔ retaliation: field ticks and same-colour hits never create a target (6.8175ms)
+✔ R-AI-010 retaliation memory expires after the configured six seconds (14.9948ms)
+✔ retaliation: cautious AI needs the attacker spot free of other threats (10.2067ms)
+✔ flee hysteresis keeps a remembered threat beyond sensing and releases at 400 (7.3003ms)
+✔ absorption escape does not return to food inside the same absorber margin (9.515ms)
+✔ absorption escape releases beyond maintain distance plus margin (9.3745ms)
+✔ sand escape holds to 420 and releases when the field expires (8.3845ms)
+✔ cautious prey can engage similar enemies in sensing range (6.6416ms)
+✔ contact defense flees without a stack and still yields to recovery (8.7237ms)
+✔ sand avoidance enters and releases using the active field radius while preserving its margin (10.5026ms)
+✔ companion command and combat guards follow custom sand radius instead of a fixed 420 (14.7821ms)
+✔ healthy prey exploit recovery of larger grown threats, but low health still flees (16.4407ms)
+✔ safe valuable death rewards interrupt optional fighting but never override survival (11.3946ms)
+✔ each biome has two active candidates, with three in the lake placed in its own biome deterministically (31.9985ms)
+✔ invalid imports reject transactionally and settings are copied (11.1037ms)
+✔ food objects respect global cooldown, disabled candidates and orb capacity (12.3712ms)
+✔ objects require body contact and heal only wounded actors (13.9147ms)
+✔ shield, speed, frost protection and volcanic cost apply to the touching actor (35.5261ms)
+✔ ice flowers double their food value during a blizzard (6.8843ms)
+✔ oasis continuously heals all occupants without shared cooldown, and stops on exit (7.1105ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 511.0783

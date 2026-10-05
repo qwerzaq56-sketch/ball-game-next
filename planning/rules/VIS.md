@@ -58,3 +58,10 @@
   - symbol js/actionArt.js :: drawActionArt
   - file reports/M79-action-art.png
 - 변경 이력: M79 신규 카드. 세부 초기 수치는 미승인 변경(M79), 플레이 피드백으로 재조정한다.
+
+### R-VIS-007 · 공격 불가 범위 색상
+- 규칙: 조준 중 공격 잠금·스택 없음·동결·회피·회복이면 공격 예측 범위를 빨갛게 표시한다. 실행 중 전조/돌진 범위는 기존 표현을 유지한다.
+- 상태: 승인
+- 출처: 사용자 직접 지시 2026-10-06
+- 확인:
+  - test tests/vector-art.test.mjs :: attack preview turns red for locked, empty, frozen, dodging and recovering player

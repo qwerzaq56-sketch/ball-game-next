@@ -217,6 +217,9 @@ export function decideAI(ai, game, balance) {
   // R-AI-010: prioritize the actual aggressor over unrelated navigation/opportunities.
   const aggressor=ai.retaliateTarget;
   if(aggressor?.alive&&isHostile(ai,aggressor)&&hp>.3&&canStartAttack(ai)&&dist(ai,aggressor)<=cfg.detectionRange+(ai.size+aggressor.size)/2&&aggressor.size<=ai.size*2.8){game.abilities?.endCommand(ai,'retaliation');ai.state='chase_fight';ai.target=aggressor;return;}
+  // User: safe high-value death drops outrank optional combat, after survival/retaliation.
+  const reward=food.filter(e=>e.rewardSource!=null&&(e.growthValue??0)>=80&&safe(e)).sort((a,b)=>(b.growthValue/Math.max(40,dist(ai,b)))-(a.growthValue/Math.max(40,dist(ai,a)))||a.id-b.id)[0];
+  if(reward){game.abilities?.endCommand(ai,'valuable-reward');ai.state='chase_eat';ai.target=reward;return;}
   // Nearby combat can interrupt navigation and collection instead of waiting for route arrival.
   const interrupt=hp>.4&&canStartAttack(ai)?closest(within.filter(t=>isHostile(ai,t)&&t.size<=ai.size*1.15&&dist(ai,t)<=attackReach(ai,balance)+(ai.size+t.size)/2+90&&(ai.personality!=='cautious'||safe(t,t)))):null;
   if(interrupt){game.abilities?.endCommand(ai,'combat-opportunity');ai.state='chase_fight';ai.target=interrupt;return;}

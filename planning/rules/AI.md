@@ -91,3 +91,10 @@
   - config ai.retaliationSeconds = 6
   - test tests/m79-systems.test.mjs :: R-AI-010 struck AI
 - 변경 이력: M79 신규 카드. 세부 초기 수치는 미승인 변경(M79), 플레이 피드백으로 재조정한다.
+
+### R-AI-011 · 고가치 처치 보상 회수
+- 규칙: 생존·지형 회피·실제 공격자 대응 뒤, 감지 범위의 안전한 고가치 처치 먹이는 일반 교전/이동보다 먼저 회수한다. 먹을 수 없는 크기의 보상은 선택하지 않는다. 가치/거리 평가와 기존 80 고가치 기준·감지 범위를 유지한다.
+- 상태: 승인
+- 출처: 사용자 직접 지시 2026-10-06. 일반 교전 선행으로 회수 우선순위가 밀리는 원인 확인.
+- 확인:
+  - test tests/ai-rules.test.mjs :: safe valuable death rewards interrupt optional fighting but never override survival

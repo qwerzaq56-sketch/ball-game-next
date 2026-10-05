@@ -20,11 +20,13 @@ export class BiomeObjects{
  update(dt=1/60){if(!this.game.biomes.enabled)return;this.sync();const g=this.game,now=g.gameTime,maxRadius=g.entities.reduce((m,e)=>e.alive?Math.max(m,e.size/2):m,0);
   for(const o of this.objects){const c=o.config,ready=(this.cooldowns.get(o.id)??0)<=now;
    if(c.effect==='berry-spawner'){if(ready){this.spawnRewards(o);this.cooldowns.set(o.id,now+c.cooldown);}continue;}
-   const environmental=['vent','current','vortex'].includes(c.effect);if(!environmental&&!ready)continue;
+   const environmental=['vent','current','vortex'].includes(c.effect);const continuous=['desert-oasis','snow-shelter'].includes(o.candidate);if(!environmental&&!continuous&&!ready)continue;
    const actors=g.getNearbyEntities(o,(o.reach??c.radius)+maxRadius).filter(e=>e.alive&&(['player','ai'].includes(e.behavior)||['current','vortex'].includes(c.effect)&&e.behavior==='orb')).filter(e=>c.effect==='current'?this.currentVector(o,e):dist(o,e)<=c.radius+e.size/2).sort((a,b)=>dist(o,a)-dist(o,b)||a.id-b.id);
    if(environmental){for(const e of actors){if(c.effect==='vent'){if(ready&&this.activeVent(o))applyDamage(e,e.maxHp*c.hpFraction*c.tickInterval,g,null,g.balance,{kind:'field',ignoreDefense:true,postDefenseMultiplier:terrainDamageMultiplier(e.size,g.balance),knockback:false});continue;}
      if(c.effect==='vortex'&&dist(o,e)>c.radius)continue;const v=c.effect==='current'?this.currentVector(o,e):delta(e,o),len=Math.hypot(v.x,v.y);if(!len)continue;const move=c.effect==='current'?c.speed*dt:Math.min(len,c.speed*dt*Math.max(.15,1-len/c.radius));e.x=wrap(e.x+v.x/len*move,g.balance.world.worldWidth);e.y=wrap(e.y+v.y/len*move,g.balance.world.worldHeight);
     }if(c.effect==='vent'&&ready&&this.activeVent(o))this.cooldowns.set(o.id,now+c.tickInterval);continue;}
+   // User: these landmarks benefit every actor remaining inside; no shared consumption.
+   if(continuous){for(const e of actors){if(c.effect==='heal')e.hp=Math.min(e.maxHp,e.hp+e.maxHp*c.power/Math.max(.001,c.cooldown)*dt);}continue;}
    const e=actors.find(e=>c.effect!=='heal'||e.hp<e.maxHp);if(!e)continue;this.cooldowns.set(o.id,now+c.cooldown);
    if(c.effect==='food')this.spawnRewards(o);
    if(c.effect==='heal')e.hp=Math.min(e.maxHp,e.hp+e.maxHp*c.power);

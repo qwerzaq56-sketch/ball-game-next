@@ -178,3 +178,10 @@
   - test tests/relics.test.mjs :: death, life defeat and reset clear relics while spawn count remains bounded
   - test tests/era.test.mjs :: apocalypse warns without damage, avoids respawn centre and ticks after six seconds
   - test tests/era.test.mjs :: apocalypse finishes once, creates capped perimeter rewards and returns next cycle
+
+### R-WORLD-014 · 범위 지속 오아시스·피난처
+- 규칙: 작은 오아시스는 모든 범위 내 전투 개체를 지속 회복하고, 서리 피난처는 범위 안의 모든 전투 개체에 동상 해제·회복과 추가 서리 저항을 제공한다. 이 둘은 공유 소모/쿨다운 대상으로 삼지 않는다. 이탈하면 지속 혜택은 끝나며 이미 회복한 HP/해제한 동상은 되돌리지 않는다. 기존 R-WORLD-010의 일회 지급/쿨다운 설명은 이 두 후보에 대해 대체한다.
+- 상태: 승인
+- 출처: 사용자 직접 지시 2026-10-06. 오아시스 회복률은 기존 power/cooldown 환산(Codex 구현 선택), 기본 최대HP의 초당0.5%.
+- 확인:
+  - test tests/biome-objects.test.mjs :: oasis continuously heals all occupants without shared cooldown, and stops on exit

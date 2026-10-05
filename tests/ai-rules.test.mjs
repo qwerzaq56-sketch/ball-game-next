@@ -189,3 +189,5 @@ test('healthy prey exploit recovery of larger grown threats, but low health stil
  assert.equal(t.run([a,big],a),'chase_fight');assert.equal(a.nextHarass,11.5);
  a.hp=a.maxHp*.3;assert.equal(t.run([a,big],a),'flee');
 });
+
+test('safe valuable death rewards interrupt optional fighting but never override survival',()=>{const t=setup(),ai=t.unit(100,'blue',1000),enemy=t.unit(90,'red',1150),reward=t.orbs(300),ordinary=t.orbs(10);reward.rewardSource=99;reward.y=1200;ordinary.y=1020;assert.equal(t.run([ai,enemy,reward,ordinary],ai),'chase_eat');assert.equal(ai.target,reward);const danger=t.unit(160,'red',1100);assert.equal(t.run([ai,danger,reward],ai),'flee');assert.equal(ai.target,danger);});
