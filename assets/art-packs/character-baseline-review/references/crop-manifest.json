@@ -1,0 +1,364 @@
+[
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      282,
+      69,
+      392,
+      179
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\base-cyan.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "b0094bb8ca225230cb40247e8f61b4c47f7ac355fd86df79bba671273131c5b3",
+    "centerPixelRGBA": [
+      75,
+      175,
+      212,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      596,
+      69,
+      706,
+      179
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\base-blue.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "931724795f304ba5daa72e8c23c47eed5535d18d427b13a6e749aa34c54faa78",
+    "centerPixelRGBA": [
+      64,
+      132,
+      192,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      915,
+      69,
+      1025,
+      179
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\base-green.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "8fcacd716abc84f4c17ac0f639447c995a20206fcf40e00ebabd25365c352e07",
+    "centerPixelRGBA": [
+      65,
+      189,
+      86,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      1231,
+      69,
+      1341,
+      179
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\base-red.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "91ffb0b28706287cd7c51632ff7bd91a8025030344c8187ca6cc9b103b9e08bc",
+    "centerPixelRGBA": [
+      235,
+      67,
+      49,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      1548,
+      69,
+      1658,
+      179
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\base-yellow.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "0fce11ef15fe99d096872740534502811e4bacb31f66b6c259985cc8d469840d",
+    "centerPixelRGBA": [
+      246,
+      209,
+      67,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      252,
+      260,
+      422,
+      430
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\growth-cyan.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "1488761110724d545eb0b06f7c05dfdde3337c3c21a1af1b82edfc2c2a245baf",
+    "centerPixelRGBA": [
+      77,
+      176,
+      213,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      566,
+      260,
+      736,
+      430
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\growth-blue.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "8adbf9d4299a531f23d73696486b7e53208d7a75046aa26e32fcb91fc63fce2c",
+    "centerPixelRGBA": [
+      66,
+      134,
+      195,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      885,
+      260,
+      1055,
+      430
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\growth-green.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "b354fa289184f09366b906bad8fc142d9678a1e9ee6df815fb55a17ca5649185",
+    "centerPixelRGBA": [
+      67,
+      189,
+      86,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      1201,
+      260,
+      1371,
+      430
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\growth-red.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "dcbff4e00eaa634c91f5030239ede32606edf73c55e1e5cc53d4794de1c0ae4b",
+    "centerPixelRGBA": [
+      236,
+      67,
+      49,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      1518,
+      260,
+      1688,
+      430
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\growth-yellow.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "24317343f2ae301bd975f511a60173342c1d0899cf68312652996bc02bab26d7",
+    "centerPixelRGBA": [
+      246,
+      209,
+      67,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      202,
+      485,
+      472,
+      755
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\apex-cyan.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "8761875f6ec80ade9d0bafa0df4bbde7871f65404d37e0340ddd1e3ca473002e",
+    "centerPixelRGBA": [
+      76,
+      176,
+      213,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      516,
+      485,
+      786,
+      755
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\apex-blue.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "6187013b62077f2780ff655ec33465a5b81fcfeced714c51e6f119b99d1f4bda",
+    "centerPixelRGBA": [
+      64,
+      134,
+      194,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      835,
+      485,
+      1105,
+      755
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\apex-green.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "35a78900f50d84375cb52f977ff29be0731bad8a59ba25ec2e574c60cde4742a",
+    "centerPixelRGBA": [
+      66,
+      190,
+      86,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      1151,
+      485,
+      1421,
+      755
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\apex-red.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "f0f3cf1de1e9c5af8c2a204e2c2311341af80b42a38765fc0f76f629ac79aa53",
+    "centerPixelRGBA": [
+      236,
+      68,
+      49,
+      255
+    ]
+  },
+  {
+    "source": "planning\\art-concepts\\ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      1468,
+      485,
+      1738,
+      755
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\apex-yellow.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "baff04f2c3399c219d925ab5d3d7fc44fe511f8078c85f3c523da43af307e0b3",
+    "centerPixelRGBA": [
+      246,
+      208,
+      67,
+      255
+    ]
+  },
+  {
+    "source": "planning/art-concepts/gameplay-regions-a-001.png",
+    "sourceSize": [
+      1944,
+      809
+    ],
+    "boxFormat": "XYXY right/bottom exclusive",
+    "box": [
+      281,
+      373,
+      343,
+      433
+    ],
+    "crop": "assets\\art-packs\\character-baseline-review\\references\\gameplay-cyan.png",
+    "sourceSHA256": "14e72f571c49500d455eb0039ad9cd2433b35f8e7eefb709873658dfd03ebfc0",
+    "cropSHA256": "ef08315a7e388e84846e241d649c667fe696baa6f63fc7e84d22c420d6afca33"
+  }
+]

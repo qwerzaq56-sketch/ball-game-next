@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "basis": "Current user-approved repository files at prepare time; not proof of original generation bytes. Git provenance is recorded and may be unavailable. No automatic approval refresh.",
+  "head": "bc825247ec403ff2b3c79b4b90028aba165dc3af",
+  "items": [
+    {
+      "id": "ball-002-refined",
+      "files": [
+        {
+          "path": "planning/art-concepts/ball-002-refined.png",
+          "sha256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+          "bytes": 1254656,
+          "lastCommit": "2d91d8a44133af3e0e321a9e72530dbe52c905eb",
+          "workingTreeStatus": ""
+        },
+        {
+          "path": "planning/art-concepts/ball-002-refined-prompt.md",
+          "sha256": "663f4d1bcbf19a7fb1a011e1bb151bb5a3315e26bf259daf3473198a34b4c10b",
+          "bytes": 3650,
+          "lastCommit": "54d53d13e7650ca85a01e43690f1ec51fba46c81",
+          "workingTreeStatus": ""
+        }
+      ],
+      "exactPromptSource": "planning/art-concepts/ball-002-refined-prompt.md",
+      "promptReuse": "Read exact generation prompt in original source markdown; do not paraphrase or replace source. Full file SHA covers wording and surrounding provenance."
+    },
+    {
+      "id": "gameplay-regions-a-001",
+      "files": [
+        {
+          "path": "planning/art-concepts/gameplay-regions-a-001.png",
+          "sha256": "14e72f571c49500d455eb0039ad9cd2433b35f8e7eefb709873658dfd03ebfc0",
+          "bytes": 1699685,
+          "lastCommit": "028e4a4faad7ae0842ff7cd1b49adaa2f36759c9",
+          "workingTreeStatus": ""
+        },
+        {
+          "path": "planning/art-concepts/gameplay-regions-a-001-prompt.md",
+          "sha256": "8dff3f22d2f0930366b3f3493e1ac38f1bee1182c77ce91e2e5ecd812b0cf5cc",
+          "bytes": 3118,
+          "lastCommit": "028e4a4faad7ae0842ff7cd1b49adaa2f36759c9",
+          "workingTreeStatus": ""
+        }
+      ],
+      "exactPromptSource": "planning/art-concepts/gameplay-regions-a-001-prompt.md",
+      "promptReuse": "Read exact generation prompt in original source markdown; do not paraphrase or replace source. Full file SHA covers wording and surrounding provenance."
+    },
+    {
+      "id": "gameplay-regions-b-001",
+      "files": [
+        {
+          "path": "planning/art-concepts/gameplay-regions-b-001.png",
+          "sha256": "0aa4e235f143991240b0a08032d7420d130b6b5e8240151690b8617d846f79ad",
+          "bytes": 2070943,
+          "lastCommit": "028e4a4faad7ae0842ff7cd1b49adaa2f36759c9",
+          "workingTreeStatus": ""
+        },
+        {
+          "path": "planning/art-concepts/gameplay-regions-b-001-prompt.md",
+          "sha256": "9f81b868022784d54be7ce32b699eac9f242b9df685a8791119e84e4e29d0837",
+          "bytes": 3300,
+          "lastCommit": "028e4a4faad7ae0842ff7cd1b49adaa2f36759c9",
+          "workingTreeStatus": ""
+        }
+      ],
+      "exactPromptSource": "planning/art-concepts/gameplay-regions-b-001-prompt.md",
+      "promptReuse": "Read exact generation prompt in original source markdown; do not paraphrase or replace source. Full file SHA covers wording and surrounding provenance."
+    },
+    {
+      "id": "ally-buffs-001",
+      "files": [
+        {
+          "path": "planning/art-concepts/ally-buffs-001.png",
+          "sha256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+          "bytes": 2173439,
+          "lastCommit": "028e4a4faad7ae0842ff7cd1b49adaa2f36759c9",
+          "workingTreeStatus": ""
+        },
+        {
+          "path": "planning/art-concepts/ally-buffs-001-prompt.md",
+          "sha256": "75d555051db7842fdefc1efbc0c4e159f2d53e78cd456bd1af9dc3697ca922e1",
+          "bytes": 2983,
+          "lastCommit": "028e4a4faad7ae0842ff7cd1b49adaa2f36759c9",
+          "workingTreeStatus": ""
+        }
+      ],
+      "exactPromptSource": "planning/art-concepts/ally-buffs-001-prompt.md",
+      "promptReuse": "Read exact generation prompt in original source markdown; do not paraphrase or replace source. Full file SHA covers wording and surrounding provenance."
+    },
+    {
+      "id": "objects-t3a-001",
+      "files": [
+        {
+          "path": "planning/art-concepts/objects-t3a-001.png",
+          "sha256": "3b1fe32c4aee1261624b61d66fdf8172179c11c2769254b1beb55a67912a0eea",
+          "bytes": 1697834,
+          "lastCommit": "06d0687ff0cd40aeb2c3b7c31044602dfea280a3",
+          "workingTreeStatus": ""
+        },
+        {
+          "path": "planning/art-concepts/objects-t3a-001-prompt.md",
+          "sha256": "3206bb68aa37651fbfea354faaad5b86f25b86b600f158e018f4905dbaf4bd5e",
+          "bytes": 2643,
+          "lastCommit": "06d0687ff0cd40aeb2c3b7c31044602dfea280a3",
+          "workingTreeStatus": ""
+        }
+      ],
+      "exactPromptSource": "planning/art-concepts/objects-t3a-001-prompt.md",
+      "promptReuse": "Read exact generation prompt in original source markdown; do not paraphrase or replace source. Full file SHA covers wording and surrounding provenance."
+    },
+    {
+      "id": "objects-t3b-001",
+      "files": [
+        {
+          "path": "planning/art-concepts/objects-t3b-001.png",
+          "sha256": "26cc3f39732c87adbe428c3f3109940c3d35988535a8ddbf75bd0ca7ab8a8637",
+          "bytes": 1681308,
+          "lastCommit": "06d0687ff0cd40aeb2c3b7c31044602dfea280a3",
+          "workingTreeStatus": ""
+        },
+        {
+          "path": "planning/art-concepts/objects-t3b-001-prompt.md",
+          "sha256": "b4b7b8c5a88ba55fb99c741adaf2657f634fd8ce8553f4259c05ec03408fb9d7",
+          "bytes": 2618,
+          "lastCommit": "06d0687ff0cd40aeb2c3b7c31044602dfea280a3",
+          "workingTreeStatus": ""
+        }
+      ],
+      "exactPromptSource": "planning/art-concepts/objects-t3b-001-prompt.md",
+      "promptReuse": "Read exact generation prompt in original source markdown; do not paraphrase or replace source. Full file SHA covers wording and surrounding provenance."
+    },
+    {
+      "id": "terrain-t1-001",
+      "files": [
+        {
+          "path": "planning/art-concepts/terrain-t1-001.png",
+          "sha256": "4501c36a35281860e60c8e12d5417574a1b8e71a9cc6cbe9b6746fb719fb3187",
+          "bytes": 1638228,
+          "lastCommit": "3f4167c96cd0ef2e5d745ff80ca79b0b2488d2c7",
+          "workingTreeStatus": ""
+        },
+        {
+          "path": "planning/art-concepts/terrain-t1-001-prompt.md",
+          "sha256": "c5c9b0bd54113a3570f95e7c0bf214caffccef0c2a0daacef8c8de9c1d1bbc88",
+          "bytes": 3205,
+          "lastCommit": "3f4167c96cd0ef2e5d745ff80ca79b0b2488d2c7",
+          "workingTreeStatus": ""
+        }
+      ],
+      "exactPromptSource": "planning/art-concepts/terrain-t1-001-prompt.md",
+      "promptReuse": "Read exact generation prompt in original source markdown; do not paraphrase or replace source. Full file SHA covers wording and surrounding provenance."
+    },
+    {
+      "id": "concept-002-vector",
+      "files": [
+        {
+          "path": "planning/art-concepts/concept-002-vector.png",
+          "sha256": "d50f5fa4e800b1b9c0f7d6fff8509480a28def4e254fc0e6280494bcc8ae2c74",
+          "bytes": 1937993,
+          "lastCommit": "54d53d13e7650ca85a01e43690f1ec51fba46c81",
+          "workingTreeStatus": ""
+        },
+        {
+          "path": "planning/art-concepts/concept-002-vector-prompt.md",
+          "sha256": "920e6bef54eb95d6123bdc60de98f04685f2079a7b4f786b20c8c4d202343020",
+          "bytes": 1035,
+          "lastCommit": "54d53d13e7650ca85a01e43690f1ec51fba46c81",
+          "workingTreeStatus": ""
+        }
+      ],
+      "exactPromptSource": "planning/art-concepts/concept-002-vector-prompt.md",
+      "promptReuse": "Read exact generation prompt in original source markdown; do not paraphrase or replace source. Full file SHA covers wording and surrounding provenance."
+    }
+  ],
+  "missingRequested": [],
+  "registrationCompletion": {
+    "authorization": "Parent relayed explicit user-approved initial registration completion, 2026-10-06. One-time addition only; original hashes retained.",
+    "added": [
+      "objects-t3a-001",
+      "objects-t3b-001",
+      "terrain-t1-001",
+      "concept-002-vector"
+    ],
+    "nameCorrection": "Speculative biome-landmarks-a/b-001 names corrected to existing objects-t3a/b-001.",
+    "head": "bc825247ec403ff2b3c79b4b90028aba165dc3af"
+  }
+}

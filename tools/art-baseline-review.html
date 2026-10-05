@@ -1,0 +1,56 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>원화 기준 → 현재 아웃풋 비교</title>
+<style>/* Comparison captures are controlled scenes, not FPS measurements. */
+body{margin:18px;background:#14211c;color:#e8f0eb;font:14px system-ui}a{color:#aadbc6}h1{font-size:23px}h2{font-size:18px}p{line-height:1.5}select{padding:7px}.anchors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.anchor{border:1px solid #567362;padding:10px}.anchor img{width:100%;height:170px;object-fit:contain}.row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.cell{padding:10px;border:1px solid #486052;min-width:0}.cell img,.cell canvas{width:100%;height:180px;object-fit:contain;background:#304331}.cell h3{font-size:14px;margin:0 0 8px}.small{font-size:12px;color:#b9cdbf;overflow-wrap:anywhere}.warn{color:#f3d695}.pack{border-top:2px solid #739d86;margin-top:20px}.failed a{margin-right:12px}@media(max-width:800px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}.anchors{grid-template-columns:1fr}}</style>
+<h1>초기 원화 기준 → 정확 크롭 → 현재 리소스 → 실제 아웃풋</h1><p>초기 승인 원본과 프롬프트를 고정해 최종 화면을 다시 비교합니다. 선택 자산은 현재 manifest를 읽습니다. 생성 성공·로드 성공은 시각 합격이 아니며, 아래 캡처는 통제 장면으로 자연 플레이/FPS 검증을 대체하지 않습니다.</p>
+<p><a href='../planning/art-baselines/initial/manifest.json' target='_blank'>초기 원본 SHA·프롬프트 고정 manifest</a> · <a href='../reports/ART_BASELINE_GUARD.md' target='_blank'>보존 규칙</a></p><section class="anchors"></section><p><label>표시 묶음 <select id="filter"><option value="all">전체</option></select></label> <span id="status">현재 manifest 로딩 중</span></p><main></main>
+<details><summary>ON / OFF와 기능 의미</summary><p>캐릭터·효과·능력 texture OFF는 기존 벡터 본체·필수 범위·실제 판정을 유지하는 비교입니다. 숲 주변 바닥 OFF는 기능 오브젝트 아래 시각 공간만 해제합니다. 서로 다른 size/줌/상태 캡처는 같은 조건 A/B로 비교하지 않습니다. texture 외곽, 바닥의 빈 공간, 효과 색은 새 범위·보상·수혜 판정이 아닙니다.</p><p>원화의 비스듬한 탑뷰·고정 광원·색감·상대 축척을 전체 장면에서 평가합니다. 수혜 대상/비수혜·공격 전조·위험 범위는 실제 규칙으로 확인합니다. 실패 시안은 아래 링크로 보존하며 선택 자산처럼 진열하지 않습니다.</p></details>
+<script type="module">
+const root=new URL('../',import.meta.url),$=s=>document.querySelector(s),data=await(await fetch(new URL('art-baseline-review-data.json',import.meta.url))).json();
+const normalize=p=>String(p??'').replaceAll('\\','/'),url=p=>new URL(normalize(p),root).href;
+const el=(tag,text,cls)=>{const n=document.createElement(tag);if(text)n.textContent=text;if(cls)n.className=cls;return n;};
+function link(path,label){const a=el('a',label??path);a.href=url(path);a.target='_blank';a.rel='noopener';return a;}
+function image(parent,path,label){if(!path)return;const a=link(path),i=el('img');i.src=url(path);i.alt=label??path;i.loading='lazy';i.onerror=()=>{i.replaceWith(el('p','파일 없음: '+path,'warn'));};a.append(i);parent.append(a);}
+function joins(base,path){const p=normalize(path);return /^(assets|planning|reports)\//.test(p)?p:base+p;}
+async function json(path){const r=await fetch(url(path));if(!r.ok)throw new Error(path+' '+r.status);return r.json();}
+const anchors=new Map(data.anchors.map(a=>[a.id,a]));for(const a of data.anchors){const n=el('article',null,'anchor');n.append(el('h2',a.label));image(n,a.image,a.label);n.append(link(a.image,'원본 이미지'),document.createTextNode(' · '),link(a.prompt,'정확 원본 프롬프트'));$('.anchors').append(n);}
+function cropList(c){return Array.isArray(c)?c:c.items??(c.source?[c]:[]);}
+function cropPath(pack,c){return joins(pack.base+'references/',c.output??c.crop??c.path);}
+function cropFor(pack,item,crops){
+ if(pack.mode==='forest' && ['floor','dense','decal'].includes(item.role))return null;
+ if(item.sourceCrop)return crops.find(c=>normalize(c.output??c.crop??c.path).endsWith(normalize(item.sourceCrop).split('/').pop()))??{crop:joins(pack.base,item.sourceCrop),source:item.source??pack.source};
+ const prefix=item.role??item.stage??item.file?.replace(/-\d+\.png$/,'');
+ const hint={base:'basic',growth:'growth',apex:'apex',canopy:'canopy',understory:'understory',edge:'edge','functionalBerry':'berry'}[prefix]??prefix;
+ return crops.find(c=>String(c.id??c.output??c.crop??c.path).includes(hint));
+}
+function selected(pack,m){
+ if(pack.mode==='characters')return m.selected?m.sprites.map(s=>({...s,file:m.source,boxFormat:'XYXY',prompt:'body-sheet-001-prompt.txt'})):[];
+ if(pack.mode==='forest'){
+  const l=m.layers,out=[];for(const key of ['floor','dense','canopy','understory','edge'])for(const file of (Array.isArray(l[key])?l[key]:[l[key]]).filter(Boolean))out.push({role:key,file:file.split(':')[0],prompt:key==='floor'?'floor-prompts.md':file.split(':')[0].replace('.png','-prompt.md')});
+  for(const decal of l.decals??[])out.push({role:'decal',...decal,prompt:false});
+  if(l.functionalBerry)out.push({role:'functionalBerry',...l.functionalBerry,prompt:l.functionalBerry.file.replace('.png','-prompt.md')});return out;
+ }
+ if(pack.mode==='combat')return Object.entries(m.effects).map(([role,i])=>({role,...i,prompt:i.file.replace('.png','-prompt.md')}));
+ return (m.items??[]).filter(i=>i.selected===true||String(i.status??'').startsWith('selected'));
+}
+async function resource(parent,pack,item){const path=joins(pack.base,item.file);if(item.box&&pack.mode==='characters'){
+  const c=el('canvas');c.width=c.height=256;parent.append(c);const i=new Image();i.src=url(path);await i.decode();const [x,y,x2,y2]=item.box;c.getContext('2d').drawImage(i,x,y,x2-x,y2-y,0,0,256,256);parent.append(link(path,'원본 sheet'));
+ }else image(parent,path,item.role??item.file);
+ parent.append(link(path,item.file));const prompt=item.prompt??item.file.replace('.png','-prompt.txt');if(item.prompt!==false)parent.append(document.createTextNode(' · '),link(joins(pack.base,prompt),'생성 프롬프트'));else parent.append(el('p','코드 작성 SVG 장식: 별도 이미지 생성 프롬프트 없음','small'));parent.append(el('p',JSON.stringify({crop:item.cacheCropXYWH??item.crop,pivot:item.pivot??item.pivotInRawImage??item.actorPivotNormalized,status:item.status??'manifest 선택'}),'small'));
+}
+let total=0;for(const pack of data.packs){
+ const option=el('option',pack.title);option.value=pack.id;$('#filter').append(option);const section=el('section',null,'pack');section.dataset.pack=pack.id;section.append(el('h2',pack.title),el('p',pack.note));$('main').append(section);
+ try{
+  const [m,c]=await Promise.all([json(pack.base+pack.manifest),json(pack.base+pack.crops)]),crops=cropList(c),items=selected(pack,m);section.append(link(pack.base+pack.manifest,'선택 manifest'),document.createTextNode(' · '),link(pack.base+pack.crops,'정확 크롭·좌표·SHA 기록'));
+  for(const item of items){total++;const row=el('article',null,'row'),crop=cropFor(pack,item,crops),a=anchors.get(pack.anchor),source=crop?.source?joins(pack.base+'references/',crop.source):pack.source??a.image;
+   const one=el('div',null,'cell');one.append(el('h3','① 원본 · '+(item.role??item.stage??item.runtime??item.file)));image(one,source,'실제 크롭 출처');one.append(link(source,'원본'),document.createTextNode(' · '),link(pack.sourcePrompt??a.prompt,pack.sourcePrompt?'실제 생성 출처 프롬프트':'초기 기준 프롬프트'));if(source!==a.image)one.append(el('p','초기 승인 기준은 위 '+a.label+'에 고정. 이 열은 실제 생성 출처를 추가로 표시.','small'));
+   const two=el('div',null,'cell');two.append(el('h3','② 정확 크롭'));if(crop){image(two,cropPath(pack,crop),'exact crop');two.append(el('p','좌표 '+JSON.stringify(crop.box??crop.boxXYXY??crop.cropXYXY??crop.cropPixels)+' · 원본 '+JSON.stringify(crop.sourceSize),'small'));two.append(el('p','SHA '+(crop.sourceSHA256??crop.sourceSha256??''),'small'));}else two.append(el('p','이 선택 자산의 개별 exact crop 연결 기록 없음. 생성 프롬프트/manifest를 확인.','warn'));
+   const three=el('div',null,'cell');three.append(el('h3','③ 현재 선택 리소스'));await resource(three,pack,item);
+   const four=el('div',null,'cell');four.append(el('h3','④ 실제 아웃풋 · 통제 캡처'));const prefix=item.role??item.file.replace(/-\d+\.png$/,'');const capture=pack.captureByPrefix?.[prefix]??pack.captures[0];image(four,capture,'실제 renderer 캡처');four.append(link(capture,'원본 크기 캡처'));if(pack.off)four.append(el('p',null),link(pack.off,'OFF 비교 · 조건/의미는 위 설명'));if(pack.id==='abilities')four.append(el('p','이 캡처는 해당 능력 발동 전체 증거가 아님. 능력 fixture로 후속 검수.','warn'));row.append(one,two,three,four);section.append(row);
+  }
+  const failures=pack.mode==='forest'?m.composition?.failedNotSelected??[]:pack.mode==='combat'?Object.values(m.effects).flatMap(i=>i.alternatives??[]):(m.items??[]).filter(i=>i.selected===false||String(i.status??'').startsWith('unselected')).map(i=>i.file);
+  if(failures.length){const details=el('details',null,'failed');details.append(el('summary','비선택/실패 시안 링크 보존'));for(const f of failures)details.append(link(joins(pack.base,f),f));section.append(details);}
+ }catch(error){section.append(el('p','묶음 로딩 실패: '+error.message,'warn'));}
+}
+$('#status').textContent=`현재 manifest 선택 ${total}개 표시 · 생성/시각 합격 자동 판정 없음`;
+$('#filter').onchange=()=>{for(const s of document.querySelectorAll('.pack'))s.hidden=$('#filter').value!=='all'&&s.dataset.pack!==$('#filter').value;};
+</script></html>
