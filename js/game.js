@@ -1,6 +1,6 @@
 import {drawActionArt} from './actionArt.js';
-import {chargedAttackDistance} from './combat.js?art-release-02';
-import {BiomeObjects} from './biomeObjects.js?art-release-02';
+import {chargedAttackDistance} from './combat.js?ai-pressure-01';
+import {BiomeObjects} from './biomeObjects.js?ai-pressure-01';
 import {updateGrowthMotion} from './growthMotion.js';
 import {updateSprint} from './sprint.js';
 import {delta,angleTo,near,wrap} from './topology.js';
@@ -11,7 +11,7 @@ import { RunMetrics } from './runMetrics.js';
 import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection,drawMatteBody } from './vectorArt.js';
 import { Relics } from './relics.js';
 import { Era } from './era.js';
-import { Biomes } from './biomes.js?art-release-02';
+import { Biomes } from './biomes.js?ai-pressure-01';
 import { AllyLinks } from './allyLinks.js';
 import { ApexHistory } from './apexHistory.js';
 import { scoreRanking, layoutNameLabels, debugRoleLabel, entityLabelRows } from './presentation.js';
@@ -21,13 +21,13 @@ import { Ecology } from './ecology.js';
 import { random, resetRandom } from './random.js';
 import { resetEntityIds, growthRewardFor } from './entity.js';
 import { Player } from './player.js';
-import { AIEntity, updateAI } from './ai.js';
+import { AIEntity, updateAI } from './ai.js?ai-pressure-01';
 import { canEatOrb, canAbsorb, isHostile, circlesOverlap, dist } from './collision.js';
 import {
   updateAttack, updateDodge, updateKnockback, updateHealthRegen,
   updateAttackStack, updateDodgeStack, attackChargeDistanceForSize,
   canStartAttack, startAttack, canStartDodge, startDodge,
-} from './combat.js?art-release-02';
+} from './combat.js?ai-pressure-01';
 import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
 import {apexTerritoryRadius} from './skillCatalog.js';
 import { startAbsorption, cancelAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';

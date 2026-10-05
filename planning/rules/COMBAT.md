@@ -135,3 +135,13 @@
   - config killReward.compactDropOuterFraction = 0.1
   - config killReward.compactDropOuterRadiusDiameters = 2.25
   - test tests/balance-growth.test.mjs :: large kill drops keep at least ninety percent close without changing rewards or random consumption
+
+### R-COMBAT-013 · AI 지속 공격과 위험 기반 회피
+- 규칙: AI 스택재충전은 플레이어와같은1.5초, 별도공격시작gate0. AI차징전조중현재목표를조준, 돌진시방향고정. 근접상대돌진만으로짧은차징하지않고HP35%이하일때만긴급단축. 일반공격회피는실제조준통로가자신과겹치고예상피해가현재HP25%이상이거나HP35%이하인경우. 소진된타격/뒤로향한타격은회피하지않는다. 특수시전은근처HP35%이하반응. 흡수탈출은기존유지.
+- 상태: 승인
+- 출처: 사용자직접AI DPS/불필요회피수정요청2026-10-06. 25%/35%는초기튜닝값.
+- 확인:
+  - test tests/ai-pressure.test.mjs :: AI keeps attacking through safe opposing windups
+  - test tests/ai-pressure.test.mjs :: AI has no extra attack gate
+  - file reports/ai-pressure-benchmark.json
+- 변경 이력: 기존AI독립1.8초쿨다운/추가gate규칙대체. 실전유저와동급DPS라고확정하지않는다.

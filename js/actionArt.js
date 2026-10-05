@@ -1,4 +1,4 @@
-import {drawRevisedLandmark} from './landmarkArt.js?art-release-02';
+import {drawRevisedLandmark} from './landmarkArt.js?ai-pressure-01';
 // R-VIS-005: restrained vector art, no canvas blur or gameplay RNG.
 export function drawActionArt(ctx,e,game,r,zoom){
  if(e.behavior==='orb')return;

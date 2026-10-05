@@ -1,0 +1,77 @@
+{
+  "note": "Ideal sustained full-charge contact benchmark; not a live duel. All attacks hit, target follows for identical contact. Player waits manual full-charge time.",
+  "results": [
+    {
+      "mode": "old-ai",
+      "size": 100,
+      "seconds": 30,
+      "attacks": 17,
+      "damage": 1768,
+      "dps": 58.93333333333333
+    },
+    {
+      "mode": "new-ai",
+      "size": 100,
+      "seconds": 30,
+      "attacks": 20,
+      "damage": 1976,
+      "dps": 65.86666666666666
+    },
+    {
+      "mode": "player",
+      "size": 100,
+      "seconds": 30,
+      "attacks": 19,
+      "damage": 1976,
+      "dps": 65.86666666666666
+    },
+    {
+      "mode": "old-ai",
+      "size": 400,
+      "seconds": 30,
+      "attacks": 16,
+      "damage": 5984,
+      "dps": 199.46666666666667
+    },
+    {
+      "mode": "new-ai",
+      "size": 400,
+      "seconds": 30,
+      "attacks": 16,
+      "damage": 5984,
+      "dps": 199.46666666666667
+    },
+    {
+      "mode": "player",
+      "size": 400,
+      "seconds": 30,
+      "attacks": 16,
+      "damage": 5984,
+      "dps": 199.46666666666667
+    },
+    {
+      "mode": "old-ai",
+      "size": 1000,
+      "seconds": 30,
+      "attacks": 14,
+      "damage": 12796,
+      "dps": 426.53333333333336
+    },
+    {
+      "mode": "new-ai",
+      "size": 1000,
+      "seconds": 30,
+      "attacks": 14,
+      "damage": 12796,
+      "dps": 426.53333333333336
+    },
+    {
+      "mode": "player",
+      "size": 1000,
+      "seconds": 30,
+      "attacks": 14,
+      "damage": 12796,
+      "dps": 426.53333333333336
+    }
+  ]
+}

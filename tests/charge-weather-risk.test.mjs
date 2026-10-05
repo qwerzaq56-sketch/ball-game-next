@@ -12,11 +12,11 @@ test('support apex uses summon and invitation without needing a hostile enemy',(
 test('desert weather spawns in desert, drifts, expires and gives yellow resistance and real defense',()=>{const g=setup();g.biomes.enabled=true;g.biomes.sandstormTimer=0;g.biomes.updateSandstorms(0);const f=g.biomes.sandstorms[0];assert(f);assert.equal(g.biomes.regionAt(f).id,'desert');const x=f.x,y=f.y;g.biomes.updateSandstorms(1);assert(Math.abs(Math.hypot(f.x-x,f.y-y)-45)<1e-8);const blue=unit(g,100),yellow=unit(g,100,'yellow'),attacker=unit(g,100,'red');for(const e of [blue,yellow]){e.x=f.x;e.y=f.y;}g.entities=[blue,yellow,attacker];g.biomes.lavaAt=()=>null;g.biomes.damageTimer=0;const bh=blue.hp,yh=yellow.hp;g.biomes.update(.5);const blueLost=bh-blue.hp,yellowLost=yh-yellow.hp;assert(Math.abs(yellowLost/blueLost-.2)<1e-8);assert.equal(g.abilities.defenseMultiplier(yellow),1.25);const old=yellow.hp;applyDamage(yellow,150,g,attacker,g.balance,{knockback:false});assert.equal(old-yellow.hp,87.5);assert.equal(g.biomes.danger(yellow),null);g.biomes.updateSandstorms(f.remaining+.1);assert(!g.biomes.sandstorms.includes(f));assert.equal(g.abilities.defenseMultiplier(yellow),1);});
 test('debug AI labels default off on each new run',()=>{const g=setup();assert.equal(g.showAILabels,false);g.showAILabels=true;g.reset();assert.equal(g.showAILabels,false);});
 
-test('AI prefers full charge and only shortens for incoming contact strikes',async()=>{
+test('AI prefers full charge and only shortens for critical incoming contact strikes',async()=>{
  const {aiAttackCharge}=await import('../js/combat.js'),g=setup(),a=unit(g,100,'blue'),target=unit(g,100,'red',4100);a.target=target;
  const near=aiAttackCharge(a,g.balance);assert.equal(near,1);target.x=4700;const far=aiAttackCharge(a,g.balance);assert.equal(far,1);
  startAttack(a,0,g.balance);assert.equal(a.currentTelegraphTime,.9);updateAttack(a,.2,g.balance,[],g);assert(Math.abs(a.attackHoldProgress-.2/.9)<1e-8);assert.equal(a.x,4000);updateAttack(a,.7,g.balance,[],g);assert.equal(a.attackState,'CHARGING');assert.equal(a.currentAttackPower,2);
- a.attackState='READY';a.attackStack=1;target.x=4100;target.attackState='CHARGING';startAttack(a,0,g.balance);assert.equal(a.currentAttackCharge,.3);assert(Math.abs(a.currentTelegraphTime-.27)<1e-8);assert(a.currentAttackPower<2);
+ a.attackState='READY';a.attackStack=1;target.x=4100;target.attackState='CHARGING';a.hp=a.maxHp*.3;startAttack(a,0,g.balance);assert.equal(a.currentAttackCharge,.3);assert(Math.abs(a.currentTelegraphTime-.27)<1e-8);assert(a.currentAttackPower<2);
 });
 
 test('R-ABS-002 absorption pays full proposed cost progressively and success restores actual spending',()=>{

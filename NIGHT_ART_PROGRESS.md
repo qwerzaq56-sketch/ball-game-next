@@ -195,3 +195,7 @@ scene-coherent-v1의 snow-shelter/desert-oasis PNG를 실제 landmarkArt256캐�
 외부배포 확인 보류: Pages run37367807705의build가GitHub대기열queued. 오류없음, release.json은아직404라최신배포완료로보고하지않음. 다음자동작업은새아트보다이배포상태확인우선. 성공시release.json의art-absorption-20261006-01확인후공개게임시작/PNG로드확인. 공개주소https://qwerzaq56-sketch.github.io/ball-game-next/ .
 
 Pages37367807705仍queued. 즉시외부플레이대안raw.githack커밋고정링크검증시 PNG지형은로드되나랜드마크alpha crop이cross-origin canvas보안에막혀벡터폴백관찰. landmark/environment이미지crossOrigin anonymous명시로해결진행. 최신공유링크는수정커밋고정URL로검증.
+
+## AI 지속 화력 보완 · 사용자 직접 요청2026-10-06
+유저 연타대비 낮은AI DPS: 공격 스택재충전1.8→플레이어동일1.5, 추가공격시작gate1.8→0. 풀차징중 살아있는목표를매프레임조준(발사후추적없음). 건강한근접교전은풀차징, 들어오는접촉공격+HP35%이하일때만급한짧은차징. 랜덤전조회피대신실제공격방향/통로교차+예상피해가현재HP25%이상이거나HP35%이하인경우회피. 이미맞은공격/뒤로향한공격회피금지. 특수시전반응은근처HP35%이하로보수적제한(개별스킬피격예측은추후과제). 흡수탈출회피유지.
+30초동일접촉/풀차징최대화력통제benchmark: Size100 oldAI58.93/newAI65.87/player65.87 DPS, Size400 199.47동일, Size1000 426.53동일. 실제명중률/실제유저DPS비교아님. ai-pressure-benchmark.json와실행도구보존.385/385. 공격력/효과수치상향없음. 외부main배포추가승인대기로아트브랜치공유만진행.

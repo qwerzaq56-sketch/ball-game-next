@@ -188,11 +188,13 @@
     "absorptionDetectionRange": 400,
     "absorptionPriorityRatio": 1.5,
     "highPriorityAbsorptionRatio": 2.0,
-    "attackCooldown": 1.8,
+    "attackCooldown": 1.5,
     "absorptionAttemptChance": 0.6,
     "lowHealthAttackChance": 0.15,
     "guardSurfaceDistance": 140,
-    "retaliationSeconds": 6
+    "retaliationSeconds": 6,
+    "attackGateSeconds": 0,
+    "dodgeThreatHpFraction": 0.25
   },
   "world": {
     "wrap": true,

@@ -1,6 +1,6 @@
 import {maintainDistanceFor} from './absorption.js';
 import {beginGrowthMotion} from './growthMotion.js';
-import {angleTo,wrap} from './topology.js';
+import {angleTo,wrap,delta} from './topology.js';
 import { explorationDestination } from './exploration.js';
 import { attackReach } from './abilities.js';
 import { assignPersonality } from './ecology.js';
@@ -9,7 +9,7 @@ import { random } from './random.js';
 import {apexTerritoryRadius} from './skillCatalog.js';
 import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
 import { canAbsorb, canEatOrb, isHostile, dist } from './collision.js';
-import { canStartAttack, startAttack, updateAttack, canStartDodge, startDodge, updateDodge, attackRangeForSize, attackDamageForSize, applyDefense } from './combat.js?art-release-02';
+import { canStartAttack, startAttack, updateAttack, canStartDodge, startDodge, updateDodge, attackRangeForSize, attackDamageForSize, applyDefense } from './combat.js?ai-pressure-01';
 
 // AI states, implemented in priority order per spec section 25:
 // Search -> Chase -> Eat(resolved centrally by Game) -> Attack -> Dodge -> Dead.
@@ -290,21 +290,25 @@ export function decideAI(ai, game, balance) {
   ai.state='search';ai.target=null;
 }
 
+export function shouldDodgeThreat(ai,other,balance){
+ if(!isHostile(ai,other)||other.attackHitSet?.has(ai.id))return false;
+ const hp=ai.hp/ai.maxHp;
+ if(other.specialCast)return hp<=.35&&dist(ai,other)<attackRangeForSize(other.size,balance)+(ai.size+other.size)/2;
+ if(!['TELEGRAPH','CHARGING'].includes(other.attackState))return false;
+ const d=delta(other,ai),angle=other.attackDir??other.facing??0;
+ const along=d.x*Math.cos(angle)+d.y*Math.sin(angle),side=Math.abs(d.x*Math.sin(angle)-d.y*Math.cos(angle));
+ const radius=(ai.size+other.size)/2;
+ if(along < -radius || along>(other.currentChargeDistance??0)+radius+(other.currentAttackRange??0)||side>radius+(other.currentAttackRange??0)*.5)return false;
+ const damage=applyDefense(attackDamageForSize(other.size,balance)*(other.currentAttackPower??1),ai.size,balance);
+ return hp<=.35 || damage>=ai.hp*(balance.ai.dodgeThreatHpFraction??.25);
+}
 function reactToThreats(ai, game, balance) {
-  if (!ai.dodgeUnlocked || !canStartDodge(ai)) return;
-  const range = Math.min(game.biomes.sensingRange(ai), attackRangeForSize(ai.size, balance) * 1.5);
-  const nearby = game.getNearbyEntities(ai, range);
-  for (const other of nearby) {
-    if ((other.attackState === 'TELEGRAPH' || other.specialCast) && isHostile(ai, other)) {
-      const d = dist(ai, other);
-      if (d < range && random('ai') < 0.5) {
-        const away = angleTo(other,ai);
-        if(ai.color==='blue'){ai.counterattacker=other;ai.counterTimer=1;}
-        startDodge(ai, away, balance);
-        return;
-      }
-    }
-  }
+ if (!ai.dodgeUnlocked || !canStartDodge(ai)) return;
+ const range = Math.min(game.biomes.sensingRange(ai), attackRangeForSize(ai.size, balance) * 1.5);
+ const threat=game.getNearbyEntities(ai,range).find(other=>dist(ai,other)<range&&shouldDodgeThreat(ai,other,balance));
+ if(!threat)return;
+ if(ai.color==='blue'){ai.counterattacker=threat;ai.counterTimer=1;}
+ startDodge(ai,angleTo(threat,ai),balance);
 }
 
 function moveAI(ai, dt, balance,game) {

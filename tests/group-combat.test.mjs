@@ -18,7 +18,7 @@ test('nearby allied strength permits stronger opponents but solitary and cautiou
 test('companions react with dodge and do not cancel committed attacks to form up',()=>{
  const {g,unit}=setup(),a=unit(4000),b=unit(4050),enemy=unit(4100,'red',100);g.entities=[a,b,enemy];g.buildGrid();g.allyLinks.refresh();g.allyLinks.join(b,a);
  startAttack(a,0,g.balance);const time=a.attackTimer;updateAI(a,.05,g,g.balance);assert.equal(a.attackState,'TELEGRAPH');assert(a.attackTimer>time);
- a.attackState='READY';enemy.attackState='TELEGRAPH';let dodged=false;for(let i=0;i<30;i++){a.dodgeState='READY';a.dodgeStack=2;updateAI(a,.001,g,g.balance);if(a.dodgeState==='DODGING'){dodged=true;break;}a.attackState='READY';}assert(dodged);
+ a.attackState='READY';a.hp=a.maxHp*.3;startAttack(enemy,Math.PI,g.balance,1);let dodged=false;for(let i=0;i<30;i++){a.dodgeState='READY';a.dodgeStack=2;updateAI(a,.001,g,g.balance);if(a.dodgeState==='DODGING'){dodged=true;break;}a.attackState='READY';}assert(dodged);
 });
 test('prey flees, counters exposed recovery once, then flees until opportunity timer releases',()=>{
  const {g,unit}=setup(),a=unit(4000),enemy=unit(4140,'red',140);a.role='prey';a.personality='cautious';g.entities=[a,enemy];g.buildGrid();g.gameTime=10;

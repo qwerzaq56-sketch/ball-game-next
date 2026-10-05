@@ -92,7 +92,7 @@ export function aiAttackCharge(entity,balance){
  const target=entity.target;
  const gap=target?.alive?Math.max(0,dist(entity,target)-(entity.size+target.size)/2):Infinity;
  // Reserve hurried attacks for an incoming contact strike or an urgent escape.
- const urgent=!!entity.beingAbsorbedByRef || (entity.state==='flee'&&entity.hp/entity.maxHp<=.3) || (target?.attackState==='CHARGING'&&gap<=60);
+ const urgent=!!entity.beingAbsorbedByRef || (entity.state==='flee'&&entity.hp/entity.maxHp<=.3) || (target?.attackState==='CHARGING'&&gap<=60&&entity.hp/entity.maxHp<=.35);
  return urgent?(balance.attack.aiMinChargeFraction??.3):1;
 }
 export function startAttack(entity, dirAngle, balance,charge=entity.behavior==='ai'?aiAttackCharge(entity,balance):1) {
@@ -110,7 +110,7 @@ export function startAttack(entity, dirAngle, balance,charge=entity.behavior==='
   entity.currentChargeDistance = chargedAttackDistance(entity.size,balance,entity.apex,level);
   entity.currentChargeDuration = Math.max(.08,attackChargeDurationForSize(entity.size, balance)*(.2+.8*level));
   entity.currentTelegraphTime = entity.behavior==='ai'?(balance.attack.manualChargeSeconds??.9)*level:0;
-  if (entity.behavior === 'ai') entity.aiAttackGateTimer = balance.ai.attackCooldown;
+  if (entity.behavior === 'ai') entity.aiAttackGateTimer = balance.ai.attackGateSeconds??0;
 }
 
 export function updateAttack(entity, dt, balance, hostiles, game) {
@@ -121,6 +121,7 @@ export function updateAttack(entity, dt, balance, hostiles, game) {
 
   switch (entity.attackState) {
     case 'TELEGRAPH': {
+      if(entity.behavior==='ai'&&entity.target?.alive)entity.attackDir=angleTo(entity,entity.target);
       entity.attackTimer += dt;
       if(entity.behavior==='ai')entity.attackHoldProgress=Math.min(entity.currentAttackCharge,entity.attackTimer/(cfg.manualChargeSeconds??.9));
       if (entity.attackTimer + 1e-8 >= entity.currentTelegraphTime) {
