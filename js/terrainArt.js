@@ -16,6 +16,27 @@ export function forestDecoration(x,y){
  const size=140+(h>>>8)%45,margin=(200-size)/2;
  return {size,x:x+100+(((h>>>14)%101)/50-1)*margin,y:y+100+(((h>>>21)%101)/50-1)*margin,variant:(h>>>6)%4};
 }
+// Rendering cache only: crossfade overlapping edge samples without mirroring baked light.
+export function periodicForestGround(image,size=1600,overlap=120){
+ const source=document.createElement('canvas');source.width=source.height=size+2*overlap;
+ const sc=source.getContext('2d');sc.drawImage(image,0,0,source.width,source.height);
+ if(typeof sc.createLinearGradient!=='function'){source.width=source.height=size;sc.drawImage(image,0,0,size,size);return source;}
+ function axis(input,horizontal){
+  const out=document.createElement('canvas');out.width=horizontal?size:input.width;out.height=horizontal?input.height:size;
+  const oc=out.getContext('2d');
+  for(const mode of ['center','before','after']){
+   const layer=document.createElement('canvas');layer.width=out.width;layer.height=out.height;const lc=layer.getContext('2d');
+   const g=lc.createLinearGradient(0,0,horizontal?size:0,horizontal?0:size),a=overlap/size;
+   const stops=mode==='center'?[[0,.5],[a,1],[1-a,1],[1,.5]]:mode==='before'?[[0,.5],[a,0],[1,0]]:[[0,0],[1-a,0],[1,.5]];
+   for(const [p,alpha]of stops)g.addColorStop(p,`rgba(255,255,255,${alpha})`);
+   lc.fillStyle=g;lc.fillRect(0,0,out.width,out.height);lc.globalCompositeOperation='source-in';
+   const shift=mode==='center'?-overlap:mode==='before'?-(size+overlap):size-overlap;
+   lc.drawImage(input,horizontal?shift:0,horizontal?0:shift);
+   oc.globalCompositeOperation='lighter';oc.drawImage(layer,0,0);
+  }return out;
+ }
+ return axis(axis(source,true),false);
+}
 export class TerrainArt {
  constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();this.blendMasks=new Map();this.rasterBiomes=new Set();
   if(typeof document!=='undefined'&&typeof Image!=='undefined')this.loading=this.load();
@@ -35,12 +56,9 @@ export class TerrainArt {
    // Approved image-asset pilot. Optional loading keeps the original vector pack usable.
    try{
     const pack=new URL('../assets/art-packs/forest-raster-v1/',import.meta.url);
-    const ground=new Image(),tree=new Image();ground.src=new URL('ground-002.png',pack).href;tree.src=new URL('tree-001.png',pack).href;
+    const ground=new Image(),tree=new Image();ground.src=new URL('ground-005.png',pack).href;tree.src=new URL('tree-003.png',pack).href;
     await Promise.all([ground.decode(),tree.decode()]);
-    this.tiles.set('forest',Array.from({length:3},(_,v)=>{
-     const c=document.createElement('canvas');c.width=c.height=800;const ctx=c.getContext('2d');
-     ctx.drawImage(ground,0,0,800,800);return c;
-    }));this.forestRaster=true;
+    const cachedGround=periodicForestGround(ground);this.tiles.set('forest',[cachedGround,cachedGround,cachedGround]);this.forestRaster=true;
     this.forestTrees=Array.from({length:4},(_,v)=>{
      const tc=document.createElement('canvas');tc.width=tc.height=256;const ctx=tc.getContext('2d');
      ctx.drawImage(tree,0,0,256,256);return tc;
@@ -92,7 +110,7 @@ export class TerrainArt {
    if(region.id==='forest'&&this.forestTrees){const d=forestDecoration(x,y);if(d)ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);}
    return true;
   }
-  const key='blend:'+ids.map(id=>`${id}:${this.variant(id,x,y)}`).join(',')+`:${modulo(x,800)}:${modulo(y,800)}`;
+  const key='blend:'+ids.map(id=>{const t=this.texture(id,x,y);return `${id}:${this.variant(id,x,y)}:${modulo(x,t?.width||400)}:${modulo(y,t?.height||400)}`;}).join(',');
   let composed=this.layers.get(key);
   if(!composed){
    composed=document.createElement('canvas');composed.width=composed.height=200;

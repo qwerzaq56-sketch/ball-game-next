@@ -1,7 +1,7 @@
 import {delta} from './topology.js';
 import { boundCenter } from './worldBounds.js';
 import {canEatOrb,canAbsorb,isHostile,dist} from './collision.js';
-import {canStartAttack,canStartDodge} from './combat.js?ai-pressure-01';
+import {canStartAttack,canStartDodge} from './combat.js?forest-palette-04';
 export class Autoplay {
  constructor(game){this.game=game;this.enabled=false;this.timer=0;this.dodgeWait=0;this.action=null;this.reason='OFF';this.policy='local-survival-v2';this.explorationPoint=null;this.explorationRecent=[];this.explorationIndex=0;}
  setEnabled(value){this.enabled=!!value;this.timer=0;this.dodgeWait=0;this.action=null;this.explorationPoint=null;this.explorationRecent=[];this.explorationIndex=0;this.reason=this.enabled?'탐색 준비':'OFF';if(value){const input=this.game.input;input.keys.clear();input.mouseDown=false;input.touchMove=null;input._specialQueued=false;input._ultimateQueued=false;input._dodgeQueued=false;}}

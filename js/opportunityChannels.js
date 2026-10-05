@@ -1,7 +1,7 @@
 import {dist,isHostile,canAbsorb} from './collision.js';
 import {sizeFromGrowth,growthRewardFor} from './entity.js';
 import {absorptionGrowthFor} from './absorption.js';
-import {attackDamageForEntity,applyDefense,attackChargeDurationForSize,attackTelegraphTimeForSize} from './combat.js?ai-pressure-01';
+import {attackDamageForEntity,applyDefense,attackChargeDurationForSize,attackTelegraphTimeForSize} from './combat.js?forest-palette-04';
 import {minimumDeathDropGrowth} from './spawning.js';
 // Potential rewards assume successful interaction and full collection, never probability.
 export function assessOpportunityChannels(game,p,nearby,needed,foodGrowth,threats,fields,environment){

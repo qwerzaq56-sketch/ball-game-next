@@ -1,7 +1,7 @@
-import {drawObjectArt} from './actionArt.js?ai-pressure-01';
-import {drawEnvironmentalArt} from './environmentArt.js?ai-pressure-01';
-import {BIOME_OBJECTS,objectPreset} from './biomeObjectCatalog.js?ai-pressure-01';
-import {dist} from './collision.js';import {spawnOrb} from './spawning.js';import {applyDamage} from './combat.js?ai-pressure-01';import {delta,wrap,near} from './topology.js';import {terrainDamageMultiplier} from './biomes.js?ai-pressure-01';
+import {drawObjectArt} from './actionArt.js?forest-palette-04';
+import {drawEnvironmentalArt} from './environmentArt.js?forest-palette-04';
+import {BIOME_OBJECTS,objectPreset} from './biomeObjectCatalog.js?forest-palette-04';
+import {dist} from './collision.js';import {spawnOrb} from './spawning.js';import {applyDamage} from './combat.js?forest-palette-04';import {delta,wrap,near} from './topology.js';import {terrainDamageMultiplier} from './biomes.js?forest-palette-04';
 export function objectRole(c){return ['vent','vortex'].includes(c.effect)?'danger':c.effect==='current'?'movement':'benefit';}
 export class BiomeObjects{
  constructor(game){this.game=game;this.objects=[];this.cooldowns=new Map();this.signature='';this.events=[];}

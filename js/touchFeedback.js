@@ -1,4 +1,4 @@
-import {canStartAttack,canStartDodge} from './combat.js?ai-pressure-01';
+import {canStartAttack,canStartDodge} from './combat.js?forest-palette-04';
 const clamp=value=>Math.max(0,Math.min(1,value));
 // Read-only feedback shares combat's availability predicates.
 export function touchActionFeedback(game,kind){

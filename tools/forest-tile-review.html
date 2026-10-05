@@ -1,0 +1,5 @@
+<!doctype html><meta charset="utf-8"><title>숲 반복 타일 · 하이라이트 보정</title><style>body{background:#132329;color:#ddd;font:14px sans-serif;margin:16px}canvas{width:100%;max-width:900px}</style><h1>숲 005 · 반복 경계 / 하이라이트 보정</h1><p id="status">로딩 중</p><canvas width="1600" height="1600"></canvas><script type="module">
+import {periodicForestGround} from '../js/terrainArt.js?forest-palette-04';
+const image=new Image();image.src='../assets/art-packs/forest-raster-v1/ground-005.png';await image.decode();const cache=periodicForestGround(image);const cx=cache.getContext('2d'),pixels=cx.getImageData(0,0,1600,1600).data;let h=0,v=0;for(let i=0;i<1600;i++)for(let c=0;c<3;c++){h+=Math.abs(pixels[(i*1600)*4+c]-pixels[(i*1600+1599)*4+c]);v+=Math.abs(pixels[i*4+c]-pixels[(1599*1600+i)*4+c]);}document.querySelector('#status').textContent=`1600 월드 반복 · 좌우 이음 평균 RGB차 ${(h/4800).toFixed(2)} · 상하 ${(v/4800).toFixed(2)} /255`;
+const ctx=document.querySelector('canvas').getContext('2d');for(let y=0;y<2;y++)for(let x=0;x<2;x++)ctx.drawImage(cache,x*800,y*800,800,800);
+</script>

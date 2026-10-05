@@ -1,9 +1,9 @@
 import {DesignerReview} from './designerReview.js';
-import {loadObjectPreset} from './biomeObjectCatalog.js?ai-pressure-01';
+import {loadObjectPreset} from './biomeObjectCatalog.js?forest-palette-04';
 import {installMovablePanels} from './movablePanels.js';
 import { DiagnosticsUI } from './diagnosticsUI.js';
-import { Game } from './game.js?ai-pressure-01';
-import { UI } from './ui.js?ai-pressure-01';
+import { Game } from './game.js?forest-palette-04';
+import { UI } from './ui.js?forest-palette-04';
 import { loadMuted, saveMuted } from './storage.js';
 import { AIInspector } from './aiInspector.js';
 import { PlayerSetup, loadPlayerProfile } from './playerProfile.js';

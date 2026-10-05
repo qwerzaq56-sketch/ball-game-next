@@ -2,9 +2,9 @@
 <style>body{background:#14232c;color:#eee;font:15px system-ui;margin:12px}canvas{width:100%;max-width:1100px}button{padding:8px}</style>
 <h1>현재 리소스 13종 · 실제 BiomeObjects.draw</h1><p>준비 상태 / 분출 활성 상태. 범위·방향은 기존 판정 기준.</p><button>준비 / 수혜 후 전환</button><canvas width="1100" height="880"></canvas>
 <script type="module">
-import {BiomeObjects} from '../js/biomeObjects.js?ai-pressure-01';import {DEFAULT_OBJECT_IDS,BIOME_OBJECTS} from '../js/biomeObjectCatalog.js?ai-pressure-01';import {loadLandmarkImages} from '../js/landmarkArt.js?ai-pressure-01';
+import {BiomeObjects} from '../js/biomeObjects.js?forest-palette-04';import {DEFAULT_OBJECT_IDS,BIOME_OBJECTS} from '../js/biomeObjectCatalog.js?forest-palette-04';import {loadLandmarkImages} from '../js/landmarkArt.js?forest-palette-04';
 await loadLandmarkImages();
-import {loadEnvironmentImages} from '../js/environmentArt.js?ai-pressure-01';await loadEnvironmentImages();const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');let ready=true;
+import {loadEnvironmentImages} from '../js/environmentArt.js?forest-palette-04';await loadEnvironmentImages();const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');let ready=true;
 const game={canvas,biomes:{enabled:true},camera:{x:550,y:440},gameTime:2};const objects=new BiomeObjects(game);objects.sync=()=>{};
 for(const [i,candidate]of DEFAULT_OBJECT_IDS.entries()){
 const x=135+(i%4)*275,y=130+Math.floor(i/4)*220;

@@ -106,3 +106,9 @@ test('revisiting a boundary layout at a different texture phase reuses its bound
   assert.equal(generated,2);assert.equal(art.blendMasks.size,1);assert.equal(art.layers.size,3);
  }finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
 });
+
+test('expanded forest ground does not alias boundary crops 800 world units apart',()=>{
+ const art=new TerrainArt();art.ready=true;art.forestRaster=true;art.tiles.set('forest',Array.from({length:3},()=>({width:1600,height:1600})));art.tiles.set('desert',Array.from({length:3},()=>({width:800,height:800})));
+ const old=globalThis.document,crops=[];globalThis.document={createElement(){return {getContext(){return {createImageData(){return {data:new Uint8ClampedArray(200*200*4)};},putImageData(){},drawImage(...a){if(a.length===9&&a[0].width===1600)crops.push(a.slice(1,3));}};}};}};
+ try{const b={game:{balance:{world:{worldWidth:8000,worldHeight:8000}}},regionAt(p){return {id:p.x%800>=600?'desert':'forest'};}};for(const x of [400,1200])art.drawTile({drawImage(){}},{x,y:200,region:{id:'forest'}},b);assert.deepEqual(crops,[[400,200],[1200,200]]);assert.equal(art.layers.size,2);}finally{if(old===undefined)delete globalThis.document;else globalThis.document=old;}
+});
