@@ -13,13 +13,13 @@ for index,(key,b) in enumerate(m['biomes'].items()):
     a=j*math.tau/10; q=rng.uniform(.78,1.08);pts.append((x+math.cos(a)*rx*q,y+math.sin(a)*ry*q))
    d='M'+' L'.join(f'{px:.1f} {py:.1f}' for px,py in pts)+'Z'
    shapes.append(f'<path d="{d}" fill="{ink}" opacity=".18"/>')
-  for n in range(36):
+  for n in range(18):
    x,y=rng.randint(28,372),rng.randint(28,372)
    if key in ('forest','grass'):
     # Ground foliage clusters: no trunks/walls or new gameplay obstacles.
     for j in range(4 if key=='forest' else 2):
-     dx,dy=rng.randint(-8,8),rng.randint(-6,6); angle=rng.randrange(180)
-     shapes.append(f'<ellipse cx="{x+dx}" cy="{y+dy}" rx="{rng.randint(3,8)}" ry="{rng.randint(2,4)}" fill="{ink}" opacity=".5" transform="rotate({angle} {x+dx} {y+dy})"/>')
+     dx,dy=rng.randint(-16,16),rng.randint(-12,12); angle=rng.randrange(180)
+     shapes.append(f'<ellipse cx="{x+dx}" cy="{y+dy}" rx="{rng.randint(9,19)}" ry="{rng.randint(4,8)}" fill="{ink}" opacity=".5" transform="rotate({angle} {x+dx} {y+dy})"/>')
     if n%8==0:shapes.append(f'<path d="M{x-9} {y+3}l3 -9 9 -2 6 7 -4 7Z" fill="#63796c" opacity=".36"/>')
    elif key=='lake':shapes.append(f'<path d="M{x-14} {y}q9 -5 18 -1t15 -2" fill="none" stroke="{ink}" stroke-width="2" opacity=".5" stroke-linecap="round"/>')
    elif key=='desert':shapes.append(f'<path d="M{x-16} {y+3}q15 -9 31 -1 M{x-9} {y+8}q11 -5 21 -1" fill="none" stroke="{ink}" stroke-width="1.5" opacity=".45"/>')

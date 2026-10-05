@@ -13,7 +13,7 @@ export function drawMatteBody(ctx,e,r,zoom,flash=false){
  ctx.stroke();ctx.restore();
 }
 export function drawSpeciesMark(ctx,e,zoom){
- if(e.behavior==='orb'||e.size<70||e.size*zoom<36)return;
+ if(e.behavior==='orb'||e.size*zoom<12)return;
  const r=Math.min(e.size*.24,12/zoom);ctx.save();ctx.translate(e.x,e.y);ctx.strokeStyle='rgba(255,255,255,.65)';ctx.fillStyle='rgba(255,255,255,.65)';ctx.lineWidth=Math.max(1/zoom,r*.13);ctx.lineCap='round';
  ctx.beginPath();
  if(e.color==='cyan'){for(let i=0;i<3;i++){const angle=i*Math.PI/3;ctx.moveTo(-Math.cos(angle)*r,-Math.sin(angle)*r);ctx.lineTo(Math.cos(angle)*r,Math.sin(angle)*r);}}
