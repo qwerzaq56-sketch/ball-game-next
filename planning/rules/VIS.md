@@ -1,5 +1,18 @@
 # 표현 규칙 (VIS)
 
+### R-VIS-006 · 승인 공·지형 아트 팩 연결
+- 규칙: 전투 몸체는 승인된 평면 색 면·얇은 윤곽·절제된 내부 아래 음영을 사용한다. 기존 종족 문양/직위/피격 표식은 유지한다. 지형6종 SVG는 한번 렌더/캐시하고 좌표 기반 변형과 경계 합성을 사용한다. 자산 실패/아트 OFF는 기존 단색 폴백. 실제 크기·판정·게임 난수는 바꾸지 않는다.
+- 상태: 승인
+- 출처: 사용자 2026-10-05 공·T2 승인, 전체 컨셉 구현 진행 승인 및 실제 리소스 반영 허용(2026-10-06)
+- 확인:
+  - symbol js/vectorArt.js :: drawMatteBody
+  - file assets/terrain/manifest.json
+  - symbol js/terrainArt.js :: TerrainArt
+  - test tests/matte-body.test.mjs :: R-VIS-001 matte body keeps exact silhouette
+  - test tests/terrain-art.test.mjs :: R-VIS-006 terrain variant remains stable
+  - test tests/terrain-art.test.mjs :: R-VIS-006 terrain loading/off states preserve original fallback
+- 변경 이력: 야간 첫 연결본. 경계 페더링과 단순 패턴은 원화 유기적 형태 개선·코너/토러스 추가 검증을 이어간다.
+
 도메인 규칙 카드. 형식은 `README.md`. 표현은 게임 상태·난수·판정을 바꾸지 않는다(실제 몸은 항상 size/2). 승인: 사용자 2026-10-04 "구현 초과는 플레이해 보고 구현한 것이니 승인". 지형 아트 리소스는 `03_아트/29_지형_리소스_요청_팩.md`(미제작).
 
 ### R-VIS-001 · 색별 벡터 문양과 성장 링

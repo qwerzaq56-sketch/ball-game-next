@@ -8,7 +8,7 @@ import {worldView,boxInView,segmentInView} from './renderVisibility.js';
 import { clampEntity } from './worldBounds.js';
 import { Autoplay } from './autoplay.js';
 import { RunMetrics } from './runMetrics.js';
-import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection } from './vectorArt.js';
+import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection,drawMatteBody } from './vectorArt.js';
 import { Relics } from './relics.js';
 import { Era } from './era.js';
 import { Biomes } from './biomes.js';
@@ -981,21 +981,16 @@ export class Game {
     if(e.healFraction){ctx.save();ctx.strokeStyle='#ffffff';ctx.lineWidth=2/this.camera.zoom;ctx.beginPath();ctx.moveTo(e.x-5/this.camera.zoom,e.y);ctx.lineTo(e.x+5/this.camera.zoom,e.y);ctx.moveTo(e.x,e.y-5/this.camera.zoom);ctx.lineTo(e.x,e.y+5/this.camera.zoom);ctx.stroke();ctx.restore();}
     if(e.regionReward==='snow'&&e.behavior==='orb'){ctx.save();ctx.strokeStyle='#e0f2fe';ctx.lineWidth=1/this.camera.zoom;ctx.beginPath();for(let i=0;i<6;i++){const angle=i*Math.PI/3;ctx.moveTo(e.x,e.y);ctx.lineTo(e.x+Math.cos(angle)*(r+5),e.y+Math.sin(angle)*(r+5));}ctx.stroke();ctx.restore();}
     if(e.attackState==='CHARGING'){ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.strokeStyle='#ffffff';ctx.lineWidth=4/this.camera.zoom;ctx.stroke();}
-    // shadow
-    ctx.beginPath();
-    ctx.fillStyle = 'rgba(0,0,0,0.35)';
-    ctx.ellipse(e.x, e.y + r * 0.15, r * 0.95, r * 0.6, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // body
-    ctx.beginPath();
-    ctx.fillStyle = (e.hitVisualUntil!=null?e.hitVisualUntil-this.gameTime>.12:e.hitFlash>0) ? '#ffffff' : e.colorHex;
-    ctx.arc(e.x, e.y, r, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.lineWidth = Math.max(1.5, r * 0.08);
-    ctx.strokeStyle = e.attackState==='CHARGING' ? '#ffffff' : e.behavior === 'player' ? '#ffffff' : (beingAbsorbed ? '#ffffff' : 'rgba(0,0,0,0.45)');
-    ctx.stroke();
+    // R-VIS-001: matte combat units, keep passive food rendering unchanged.
+    const flashing=(e.hitVisualUntil!=null?e.hitVisualUntil-this.gameTime>.12:e.hitFlash>0);
+    if(e.behavior!=='orb')drawMatteBody(ctx,e,r,this.camera.zoom,flashing);
+    else {
+      ctx.beginPath();ctx.fillStyle='rgba(0,0,0,0.35)';
+      ctx.ellipse(e.x,e.y+r*.15,r*.95,r*.6,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.fillStyle=flashing?'#ffffff':e.colorHex;
+      ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.fill();
+      ctx.lineWidth=Math.max(1.5,r*.08);ctx.strokeStyle=beingAbsorbed?'#ffffff':'rgba(0,0,0,0.45)';ctx.stroke();
+    }
     // Canvas save/restore does not restore the current path. Stroke the body before
     // decorative helpers replace it with their marks, pulse circles or arrow triangles.
     if((e.hitVisualUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+3/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle=e.hitVisualShield?'#a5f3fc':'#ffffff';ctx.globalAlpha=Math.min(1,(e.hitVisualUntil-this.gameTime)/.18);ctx.lineWidth=4/this.camera.zoom;ctx.stroke();ctx.restore();}

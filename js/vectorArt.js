@@ -1,4 +1,17 @@
 // Presentation only: exact body radius remains size / 2; no gameplay RNG is consumed.
+// R-VIS-001: approved matte concept, body silhouette independent of overlays.
+export function drawMatteBody(ctx,e,r,zoom,flash=false){
+ ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);
+ ctx.fillStyle=flash?'#ffffff':e.colorHex;ctx.fill();
+ // Keep the small lower shade INSIDE the round body; no glossy highlight dots.
+ ctx.save();ctx.clip();ctx.beginPath();
+ ctx.ellipse(e.x,e.y+r*1.03,r*1.08,r*.22,0,0,Math.PI*2);
+ ctx.fillStyle='rgba(0,0,0,.16)';ctx.fill();ctx.restore();
+ ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);
+ ctx.lineWidth=Math.min(2/zoom,Math.max(.8/zoom,r*.025));
+ ctx.strokeStyle=e.attackState==='CHARGING'||e.beingAbsorbedByRef?'#ffffff':e.colorHex;
+ ctx.stroke();ctx.restore();
+}
 export function drawSpeciesMark(ctx,e,zoom){
  if(e.behavior==='orb'||e.size*zoom<12)return;
  const r=Math.min(e.size*.24,12/zoom);ctx.save();ctx.translate(e.x,e.y);ctx.strokeStyle='rgba(255,255,255,.65)';ctx.fillStyle='rgba(255,255,255,.65)';ctx.lineWidth=Math.max(1/zoom,r*.13);ctx.lineCap='round';

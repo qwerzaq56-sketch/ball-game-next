@@ -1,6 +1,7 @@
 export function terrainDamageMultiplier(size,balance){return 1/(1+Math.max(0,size-40)/(balance.biomes.terrainDefenseScale??200));}
 export function lavaResistance(e,balance){const c=balance.biomes;return e.color==='red'?Math.min(Math.max(0,c.maxRedLavaResistance??.85),.95,Math.max(0,e.size*(c.redLavaResistancePerSize??0))):0;}
 import {delta,angleTo,wrap} from './topology.js';
+import {TerrainArt} from './terrainArt.js';
 import {dist} from './collision.js';
 import { boundCenter } from './worldBounds.js';
 import {random} from './random.js';
@@ -8,7 +9,7 @@ import {spawnOrb} from './spawning.js';
 import {applyDamage} from './combat.js';
 export class Biomes {
  constructor(game){
-  this.game=game;this.enabled=game.balance.biomes?.enabled!==false;this.encounterTimer=45;this.damageTimer=0;this.encounters=0;this.sandstorms=[];this.sandstormTimer=5;
+  this.game=game;this.terrainArt=new TerrainArt();this.enabled=game.balance.biomes?.enabled!==false;this.encounterTimer=45;this.damageTimer=0;this.encounters=0;this.sandstorms=[];this.sandstormTimer=5;
   const w=game.balance.world,r=Math.min(w.worldWidth,w.worldHeight)*.22;
   this.regions=this.enabled?[
    {id:'forest',name:'숲',x:w.worldWidth*.22,y:w.worldHeight*.22,radius:r,color:'#205c3b',reward:1.25},
@@ -141,16 +142,17 @@ export class Biomes {
   ctx.save();
   for(const tile of this.tiles){
    if(tile.x+this.tile<camera.x-halfW||tile.x>camera.x+halfW||tile.y+this.tile<camera.y-halfH||tile.y>camera.y+halfH)continue;
-   const r=tile.region;ctx.fillStyle=r.color+'88';ctx.fillRect(tile.x,tile.y,this.tile,this.tile);
+   const r=tile.region,painted=this.terrainArt.drawTile(ctx,tile,this);
+   if(!painted){ctx.fillStyle=r.color+'88';ctx.fillRect(tile.x,tile.y,this.tile,this.tile);}
    if(r.id==='snow'&&this.blizzard()){ctx.fillStyle='rgba(224,242,254,.22)';ctx.fillRect(tile.x,tile.y,this.tile,this.tile);ctx.strokeStyle='rgba(240,249,255,.65)';ctx.lineWidth=1.5/zoom;
     for(let i=0;i<5;i++){const x=tile.x+24+(i*37)%150,y=tile.y+25+(i*61)%150;ctx.beginPath();ctx.moveTo(x-5,y);ctx.lineTo(x+5,y);ctx.moveTo(x,y-5);ctx.lineTo(x,y+5);ctx.stroke();}}
 
-   ctx.strokeStyle=r.id==='snow'?'rgba(235,248,255,.45)':r.color;ctx.lineWidth=1.5/zoom;
+   if(!painted){ctx.strokeStyle=r.id==='snow'?'rgba(235,248,255,.45)':r.color;ctx.lineWidth=1.5/zoom;
    for(let i=0;i<3;i++){const x=tile.x+32+i*57,y=tile.y+40+(i*53)%130;ctx.beginPath();
     if(r.id==='forest'){ctx.moveTo(x-12,y+15);ctx.lineTo(x,y-17);ctx.lineTo(x+12,y+15);}
     else if(r.id==='lake'){ctx.arc(x,y,18,0,Math.PI);}
     else {ctx.moveTo(x-9,y+5);ctx.lineTo(x,y-6);ctx.lineTo(x+9,y+5);}ctx.stroke();
-   }
+   }}
   }
   if(this.rivers.length){
    const path=()=>{ctx.beginPath();let previous=null;for(const h of this.rivers){if(!previous||dist(previous,h)>110)ctx.moveTo(h.x,h.y);else ctx.lineTo(h.x,h.y);previous=h;}};

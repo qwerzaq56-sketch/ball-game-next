@@ -1,0 +1,31 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {TerrainArt,terrainVariant} from '../js/terrainArt.js';
+import {resetRandom,random} from '../js/random.js';
+test('R-VIS-006 terrain variant remains stable for a 2x2 block without gameplay RNG',()=>{
+ resetRandom(34);const expected=random('world');resetRandom(34);
+ for(const x of [-800,0,400,7600])for(const y of [-400,0,1200]){
+  const v=terrainVariant(x,y);assert(v>=0&&v<3);
+  assert.equal(terrainVariant(x+200,y+200),v);
+ }
+ assert.equal(random('world'),expected);
+});
+test('R-VIS-006 terrain loading/off states preserve original fallback and never mutate biome classification',()=>{
+ const art=new TerrainArt(),tile={x:0,y:0,region:{id:'grassland'}},calls=[];
+ const ctx={drawImage(...args){calls.push(args);}},biomes={game:{balance:{world:{worldWidth:8000,worldHeight:8000}}},regionAt(){return tile.region;}};
+ assert.equal(art.drawTile(ctx,tile,biomes),false);assert.equal(calls.length,0);
+ const textures=[{}, {}, {}];art.tiles.set('grass',textures);art.ready=true;
+ assert.equal(art.drawTile(ctx,tile,biomes),true);assert.equal(calls.length,1);
+ assert.deepEqual(calls[0].slice(1),[0,0,200,200,0,0,200,200]);
+ art.setEnabled(false);assert.equal(art.drawTile(ctx,tile,biomes),false);
+ assert.deepEqual(tile,{x:0,y:0,region:{id:'grassland'}});
+});
+test('R-VIS-006 terrain manifest resolves all six biome packs and 8 masks within 2MB',()=>{
+ const root=new URL('../assets/terrain/',import.meta.url),m=JSON.parse(fs.readFileSync(new URL('manifest.json',root)));
+ assert.equal(Object.keys(m.biomes).length,6);assert.equal(Object.keys(m.transitionMasks).length,8);
+ let bytes=0;for(const file of [...Object.values(m.biomes).flatMap(b=>b.files),...Object.values(m.transitionMasks)]){
+  const data=fs.readFileSync(new URL(file,root));bytes+=data.length;assert.match(data.toString(),/<svg /);
+ }
+ assert(bytes<2_000_000);
+});

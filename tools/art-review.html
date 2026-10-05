@@ -1,0 +1,25 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>실제 게임 렌더 · 아트 검증</title>
+<style>body{margin:18px;background:#0b1020;color:#e2e8f0;font:15px system-ui}canvas{width:100%;max-width:1280px;border:1px solid #334155}button{padding:9px;margin:5px}h2{font-size:18px}</style>
+<h1>실제 Game.render · 6지역 통제 장면</h1><p>실제 게임 렌더러로 고정 개체를 배치한 검증 화면. 자연 플레이 결과는 별도 확인.</p>
+<button id="zoom">배율 0.5 / 1.0</button><button id="art">지형 아트 ON / OFF</button><p id="state">자산 로딩 중</p><main></main>
+<script type="module">
+import {Game} from '../js/game.js';import {AIEntity} from '../js/ai.js';
+const balance=await (await fetch('../config/gameBalance.json')).json(),scenes=[];
+let zoom=.5,enabled=true;
+for(const id of ['grassland','forest','lake','snow','volcano','desert']){
+ const section=document.createElement('section');section.innerHTML=`<h2>${id}</h2><canvas width="1280" height="720"></canvas>`;document.querySelector('main').append(section);
+ const canvas=section.querySelector('canvas'),input={keys:new Set(),mouseX:1000,mouseY:360,mouseDown:false,consumeDodge:()=>false},ui={showUnlock(){},showDefeatMessage(){},preferences:{names:false}};
+ const g=new Game(structuredClone(balance),canvas,input,ui,{seed:44});
+ const label=g.biomes.labels.find(r=>r.id===id);g.player.x=label.x;g.player.y=label.y;g.player.size=60;g.player.visualSize=60;g.player.attackUnlocked=true;
+ g.camera={x:label.x,y:label.y,zoom};g.gameTime=2;
+ // Controlled color/readability samples use the real AI body and attack renderer.
+ for(const [i,c]of balance.colors.entries()){
+  const e=new AIEntity({x:label.x-340+i*150,y:label.y+150,color:c.id,colorHex:c.color,balance:g.balance,startSize:40+i*5});g.entities.push(e);
+ }
+ g.entities.push(new AIEntity({x:label.x-90,y:label.y,color:g.player.color,colorHex:g.player.colorHex,balance:g.balance,startSize:30}));
+ input.mouseDown=true;g.player.attackHoldProgress=.6;g.biomeObjects.sync();
+ await g.biomes.terrainArt.loading;scenes.push(g);
+}
+const render=()=>{for(const g of scenes){g.camera.zoom=zoom;g.biomes.terrainArt.setEnabled(enabled);g.render();}document.querySelector('#state').textContent=`${scenes.every(g=>g.biomes.terrainArt.ready)?'SVG 로딩 완료':'단색 폴백'} · 배율 ${zoom} · 아트 ${enabled?'ON':'OFF'}`;};
+document.querySelector('#zoom').onclick=()=>{zoom=zoom===.5?1:.5;render();};document.querySelector('#art').onclick=()=>{enabled=!enabled;render();};render();
+</script></html>

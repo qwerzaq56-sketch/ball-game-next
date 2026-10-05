@@ -108,6 +108,8 @@ async function main() {
   const designerReview=new DesignerReview(()=>game);window.__designerReview=designerReview;designerReview.start();
   const labLink=document.createElement('a');labLink.href='simulation-room.html';labLink.textContent='시뮬레이션 룸';labLink.className='hud-btn';ui.debugPanel.append(labLink);
   const answerButton=document.createElement('button');answerButton.textContent='기획 의견 JSON';answerButton.onclick=()=>designerReview.export();ui.debugPanel.append(answerButton);
+  const terrainButton=document.createElement('button');terrainButton.textContent='지형 아트 ON';terrainButton.className='hud-btn';terrainButton.setAttribute('aria-pressed','true');
+  terrainButton.onclick=()=>{const art=game.biomes.terrainArt;art.setEnabled(!art.enabled);terrainButton.textContent=`지형 아트 ${art.enabled?'ON':'OFF'}`;terrainButton.setAttribute('aria-pressed',String(art.enabled));};ui.debugPanel.append(terrainButton);
   window.__game = game; // debug inspection hook
   const playControls=new PlayControls(game,input);
   const touchControls=new TouchControls(game,input,canvas);
