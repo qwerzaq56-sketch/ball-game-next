@@ -6,9 +6,9 @@ export class BiomeObjects{
  constructor(game){this.game=game;this.objects=[];this.cooldowns=new Map();this.signature='';this.events=[];}
  sync(){const preset=objectPreset(this.game.balance),signature=JSON.stringify(preset);if(signature===this.signature)return;this.signature=signature;this.objects=[];
   for(const id of preset.enabled){const cfg={...BIOME_OBJECTS[id],...preset.overrides[id]},tiles=this.game.biomes.tiles.filter(t=>t.region.id===cfg.region);if(!tiles.length)continue;let hash=(this.game.seed>>>0);for(const char of id)hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;
-   for(let i=0;i<preset.countPerType;i++){const t=tiles[(hash+i*137)%tiles.length],o={id:`${id}:${i}`,candidate:id,config:cfg,x:t.x+100,y:t.y+100,_world:this.game.balance.world,phase:i*2};
+   for(let i=0;i<(id==='desert-oasis'?Math.max(1,Math.ceil(preset.countPerType/3)):preset.countPerType);i++){const t=tiles[(hash+i*137)%tiles.length],o={id:`${id}:${i}`,candidate:id,config:cfg,x:t.x+100,y:t.y+100,_world:this.game.balance.world,phase:i*2};
     if(cfg.effect==='current'){const a=((hash+i)%4)*Math.PI/2,w=this.game.balance.world;o.points=[{x:o.x,y:o.y}];for(const sign of [-1,1]){const side=[];for(let k=1;k<=cfg.pathSteps;k++){const p={x:wrap(o.x+Math.cos(a)*k*200*sign,w.worldWidth),y:wrap(o.y+Math.sin(a)*k*200*sign,w.worldHeight)};if(this.game.biomes.regionAt(p)?.id!=='lake')break;side.push(p);}o.points=sign<0?[...side.reverse(),...o.points]:[...o.points,...side];}if(o.points.length<2)o.points=[{x:o.x,y:o.y},{x:o.x+Math.cos(a)*60,y:o.y+Math.sin(a)*60}];o.width=Math.min(cfg.widthMax,Math.max(cfg.widthMin,cfg.widthMin+(hash+i*37)%(Math.max(1,cfg.widthMax-cfg.widthMin+1))));o.reach=cfg.pathSteps*200+o.width;}
-    this.objects.push(o);
+    const scale=.8+((hash+i*73)%401)/1000;o.visualScale=scale;o.config={...cfg,radius:cfg.radius*scale*(id==='desert-oasis'?1.6:1),...(id==='desert-oasis'?{power:cfg.power*2}:{})};this.objects.push(o);
    }
   }
  }
@@ -23,7 +23,7 @@ export class BiomeObjects{
    const environmental=['vent','current','vortex'].includes(c.effect);const continuous=['desert-oasis','snow-shelter'].includes(o.candidate);if(!environmental&&!continuous&&!ready)continue;
    const actors=g.getNearbyEntities(o,(o.reach??c.radius)+maxRadius).filter(e=>e.alive&&(['player','ai'].includes(e.behavior)||['current','vortex'].includes(c.effect)&&e.behavior==='orb')).filter(e=>c.effect==='current'?this.currentVector(o,e):dist(o,e)<=c.radius+e.size/2).sort((a,b)=>dist(o,a)-dist(o,b)||a.id-b.id);
    if(environmental){for(const e of actors){if(c.effect==='vent'){if(ready&&this.activeVent(o))applyDamage(e,e.maxHp*c.hpFraction*c.tickInterval,g,null,g.balance,{kind:'field',ignoreDefense:true,postDefenseMultiplier:terrainDamageMultiplier(e.size,g.balance),knockback:false});continue;}
-     if(c.effect==='vortex'&&dist(o,e)>c.radius)continue;const v=c.effect==='current'?this.currentVector(o,e):delta(e,o),len=Math.hypot(v.x,v.y);if(!len)continue;const move=c.effect==='current'?c.speed*dt:Math.min(len,c.speed*dt*Math.max(.15,1-len/c.radius));e.x=wrap(e.x+v.x/len*move,g.balance.world.worldWidth);e.y=wrap(e.y+v.y/len*move,g.balance.world.worldHeight);
+     if(c.effect==='vortex'&&dist(o,e)>c.radius)continue;const v=c.effect==='current'?this.currentVector(o,e):delta(e,o),len=Math.hypot(v.x,v.y);if(!len)continue;const resistance=e.behavior==='orb'?c.speed:Math.min(c.speed,e.moveSpeed*(g.biomes.moveMultiplier(e)??1)*.25);const move=c.effect==='current'?resistance*dt:Math.min(len,c.speed*dt*Math.max(.15,1-len/c.radius));e.x=wrap(e.x+v.x/len*move,g.balance.world.worldWidth);e.y=wrap(e.y+v.y/len*move,g.balance.world.worldHeight);
     }if(c.effect==='vent'&&ready&&this.activeVent(o))this.cooldowns.set(o.id,now+c.tickInterval);continue;}
    // User: these landmarks benefit every actor remaining inside; no shared consumption.
    if(continuous){for(const e of actors){if(c.effect==='heal')e.hp=Math.min(e.maxHp,e.hp+e.maxHp*c.power/Math.max(.001,c.cooldown)*dt);}continue;}

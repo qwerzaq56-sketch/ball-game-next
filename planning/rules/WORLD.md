@@ -185,3 +185,10 @@
 - 출처: 사용자 직접 지시 2026-10-06. 오아시스 회복률은 기존 power/cooldown 환산(Codex 구현 선택), 기본 최대HP의 초당0.5%.
 - 확인:
   - test tests/biome-objects.test.mjs :: oasis continuously heals all occupants without shared cooldown, and stops on exit
+
+### R-WORLD-015 · 역주행과 객체 크기 다양화
+- 규칙: 해류의 전투 개체 표류 속도를 실제 기본 이동 능력25% 이하로 제한하여 역주행 허용, 먹이 표류 유지. 객체는 seed 고정0.8~1.2배 본체/범위, 작은 오아시스는 개수1/3·추가반경1.6배·회복2배. 기존 오아시스 기본6개/초당0.5%는 기본2개/초당1%로 대체.
+- 상태: 승인
+- 출처: 사용자 직접 요청2026-10-06, 비율은 Codex 구현 선택
+- 확인:
+  - test tests/biome-objects.test.mjs :: current counterflow cannot overpower ordinary actor movement and object scales repeat deterministically

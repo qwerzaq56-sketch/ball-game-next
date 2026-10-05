@@ -12,7 +12,7 @@ export function drawActionArt(ctx,e,game,r,zoom){
 }
 // R-VIS-005: landmark silhouettes distinguish resources without heavy animated filters.
 export function drawObjectArt(ctx,o,zoom,ready=true){
- const c=o.config;ctx.save();ctx.translate(o.x,o.y);ctx.scale(1/zoom,1/zoom);ctx.lineWidth=1.5;
+ const c=o.config;ctx.save();ctx.translate(o.x,o.y);ctx.scale((o.visualScale??1)/zoom,(o.visualScale??1)/zoom);ctx.lineWidth=1.5;
  if(drawRevisedLandmark(ctx,o,ready)){ctx.restore();return;}
  const disc=(x,y,r,color)=>{ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();};
  if(c.effect==='charm'&&o.candidate.includes('lake')){ctx.fillStyle='#fef3c7';ctx.strokeStyle='#f59e0b';ctx.beginPath();ctx.moveTo(0,12);ctx.lineTo(-17,-1);ctx.lineTo(-13,-12);ctx.lineTo(0,-17);ctx.lineTo(13,-12);ctx.lineTo(17,-1);ctx.closePath();ctx.fill();ctx.stroke();for(const x of [-9,0,9]){ctx.beginPath();ctx.moveTo(0,12);ctx.lineTo(x,-12);ctx.stroke();}disc(0,0,4,'#fff');}

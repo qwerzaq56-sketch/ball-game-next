@@ -65,3 +65,10 @@
 - 출처: 사용자 직접 지시 2026-10-06
 - 확인:
   - test tests/vector-art.test.mjs :: attack preview turns red for locked, empty, frozen, dodging and recovering player
+
+### R-VIS-008 · 최소 순위 종족색
+- 규칙: 최소 순위표에도 종족색 점을 표시하며 이름/직위/점수 유지.
+- 상태: 승인
+- 출처: 사용자 직접 요청2026-10-06
+- 확인:
+  - file css/style.css

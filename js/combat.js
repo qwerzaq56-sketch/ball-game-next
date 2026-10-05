@@ -22,7 +22,7 @@ import {angleTo,delta} from './topology.js';
 // Dodge distance switches from the exponential Size curve to the flat linear one the spec
 // gives directly (spec §6): `baseDistance + size * distanceGrowth`.
 
-import {isHostile} from './collision.js';
+import {isHostile,dist} from './collision.js';
 import { cancelAbsorption } from './absorption.js';
 
 export function attackDamageForSize(size, balance) {
@@ -89,9 +89,11 @@ export function canStartAttack(entity) {
 }
 
 export function aiAttackCharge(entity,balance){
- const target=entity.target;if(!target?.alive||!isHostile(entity,target))return balance.attack.aiChargeFraction??.75;
- const d=delta(entity,target),gap=Math.max(0,Math.hypot(d.x,d.y)-(entity.size+target.size)/2),full=attackChargeDistanceForSize(entity.size,balance,entity.apex);
- return Math.max(balance.attack.aiMinChargeFraction??.3,Math.min(1,(gap+target.size*.25)/Math.max(1,full)));
+ const target=entity.target;
+ const gap=target?.alive?Math.max(0,dist(entity,target)-(entity.size+target.size)/2):Infinity;
+ // Reserve hurried attacks for an incoming contact strike or an urgent escape.
+ const urgent=!!entity.beingAbsorbedByRef || (entity.state==='flee'&&entity.hp/entity.maxHp<=.3) || (target?.attackState==='CHARGING'&&gap<=60);
+ return urgent?(balance.attack.aiMinChargeFraction??.3):1;
 }
 export function startAttack(entity, dirAngle, balance,charge=entity.behavior==='ai'?aiAttackCharge(entity,balance):1) {
   const level=Math.max(0,Math.min(1,Number.isFinite(charge)?charge:0)),minPower=balance.attack.minChargeDamageMultiplier??.35;

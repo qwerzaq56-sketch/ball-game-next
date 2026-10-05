@@ -98,3 +98,10 @@
 - 출처: 사용자 직접 지시 2026-10-06. 일반 교전 선행으로 회수 우선순위가 밀리는 원인 확인.
 - 확인:
   - test tests/ai-rules.test.mjs :: safe valuable death rewards interrupt optional fighting but never override survival
+
+### R-AI-012 · 기본 풀차징 공격
+- 규칙: 거리와 무관하게 기본 풀차징, 흡수 탈출·HP30%이하 도주·표면거리60이내 적 돌진만 최소 충전0.3 허용. 기존 거리별 AI 충전 규칙 대체.
+- 상태: 승인
+- 출처: 사용자 직접 지시2026-10-06
+- 확인:
+  - test tests/charge-weather-risk.test.mjs :: AI prefers full charge and only shortens for incoming contact strikes
