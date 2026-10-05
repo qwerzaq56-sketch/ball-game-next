@@ -258,3 +258,4 @@ main4c001c2→b85e221 강제없는fast-forward,아트브랜치push완료. GitHub
 
 ## 캐릭터·공통 효과 실제 연결 · 2026-10-06 07시 묶음
 원화 exact crop 직접참조로 몸체3단계/5색, 차징·피격·회피·보호·강화·서리해제·회복7질감, 성장ring 실제Game.render 연결. 광원고정/기존문양·방향·범위벡터 유지. 피격은실제contact particle만, 회복/냉기해제는실제성공타이머만. 흡수질감은거친파편이남아보존/미연결.402테스트통과,6지역줌.5/1·5색·이동·중첩·수혜/비수혜·접촉점 검수/캡처/오류경고0. 추적기존AI충돌1/옛확인식3는남음,게임코드변경없음. 상세 reports/CHARACTERS_EFFECTS_20261006.md. 다음종족능력새pack병렬제작중,08:16큰릴리즈목표/13시마감유지. main/Pages미공개.
+07:29 KST: afd35f8 아트브랜치 push, 외부 고정커밋 fixture body ready/7effects loaded/failed[]/requested[]·오류경고0 확인. 0d5b143에 다음릴리즈후보 기록. main/Pages는 기존공개 상태 유지,08:16큰묶음릴리즈대기.
