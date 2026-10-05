@@ -1,0 +1,398 @@
+{
+  "version": 1,
+  "scope": "13 current planned object identities; archived function aliases reuse these identities",
+  "finalLook": "gameplay-regions-a-001",
+  "generation": "built-in imagegen, one call per item",
+  "items": [
+    {
+      "id": "grass-garland",
+      "name": "꽃무리 · 꽃 치장",
+      "region": "grassland",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\grass-garland\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-a-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3a-001.png",
+      "crop": [
+        230,
+        8,
+        560,
+        139
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: small cream flower cluster with dark green leaves. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\grass-garland\\asset.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "fecdcc49f9f314a2a6a6abf06b4b183db7ebe5dad96a33871d16e8bd159ad5d6",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-6b13dcf4-a7a5-4967-948e-386717aadb59.png"
+    },
+    {
+      "id": "grass-wind-stack",
+      "name": "바람돌 · 3스택",
+      "region": "grassland",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\grass-wind-stack\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-a-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3a-001.png",
+      "crop": [
+        230,
+        154,
+        560,
+        285
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: grey wind stone with pale carved spiral. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\grass-wind-stack\\asset.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "6e1bba681f6c22e9995ce4d0474e27bab0323976af6821a4fe9f08b2824c377a",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-f3efcf2a-ed97-4148-a3e2-ef26eb87b81e.png"
+    },
+    {
+      "id": "forest-berry-grove",
+      "name": "열매 덤불 · 먹이/회복",
+      "region": "forest",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\forest-berry-grove\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-a-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3a-001.png",
+      "crop": [
+        230,
+        300,
+        560,
+        431
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: rounded low dark green bush with red berries. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\forest-berry-grove\\asset.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "e8fd6a8cb5f7263d23fd92eafa7343a7aebbfe735ab236a438b3602374cbb733",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-691b1273-a5ad-421a-872d-451d0a1910b6.png"
+    },
+    {
+      "id": "forest-tree",
+      "name": "수호 고목",
+      "region": "forest",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\forest-tree\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-a-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3-r2-001.png",
+      "crop": [
+        140,
+        12,
+        380,
+        214
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: short thick trunk and rounded layered guardian canopy. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\forest-tree\\asset.png",
+      "size": [
+        1367,
+        1150
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "0711472b40fbdbbe592f87f6947e97ae1f3ecfa45a806b768c337814f0b9e2bc",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-1430099b-6444-402a-a1ec-937086f27469.png"
+    },
+    {
+      "id": "lake-garland",
+      "name": "진주 조개밭 · 조개 치장",
+      "region": "lake",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\lake-garland\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-a-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3a-001.png",
+      "crop": [
+        230,
+        592,
+        560,
+        723
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: three open pale shells with pearls. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\lake-garland\\asset.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "6e4633c83b9a4c8d37f2066a9c794eb72fb3bade581d2fa4d402212849afebdc",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-cd55d1a2-3c1b-486b-aba7-ddc3c75e1025.png"
+    },
+    {
+      "id": "lake-current",
+      "name": "해류",
+      "region": "lake",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\lake-current\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-a-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3b-001.png",
+      "crop": [
+        230,
+        8,
+        560,
+        163
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: gently curved blue current ribbon; no baked arrows. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\lake-current\\asset.png",
+      "size": [
+        1944,
+        809
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "632f3bcc7fce1dc7dc3fb6b40517ddc6b01cc1602293602871d16124130d7f75",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-308c4382-f86c-438a-b60b-d054507a79bd.png"
+    },
+    {
+      "id": "lake-vortex",
+      "name": "소용돌이",
+      "region": "lake",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\lake-vortex\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-a-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3b-001.png",
+      "crop": [
+        230,
+        178,
+        560,
+        333
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: blue spiral whirlpool; no baked danger ring. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\lake-vortex\\asset.png",
+      "size": [
+        1510,
+        1042
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "db027d5d168548aa487b56e661597b135c28f570ffc4e7547144e92ad53cc688",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-3befad7f-ec0a-476d-a6be-076e2968aec2.png"
+    },
+    {
+      "id": "snow-flowers",
+      "name": "얼음꽃 군락",
+      "region": "snow",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\snow-flowers\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-b-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3-r2-001.png",
+      "crop": [
+        140,
+        268,
+        390,
+        494
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: three crystalline blue ice flowers with small cream centers. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\snow-flowers\\asset.png",
+      "size": [
+        1319,
+        1192
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "c74ee4a0f63ce15a28d97852e03eba5029d5c7a12fb690657b5fbad485954aa6",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-17479685-f704-4e35-864d-5d099cb7d6c5.png"
+    },
+    {
+      "id": "snow-shelter",
+      "name": "서리 피난석",
+      "region": "snow",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\snow-shelter\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-b-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3-r2-001.png",
+      "crop": [
+        110,
+        518,
+        410,
+        741
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: low semicircle of snow-capped rocks, not a cave doorway. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\snow-shelter\\asset.png",
+      "size": [
+        1455,
+        1081
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "4ffc3c721dc6448ba9afda33d4d2af09a5e55d72ae8d140c8eedb116160b856a",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-f637b7db-ce5d-4b9e-aa6f-b3fdb8826e4a.png"
+    },
+    {
+      "id": "desert-oasis",
+      "name": "작은 오아시스",
+      "region": "desert",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\desert-oasis\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-b-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3-r2-001.png",
+      "crop": [
+        110,
+        770,
+        430,
+        1014
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: small teal pool edged by warm rocks, reeds and lily pads, no palm tree. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\desert-oasis\\asset.png",
+      "size": [
+        1436,
+        1095
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "0757c3207628c3aef3012747e19345bca991c350418d0df2e5b709e3d8757615",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-815c1703-5904-4cd0-8cad-79544eaeb1c4.png"
+    },
+    {
+      "id": "desert-obelisk",
+      "name": "모래 비석",
+      "region": "desert",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\desert-obelisk\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-b-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3b-001.png",
+      "crop": [
+        230,
+        518,
+        560,
+        673
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: angular warm sandstone standing slab with subtle carved spiral. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\desert-obelisk\\asset.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "6cfb7147260312b9911165dc0ea1f37db349d367dcbe2e14b58951c336cd3122",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-50b8d201-62f7-41a9-aef8-40edfe70814f.png"
+    },
+    {
+      "id": "volcano-obsidian-stack",
+      "name": "흑요석 광맥 · 보호막",
+      "region": "volcano",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\volcano-obsidian-stack\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-b-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3b-001.png",
+      "crop": [
+        230,
+        688,
+        560,
+        843
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: dark violet angular obsidian crystal cluster. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\volcano-obsidian-stack\\asset.png",
+      "size": [
+        1829,
+        860
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "f10e63617adf280f7d574faff5cdc3bcbf9db6b4412ab4ae9f442db883b28c1d",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-4ab4e0aa-a41b-4fd6-986f-612e24f66b5f.png"
+    },
+    {
+      "id": "volcano-vent-cycle",
+      "name": "열기 분출구 · 주기 분출",
+      "region": "volcano",
+      "references": [
+        "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\volcano-vent-cycle\\reference.png",
+        "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\gameplay-regions-b-001.png"
+      ],
+      "originalReference": "F:\\GPT\\ball-game\\ball-game-next-art\\planning\\art-concepts\\objects-t3b-001.png",
+      "crop": [
+        230,
+        858,
+        560,
+        1013
+      ],
+      "prompt": "Extract and faithfully reconstruct only this planned game object: dark broken rock vent with restrained orange heat in the center. Reference 1 is the cropped original object design. Reference 2 is the authoritative FINAL GAMEPLAY LOOK: match its muted palette, broad flat organic color planes, soft restrained upper-left lighting, dark but subtle outlines, elevated top-down view and readable detail density. Overall harmony with reference 2 takes priority over copying every individual detail. Keep the object silhouette and gameplay identity of reference 1. Single isolated object on true transparency, centered with margin, no surrounding terrain, balls, UI, text, range rings, arrows or flying buff particles. Do not add glossy gradients, photoreal textures, tiny noisy leaves, exaggerated volume, new ornaments or a different camera. No rotation or mirroring of lighting. Preserve compact scene-scale proportions. For shelter and oasis keep a healthy continuous-benefit body, no depleted state. This is a reusable scene-coherent asset, not a redesign or a screenshot.",
+      "status": "generated-review-pending",
+      "output": "F:\\GPT\\ball-game\\ball-game-next-art\\assets\\art-batches\\scene-coherent-v1\\volcano-vent-cycle\\asset.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "sha256": "0cc6b62474fac3366826ebe575bdd4bf6e19da89f91a96f36ab6cba7094259ed",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a0fbae-07c4-7bc2-942a-f58c59669094\\exec-1adc1627-da31-4b6d-af3b-95035a7d6663.png"
+    }
+  ]
+}

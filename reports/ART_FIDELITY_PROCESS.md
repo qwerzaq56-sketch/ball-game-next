@@ -34,3 +34,13 @@ Extract and reconstruct the guardian tree from the supplied cropped ORIGINAL CON
 ## 03 · 전달 가능 잎 형상 개선
 
 원화의 작은 뾰족한 잎 쌍을 코드로 분리 표현. 타원→직선면 첫시도는 각져 보여 곡선으로 수정. guardian-002 본체/게임기능 유지. 준비 때 밝은 잎, 수혜후 작고 어두운 잎. 기존동작불변 테스트1통과·브라우저검증. reports/guardian-leaves-003.png. 원화의4잎 발광과 완전히 일치한 것은 아니며 과한 bloom 없이 최소 형태를 우선.
+
+## 04 · 전체 오브젝트 배치 실행 및 장면 원화 재구성
+
+사용자 직접 요청: 압축·반복 가능한 간단한 툴, 기획 오브젝트 전체 배치. art-batch.py prepare/record/status/pack과 비교페이지 제작. 현재 DEFAULT_OBJECT_IDS13종 전부 별도 imagegen 호출 완료, 원화 crop/정확한 prompt/원본PNG/알파/해시/시간 보존. 옛 기능 후보는 현재13외형의 별칭으로 묶음. 생성13/13, 오류0. 재prepare가 생성metadata/원본을 보존하고 record가 기존결과 덮어쓰기를 거부하는 실제검증 통과. 알파최대254인7항목도 투명최소0/최대250이상으로 인정, 픽셀수정없음.
+
+게임플레이 단계: 기존gameplay-regions-a/b와 기존오브젝트원화 및 신규대표자산을 함께 참조하여 gameplay-a-002 / b-002 생성. 참조최대5장 제한 때문에13자산모두를한번에입력하지않음. A실제참조:gameplay-regions-a-001,objects-t3a-001,배치forest-tree/grass-wind-stack/lake-garland. B실제참조:gameplay-regions-a-001,gameplay-regions-b-001,objects-t3-r2-001,배치snow-shelter/desert-oasis. 정확한프롬프트와원본모두보존.
+
+잠정관찰: 새장면은 원래 A의 넓은개방공간·색상공·변두리식생구성을유지하며신규고목/바람돌/조개와결합. 하지만A의마른나무묘사, B의다소강한세부밀도는후속일치검토대상. 새장면은실제플레이스크린샷이아니며후속렌더목표후보. 13종후보는게임에일괄반영하지않음; 전체장면자연스러움기준으로추후선택·룩조정.
+
+비교페이지13종DOM로딩확인. 브라우저스크린샷은CDP캡처시간초과로실패, 이를시각검증완료로주장하지않음. 리소스전체의스타일완전일치도미확정. 새장면2장은직접이미지검수.

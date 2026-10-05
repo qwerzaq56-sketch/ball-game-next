@@ -1,0 +1,8 @@
+<!doctype html><meta charset="utf-8"><title>Object batch review</title>
+<style>body{background:#233b35;color:#e4eade;font:15px system-ui;margin:20px}main{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}figure{margin:0;background:#304c40;padding:12px}img{width:100%;height:180px;object-fit:contain}figcaption{font-size:13px}a{color:#bae9d0}</style>
+<h1>원화 + 게임플레이 룩 · 오브젝트 13종 배치</h1><p>생성 후보 비교. 게임 적용/최종 룩 승인과 구분. 각 항목에서 잘라낸 원화와 정확한 프롬프트 확인 가능.</p><main></main><p id="summary"></p>
+<script type="module">
+const base='../assets/art-batches/scene-coherent-v1/',m=await(await fetch(base+'manifest.json')).json();
+for(const i of m.items){const f=document.createElement('figure');f.innerHTML=`<img src="${base+i.id}/asset.png" alt="${i.name}"><figcaption>${i.name}<br>${i.id} · ${i.status}<br><a href="${base+i.id}/reference.png">원화 영역</a> · <a href="${base+i.id}/prompt.txt">프롬프트</a></figcaption>`;document.querySelector('main').append(f);}
+document.querySelector('#summary').textContent=`${m.items.filter(i=>i.status==='generated-review-pending').length}/${m.items.length} 생성 완료 · 전체 화면 조화 검토 대기`;
+</script>
