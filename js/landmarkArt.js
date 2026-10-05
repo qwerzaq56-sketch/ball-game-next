@@ -51,7 +51,7 @@ export function loadLandmarkImages(){
   ['snow-flowers','../assets/art-batches/scene-coherent-v1/snow-flowers/overhead-states-002.png'],
  ].map(async([id,url])=>{
   try{
-   const image=new Image();image.src=new URL(url,import.meta.url).href;await image.decode();
+   const image=new Image();image.crossOrigin='anonymous';image.src=new URL(url,import.meta.url).href;await image.decode();
    if(id==='snow-flowers'){
     // Generated sheet: matched healthy bases, collectible petals on the left only.
     for(const [state,index]of [['ready',0],['post',1]]){

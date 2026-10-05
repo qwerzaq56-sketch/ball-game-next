@@ -189,3 +189,9 @@ scene-coherent-v1의 snow-shelter/desert-oasis PNG를 실제 landmarkArt256캐�
 
 ## 흡수/탈출 밸런스와 외부 공유 배포 · 사용자 직접 요청
 흡수속도4.2→1.4(동일조건시간3배), 흡수대상 몸 표면80거리 이내 회피거리0.35배/최대90, 경계까지smoothstep복원·매프레임현재거리평가. HP비례/비용/환급/원래이동거리·무적·스택 유지. R-ABS012 및3회귀테스트. 기존 대형AI추격완료 테스트5초→15초는요청3배에맞춰변경. 전체381/381, 로컬시작화면/게임로드오류0. 사용자외부공유최신링크요청으로ball-game-next main에아트포함커밋배포승인됨; 기존ball-game는미변경. origin/main3b9ac5b가아트HEAD의조상임확인, 강제없는fast-forward배포. release.json로실제배포버전식별.
+
+2026-10-06 사용자 명시 승인: 질문의 "main 반영 및 공개배포 승인" 선택으로 ball-game-next main/Pages 배포금지 해제(이번 검증커밋4c001c2 배포). 기존ball-game미변경. main3b9ac5b→4c001c2 fast-forward완료. Pages작업37367807705대기중, 아직공개최신버전확인전.
+
+외부배포 확인 보류: Pages run37367807705의build가GitHub대기열queued. 오류없음, release.json은아직404라최신배포완료로보고하지않음. 다음자동작업은새아트보다이배포상태확인우선. 성공시release.json의art-absorption-20261006-01확인후공개게임시작/PNG로드확인. 공개주소https://qwerzaq56-sketch.github.io/ball-game-next/ .
+
+Pages37367807705仍queued. 즉시외부플레이대안raw.githack커밋고정링크검증시 PNG지형은로드되나랜드마크alpha crop이cross-origin canvas보안에막혀벡터폴백관찰. landmark/environment이미지crossOrigin anonymous명시로해결진행. 최신공유링크는수정커밋고정URL로검증.

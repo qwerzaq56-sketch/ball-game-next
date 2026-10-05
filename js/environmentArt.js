@@ -25,7 +25,7 @@ function prepareImage(image,trim=true){
 export function loadEnvironmentImages(){
  if(loading)return loading;
  if(typeof document==='undefined'||typeof Image==='undefined')return Promise.resolve(false);
- loading=Promise.all(sources.map(async([id,url])=>{try{const image=new Image();image.src=new URL('../assets/art-batches/scene-coherent-v1/'+url,import.meta.url).href;await image.decode();images.set(id,prepareImage(image,!id.startsWith('volcano-vent-cycle')));return true;}catch{return false;}})).then(results=>results.every(Boolean));return loading;
+ loading=Promise.all(sources.map(async([id,url])=>{try{const image=new Image();image.crossOrigin='anonymous';image.src=new URL('../assets/art-batches/scene-coherent-v1/'+url,import.meta.url).href;await image.decode();images.set(id,prepareImage(image,!id.startsWith('volcano-vent-cycle')));return true;}catch{return false;}})).then(results=>results.every(Boolean));return loading;
 }
 export function drawEnvironmentalArt(ctx,o,{a,b,active=true}={}){
  if(!sources.some(([id])=>id===o.candidate))return false;

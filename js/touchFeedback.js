@@ -1,4 +1,4 @@
-import {canStartAttack,canStartDodge} from './combat.js?art-release-01';
+import {canStartAttack,canStartDodge} from './combat.js?art-release-02';
 const clamp=value=>Math.max(0,Math.min(1,value));
 // Read-only feedback shares combat's availability predicates.
 export function touchActionFeedback(game,kind){
