@@ -45,7 +45,13 @@ export function drawCharacterRasterBody(ctx,e,r,zoom=1,flash=false,stage='base')
  if(!(r>0)||!(zoom>0)||e.behavior==='orb')return false;
  loadCharacterRaster();const image=coloredBody(Object.hasOwn(SPRITES,stage)?stage:'base',flash?'#ffffff':e.colorHex);
  if(!image)return false;
- ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+1.5/zoom,0,Math.PI*2);ctx.fillStyle='rgba(5,18,22,.55)';ctx.fill();
+ ctx.save();
+ // A fixed downward contact crescent. The body occludes its upper portion.
+ // Offset is capped in screen pixels; no blur and no facing transform.
+ const shadowOffset=Math.min(r*.12,6/zoom)+1.5/zoom;
+ ctx.beginPath();ctx.ellipse(e.x,e.y+shadowOffset,r*.98,r*.98,0,0,Math.PI*2);
+ ctx.fillStyle='rgba(5,18,22,.28)';ctx.fill();
+ ctx.beginPath();ctx.arc(e.x,e.y,r+1.5/zoom,0,Math.PI*2);ctx.fillStyle='rgba(5,18,22,.55)';ctx.fill();
  ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.clip();ctx.drawImage(image,e.x-r,e.y-r,r*2,r*2);ctx.restore();
  if(e.attackState==='CHARGING'||e.beingAbsorbedByRef){ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.lineWidth=Math.min(2/zoom,Math.max(.8/zoom,r*.025));ctx.strokeStyle='#ffffff';ctx.stroke();}
  ctx.restore();return true;

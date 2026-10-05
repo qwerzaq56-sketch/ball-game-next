@@ -29,6 +29,14 @@ test('ready raster uses exact diameter and fixed lighting even when facing chang
   const first=calls.find(c=>c[0]==='drawImage')[1];e.facing=2.6;calls.length=0;
   art.drawCharacterRasterBody(ctx,e,50,.5,false,'apex');assert.equal(calls.find(c=>c[0]==='drawImage')[1],first);
   assert.equal(calls.some(c=>['rotate','scale'].includes(c[0])),false);
+  const shadow=calls.find(c=>c[0]==='ellipse');
+  assert.deepEqual(shadow,['ellipse',15,30,49,49,0,0,Math.PI*2]);
+  assert.equal(calls.filter(c=>c[0]==='save').length,calls.filter(c=>c[0]==='restore').length);
+  calls.length=0;art.drawCharacterRasterBody(ctx,e,50,1,false,'apex');
+  assert.equal(calls.find(c=>c[0]==='ellipse')[2],28.5,'contact offset includes screen-space separator at zoom1');
+  calls.length=0;art.drawCharacterRasterBody(ctx,e,100,1,false,'apex');
+  assert.equal(calls.find(c=>c[0]==='ellipse')[2],28.5,'large-body contact offset capped at6screenpx plus separator');
+
   for(let i=0;i<40;i++)art.drawCharacterRasterBody(ctx,{...e,colorHex:'#'+i.toString(16).padStart(6,'0')},20,1);
   assert.equal(art.characterRasterStatus().colorCache,32);
  }finally{if(priorImage===undefined)delete globalThis.Image;else globalThis.Image=priorImage;if(priorDocument===undefined)delete globalThis.document;else globalThis.document=priorDocument;}
