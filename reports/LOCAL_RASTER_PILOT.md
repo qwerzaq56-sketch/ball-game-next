@@ -15,3 +15,5 @@
 남은 작업: 바닥 반복/정사각 경계, 나무 배치 변형, 별도 풀·바위 자산, 기능 고목의 원화와의 불일치. 원화와 동일한 완성 화면이라고 주장하지 않는다. 다음 자동 작업은 이 간격을 줄이는 데 우선한다.
 
 변환 재현: `pip install vtracer==0.6.15 Pillow` 후 프로젝트 루트에서 `python tools/trace-forest-pilot.py`. 격리 설치를 쓸 경우 `--dependency-dir 경로`. 이번 설치 위치는 프로젝트 밖 cloud-review/art-tools-vtracer이며 게임 런타임 의존성이 아니다.
+
+후속002: 나무 반전4종 캐시·셀 안 위치 변화·크기140~184world로 반복 감소. 관련4테스트 통과, forest-raster-002.png. 원본 PNG는 수정하지 않음.

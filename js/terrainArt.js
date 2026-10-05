@@ -2,6 +2,12 @@
 export function terrainVariant(x,y){return ((Math.imul(Math.floor(x/400),73856093)^Math.imul(Math.floor(y/400),19349663))>>>0)%3;}
 const biomeKey=id=>id==='grassland'?'grass':id;
 const modulo=(x,n)=>(x%n+n)%n;
+export function forestDecoration(x,y){
+ const h=(Math.imul(x/200,83492791)^Math.imul(y/200,19349663))>>>0;
+ if(h%5!==0)return null;
+ const size=140+(h>>>8)%45,margin=(200-size)/2;
+ return {size,x:x+100+(((h>>>14)%101)/50-1)*margin,y:y+100+(((h>>>21)%101)/50-1)*margin,variant:(h>>>6)%4};
+}
 export class TerrainArt {
  constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();
   if(typeof document!=='undefined'&&typeof Image!=='undefined')this.loading=this.load();
@@ -25,7 +31,10 @@ export class TerrainArt {
     await Promise.all([ground.decode(),tree.decode()]);
     const c=document.createElement('canvas');c.width=c.height=800;c.getContext('2d').drawImage(ground,0,0,800,800);
     this.tiles.set('forest',[c,c,c]);
-    const tc=document.createElement('canvas');tc.width=tc.height=256;tc.getContext('2d').drawImage(tree,0,0,256,256);this.forestTree=tc;
+    this.forestTrees=Array.from({length:4},(_,v)=>{
+     const tc=document.createElement('canvas');tc.width=tc.height=256;const ctx=tc.getContext('2d');
+     ctx.translate(v&1?256:0,v&2?256:0);ctx.scale(v&1?-1:1,v&2?-1:1);ctx.drawImage(tree,0,0,256,256);return tc;
+    });
    }catch(error){this.imagePackError=String(error);}
    this.ready=['grass','forest','lake','snow','volcano','desert'].every(id=>this.tiles.has(id));
   }catch(error){this.error=String(error);this.ready=false;this.tiles.clear();this.masks.clear();this.layers.clear();}
@@ -46,9 +55,9 @@ export class TerrainArt {
   if(!this.enabled||!this.ready)return false;
   const {x,y,region}=tile,texture=this.texture(region.id,x,y);if(!texture)return false;
   const sx=modulo(x,texture.width||400),sy=modulo(y,texture.height||400);ctx.drawImage(texture,sx,sy,200,200,x,y,200,200);
-  if(region.id==='forest'&&this.forestTree){
-   const h=(Math.imul(x/200,83492791)^Math.imul(y/200,19349663))>>>0;
-   if(h%5===0){const size=150+h%35;ctx.drawImage(this.forestTree,x+100-size/2,y+100-size/2,size,size);}
+  if(region.id==='forest'&&this.forestTrees){
+   const d=forestDecoration(x,y);
+   if(d)ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);
   }
   const neighbors=[['north',0,-200],['east',200,0],['south',0,200],['west',-200,0],['nw',-200,-200],['ne',200,-200],['se',200,200],['sw',-200,200]];
   const world=biomes.game.balance.world;

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {TerrainArt,terrainVariant} from '../js/terrainArt.js';
+import {TerrainArt,terrainVariant,forestDecoration} from '../js/terrainArt.js';
 import {resetRandom,random} from '../js/random.js';
 test('R-VIS-006 terrain variant remains stable for a 2x2 block without gameplay RNG',()=>{
  resetRandom(34);const expected=random('world');resetRandom(34);
@@ -28,4 +28,16 @@ test('R-VIS-006 terrain manifest resolves all six biome packs and 8 masks within
   const data=fs.readFileSync(new URL(file,root));bytes+=data.length;assert.match(data.toString(),/<svg /);
  }
  assert(bytes<2_000_000);
+});
+test('forest decorations stay within their cell, vary appearance and leave gameplay RNG untouched',()=>{
+ resetRandom(91);const expected=random('world');resetRandom(91);
+ const variants=new Set();let occupied=0,total=0;
+ for(let x=0;x<8000;x+=200)for(let y=0;y<8000;y+=200){
+  total++;const d=forestDecoration(x,y);assert.deepEqual(d,forestDecoration(x,y));if(!d)continue;
+  occupied++;variants.add(d.variant);
+  assert(d.x-d.size/2>=x&&d.x+d.size/2<=x+200);
+  assert(d.y-d.size/2>=y&&d.y+d.size/2<=y+200);
+ }
+ assert.equal(variants.size,4);assert(occupied/total>.15&&occupied/total<.25);
+ assert.equal(random('world'),expected);
 });
