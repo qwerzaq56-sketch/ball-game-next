@@ -31,3 +31,9 @@ LOCAL_ART_T2_DELIVERY.md, LOCAL_ART_T3_CONCEPTS.md, LOCAL_ART_SCENE_REVIEW.md의
 Windows Python 기본 서버의 .js MIME가 text/plain이어서 처음 모듈 로딩이 안 됐다. tools/serve.py에서 MIME 명시, 로컬 포트8781 정상 확인. 게임 http://127.0.0.1:8781/index.html, 통제 화면 http://127.0.0.1:8781/tools/art-review.html.
 
 다음 작업: 실제 수혜 이벤트 기반 보호/강화/서리해제/회복 표현, 피난처·오아시스 본체 유지 및 고목/얼음꽃 실제 상태, 지형 패턴의 원화 개선. 경계 코너가 각지고 일부 겹친 페더링 흔적이 있으므로 반전/모서리/토러스 검증·정리 필요. 새 단위를 시작할 때 git status와 이 문서 확인, 끝난 공·기본 연결을 반복하지 않는다.
+
+## 두 번째 단위 · 2026-10-06 00:20 KST
+
+landmarkArt.js 실제 Canvas 벡터 4종 적용: 건강한 수호 고목(준비 잎/작은 잎눈), 얼음꽃(꽃잎/빈 꽃받침·새싹), 서리 피난처·오아시스(쿨다운 중 본체 동일). BiomeObjects.draw의 네 본체 투명도 유지; 기존 이득 범위·마름모·+·이름 유지. 게임 규칙·쿨다운·효과·대상·난수 변경 없음.
+
+전체361/361 테스트 통과. 새 테스트는 게임 상태·난수 불변과 피난처/오아시스 준비·쿨다운 동일 외형 확인. 실제 BiomeObjects.draw 통제 비교 tools/landmark-review.html, 배율1/0.5 확인·콘솔 오류/경고 없음, reports/local-landmarks*.png 보존. 아직 수혜 효과 전달은 미완료. 다음 단위는 실제 객체 이벤트/동상 해제 기반 수혜 효과 연결; 그 후 지형 경계 개선.
