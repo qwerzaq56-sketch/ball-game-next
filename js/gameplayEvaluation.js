@@ -1,7 +1,7 @@
 import {assessOpportunityChannels} from './opportunityChannels.js';
 import {dist,isHostile,canAbsorb,canEatOrb} from './collision.js';
 import {sizeFromGrowth,growthRewardFor} from './entity.js';
-import {attackDamageForEntity,applyDefense} from './combat.js?forest-trees-01';
+import {attackDamageForEntity,applyDefense} from './combat.js?forest-clearing-01';
 // Read-only local opportunity assessment. No spawn/AI decisions or random calls.
 export function assessGameplay(game,actor=game.player){
  const p=actor,b=game.balance,c=b.evaluation??{},range=actor===game.player?Math.min(b.ai.detectionRange,game.biomes.playerSightRadius()):game.biomes.sensingRange(actor);

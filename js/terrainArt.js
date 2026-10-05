@@ -38,15 +38,25 @@ export function periodicForestGround(image,size=800,overlap=60){
  return axis(axis(source,true),false);
 }
 // World-space density, continuous across chunk borders and the 8000-world wrap.
-export function forestDensity(x,y){
- const tau=Math.PI*2;
+export function forestLayout(x,y){
+ const tau=Math.PI*2,smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
+ x=modulo(x,8000);y=modulo(y,8000);
  const center=1000+260*Math.sin(tau*x/8000);
  const distance=Math.abs(modulo(y-center+1000,2000)-1000);
- const path=Math.max(0,Math.min(1,(distance-48)/110));
- const clusters=.48+.23*Math.sin(tau*x/1600)+.21*Math.cos(tau*y/2000)+.12*Math.sin(tau*(x+y)/1000);
- const patch=Math.max(0,Math.min(1,(clusters-.25)/.4));
- return path*patch*patch*(3-2*patch);
+ const path=smooth((distance-26)/54);
+ // Small genuinely empty clearings sit inside a predominantly shrub-covered forest.
+ let clearing=1,nearest=Infinity;
+ const gx=Math.floor(x/1600),gy=Math.floor(y/2000);
+ for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){
+  const ix=modulo(gx+i,5),iy=modulo(gy+j,4),h=(Math.imul(ix,73856093)^Math.imul(iy,19349663))>>>0;
+  const cx=(gx+i)*1600+800+((h>>>8)%401-200),cy=(gy+j)*2000+1000+260*Math.sin(tau*modulo(cx,8000)/8000);
+  const r=Math.hypot((x-cx)/180,(y-cy)/135);nearest=Math.min(nearest,r);clearing=Math.min(clearing,smooth((r-1)/.65));
+ }
+ const dense=.92+.08*Math.sin(tau*x/1600)*Math.cos(tau*y/2000);
+ const density=path*clearing*dense;
+ return {density,kind:nearest<=1?'clearing':distance<=26?'path':nearest<1.65||distance<120?'transition':'shrubs'};
 }
+export function forestDensity(x,y){return forestLayout(x,y).density;}
 export class TerrainArt {
  constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();this.blendMasks=new Map();this.rasterBiomes=new Set();this.forestChunks=new Map();
   if(typeof document!=='undefined'&&typeof Image!=='undefined')this.loading=this.load();
@@ -69,7 +79,7 @@ export class TerrainArt {
     const ground=new Image(),tree=new Image(),floor=new Image();floor.src=new URL('floor-002.png',pack).href;ground.src=new URL('ground-005.png',pack).href;tree.src=new URL('tree-003.png',pack).href;
     await Promise.all([ground.decode(),tree.decode(),floor.decode()]);
     this.forestFloor=periodicForestGround(floor);const cachedGround=periodicForestGround(ground);this.tiles.set('forest',[cachedGround,cachedGround,cachedGround]);this.forestRaster=true;
-    this.forestTrees=await Promise.all([4,5,6].map(async n=>{
+    this.forestTrees=await Promise.all([4,5,7].map(async n=>{
      let sprite=tree;try{const candidate=new Image();candidate.src=new URL(`tree-${String(n).padStart(3,'0')}.png`,pack).href;await candidate.decode();sprite=candidate;}catch(error){this.treePackError=String(error);}
      const tc=document.createElement('canvas');tc.width=tc.height=256;const ctx=tc.getContext('2d');
      // Correct only this cached sprite, never apply a per-frame world filter.
@@ -123,7 +133,7 @@ export class TerrainArt {
   this.layers.set(key,c);return c;
  }
  drawForestDetails(ctx,x,y){
-  const d=forestDecoration(x,y);if(d&&this.forestTrees&&forestDensity(d.x,d.y)>.4)ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);
+  const d=forestDecoration(x,y);if(d&&this.forestTrees&&[[-1,-1],[1,-1],[-1,1],[1,1]].every(([dx,dy])=>forestDensity(d.x+dx*d.size/2,d.y+dy*d.size/2)>.75))ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);
   const h=(Math.imul(x/200,73856093)^Math.imul(y/200,19349663))>>>0;
   if(this.forestDecals&&h%3===0){const px=x+35+(h>>>8)%130,py=y+35+(h>>>16)%130,size=18+(h>>>24)%12;ctx.drawImage(this.forestDecals[(h>>>5)%3],px-size/2,py-size/2,size,size);}
  }

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights,forestDensity} from '../js/terrainArt.js';
+import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights,forestDensity,forestLayout} from '../js/terrainArt.js';
 import {resetRandom,random} from '../js/random.js';
 test('R-VIS-006 terrain variant remains stable for a 2x2 block without gameplay RNG',()=>{
  resetRandom(34);const expected=random('world');resetRandom(34);
@@ -125,6 +125,12 @@ test('tree variants load distinct sprites and one missing variant preserves the 
  globalThis.document={createElement(){const canvas={};canvas.getContext=()=>({drawImage(image){canvas.source=image.src;}});return canvas;}};
  globalThis.Image=class{async decode(){if(this.src.endsWith('tree-005.png'))throw new Error('missing variant');}};
  globalThis.fetch=async()=>({ok:true,json:async()=>manifest});
- try{const art=new TerrainArt();await art.loading;assert.equal(art.ready,true);assert.equal(art.forestRaster,true);assert.equal(art.forestTrees.length,3);assert.match(art.forestTrees[0].source,/tree-004.png$/);assert.match(art.forestTrees[1].source,/tree-003.png$/);assert.match(art.forestTrees[2].source,/tree-006.png$/);assert.match(art.treePackError,/missing variant/);}
+ try{const art=new TerrainArt();await art.loading;assert.equal(art.ready,true);assert.equal(art.forestRaster,true);assert.equal(art.forestTrees.length,3);assert.match(art.forestTrees[0].source,/tree-004.png$/);assert.match(art.forestTrees[1].source,/tree-003.png$/);assert.match(art.forestTrees[2].source,/tree-007.png$/);assert.match(art.treePackError,/missing variant/);}
  finally{for(const [key,value]of Object.entries(old)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
+});
+
+test('forest layout keeps shrubs dominant and separates empty cores from transition belts',()=>{
+ const kinds={};let covered=0,total=0;
+ for(let x=0;x<8000;x+=40)for(let y=0;y<8000;y+=40){const v=forestLayout(x,y);kinds[v.kind]=(kinds[v.kind]||0)+1;covered+=v.density>.75?1:0;total++;if(v.kind==='clearing'||v.kind==='path')assert.equal(v.density,0);}
+ assert(covered/total>.75);for(const k of ['clearing','path','transition','shrubs'])assert(kinds[k]>0);
 });

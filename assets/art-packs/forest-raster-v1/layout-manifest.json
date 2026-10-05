@@ -1,5 +1,5 @@
 {
-  "version": "forest-trees-001",
+  "version": "forest-clearing-001",
   "worldRepeat": 800,
   "logicalModule": 400,
   "layers": {
@@ -8,7 +8,7 @@
     "tree": [
       "tree-004.png",
       "tree-005.png",
-      "tree-006.png"
+      "tree-007.png"
     ],
     "decals": [
       {
@@ -37,7 +37,7 @@
       }
     ]
   },
-  "density": "forestDensity(worldX,worldY), periodic at 8000",
+  "density": "forestLayout: shrub-dominant, empty clearing/path cores, sparse transition belts",
   "notes": "First compositing pass; dedicated grass/path/connectors not yet produced.",
   "treePresentation": {
     "worldFootprint": [
@@ -47,6 +47,10 @@
     "preserveAspectRatio": true,
     "bakedLight": "upper-left, no rotations",
     "cacheFilter": "saturate(0.86) contrast(0.88) brightness(0.94) blur(0.35px)",
-    "variantFallback": "tree-003.png"
+    "variantFallback": "tree-003.png",
+    "references": [
+      "planning/art-concepts/gameplay-regions-a-001.png: middle forest panel",
+      "user-palette-reference-001.png: lower gameplay palette"
+    ]
   }
 }
