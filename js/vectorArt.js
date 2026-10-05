@@ -1,7 +1,10 @@
 // Presentation only: exact body radius remains size / 2; no gameplay RNG is consumed.
 // R-VIS-001: approved matte concept, body silhouette independent of overlays.
 export function drawMatteBody(ctx,e,r,zoom,flash=false){
- ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);
+ ctx.save();
+ // A quiet screen-space silhouette separator, not an ability halo or larger body.
+ ctx.beginPath();ctx.arc(e.x,e.y,r+1.5/zoom,0,Math.PI*2);ctx.fillStyle='rgba(5,18,22,.55)';ctx.fill();
+ ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);
  ctx.fillStyle=flash?'#ffffff':e.colorHex;ctx.fill();
  // Keep the small lower shade INSIDE the round body; no glossy highlight dots.
  ctx.save();ctx.clip();ctx.beginPath();

@@ -1,5 +1,5 @@
 {
-  "version": "forest-clearing-001",
+  "version": "forest-canopy-001",
   "worldRepeat": 800,
   "logicalModule": 400,
   "layers": {
@@ -35,10 +35,13 @@
         ],
         "interactive": false
       }
-    ]
+    ],
+    "canopy": "canopy-001.png",
+    "understory": "ground-005.png: transition only",
+    "edge": "edge-001.png"
   },
   "density": "forestLayout: shrub-dominant, empty clearing/path cores, sparse transition belts",
-  "notes": "First compositing pass; dedicated grass/path/connectors not yet produced.",
+  "notes": "Canopy-first woodland. Shared raster coverage 800 world; clearings/path cores empty. Prior fern-rich ground retained for transitional understory only.",
   "treePresentation": {
     "worldFootprint": [
       140,

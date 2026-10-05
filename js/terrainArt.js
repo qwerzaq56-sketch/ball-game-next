@@ -17,9 +17,9 @@ export function forestDecoration(x,y){
  return {size,x:x+100+(((h>>>14)%101)/50-1)*margin,y:y+100+(((h>>>21)%101)/50-1)*margin,variant:(h>>>6)%3};
 }
 // Rendering cache only: crossfade overlapping edge samples without mirroring baked light.
-export function periodicForestGround(image,size=800,overlap=60){
+export function periodicForestGround(image,size=800,overlap=60,tone='none'){
  const source=document.createElement('canvas');source.width=source.height=size+2*overlap;
- const sc=source.getContext('2d');sc.drawImage(image,0,0,source.width,source.height);
+ const sc=source.getContext('2d');sc.filter=tone;sc.drawImage(image,0,0,source.width,source.height);
  if(typeof sc.createLinearGradient!=='function'){source.width=source.height=size;sc.drawImage(image,0,0,size,size);return source;}
  function axis(input,horizontal){
   const out=document.createElement('canvas');out.width=horizontal?size:input.width;out.height=horizontal?input.height:size;
@@ -88,6 +88,12 @@ export class TerrainArt {
      ctx.drawImage(sprite,(256-width*scale)/2,(256-height*scale)/2,width*scale,height*scale);return tc;
     }));
    }catch(error){this.imagePackError=String(error);}
+   try{
+    const canopy=new Image();canopy.src=new URL('../assets/art-packs/forest-raster-v1/canopy-001.png',import.meta.url).href;await canopy.decode();
+    this.forestUnderstory=this.tiles.get('forest')?.[0];const cached=periodicForestGround(canopy,800,60,'saturate(0.90) contrast(0.90) brightness(0.96)');
+    this.tiles.set('forest',[cached,cached,cached]);this.forestCanopy=true;
+    const edge=new Image();edge.src=new URL('../assets/art-packs/forest-raster-v1/edge-001.png',import.meta.url).href;await edge.decode();this.forestEdge=edge;
+   }catch(error){this.canopyPackError=String(error);}
    try{this.forestDecals=await Promise.all([1,2,3].map(async n=>{const i=new Image();i.src=new URL(`../assets/art-packs/forest-raster-v1/decal-${String(n).padStart(3,'0')}.svg`,import.meta.url).href;await i.decode();return i;}));}catch(error){this.decalPackError=String(error);}
    // Each regional image is optional independently. Preserve loaded SVGs on failure.
    this.rasterPackErrors=new Map();
@@ -116,6 +122,11 @@ export class TerrainArt {
  const c=document.createElement('canvas');c.width=c.height=800;const ctx=c.getContext('2d');ctx.drawImage(this.forestFloor,0,0);
  const mask=document.createElement('canvas');mask.width=mask.height=80;const mc=mask.getContext('2d'),pixels=mc.createImageData(80,80);
  for(let py=0;py<80;py++)for(let px=0;px<80;px++){const n=(py*80+px)*4;pixels.data[n]=pixels.data[n+1]=pixels.data[n+2]=255;pixels.data[n+3]=Math.round(255*forestDensity(bx+(px+.5)*10,by+(py+.5)*10));}
+ if(this.forestUnderstory){
+  const edgeMask=document.createElement('canvas');edgeMask.width=edgeMask.height=80;const em=edgeMask.getContext('2d'),ep=em.createImageData(80,80);
+  for(let i=0;i<80*80;i++){const density=pixels.data[i*4+3]/255;ep.data[i*4]=ep.data[i*4+1]=ep.data[i*4+2]=255;ep.data[i*4+3]=Math.round(255*4*density*(1-density)*.7);}
+  em.putImageData(ep,0,0);const under=document.createElement('canvas');under.width=under.height=800;const uc=under.getContext('2d');uc.drawImage(edgeMask,0,0,800,800);uc.globalCompositeOperation='source-in';uc.drawImage(this.forestUnderstory,0,0);ctx.drawImage(under,0,0);
+ }
  mc.putImageData(pixels,0,0);const foliage=document.createElement('canvas');foliage.width=foliage.height=800;const fc=foliage.getContext('2d');fc.drawImage(mask,0,0,800,800);fc.globalCompositeOperation='source-in';fc.drawImage(dense,0,0);ctx.drawImage(foliage,0,0);
  if(this.forestChunks.size>=12)this.forestChunks.delete(this.forestChunks.keys().next().value);this.forestChunks.set(key,c);return c;
  }
@@ -134,6 +145,7 @@ export class TerrainArt {
  }
  drawForestDetails(ctx,x,y){
   const d=forestDecoration(x,y);if(d&&this.forestTrees&&[[-1,-1],[1,-1],[-1,1],[1,1]].every(([dx,dy])=>forestDensity(d.x+dx*d.size/2,d.y+dy*d.size/2)>.75))ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);
+  const edgeDensity=forestDensity(x+100,y+100);if(this.forestEdge&&edgeDensity>.35&&edgeDensity<.75)ctx.drawImage(this.forestEdge,x+45,y+45,110,110);
   const h=(Math.imul(x/200,73856093)^Math.imul(y/200,19349663))>>>0;
   if(this.forestDecals&&h%3===0){const px=x+35+(h>>>8)%130,py=y+35+(h>>>16)%130,size=18+(h>>>24)%12;ctx.drawImage(this.forestDecals[(h>>>5)%3],px-size/2,py-size/2,size,size);}
  }
