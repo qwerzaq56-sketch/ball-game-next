@@ -1,14 +1,14 @@
 {
-  "lastReleaseAtUtc": "2026-10-05T21:16:00Z",
-  "lastReleaseAtKst": "2026-10-06 06:16",
-  "nextMilestoneTargetUtc": "2026-10-05T23:16:00Z",
+  "lastReleaseAtUtc": "2026-10-05T23:15:00Z",
+  "lastReleaseAtKst": "2026-10-06 08:15",
+  "nextMilestoneTargetUtc": "2026-10-06T01:15:00Z",
   "deadlineUtc": "2026-10-06T04:00:00Z",
-  "tag": "art-20261006-canopy-01",
-  "commit": "b85e221d3f9fe02eefe00a4abdbd7af55e3247ea",
-  "releaseUrl": "https://github.com/qwerzaq56-sketch/ball-game-next/releases/tag/art-20261006-canopy-01",
-  "playUrl": "https://raw.githack.com/qwerzaq56-sketch/ball-game-next/b85e221d3f9fe02eefe00a4abdbd7af55e3247ea/index.html",
-  "pages": "main pushed, live release.json not yet confirmed",
-  "next": "Effects reference v2 regenerated and integrated: benefits4/combat4/abilities8/absorption1; 407 tests passed and actual fixture verified. About08:16 next main/release candidate preparation, original experimental assets preserved unselected.",
+  "tag": "art-20261006-effects-02",
+  "commit": "2f687dc0868ee372ca8f7ac2791e4cd3d75436d4",
+  "releaseUrl": "https://github.com/qwerzaq56-sketch/ball-game-next/releases/tag/art-20261006-effects-02",
+  "playUrl": "https://raw.githack.com/qwerzaq56-sketch/ball-game-next/2f687dc0868ee372ca8f7ac2791e4cd3d75436d4/index.html",
+  "pages": "main fast-forward pushed; release.json blocked/unavailable in browser and web, live Pages version unconfirmed; fixed-commit game start verified",
+  "next": "17 effect roles regenerated and integrated, 407 tests pass. Release02 published08:15 and fixed-commit external game start/error logs verified. Do not repeat completed generation. Next big milestone around10:15 KST; continue natural-play character/effect composition, preserve existing all17 and original failures. Deadline13:00 KST.",
   "publicationMethod": "git push plus existing authenticated GitHub browser; gh CLI unauthenticated, credential extraction rejected and must not retry",
-  "candidateArtCommit": "afd35f85ac5b6840eb8c171c8150b2f41ce72b50"
+  "candidateArtCommit": "2f687dc0868ee372ca8f7ac2791e4cd3d75436d4"
 }
