@@ -113,7 +113,7 @@
   - symbol js/ai.js :: retaliateTarget
   - test tests/ai-rules.test.mjs :: retaliation: a hit prey fights back against an equal-size attacker
   - test tests/ai-rules.test.mjs :: retaliation: survival still wins over it
-  - test tests/ai-rules.test.mjs :: retaliation: memory expires after RETALIATION_MEMORY seconds
+  - test tests/ai-rules.test.mjs :: R-AI-010 retaliation memory expires after the configured six seconds
 
 ### R-COMBAT-011 · 대형 성장 보상 감소
 - 규칙: 성장을 받는 개체의 Size가 400까지는 기존 보상, 400~500에서 1배→0.5배로 연속 감소, 500 이상은 0.5배다(1500 이후도 0.5배 유지). 먹이·사냥 드롭·동족 흡수·직접 사냥 성장에 같은 규칙을 쓰며 월드의 드롭 자체는 줄이지 않는다.

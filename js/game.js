@@ -1,3 +1,4 @@
+import {drawActionArt} from './actionArt.js';
 import {chargedAttackDistance} from './combat.js';
 import {BiomeObjects} from './biomeObjects.js';
 import {updateGrowthMotion} from './growthMotion.js';
@@ -29,7 +30,7 @@ import {
 } from './combat.js';
 import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
 import {apexTerritoryRadius} from './skillCatalog.js';
-import { startAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
+import { startAbsorption, cancelAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
 import { AudioManager } from './audio.js';
 
 const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '관계추종', companion:'대열 동행',war_move:'전선 이동', recover: '회복' };
@@ -159,10 +160,13 @@ export class Game {
   // ---------- spatial grid ----------
 
   buildGrid() {
+    // R-META-005: compute the shared maximum once per spatial rebuild.
+    this.maxUnitRadius=0;
     this.grid.clear();
     this.gridOrder=null;
     for (const e of this.entities) {
       if (!e.alive) continue;
+      if(e.behavior!=='orb')this.maxUnitRadius=Math.max(this.maxUnitRadius,e.size/2);
       const cx = Math.floor(e.x / CELL_SIZE);
       const cy = Math.floor(e.y / CELL_SIZE);
       const key = cx + ',' + cy;
@@ -203,9 +207,11 @@ export class Game {
   }
 
   hostileTargetsFor(entity) {
+    // R-META-005: READY/TELEGRAPH/RECOVERY never perform a contact hit scan.
+    if(entity.attackState!=='CHARGING')return [];
     // v0.5: charge distance now scales with attack range (see combat.js), so the candidate
     // scan radius has to cover that instead of the old fixed chargeSpeed*duration distance.
-    const largest=this.entities.reduce((n,e)=>e.alive&&isHostile(entity,e)?Math.max(n,e.size/2):n,0);
+    const largest=this.maxUnitRadius??this.entities.reduce((n,e)=>e.alive&&e.behavior!=='orb'?Math.max(n,e.size/2):n,0);
     const range = attackChargeDistanceForSize(entity.size, this.balance,entity.apex) + entity.size/2 + largest;
     return this.getNearbyEntities(entity, range).filter((o) => isHostile(entity, o));
   }
@@ -358,7 +364,7 @@ export class Game {
     const moving = dx !== 0 || dy !== 0;
     const sprintMultiplier=updateSprint(p,dt,b,{held:!auto&&((inp.keys.has(' ')&&(inp.spaceHeldSeconds??0)>=.18)||inp.sprintHeld),moving});
     const moveSpeed=p.moveSpeed*this.abilities.speedMultiplier(p)*this.biomes.moveMultiplier(p)*sprintMultiplier;
-    const moveAngle = moving ? Math.atan2(dy, dx) : p.facing;
+    const moveAngle = moving ? Math.atan2(dy, dx) : p.facing;p.sprintDirection=moveAngle;
     const dragAngle=this.touchAim?.dragged?this.touchAim.angle:Number.isFinite(releasedAttack?.angle)?releasedAttack.angle:Number.isFinite(releasedDodgeAngle)?releasedDodgeAngle:null;
     const mouseAiming=!inp.touchMode&&(inp.mouseDown||releasedAttack!=null);
     const aimAngle=auto?angleTo(p,mouseWorld):dragAngle??(mouseAiming?angleTo(p,mouseWorld):moveAngle);
@@ -431,7 +437,7 @@ export class Game {
 
         if (eater === this.player && !this.player.allyAbsorptionEnabled) continue; // v0.6 §7
 
-        if (canAbsorb(eater, target) && dist(eater, target) <= maintainDistance && acceptsAbsorption(eater,target,b) && this.abilities.absorptionAllowed(eater,target)) {
+        if (canAbsorb(eater, target) && dist(eater, target) <= maintainDistanceFor(eater,b,target) && acceptsAbsorption(eater,target,b) && this.abilities.absorptionAllowed(eater,target)) {
           startAbsorption(eater, target, b, this);
         }
       }
@@ -555,6 +561,9 @@ export class Game {
   // Growth carry over unchanged into the respawn, and only running out of Lives triggers Game
   // Over (spec: "부활할 때 Size는 감소하지 않는다").
   onEntityDeath(entity, attacker) {
+    // R-ABS-010: retain refunds even after the victim is removed from the world.
+    cancelAbsorption(entity);
+    for(const target of this.entities)if(target.beingAbsorbedByRef===entity)cancelAbsorption(target);
     Object.assign(entity,{windStoneStacks:0,obsidianStacks:0,obsidianShieldHp:0,obsidianShieldUntil:0,companionCharmUntil:0,objectSpeedUntil:0,objectFrostUntil:0});
     this.relics.release(entity);
     this.abilities.release(entity);
@@ -867,7 +876,7 @@ export class Game {
       const absorber = target.beingAbsorbedByRef,image=near(target,absorber);
       if(!segmentInView(view,target,image,6/this.camera.zoom))continue;
       const t = target.absorptionRequired > 0 ? Math.min(1, target.absorptionProgress / target.absorptionRequired) : 1;
-      const maintainDistance = maintainDistanceFor(absorber, this.balance);
+      const maintainDistance = maintainDistanceFor(absorber, this.balance,target);
       const d = dist(target,absorber);
       const proximity = 1 - Math.min(1, d / maintainDistance);
 
@@ -991,6 +1000,7 @@ export class Game {
     if((e.obsidianShieldHp??0)>0&&(e.obsidianShieldUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+13/this.camera.zoom,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,e.obsidianShieldHp/e.obsidianShieldMax));ctx.strokeStyle='#c4b5fd';ctx.lineWidth=5/this.camera.zoom;ctx.stroke();ctx.restore();}
     if((e.windStoneStacks??0)>0||(e.obsidianStacks??0)>0){ctx.save();ctx.fillStyle='#c4b5fd';ctx.font=`bold ${11/this.camera.zoom}px system-ui`;ctx.textAlign='center';ctx.fillText(`바람 ${e.windStoneStacks??0} · 흑요석 ${e.obsidianStacks??0}`,e.x,e.y+r+16/this.camera.zoom);ctx.restore();}
     if((e.companionCharmUntil??0)>this.gameTime){ctx.save();const shell=e.companionDecoration==='shell';ctx.strokeStyle=shell?'#fef3c7':'#f9a8d4';ctx.lineWidth=2/this.camera.zoom;for(let i=0;i<5;i++){const a=i*Math.PI*2/5,x=e.x+Math.cos(a)*(r+9/this.camera.zoom),y=e.y+Math.sin(a)*(r+9/this.camera.zoom);ctx.beginPath();if(shell){ctx.arc(x,y,6/this.camera.zoom,Math.PI,Math.PI*2);ctx.lineTo(x,y+3/this.camera.zoom);ctx.closePath();for(let j=-1;j<=1;j++){ctx.moveTo(x,y+3/this.camera.zoom);ctx.lineTo(x+j*4/this.camera.zoom,y-4/this.camera.zoom);}}else{for(let j=0;j<5;j++){const aa=j*Math.PI*2/5;ctx.moveTo(x+Math.cos(aa)*3/this.camera.zoom+2/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom);ctx.arc(x+Math.cos(aa)*3/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom,2/this.camera.zoom,0,Math.PI*2);}}ctx.stroke();}ctx.restore();}
+    drawActionArt(ctx,e,this,r,this.camera.zoom);
     if((e.shieldHp??0)>0){ctx.beginPath();ctx.arc(e.x,e.y,r+7/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#a5f3fc';ctx.lineWidth=3/this.camera.zoom;ctx.stroke();}
     if(this.abilities.frostMarks.some(m=>m.target===e)){ctx.beginPath();ctx.arc(e.x,e.y,r+12/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#67e8f9';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([5/this.camera.zoom,4/this.camera.zoom]);ctx.stroke();ctx.setLineDash([]);}
     if((e.frostbiteRemaining??0)>0||(this.biomes.enabled&&this.biomes.regionAt(e)?.id==='lake')){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.fillStyle=(e.frostbiteRemaining??0)>0?'rgba(185,225,255,.42)':'rgba(25,110,230,.30)';ctx.fill();ctx.restore();}

@@ -1,0 +1,224 @@
+{
+  "before": {
+    "platform": "cloud Chromium headless; not physical mobile hardware",
+    "policy": "stationary player with replenished health/lives; active simulation required",
+    "results": [
+      {
+        "scenario": "desktop",
+        "seconds": 6.02,
+        "frames": 281,
+        "activeFrames": 281,
+        "gameSeconds": 6.016,
+        "entities": 1651,
+        "summary": {
+          "update": {
+            "samples": 280,
+            "p50Ms": 13.8,
+            "p95Ms": 20.4,
+            "maxMs": 42.5
+          },
+          "render": {
+            "samples": 280,
+            "p50Ms": 1.8,
+            "p95Ms": 3.2,
+            "maxMs": 16
+          },
+          "ui": {
+            "samples": 280,
+            "p50Ms": 0.5,
+            "p95Ms": 2,
+            "maxMs": 8.8
+          },
+          "interval": {
+            "samples": 280,
+            "p50Ms": 20.1,
+            "p95Ms": 28.9,
+            "maxMs": 56.1
+          }
+        },
+        "errors": []
+      },
+      {
+        "scenario": "desktop-debug",
+        "seconds": 6.02,
+        "frames": 246,
+        "activeFrames": 246,
+        "gameSeconds": 6.033,
+        "entities": 1632,
+        "summary": {
+          "update": {
+            "samples": 245,
+            "p50Ms": 15.8,
+            "p95Ms": 20.1,
+            "maxMs": 30.6
+          },
+          "render": {
+            "samples": 245,
+            "p50Ms": 1.8,
+            "p95Ms": 2.9,
+            "maxMs": 5.1
+          },
+          "ui": {
+            "samples": 245,
+            "p50Ms": 0.5,
+            "p95Ms": 2.7,
+            "maxMs": 4.7
+          },
+          "interval": {
+            "samples": 245,
+            "p50Ms": 24.3,
+            "p95Ms": 31.9,
+            "maxMs": 44.4
+          }
+        },
+        "errors": []
+      },
+      {
+        "scenario": "touch",
+        "seconds": 6.02,
+        "frames": 330,
+        "activeFrames": 330,
+        "gameSeconds": 6.016,
+        "entities": 1632,
+        "summary": {
+          "update": {
+            "samples": 329,
+            "p50Ms": 13.1,
+            "p95Ms": 16.9,
+            "maxMs": 24
+          },
+          "render": {
+            "samples": 329,
+            "p50Ms": 1.6,
+            "p95Ms": 2.6,
+            "maxMs": 4.8
+          },
+          "ui": {
+            "samples": 329,
+            "p50Ms": 0.5,
+            "p95Ms": 1.6,
+            "maxMs": 2.2
+          },
+          "interval": {
+            "samples": 329,
+            "p50Ms": 18,
+            "p95Ms": 21.9,
+            "maxMs": 28.9
+          }
+        },
+        "errors": []
+      }
+    ]
+  },
+  "after": {
+    "platform": "cloud Chromium headless; not physical mobile hardware",
+    "policy": "stationary player with replenished health/lives; active simulation required",
+    "results": [
+      {
+        "scenario": "desktop",
+        "seconds": 6.01,
+        "frames": 354,
+        "activeFrames": 354,
+        "gameSeconds": 6.016,
+        "entities": 1611,
+        "summary": {
+          "update": {
+            "samples": 353,
+            "p50Ms": 6.9,
+            "p95Ms": 10.3,
+            "maxMs": 26.3
+          },
+          "render": {
+            "samples": 353,
+            "p50Ms": 1.9,
+            "p95Ms": 2.9,
+            "maxMs": 13.8
+          },
+          "ui": {
+            "samples": 353,
+            "p50Ms": 0.5,
+            "p95Ms": 2.1,
+            "maxMs": 5.5
+          },
+          "interval": {
+            "samples": 353,
+            "p50Ms": 16.7,
+            "p95Ms": 20.2,
+            "maxMs": 46.9
+          }
+        },
+        "errors": []
+      },
+      {
+        "scenario": "desktop-debug",
+        "seconds": 6.01,
+        "frames": 349,
+        "activeFrames": 349,
+        "gameSeconds": 6.016,
+        "entities": 1655,
+        "summary": {
+          "update": {
+            "samples": 348,
+            "p50Ms": 6.5,
+            "p95Ms": 9.7,
+            "maxMs": 15.4
+          },
+          "render": {
+            "samples": 348,
+            "p50Ms": 1.9,
+            "p95Ms": 3.5,
+            "maxMs": 6.8
+          },
+          "ui": {
+            "samples": 348,
+            "p50Ms": 0.5,
+            "p95Ms": 2.7,
+            "maxMs": 7.3
+          },
+          "interval": {
+            "samples": 348,
+            "p50Ms": 16.7,
+            "p95Ms": 23.5,
+            "maxMs": 34.6
+          }
+        },
+        "errors": []
+      },
+      {
+        "scenario": "touch",
+        "seconds": 6,
+        "frames": 360,
+        "activeFrames": 360,
+        "gameSeconds": 6,
+        "entities": 1642,
+        "summary": {
+          "update": {
+            "samples": 359,
+            "p50Ms": 6,
+            "p95Ms": 8.5,
+            "maxMs": 15.3
+          },
+          "render": {
+            "samples": 359,
+            "p50Ms": 1.6,
+            "p95Ms": 2.5,
+            "maxMs": 4.5
+          },
+          "ui": {
+            "samples": 359,
+            "p50Ms": 0.5,
+            "p95Ms": 1.7,
+            "maxMs": 2.8
+          },
+          "interval": {
+            "samples": 359,
+            "p50Ms": 16.7,
+            "p95Ms": 17.1,
+            "maxMs": 26.3
+          }
+        },
+        "errors": []
+      }
+    ]
+  }
+}

@@ -19,7 +19,7 @@ test('combat relic adds to ally/morale bonuses while allowing companion attacks'
  const g=fixture(),p=g.player;p.relic={kind:'combat',expires:60};assert.equal(g.abilities.damageMultiplier(p),1.1);p.morale=new Map([[999,5]]);assert.equal(g.abilities.damageMultiplier(p),1.25);p.companionGroup=1;p.apex=true;p.specialCooldown=0;assert.equal(g.abilities.canCast(p),true);
 });
 test('growth relic increases pickup growth only; score and edibility remain independent',()=>{
- const g=fixture(),p=g.player;p.relic={kind:'growth',expires:60};const orb=new Entity({x:p.x,y:p.y,size:10,color:'red',growthValue:10});const huge=new Entity({x:p.x,y:p.y,size:100,color:'red',growthValue:100});g.entities.push(orb,huge);g.buildGrid();g.resolveConsumption();assert.equal(p.growth,12);assert.equal(p.score,10);assert.equal(huge.alive,true);
+ const g=fixture(),p=g.player;p.relic={kind:'growth',expires:60};const orb=new Entity({x:p.x,y:p.y,size:10,color:'red',growthValue:10});const huge=new Entity({x:p.x,y:p.y,size:100,color:'red',growthValue:100});g.entities.push(orb,huge);g.buildGrid();g.resolveConsumption();assert.equal(p.growth,6);assert.equal(p.score,10);assert.equal(huge.alive,true);
 });
 test('regen relic scales rate but keeps damage delay and maximum HP',()=>{
  const g=fixture(),p=g.player;p.relic={kind:'regen',expires:60};p.hp=50;p.regenTimer=0;assert.equal(updateHealthRegen(p,.1,g.balance,g.relics.regenMultiplier(p)),false);assert.equal(p.hp,50);p.regenTimer=g.balance.healthRegen.delay;const rate=g.balance.healthRegen.baseRate+p.size*g.balance.healthRegen.regenPerSize;updateHealthRegen(p,1,g.balance,g.relics.regenMultiplier(p));assert.equal(p.hp,50+rate*1.25);p.hp=p.maxHp-.1;updateHealthRegen(p,1,g.balance,1.25);assert.equal(p.hp,p.maxHp);

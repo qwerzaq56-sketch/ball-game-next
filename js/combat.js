@@ -233,7 +233,9 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   if (attacker && attacker !== target && target.behavior === 'ai' && options.kind !== 'field' &&
       attacker.behavior !== 'orb' && attacker.color !== target.color) {
     target.retaliateTarget = attacker;
-    target.retaliateTimer = RETALIATION_MEMORY;
+    // R-AI-010
+    target.retaliateTimer = bal.ai.retaliationSeconds??RETALIATION_MEMORY;
+    target.decisionTimer=0;
   }
 
   if(attacker&&options.kind!=='field'&&target.companionGroup){const group=game?.allyLinks?.groups.get(target.companionGroup);if(group){group.aggressor=attacker;group.aggressorUntil=game.gameTime+5;}}

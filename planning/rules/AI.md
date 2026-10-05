@@ -82,3 +82,12 @@
   - test tests/group-combat.test.mjs :: all roles engage similar enemies while empty stacks and critical HP preserve survival
   - test tests/ai-rules.test.mjs :: cautious prey can engage similar enemies in sensing range
 - 변경 이력: **승인된 "프레이의 일반 능동 사냥 금지(제안 005)"를 대체.** 일반 사냥 크기 조건(0.8배)은 포식 대상 선택에 남아 있다.
+
+### R-AI-010 · 실제 공격자 우선 반격
+- 규칙: 공격받으면 판단 타이머를즉시 초기화하고6초 기억한다. 생존·지형 회피 이후 실제 공격자를 일반 먹이·다른전투 목표보다 우선한다. HP30%이하·공격불가·큰위협의 생존 선택은 유지한다. 감지에 두 몸 반지름을 포함한다.
+- 상태: 제안
+- 출처: 사용자 요청 2026-10-05 · M79
+- 확인:
+  - config ai.retaliationSeconds = 6
+  - test tests/m79-systems.test.mjs :: R-AI-010 struck AI
+- 변경 이력: M79 신규 카드. 세부 초기 수치는 미승인 변경(M79), 플레이 피드백으로 재조정한다.

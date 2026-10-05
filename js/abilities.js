@@ -27,11 +27,11 @@ export function inWave(origin,target,dir,length=400,width=180){
 }
 function angleDelta(a,b){return Math.abs(Math.atan2(Math.sin(a-b),Math.cos(a-b)));}
 export class Abilities {
- constructor(game){this.enabled=game.options.abilitiesEnabled!==false;this.game=game;this.waves=[];this.fields=[];this.embers=[];this.frostMarks=[];this.frostFields=[];this.musters=[];this.events=[];this.castId=0;this.flashes=[];this.specialFires=0;this.rallies=[];this.metrics=new AbilityMetrics(game);}
+ constructor(game){this.enabled=game.options.abilitiesEnabled!==false;this.game=game;this.waves=[];this.vortices=[];this.fields=[];this.embers=[];this.frostMarks=[];this.frostFields=[];this.musters=[];this.events=[];this.castId=0;this.flashes=[];this.specialFires=0;this.rallies=[];this.metrics=new AbilityMetrics(game);}
  units(){return this.game.entities.filter(e=>e.alive&&e.behavior!=='orb');}
  log(type,e,extra={}){if(type==='special-fire')this.specialFires++;this.events.push({time:this.game.gameTime,type,id:e.id,...extra});if(!this.game.options.collect&&this.events.length>256)this.events.shift();}
  release(owner){
-   owner.specialCast=null;this.rallies=this.rallies.filter(r=>r.owner!==owner);
+   owner.specialCast=null;this.vortices=this.vortices.filter(f=>f.owner!==owner);this.rallies=this.rallies.filter(r=>r.owner!==owner);
    for(const unit of this.game.entities)unit.rallyBuffs?.delete(owner.id);
    this.fields=this.fields.filter(f=>f.owner!==owner);
    // A launched wave is an instantaneous cast's continuing projectile, not a maintained field.
@@ -55,14 +55,14 @@ export class Abilities {
  }
  start(e,dir,point,seenTarget,slot='R'){
   if(!this.canCast(e,slot)||!ABILITIES[e.color])return false;
-  if(slot==='E'){const cfg=this.skill(e,slot);e.normalSkillCooldown=cfg.cooldown;e.specialCast={id:++this.castId,time:0,dir,point:{x:e.x,y:e.y},slot,skill:cfg};this.metrics.start(e,e.specialCast,this.instantGeometry(e,e.specialCast));this.log('special-start',e,{slot,skill:cfg.id,cast:e.specialCast.id});return true;}
+  if(slot==='E'){const cfg=this.skill(e,slot);e.normalSkillCooldown=cfg.cooldown;e.specialCast={id:++this.castId,time:0,dir,point:{x:e.x,y:e.y},slot,skill:cfg,directions:cfg.effect==='wave'?(cfg.lanes===3?blueWaveDirections(dir):[dir]):null};this.metrics.start(e,e.specialCast,this.instantGeometry(e,e.specialCast));this.log('special-start',e,{slot,skill:cfg.id,cast:e.specialCast.id});return true;}
   const cfg=this.skill(e,slot);
   if(cfg.effect==='muster'){e.specialCooldown=cfg.cooldown;e.specialCast={slot,skill:cfg,id:++this.castId,time:0,dir,point:{x:e.x,y:e.y}};this.metrics.start(e,e.specialCast);this.log('special-start',e,{slot,skill:cfg.id,cast:e.specialCast.id});return true;}
   const target=e.color==='red'?(seenTarget??this.redTarget(e,dir)):null;if(e.color==='red'&&!target&&!point)return false;
   const w=this.game.balance.world;
   const p=this.aimPoint(e,dir,point??(target?{x:target.x,y:target.y}:null),cfg);
   if(e.color==='red'&&!this.units().some(t=>isHostile(e,t)&&dist({...p,_world:w},t)<=cfg.radius))return false;
-  const directions=e.color==='blue'?blueWaveDirections(dir):null;
+  const directions=e.color==='blue'&&cfg.effect!=='vortex'?blueWaveDirections(dir):null;
   e.specialCooldown=cfg.cooldown;e.specialCast={slot,skill:cfg,directions,id:++this.castId,time:0,dir,point:p,target,targetPoint:target?{x:target.x,y:target.y}:null};
   this.metrics.start(e,e.specialCast,this.instantGeometry(e,e.specialCast));this.log('special-start',e,{color:e.color,slot,skill:cfg.id,cast:e.specialCast.id});return true;
  }
@@ -80,6 +80,7 @@ export class Abilities {
   const cfg=cast.skill??this.skill(e,cast.slot??'R');
   this.metrics.fire(e,cast,this.instantGeometry(e,cast));
   if(cast.slot==='E'){this.fireNormal(e,cast);return;}
+  if(cfg.effect==='vortex'){this.vortices=this.vortices.filter(f=>f.owner!==e);this.vortices.push({owner:e,remaining:cfg.fieldDuration,skill:cfg});this.log('special-fire',e,{slot:'R',skill:cfg.id,cast:cast.id});return;}
   if(cfg.effect==='muster'){this.muster(e,cast);this.log('special-fire',e,{slot:'R',skill:cfg.id,cast:cast.id});return;}
   if(cast.skill?.effect==='summon')this.summon(e,cast);
   this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,directions:cast.directions ? [...cast.directions] : null,point:{...cast.point},remaining:.75,skill:cast.skill});
@@ -112,9 +113,12 @@ export class Abilities {
  }
  fireNormal(e,cast){
   const cfg=cast.skill,units=this.units();
-  this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,point:{x:e.x,y:e.y},remaining:.75,normal:true,skill:cfg,size:e.size});
+  this.flashes.push({x:e.x,y:e.y,color:e.color,colorHex:e.colorHex,dir:cast.dir,point:{x:e.x,y:e.y},remaining:.75,normal:true,skill:cfg,size:e.size,directions:cast.directions});
   this.log('special-fire',e,{slot:'E',skill:cfg.id,cast:cast.id});
+  // R-ABIL-004: same swept projectile and shared hit registry for one/three lanes.
+  if(cfg.effect==='wave'){const hit=new Set(),dirs=cast.directions??(cfg.lanes===3?blueWaveDirections(cast.dir):[cast.dir]);for(const dir of dirs)this.waves.push({owner:e,cast:cast.id,x:e.x,y:e.y,dir,time:0,hit,skill:cfg,metricKey:cast.metricKey,slot:cast.slot});return;}
   if(cfg.effect==='shield'){for(const t of units)if(!isHostile(e,t)&&(t===e||t.color===e.color||e.companionGroup&&e.companionGroup===t.companionGroup)&&dist(e,t)<=cfg.radius){t.shieldHp=Math.max(t.shieldHp??0,t.maxHp*cfg.shieldHpFraction);t.shieldRemaining=cfg.shieldDuration;this.metrics.count(e,cast,'buffs');}return;}
+  // R-ABIL-006: recruitment probability changes without weakening existing ally buffs.
   if(cfg.effect==='invite'){
    const attemptedGroups=new Set();
    for(const t of units.filter(t=>t!==e&&(!t.companionGroup||t.companionGroup!==e.companionGroup)&&t.color===e.color&&!isHostile(e,t)&&dist(e,t)<=cfg.radius&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3).sort((a,b)=>dist(e,a)-dist(e,b))) {
@@ -177,7 +181,8 @@ export class Abilities {
     if(!e.alive||(e.obsidianShieldUntil??0)<=this.game.gameTime)e.obsidianShieldHp=0;
     e.shieldRemaining=Math.max(0,(e.shieldRemaining??0)-dt);if(!e.shieldRemaining||!e.alive)e.shieldHp=0;
     if(e.summoned)e.summoned.absorbable=this.game.gameTime>=e.summoned.absorbableAt;
-    if(!e.alive){this.release(e);e._specialApex=false;}
+    if(!e.alive){if(!e._abilitiesReleased){this.release(e);e._abilitiesReleased=true;}e._specialApex=false;}
+    else if(e._abilitiesReleased)e._abilitiesReleased=false;
     else if(!e.apex&&e._specialApex){this.loseApex(e);}
     e.inviteBuffs=(e.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime);
     e.normalSkillCooldown=Math.max(0,(e.normalSkillCooldown??0)-dt);
@@ -192,13 +197,16 @@ export class Abilities {
     if(e.command){e.command.remaining-=dt;if(e.command.remaining<=0||!e.command.owner.alive||!e.command.owner.apex)this.endCommand(e,'expiry-or-owner');}
     if(e.specialCast){if(!e.alive||!this.unlocked(e,e.specialCast.slot??'R')||e.frozen>0)e.specialCast=null;else {e.specialCast.time+=dt;if(e.specialCast.time+1e-8>=(e.specialCast.skill?.windup??ABILITIES[e.color].windup)){const cast=e.specialCast;e.specialCast=null;this.fire(e,cast);}}}
   }
+  // R-ABIL-005: pull every movable entity; strongest near the living caster.
+  for(const f of this.vortices){const used=Math.min(dt,f.remaining);f.remaining-=dt;if(!f.owner.alive)continue;for(const t of this.game.getNearbyEntities(f.owner,f.skill.radius)){if(!t.alive||t===f.owner)continue;const v=delta(t,f.owner),d=Math.hypot(v.x,v.y);if(d>f.skill.radius||d<1e-8)continue;const move=Math.min(d,f.skill.pullSpeed*(1-d/f.skill.radius)*used);t.x=boundCenter(t.x+v.x/d*move,0,w.worldWidth,w.wrap);t.y=boundCenter(t.y+v.y/d*move,0,w.worldHeight,w.wrap);}}
+  this.vortices=this.vortices.filter(f=>f.remaining>0&&f.owner.alive);
   for(const wave of this.waves){const cfg=wave.skill??ABILITIES.blue,duration=cfg.waveDuration??.5,length=cfg.length??400,width=cfg.width??180;const previous=wave.time;wave.time=Math.min(duration,wave.time+dt);
     // Swept advancing strip avoids tunneling across frame boundaries.
     for(const t of units){if(!t.alive||!isHostile(wave.owner,t)||wave.hit.has(t.id))continue;
       if(!inWave(wave,t,wave.dir,wave.time/duration*length,width))continue;
       const relative=delta(wave,t),along=relative.x*Math.cos(wave.dir)+relative.y*Math.sin(wave.dir);
       if(along<previous/duration*length-1e-8)continue;
-      wave.hit.add(t.id);if(this.damage(wave.owner,t,cfg.damage??.5,'direct',wave)&&t.alive&&!t.wavePush&&!(t.waveImmune>0))t.wavePush={remaining:cfg.pushDuration??.2,vx:Math.cos(wave.dir)*(cfg.pushSpeed??600),vy:Math.sin(wave.dir)*(cfg.pushSpeed??600)};
+      wave.hit.add(t.id);if(this.damage(wave.owner,t,(cfg.damage??.5)*(1+((cfg.nearDamageMultiplier??1)-1)*(1-Math.min(1,Math.max(0,along)/length))),'direct',wave)&&t.alive&&!t.wavePush&&!(t.waveImmune>0))t.wavePush={remaining:cfg.pushDuration??.2,vx:Math.cos(wave.dir)*(cfg.pushSpeed??600),vy:Math.sin(wave.dir)*(cfg.pushSpeed??600)};
     }
   }
   this.waves=this.waves.filter(f=>f.time<(f.skill?.waveDuration??.5)-1e-8);
@@ -276,6 +284,8 @@ export class Abilities {
   if(cfg.effect==='invite')return this.invitePower(e,'damage')<.15||room>0&&this.units().some(t=>t!==e&&t.color===e.color&&!isHostile(e,t)&&!t.companionGroup&&!t.beingAbsorbedByRef&&t.hp/t.maxHp>.3&&dist(e,t)<=cfg.radius);
   if(!target?.alive||!isHostile(e,target))return false;const dir=angleTo(e,target);
   if(['chill','ripple'].includes(cfg.effect)||slot==='R'&&e.color==='cyan')return inCone(e,target,dir,cfg.radius);
+  if(cfg.effect==='wave')return inWave(e,target,dir,cfg.length,cfg.width);
+  if(cfg.effect==='vortex')return dist(e,target)<=cfg.radius;
   if(slot==='R'&&e.color==='blue')return inWave(e,target,dir,cfg.length,cfg.width);
   if(slot==='R'&&['red','yellow'].includes(e.color))return dist(e,target)<=(cfg.castRange??350)+cfg.radius;
   if(cfg.effect==='dust')return dist(e,target)<=Math.max(180,attackReach(target,this.game.balance))&&((e.dustUntil??0)<=this.game.gameTime);
@@ -290,6 +300,8 @@ export class Abilities {
    if(cfg.effect==='shield'||cfg.effect==='muster'||cfg.effect==='invite'||cfg.effect==='vigor'||cfg.effect==='dust')return this.start(e,e.facing,null,null,slot);
    const target=nearby.filter(t=>isHostile(e,t)&&dist(e,t)<=range).sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id).find(t=>{
     const dir=angleTo(e,t);if(['chill','ripple'].includes(cfg.effect)||slot==='R'&&e.color==='cyan')return inCone(e,t,dir,cfg.radius);
+    if(cfg.effect==='wave')return inWave(e,t,dir,cfg.length,cfg.width);
+    if(cfg.effect==='vortex')return dist(e,t)<=cfg.radius;
     if(e.color==='blue'&&slot==='R')return inWave(e,t,dir,cfg.length,cfg.width);
     if(cfg.effect==='embers')return dist(e,t)<=cfg.radius;
     return true;
@@ -304,19 +316,20 @@ export class Abilities {
  draw(ctx,zoom){
   const shape=(e,dir,point)=>{
     const cfg=e.skill??e.specialCast?.skill??ABILITIES[e.color];
-    if(e.normal||e.specialCast?.slot==='E'){const cfg=e.skill??e.specialCast.skill;if(cfg.effect==='dust'){ctx.arc(e.x,e.y,((e.size??40)/2+16/zoom)*(cfg.visualRadiusMultiplier??3),0,Math.PI*2);return;}if(['chill','ripple'].includes(cfg.effect)){ctx.moveTo(e.x,e.y);ctx.arc(e.x,e.y,cfg.radius,dir-Math.PI/3,dir+Math.PI/3);ctx.closePath();}else ctx.arc(e.x,e.y,cfg.radius,0,Math.PI*2);return;}
+    if(cfg.effect==='vortex'){ctx.arc(e.x,e.y,cfg.radius,0,Math.PI*2);return;}
+    if(e.normal||e.specialCast?.slot==='E'){const cfg=e.skill??e.specialCast.skill;if(cfg.effect==='wave'){for(const lane of e.directions??e.specialCast?.directions??[dir]){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(lane);ctx.rect(0,-cfg.width/2,cfg.length,cfg.width);ctx.restore();}return;}if(cfg.effect==='dust'){ctx.arc(e.x,e.y,((e.size??40)/2+16/zoom)*(cfg.visualRadiusMultiplier??3),0,Math.PI*2);return;}if(['chill','ripple'].includes(cfg.effect)){ctx.moveTo(e.x,e.y);ctx.arc(e.x,e.y,cfg.radius,dir-Math.PI/3,dir+Math.PI/3);ctx.closePath();}else ctx.arc(e.x,e.y,cfg.radius,0,Math.PI*2);return;}
     if(e.color==='cyan'&&cfg.effect!=='shield'){ctx.moveTo(e.x,e.y);ctx.arc(e.x,e.y,cfg.radius,dir-Math.PI/3,dir+Math.PI/3);ctx.closePath();}
     else if(e.color==='blue'){for(const lane of e.directions ?? e.specialCast?.directions ?? [dir]){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(lane);ctx.rect(0,-cfg.width/2,cfg.length,cfg.width);ctx.restore();}}
     else if(e.color==='red')ctx.arc(cfg.effect==='muster'?e.x:point.x,cfg.effect==='muster'?e.y:point.y,cfg.radius,0,Math.PI*2);
     else if(e.color==='yellow')ctx.arc(point.x,point.y,cfg.radius,0,Math.PI*2);
     else ctx.arc(e.x,e.y,cfg.radius,0,Math.PI*2);
   };
-  for(const e of this.units())if(e.specialCast){ctx.save();ctx.beginPath();shape(e,e.specialCast.dir,e.specialCast.point);ctx.fillStyle=this.game.withAlpha(e.colorHex,.09);ctx.fill();ctx.strokeStyle=e.colorHex;ctx.lineWidth=2/zoom;ctx.setLineDash([8/zoom,5/zoom]);ctx.stroke();ctx.setLineDash([]);if(e.color==='red'&&e.specialCast.target){const t=e.specialCast.target;ctx.beginPath();ctx.arc(t.x,t.y,t.size/2+10,0,Math.PI*2);ctx.stroke();}ctx.restore();}
+  for(const e of this.units())if(e.specialCast){ctx.save();ctx.beginPath();shape(e,e.specialCast.dir,e.specialCast.point);ctx.fillStyle=this.game.withAlpha(e.colorHex,['shield','invite','vigor','muster','summon'].includes(e.specialCast.skill?.effect)?.02:.09);ctx.fill();ctx.strokeStyle=e.colorHex;ctx.lineWidth=2/zoom;ctx.setLineDash([8/zoom,5/zoom]);ctx.stroke();ctx.setLineDash([]);if(e.color==='red'&&e.specialCast.target){const t=e.specialCast.target;ctx.beginPath();ctx.arc(t.x,t.y,t.size/2+10,0,Math.PI*2);ctx.stroke();}ctx.restore();}
   const labels={cyan:'냉기 휘두르기',blue:'삼중 파도',green:'사기 진작',red:'사냥 지휘',yellow:'모래바람'};
   for(const flash of this.flashes){
     ctx.save();ctx.globalAlpha=Math.min(1,flash.remaining/.25);
     ctx.beginPath();shape(flash,flash.dir,flash.point);
-    ctx.fillStyle=this.game.withAlpha(flash.colorHex,.22);ctx.fill();
+    ctx.fillStyle=this.game.withAlpha(flash.colorHex,['shield','invite','vigor','muster','summon'].includes(flash.skill?.effect)?.025:.22);ctx.fill();
     ctx.strokeStyle=flash.colorHex;ctx.lineWidth=4/zoom;ctx.stroke();
     // The stationary origin marker identifies the caster even for a remote sand field.
     ctx.beginPath();ctx.arc(flash.x,flash.y,(30+(1-flash.remaining/.75)*25)/zoom,0,Math.PI*2);ctx.stroke();
@@ -334,6 +347,7 @@ export class Abilities {
   }
   for(const f of this.frostFields){ctx.beginPath();ctx.arc(f.x,f.y,f.radius,0,Math.PI*2);ctx.fillStyle='rgba(103,232,249,.16)';ctx.fill();ctx.strokeStyle='#a5f3fc';ctx.lineWidth=2/zoom;ctx.stroke();}
   for(const f of this.fields){ctx.beginPath();ctx.arc(f.x,f.y,f.radius??360,0,Math.PI*2);ctx.fillStyle='rgba(234,179,8,.12)';ctx.fill();ctx.strokeStyle='#eab308';ctx.lineWidth=2/zoom;ctx.stroke();}
+  for(const f of this.vortices){ctx.save();ctx.beginPath();ctx.arc(f.owner.x,f.owner.y,f.skill.radius,0,Math.PI*2);ctx.fillStyle='rgba(59,130,246,.04)';ctx.fill();ctx.strokeStyle='#60a5fa';ctx.lineWidth=2/zoom;ctx.stroke();for(let i=0;i<8;i++){const a=i*Math.PI/4,rr=f.skill.radius*(.25+.65*(f.remaining%1));ctx.beginPath();ctx.arc(f.owner.x+Math.cos(a)*rr,f.owner.y+Math.sin(a)*rr,4/zoom,0,Math.PI*2);ctx.fillStyle='#bfdbfe';ctx.fill();}ctx.restore();}
   for(const wave of this.waves){ctx.save();ctx.translate(wave.x,wave.y);ctx.rotate(wave.dir);ctx.fillStyle='rgba(59,130,246,.4)';ctx.fillRect(Math.max(0,wave.time/(wave.skill?.waveDuration??.5)*(wave.skill?.length??400)-20),-(wave.skill?.width??180)/2,20,wave.skill?.width??180);ctx.restore();}
  }
 }

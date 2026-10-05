@@ -84,12 +84,15 @@ export class Biomes {
  update(dt){
   this.game.audio?.updateBlizzard?.(this.enabled&&this.blizzard()&&this.regionAt(this.game.player)?.id==='snow'&&this.game.player.alive&&!this.game.gameOver);
   if(!this.enabled)return;
-  const c=this.game.balance.biomes;this.updateSandstorms(dt);
+  const c=this.game.balance.biomes;this.updateSandstorms(dt);this.game.biomeObjects?.sync();
   for(const e of this.game.entities){if(!e.alive||e.behavior==='orb')continue;
    const cold=this.blizzard()&&this.regionAt(e)?.id==='snow',resistance=this.frostResistance(e);
-   e.frostExposure=cold?(e.frostExposure??0)+dt*(1-resistance*.5):Math.max(0,(e.frostExposure??0)-dt*2);
-   e.frostbiteRemaining=Math.max(0,(e.frostbiteRemaining??0)-dt);
-   if(cold&&e.frostExposure>=(c.frostExposureSeconds??4))e.frostbiteRemaining=c.frostDuration??6;
+   // R-WORLD-004: capped buildup gauge, hysteresis until fully recovered.
+   const sheltered=this.game.biomeObjects?.inFrostShelter(e)??false,limit=c.frostExposureSeconds??6;e.frostbiteRemaining??=0;
+   e.frostExposure=Math.max(0,Math.min(limit,(e.frostExposure??0)+(cold&&!sheltered?dt*(1-resistance*.5):-dt*(sheltered?(c.shelterRecoveryPerSecond??4):(c.frostRecoveryPerSecond??2)))));
+   if(sheltered||e.frostExposure<=0)e.frostbiteRemaining=0;
+   else if(e.frostExposure>=limit)e.frostbiteRemaining=1;
+
   }
   this.damageTimer+=dt;this.encounterTimer-=dt;
   const cycle=Math.floor(this.game.gameTime/24);

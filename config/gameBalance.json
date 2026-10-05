@@ -15,7 +15,7 @@
     "maxRedLavaResistance": 0.85,
     "waterMoveMultiplier": 0.65,
     "blueWaterMoveMultiplier": 0.9,
-    "frostExposureSeconds": 4,
+    "frostExposureSeconds": 6,
     "frostDuration": 6,
     "frostTickHpFraction": 0.0125,
     "cyanFrostResistance": 0.65,
@@ -31,7 +31,9 @@
     "sandstormSpeed": 45,
     "sandstormTickHpFraction": 0.025,
     "yellowSandstormResistance": 0.8,
-    "yellowSandstormDefenseBonus": 0.25
+    "yellowSandstormDefenseBonus": 0.25,
+    "frostRecoveryPerSecond": 2,
+    "shelterRecoveryPerSecond": 4
   },
   "player": {
     "startingSize": 20,
@@ -48,7 +50,8 @@
     "minEatSizeDifference": 0,
     "lateThreshold": 25,
     "lateMultiplier": 1.4,
-    "lateTransition": 50
+    "lateTransition": 50,
+    "paceMultiplier": 0.5
   },
   "attack": {
     "manualChargeSeconds": 0.9,
@@ -106,7 +109,7 @@
     "baseMaintainDistance": 30,
     "maintainDistancePerSize": 0.5,
     "maxAbsorptionSpeed": 5,
-    "pullForce": 1,
+    "pullForce": 1.2,
     "healthCostProgressFraction": 1,
     "successHealthRefundFraction": 1,
     "nearEqualRefundStartRatio": 0.6,
@@ -135,7 +138,11 @@
         "hpFraction": 0.8
       }
     ],
-    "woundedCostFloor": 0.5
+    "woundedCostFloor": 0.2,
+    "bluePullMultiplier": 1.3,
+    "woundedTimeFloor": 0.2,
+    "cancelDecaySeconds": 0.6,
+    "surfaceReachPerSize": 0.15
   },
   "combat": {
     "knockbackDuration": 0.15,
@@ -181,7 +188,8 @@
     "attackCooldown": 1.8,
     "absorptionAttemptChance": 0.6,
     "lowHealthAttackChance": 0.15,
-    "guardSurfaceDistance": 140
+    "guardSurfaceDistance": 140,
+    "retaliationSeconds": 6
   },
   "world": {
     "wrap": true,
@@ -322,8 +330,8 @@
         "R": "cyan-freeze"
       },
       "blue": {
-        "E": "blue-ripple",
-        "R": "blue-trident"
+        "E": "blue-wave",
+        "R": "blue-vortex"
       },
       "green": {
         "E": "green-invite",
@@ -337,6 +345,7 @@
         "E": "yellow-dust",
         "R": "yellow-storm"
       }
-    }
+    },
+    "greenJoinMultiplier": 0.75
   }
 }

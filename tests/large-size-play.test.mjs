@@ -23,7 +23,7 @@ test('large attack travels capped distance and preview uses the same distance',(
  p.attackState='CHARGING';const x=p.x;updateAttack(p,p.currentChargeDuration,g.balance,[],g);assert.equal(p.x-x,600);
 });
 test('reward reduction is smooth and halves all rewards throughout large-size bands',()=>{
- const g=createGame(7);for(const [size,amount]of [[400,100],[450,75],[500,50],[1000,50],[1500,50],[2000,50]])assert.equal(growthRewardFor(100,{size},g.balance),amount);
+ const g=createGame(7);for(const [size,amount]of [[400,100],[450,75],[500,50],[1000,50],[1500,50],[2000,50]])assert.equal(growthRewardFor(100,{size},g.balance),amount*.5);
 });
 
 test('grown skill snapshot hits beyond its original radius and keeps its cast geometry',async()=>{

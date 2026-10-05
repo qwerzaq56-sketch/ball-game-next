@@ -4,8 +4,11 @@ export const SKILL_CATALOG = {
  'cyan-shield':{color:'cyan',slot:'E',name:'서리 보호막',effect:'shield',windup:.25,cooldown:9,radius:240,shieldHpFraction:.15,shieldDuration:6},
  'cyan-burst':{color:'cyan',slot:'R',name:'냉기 휘두르기 · 폭발',effect:'frost-burst',windup:.6,cooldown:12,radius:260,damage:.35,blastDelay:1.2,blastRadius:150,blastDamage:.35,fieldDuration:15,tickInterval:.5,fieldDamage:.6,freezeHitCount:3,freezeSeconds:1.2},
  'cyan-chill':{color:'cyan',slot:'E',name:'냉기 찌르기',effect:'chill',windup:.25,cooldown:7,radius:200,damage:.35,freezeSeconds:.35},
+ // R-ABIL-004: legacy cone retained as a selectable recovery candidate.
+ 'blue-wave':{color:'blue',slot:'E',name:'직선 파도',effect:'wave',windup:.3,cooldown:8,length:440,width:160,damage:.8,apexWidth:205,apexDamage:1.08,nearDamageMultiplier:1.5,pushDuration:.15,pushSpeed:400,waveDuration:.5},
+ 'blue-vortex':{color:'blue',slot:'R',name:'심해 흡인',effect:'vortex',windup:.6,cooldown:12,radius:360,fieldDuration:4,pullSpeed:240},
  'blue-ripple':{color:'blue',slot:'E',name:'파도 밀치기',effect:'ripple',windup:.3,cooldown:8,radius:240,damage:.8,pushDuration:.15,pushSpeed:400},
- 'green-invite':{color:'green',slot:'E',name:'동행 초대',effect:'invite',windup:.3,cooldown:9,radius:350,acceptChance:.8,buffDuration:30,buffDamage:.04,buffDefense:.05,buffStackCap:5},
+ 'green-invite':{color:'green',slot:'E',name:'동행 초대',effect:'invite',windup:.3,cooldown:9,radius:350,acceptChance:.7,buffDuration:30,buffDamage:.04,buffDefense:.05,buffStackCap:5},
  'red-embers':{color:'red',slot:'E',name:'불씨 장판',effect:'embers',windup:.25,cooldown:9,radius:240,fieldDuration:5,tickInterval:.5,damage:.43},
  'red-muster':{color:'red',slot:'R',name:'혈족 집결',effect:'muster',windup:.6,cooldown:16,gatherDuration:3,buffDuration:8,buffDamage:.3,buffSpeed:1.25},
  'red-vigor':{color:'red',slot:'E',name:'사냥 박동',effect:'vigor',windup:.25,cooldown:9,radius:260,buffDuration:4,buffDamage:.15,buffSpeed:1.12},
@@ -17,12 +20,13 @@ export const SKILL_CATALOG = {
  'red-rally':{color:'red',slot:'R',name:'사냥 지휘',effect:'legacy',windup:.8,cooldown:12,radius:250,castRange:350,buffRadius:450,buffDuration:6,buffDamage:.3,buffSpeed:1.25},
  'yellow-storm':{color:'yellow',slot:'R',name:'모래바람',effect:'legacy',windup:.8,cooldown:14,radius:259.2,castRange:350,fieldDuration:5,tickInterval:.25,hpFraction:.122,missChance:.25},
 };
-export const DEFAULT_SKILLS={cyan:{E:'cyan-shield',R:'cyan-freeze'},blue:{E:'blue-ripple',R:'blue-trident'},green:{E:'green-invite',R:'green-summon'},red:{E:'red-embers',R:'red-muster'},yellow:{E:'yellow-dust',R:'yellow-storm'}};
+export const DEFAULT_SKILLS={cyan:{E:'cyan-shield',R:'cyan-freeze'},blue:{E:'blue-wave',R:'blue-vortex'},green:{E:'green-invite',R:'green-summon'},red:{E:'red-embers',R:'red-muster'},yellow:{E:'yellow-dust',R:'yellow-storm'}};
 export function selectedSkill(balance,color,slot){const selected=balance.abilitySkills?.loadout?.[color]?.[slot]??DEFAULT_SKILLS[color]?.[slot],valid=SKILL_CATALOG[selected]?.color===color&&SKILL_CATALOG[selected]?.slot===slot,id=valid?selected:DEFAULT_SKILLS[color]?.[slot],base=SKILL_CATALOG[id];return {...base,...skillOverrides(id,balance.abilitySkills?.overrides?.[id],base),id};}
 export function apexTerritoryRadius(e,balance){if(e.color==='red')return e.size*(balance.abilitySkills?.redTerritoryRadiusMultiplier??.6)*(balance.abilitySkills?.territoryMultiplier??1);return 900*Math.sqrt(Math.max(100,e.size)/100)*(balance.abilitySkills?.territoryMultiplier??1);}
 
 export function scaledSkill(balance,e,slot){
- const cfg=selectedSkill(balance,e.color,slot),scale=Math.max(.6,e.size/(balance.abilitySkills?.rangeReferenceSize??100));
+ // R-ABIL-004: apex evolves E into three lanes; R is a separate suction field.
+ const cfg=selectedSkill(balance,e.color,slot);if(cfg.id==='blue-wave'&&e.apex){cfg.lanes=3;cfg.width=cfg.apexWidth;cfg.damage=cfg.apexDamage;}const scale=Math.max(.6,e.size/(balance.abilitySkills?.rangeReferenceSize??100));
  for(const key of ['blastRadius','radius','length','width','castRange','buffRadius','commandRadius'])if(Number.isFinite(cfg[key]))cfg[key]*=scale;
  if(cfg.effect==='embers')cfg.radius=Math.max(cfg.radius,e.size/2+100);
  if(cfg.effect==='muster')cfg.radius=apexTerritoryRadius(e,balance);

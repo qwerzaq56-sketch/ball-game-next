@@ -118,10 +118,10 @@ test('retaliation: field ticks and same-colour hits never create a target', ()=>
   hitBy(t,a,ally); assert.equal(a.retaliateTarget??null,null);
 });
 
-test('retaliation: memory expires after RETALIATION_MEMORY seconds', ()=>{
+test('R-AI-010 retaliation memory expires after the configured six seconds', ()=>{
   const t=setup(), a=victim(t), foe=t.unit(100,'red',1200);
   hitBy(t,a,foe); t.g.entities=[a,foe]; t.g.buildGrid();
-  for(let i=0;i<Math.ceil(RETALIATION_MEMORY*60)+2;i++) updateAI(a,1/60,t.g,t.b);
+  for(let i=0;i<Math.ceil(t.b.ai.retaliationSeconds*60)+2;i++) updateAI(a,1/60,t.g,t.b);
   assert.equal(a.retaliateTarget,null);
 });
 
@@ -152,7 +152,7 @@ test('absorption escape does not return to food inside the same absorber margin'
 test('absorption escape releases beyond maintain distance plus margin',()=>{
  const t=setup(), a=victim(t), ally=t.unit(200,'yellow',1050);
  a.escapeAbsorber=ally;
- const radius=t.b.absorption.baseMaintainDistance+ally.size*t.b.absorption.maintainDistancePerSize+80;
+ const radius=Math.max(t.b.absorption.baseMaintainDistance+ally.size*t.b.absorption.maintainDistancePerSize,(ally.size+a.size)/2+t.b.absorption.baseMaintainDistance+ally.size*t.b.absorption.surfaceReachPerSize)+80;
  ally.x=a.x+radius; t.run([a,ally],a);assert.equal(a.escapeAbsorber,null);
 });
 test('sand escape holds to 420 and releases when the field expires',()=>{

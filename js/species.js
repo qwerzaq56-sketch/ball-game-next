@@ -5,7 +5,7 @@ import { maintainDistanceFor } from './absorption.js';
 export function acceptsAbsorption(ai, other, balance) {
   if(ai.behavior!=='ai'||ai.color!=='green')return true;
   // Outside start distance, pursuit can approach without rolling acceptance yet.
-  if(dist(ai,other)>maintainDistanceFor(ai,balance))return true;
+  if(dist(ai,other)>maintainDistanceFor(ai,balance,other))return true;
   ai.absorbEncounters ??= new Map();
   if(!canAbsorb(ai,other)){ai.absorbEncounters.delete(other.id);return false;}
   if(!ai.absorbEncounters.has(other.id))ai.absorbEncounters.set(other.id,random('ai')<.5);
@@ -15,7 +15,7 @@ export function pruneEncounters(ai,game,balance){
   if(!ai.absorbEncounters)return;
   for(const id of ai.absorbEncounters.keys()){
     const other=game.entities.find(e=>e.id===id);
-    if(!other||!other.alive||other.size>=ai.size||dist(ai,other)>maintainDistanceFor(ai,balance))ai.absorbEncounters.delete(id);
+    if(!other||!other.alive||other.size>=ai.size||dist(ai,other)>maintainDistanceFor(ai,balance,other))ai.absorbEncounters.delete(id);
   }
 }
 export function chooseGeneral(ai,choices,huntMultiplier=1){

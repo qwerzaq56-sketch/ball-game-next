@@ -137,7 +137,8 @@ export class AllyLinks {
    if(e.behavior!=='ai'||e.frozen>0||e.beingAbsorbedByRef||e.recovering||e.attackState!=='READY'||e.dodgeState==='DODGING')continue;
    const neighbor=(this.truceUntil>this.game.gameTime?candidates.filter(n=>n!==e&&dist(e,n)<=280):this.neighbors(e)).filter(n=>!n.beingAbsorbedByRef&&!(n.companionCooldown>0)&&!(n.frozen>0)&&!n.recovering&&n.dodgeState!=='DODGING'&&n.attackState==='READY'&&!n.specialCast&&(!n.companionGroup||this.groups.get(n.companionGroup)?.members.size<ALLY_RULES.maxGroup))
     .sort((a,b)=>dist(e,a)-dist(e,b)||a.id-b.id)[0];
-   if(neighbor&&random('ai')<Math.min(.8,affinity(e).join+Math.max(this.charmBonus(e),this.charmBonus(neighbor)))){if(neighbor.color===e.color)this.join(e,neighbor);else this.recruit(e,neighbor,true);}
+   // R-COMP-004: keep green companionship, reduce spontaneous joining only.
+   if(neighbor&&random('ai')<Math.min(.8,affinity(e).join*(e.color==='green'?(this.game.balance.abilitySkills.greenJoinMultiplier??.75):1)+Math.max(this.charmBonus(e),this.charmBonus(neighbor)))){if(neighbor.color===e.color)this.join(e,neighbor);else this.recruit(e,neighbor,true);}
   }
  }
  move(e,dt){

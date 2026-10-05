@@ -44,23 +44,30 @@
 - 변경 이력: M64 기본 R=`cyan-burst`(지연 폭발·15초 냉기 장판·누적 빙결) → **M74에서 기본값을 이 능력으로 되돌림**(`cyan-burst`는 선택 대기 후보로 보존: 쿨 12·표식 1.2초·폭발 반경 150·장판 15초·3타격 빙결 1.2초). **구현 추인 카탈로그 R-ABIL-001의 "R=냉기 폭발" 서술은 M64 시점이며 현재 기본값은 이 카드가 정본.**
 
 ### R-ABIL-004 · 파랑 E — 파도 밀치기
-- 규칙: 전방 반경 240(Size 비례)에 공격력 0.8배 피해와 0.15초 동안 속도 400의 밀침을 준다. 준비 0.3초, 쿨다운 8초. 파도 면역은 공유한다.
+- 규칙: 기본 파랑 E는 직선 파도1개, 최상위면 기존 분리된 좌우 방향을 포함해3개다. 기준 Size100에서 길이440·폭160(최상위205), 기본 피해0.8배(최상위1.08), 거리별 피해 배율은 가까이1.5→끝1.0. 준비0.3초·쿨8초·파도0.5초·밀침0.15초/400. 세 파도 공유 hit registry로 중복 타격하지 않는다.
 - 상태: 승인
 - 출처: 사용자 추인 2026-10-04 · M42 · M75
 - 확인:
-  - skill blue-ripple windup = 0.3
-  - skill blue-ripple cooldown = 8
-  - skill blue-ripple radius = 240
-  - skill blue-ripple damage = 0.8
-  - skill blue-ripple pushDuration = 0.15
-  - skill blue-ripple pushSpeed = 400
+  - skill blue-wave windup = 0.3
+  - skill blue-wave cooldown = 8
+  - skill blue-wave length = 440
+  - skill blue-wave width = 160
+  - skill blue-wave nearDamageMultiplier = 1.5
+  - skill blue-wave damage = 0.8
+  - skill blue-wave pushDuration = 0.15
+  - skill blue-wave pushSpeed = 400
 - 변경 이력: M42 피해 0.4 → M75 조정 0.8(1대1 균형). E 전용 테스트는 미연결(R 파도 검증에 묶여 있음).
+- 변경 이력: M79 부채꼴 E→직선 E, 최상위3파도. blue-ripple은 복구 후보 보존. 미승인 변경(M79): 근거리1.5배·최상위 강화 수치는 초기 밸런스.
 
-### R-ABIL-005 · 파랑 R — 삼중 파도
-- 규칙: 중심 조준 방향과 좌우 각 한 방향(중심 대비 [-120°,-40°], [40°,120°]에서 시전 시작 때 한 번 샘플)으로 길이 440·폭 205의 파도 3개를 발사한다. 세 방향은 전조·발사·표시가 공유하고, 같은 대상은 한 시전의 모든 파도에서 한 번만 맞는다(중복 피해·밀침·MISS 판정 방지). 공격력 1.08배·0.2초 동안 속도 600 밀침, 파도 지속 0.5초, 준비 0.6초, 쿨다운 10초(시전당 한 번). 회피로 전조를 취소하면 3방향 모두 취소되고 쿨다운은 돌려주지 않는다. 4초 동족 흡수 지시(반경 350)를 유지한다. 방향 샘플링에 AI 난수 2회를 쓴다.
+### R-ABIL-005 · 파랑 R — 심해 흡인
+- 규칙: 기본 파랑 R은 시전자 중심 기준 반경360(Size 비례),4초 동안 모든 살아있는 이동 개체(아군·적·먹이)를 끌어당긴다. 속도=240×(1−중심거리/반경), 중심을 지나치지 않는다. 준비0.6초·쿨12초, 직접 피해 없음. 이전 blue-trident 삼중 파도 R은 복구 후보로 유지한다.
 - 상태: 승인
 - 출처: 사용자 아이디어 2026-10-03(3방향) · 사용자 추인 2026-10-04 · M5 · M75
 - 확인:
+  - skill blue-vortex radius = 360
+  - skill blue-vortex fieldDuration = 4
+  - skill blue-vortex pullSpeed = 240
+  - test tests/m79-systems.test.mjs :: R-ABIL-005 blue R pulls allies
   - skill blue-trident windup = 0.6
   - skill blue-trident cooldown = 10
   - skill blue-trident length = 440
@@ -74,24 +81,26 @@
   - test tests/abilities.test.mjs :: overlapping blue lanes cannot triple damage, knockback or consume multiple MISS rolls
   - test tests/abilities.test.mjs :: dodging a blue windup cancels all three lanes without refund or fire event
 - 변경 이력: v0.9 단일 파도 → M5 삼중(길이 400·폭 180·피해 0.5배·밀침 120) → M75 길이 440·폭 205·피해 1.08·밀침 600으로 조정. 설계 문서의 M5 수치와 다르다. **선딜 제거(즉발)는 수신함 I-005로 남아 있고 미반영.** 이전 단일 파도(`blue-single-wave`)는 복구 후보로 설계만 있다.
+- 변경 이력: M79 삼중 파도 R→심해 흡인 R, 삼중 파도는 최상위 E로 진화시킴. 아래 기존 blue-trident 수치·테스트 확인은 복구 후보 검증이다. 미승인 변경(M79): 반경360·4초·속도240·쿨12는 초기값.
 
 ### R-ABIL-006 · 초록 E — 동행 초대
-- 규칙: 반경 350 안 같은 색 동족을 가까운 순서로 모집한다(수락 80%, 성향 무관). 최대 6명, 다른 대열 소속·흡수 중·HP 30% 이하는 제외하되 다른 동족 대열은 통째로 합칠 수 있다(합계 6명 이하·전원 동색·비전쟁). 수락한 새 동료·현재 대열 전체·시전자에게 공격 +4%·방어 +5%를 30초(개별 만료·최대 5중첩) 준다. 혼자 써도 자신에게 강화된다. 준비 0.3초, 쿨다운 9초.
+- 규칙: 반경 350 안 같은 색 동족을 가까운 순서로 모집한다(수락 70%, 성향 무관). 최대 6명, 다른 대열 소속·흡수 중·HP 30% 이하는 제외하되 다른 동족 대열은 통째로 합칠 수 있다(합계 6명 이하·전원 동색·비전쟁). 수락한 새 동료·현재 대열 전체·시전자에게 공격 +4%·방어 +5%를 30초(개별 만료·최대 5중첩) 준다. 혼자 써도 자신에게 강화된다. 준비 0.3초, 쿨다운 9초.
 - 상태: 승인
 - 출처: 사용자 추인 2026-10-04 · M56 · M63 · M75
 - 확인:
   - skill green-invite windup = 0.3
   - skill green-invite cooldown = 9
   - skill green-invite radius = 350
-  - skill green-invite acceptChance = 0.8
+  - skill green-invite acceptChance = 0.7
   - skill green-invite buffDuration = 30
   - skill green-invite buffDamage = 0.04
   - skill green-invite buffDefense = 0.05
   - skill green-invite buffStackCap = 5
   - test tests/green-companions.test.mjs :: green E provides solo attack and real defense, stacks to cap, then expires
-  - test tests/green-companions.test.mjs :: 80 percent E acceptance ignores personality and buffs accepted and existing companions
+  - test tests/green-companions.test.mjs :: R-ABIL-006 70 percent E acceptance ignores personality and buffs accepted and existing companions
   - test tests/sprint-food-lava.test.mjs :: green E merges whole existing groups and buffs each member once
 - 변경 이력: 공격 버프 5%(M56 문서) → M75 4%. 수신함 I-003("초록=체력 재생")은 이 능력과 다르며 미반영.
+- 변경 이력: M79 동행 유지·기존 버프는 보존하고 E 수락80%→70%. 미승인 변경(M79): 사용자 비율 완화 요청의 초기값, 실제 수락 빈도는 테스트로 검증.
 
 ### R-ABIL-007 · 초록 R — 숲의 부름
 - 규칙: 동족 소환체 최대 2명(시전자당 생존 상한)을 소환한다. 각 소환체 직경은 시전자 Size×0.16×(0.8~1.2)이며 하드 상한 20%다. 소환체는 시간·시전자 사망·직위 상실로 사라지지 않고, 소환 30초 후부터 흡수 가능하다. 자체 공격력에 시전자 기본 공격력의 44%를 계승하고, 공격·회피 충전을 최소 1회 해금한다. 자연 먹이를 소비하지 않으며 사냥 드롭·성장 보상은 시전자에게 주지 않는다. 시전 반경 350·5초 공격 +15% 사기·대열 모집 포함. 준비 0.5초, 쿨다운 18초, 대열 상한 6명.

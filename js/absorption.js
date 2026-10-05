@@ -19,22 +19,28 @@ import {delta} from './topology.js';
 // (`pullForce`) still eases the target toward the absorber for feel, but it never gates whether
 // progress advances — only distance does.
 
-export function maintainDistanceFor(absorber, balance) {
+export function maintainDistanceFor(absorber, balance, target=null) {
   const cfg = balance.absorption;
-  return cfg.baseMaintainDistance + absorber.size * cfg.maintainDistancePerSize;
+  // R-ABS-008: include both bodies so large touching allies remain reachable.
+  return Math.max(cfg.baseMaintainDistance + absorber.size * cfg.maintainDistancePerSize,target?(absorber.size+target.size)/2+cfg.baseMaintainDistance+absorber.size*(cfg.surfaceReachPerSize??.15):0);
 }
 
+// R-ABS-008
 export function resistanceTimeFor(target, balance) {
   const cfg = balance.absorption;
-  return Math.max(0.05, cfg.baseResistanceTime + target.size * cfg.resistancePerSize);
+  return Math.max(0.05, (cfg.baseResistanceTime + target.size * cfg.resistancePerSize)*((cfg.woundedTimeFloor??.2)+(1-(cfg.woundedTimeFloor??.2))*Math.max(0,Math.min(1,target.hp/target.maxHp))));
 }
 
+// R-ABS-002
 export function absorptionHealthFraction(absorber,target,balance){
  const points=balance.absorption.healthRatioCurve??[{ratio:0,hpFraction:-.03},{ratio:.15,hpFraction:-.03},{ratio:.5,hpFraction:.2},{ratio:.95,hpFraction:.75},{ratio:1,hpFraction:.8}],ratio=Math.max(0,Math.min(1,target.size/absorber.size));
  let value=points.at(-1).hpFraction;for(let i=1;i<points.length;i++)if(ratio<=points[i].ratio){const a=points[i-1],b=points[i];value=a.hpFraction+(b.hpFraction-a.hpFraction)*(ratio-a.ratio)/(b.ratio-a.ratio);break;}
  if(value>0){const floor=balance.absorption.woundedCostFloor??.5;value*=floor+(1-floor)*Math.max(0,Math.min(1,target.hp/target.maxHp));}return value;
 }
 export function startAbsorption(absorber, target, balance, game) {
+  // R-ABS-010: a new connection never discards an outstanding cancellation refund.
+  if(target.absorptionRefund)settleCancellation(target,Infinity);
+  target.absorptionDecaySeconds=balance.absorption.cancelDecaySeconds??.6;
   target.beingAbsorbedByRef = absorber;
   target.absorptionProgress = 0;
   target.absorptionRequired = resistanceTimeFor(target, balance);
@@ -45,12 +51,23 @@ export function startAbsorption(absorber, target, balance, game) {
   if (game && (absorber === game.player || target === game.player)) game.audio.absorbStart();
 }
 
-export function cancelAbsorption(target) {
-  target.beingAbsorbedByRef = null;
-  target.absorptionProgress = 0;
-  target.absorptionRequired = 0;
+// R-ABS-010: refund only health actually paid by this connection, not combat damage.
+export function cancelAbsorption(target,refund=true) {
+  const owner=target.beingAbsorbedByRef;
+  if(!owner&&target.absorptionRefund)return;
+  if(refund&&owner?.alive&&(target.absorptionHealthPaid??0)>0){target.absorptionRefund={owner,paid:target.absorptionHealthPaid,progress:target.absorptionProgress,elapsed:0,duration:target.absorptionDecaySeconds??.6,life:owner.defeatSerial??0};owner.absorptionRefundTargets??=new Set();owner.absorptionRefundTargets.add(target);target.absorptionHealthPaid=0;}
+  else {target.absorptionProgress=0;target.absorptionRequired=0;}
+  target.beingAbsorbedByRef=null;
+}
+function settleCancellation(target,dt){
+ const r=target.absorptionRefund;if(!r)return;
+ const previous=Math.min(1,r.elapsed/r.duration);r.elapsed+=dt;const next=Math.min(1,r.elapsed/r.duration);
+ if(r.owner.alive&&(r.owner.defeatSerial??0)===r.life)r.owner.hp=Math.min(r.owner.maxHp,r.owner.hp+r.paid*(next-previous));
+ target.absorptionProgress=r.progress*(1-next);
+ if(next>=1){r.owner.absorptionRefundTargets?.delete(target);target.absorptionRefund=null;target.absorptionProgress=0;target.absorptionRequired=0;}
 }
 
+// R-ABS-001
 export function absorptionGrowthFor(absorber,target,balance){
  const ratio=balance.growth.growthToSizeRatio,efficiency=balance.absorption.areaEfficiency??.8;
  const size=Math.sqrt(absorber.size*absorber.size+target.size*target.size*efficiency);
@@ -80,7 +97,7 @@ function completeAbsorption(absorber, target, game, balance) {
     game.spawnFloatingText(absorber.x, absorber.y - absorber.size / 2 - 10, `+${Math.round(gained)} GROWTH`, '#93c5fd');
 
   }
-  cancelAbsorption(target);
+  cancelAbsorption(target,false);
 
   if (target.behavior === 'player') {
     // v0.6 spec §16: being fully absorbed costs a Life exactly like a combat death — route
@@ -101,7 +118,9 @@ function completeAbsorption(absorber, target, game, balance) {
 // target drifts past maintainDistance, the size hierarchy flips, or the absorber dies.
 export function updateAbsorptions(game, dt, balance) {
   const cfg = balance.absorption;
+  for(const owner of game.entities)for(const target of owner.absorptionRefundTargets??[])settleCancellation(target,dt);
   for (const target of game.entities) {
+    if(!target.alive&&target.beingAbsorbedByRef)cancelAbsorption(target);
     if (!target.alive || !target.beingAbsorbedByRef) continue;
     const absorber = target.beingAbsorbedByRef;
 
@@ -110,21 +129,23 @@ export function updateAbsorptions(game, dt, balance) {
       continue;
     }
 
-    const maintainDistance = maintainDistanceFor(absorber, balance);
+    const maintainDistance = maintainDistanceFor(absorber, balance,target);
     const d = dist(absorber,target);
     if (d > maintainDistance) {
       cancelAbsorption(target);
       continue;
     }
 
-    const proximity = 1 - Math.min(1, d / maintainDistance); // 1 at contact, 0 at the edge
+    const surface=Math.max(0,d-(absorber.size+target.size)/2);
+    const proximity = 1 - Math.min(1, surface / Math.max(1,maintainDistance-(absorber.size+target.size)/2)); // 1 at contact, 0 at the edge
     const advance=Math.min(Math.max(0,target.absorptionRequired-target.absorptionProgress),cfg.maxAbsorptionSpeed*proximity*dt);
     const cost=(target.absorptionHealthCost??0)*(cfg.healthCostProgressFraction??1)*advance/target.absorptionRequired;
     payAbsorptionHealth(absorber,target,cost,balance);
     target.absorptionProgress += advance;
 
     if (proximity > 0) {
-      const pull = 1 - Math.pow(1 - cfg.pullForce * proximity, dt);
+      // R-ABS-011: exponential pull remains finite above strength 1.
+      const pull = 1-Math.exp(-cfg.pullForce*(absorber.color==='blue'?(cfg.bluePullMultiplier??1.3):1)*proximity*dt);
       const toward=delta(target,absorber);target.x += toward.x*pull;target.y += toward.y*pull;
     }
 

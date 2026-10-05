@@ -4,7 +4,7 @@ function unit(g,x,color='red',size=100){return new AIEntity({balance:g.balance,x
 test('desktop absorption toggle works without touch mode and right hold remains an alternative',()=>{const {g,p}=fixture();g.input.touchMode=false;g.input.absorbToggle=true;g.updatePlayer(0);assert(p.allyAbsorptionEnabled);g.input.absorbToggle=false;g.updatePlayer(0);assert(!p.allyAbsorptionEnabled);g.input.absorbHeld=true;g.updatePlayer(0);assert(p.allyAbsorptionEnabled);});
 test('water reduces ordinary movement and blue keeps ninety percent speed',()=>{const {g,p}=fixture();g.biomes.enabled=true;g.biomes.regionAt=()=>({id:'lake'});g.input.keys.add('d');const x=p.x;g.updatePlayer(.1);assert(Math.abs(p.x-x-p.moveSpeed*.65*.1)<1e-8);p.color='blue';const blue=p.x;g.updatePlayer(.1);assert(Math.abs(p.x-blue-p.moveSpeed*.9*.1)<1e-8);g.biomes.regionAt=()=>({id:'grassland'});assert.equal(g.biomes.moveMultiplier(p),1);});
 test('prolonged blizzard exposure causes DOT, cyan delays onset and size adds modest resistance',()=>{const {g,p}=fixture();g.biomes.enabled=true;g.biomes.regionAt=()=>({id:'snow'});const cyan=unit(g,p.x,'cyan',400);g.entities.push(cyan);g.gameTime=16;
- for(let i=0;i<10;i++){g.gameTime+=.5;g.biomes.update(.5);}
+ for(let i=0;i<13;i++){g.gameTime+=.5;g.biomes.update(.5);}
  assert(p.frostbiteRemaining>0);assert(p.hp<2000);assert.equal(cyan.frostbiteRemaining,0);assert(g.biomes.frostResistance(cyan)>g.biomes.frostResistance(p));assert(g.biomes.frostResistance({...p,size:600})>g.biomes.frostResistance({...p,size:40}));
  g.biomes.regionAt=()=>({id:'grassland'});for(let i=0;i<14;i++){g.gameTime+=.5;g.biomes.update(.5);}assert.equal(p.frostbiteRemaining,0);assert.equal(p.frostExposure,0);
 });

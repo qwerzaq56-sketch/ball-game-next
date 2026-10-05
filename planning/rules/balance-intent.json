@@ -43,5 +43,14 @@
   "camera.zoomOutPerSize": "커질수록 시야가 넓어지는 속도",
   "camera.maxZoomOut": "시야 확대 상한",
   "audio": "효과음 볼륨",
-  "evaluation.targetSizes": "시간별 목표 크기(60초 55·180초 140·300초 190·600초 300·900초 450) — 성장 속도를 평가하는 기준선"
+  "evaluation.targetSizes": "시간별 목표 크기(60초 55·180초 140·300초 190·600초 300·900초 450) — 성장 속도를 평가하는 기준선",
+  "growth.paceMultiplier": "모든 최종 성장 수신에 한 번 적용하는 페이스. 0.5는 동일 기회에서 목표 크기 도달 시간 약2배. 생성량까지 중복 감소하지 않음",
+  "absorption.bluePullMultiplier": "파랑 종족 흡인력 보너스. 기본 흡인력에 추가 곱함",
+  "absorption.woundedTimeFloor": "부상 대상 흡수 저항 시간의 하한. 건강한 대상 대비 20%까지 단축",
+  "absorption.cancelDecaySeconds": "취소 진행 게이지와 실제 지불 HP 환급이 함께 되돌아가는 시간",
+  "absorption.surfaceReachPerSize": "두 몸이 접촉한 뒤 흡수 연결을 유지할 수 있는 크기 비례 여유거리",
+  "biomes.frostRecoveryPerSecond": "설원 눈보라 밖 동상 게이지 감소 속도. 0이 되면 해제",
+  "biomes.shelterRecoveryPerSecond": "서리 피난처 안 게이지 회복 속도. 동상은 진입 즉시 해제",
+  "ai.retaliationSeconds": "실제 공격자를 기억하고 반격을 우선하는 시간",
+  "abilitySkills.greenJoinMultiplier": "초록 자연 동행 진입 확률 감소 배율. 다른 종족·이탈 성향은 유지"
 }

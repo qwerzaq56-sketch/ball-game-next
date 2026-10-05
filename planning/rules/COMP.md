@@ -34,7 +34,7 @@
   - test tests/charged-controls.test.mjs :: a follower approaching the link limit uses dodge to catch the leader
 
 ### R-COMP-004 · 동행 성향과 수락 확률
-- 규칙: 개체는 동행 선호(동행 선호/중립/독립 선호)를 가진다. 진입·이탈 확률과 제안 수락 확률이 선호별로 다르다(동행 선호: 진입 30%·이탈 3%·수락 85%, 중립 18%·8%·60%, 독립 선호 7%·18%·25%). 꽃·조개 치장은 수락 확률을 올리며(자연 진입 최대 80%·요청 최대 95%) 최상위 동행 제안은 수락 가중치를 얻는다(확률 상한 있음). 우정 축제 동안에는 적대 색과도 동행할 수 있다.
+- 규칙: 개체는 동행 선호(동행 선호/중립/독립 선호)를 가진다. 진입·이탈 확률과 제안 수락 확률이 선호별로 다르다(동행 선호: 진입 30%·이탈 3%·수락 85%, 중립 18%·8%·60%, 독립 선호 7%·18%·25%). 초록은 자연 진입 확률에0.75를 곱한다(동행 선호22.5%·중립13.5%·독립5.25%). 꽃·조개 치장은 수락 확률을 올리며(자연 진입 최대 80%·요청 최대 95%) 최상위 동행 제안은 수락 가중치를 얻는다(확률 상한 있음). 우정 축제 동안에는 적대 색과도 동행할 수 있다.
 - 상태: 승인
 - 출처: 사용자 추인 2026-10-04 · M39 · M74 · M78
 - 확인:
@@ -42,7 +42,10 @@
   - code js/allyLinks.js :: neutral:\{join:\.18,leave:\.08,accept:\.60
   - code js/allyLinks.js :: independent:\{join:\.07,leave:\.18,accept:\.25
   - test tests/m74-controls.test.mjs :: apex companion invitations gain acceptance weight with a probability cap
+  - config abilitySkills.greenJoinMultiplier = 0.75
   - test tests/object-effects.test.mjs :: flower and shell decorations boost invitation acceptance until expiry
+
+- 변경 이력: M79 초록 자연 진입 ×0.75, E 수락80→70(R-ABIL-006). 미승인 변경(M79): 세부 계수 초기 튜닝; 성향 및 이탈·치장·최상위 가중치 유지.
 
 ### R-COMP-005 · 자동 동행 신청
 - 규칙: 자동 동행은 기본 OFF이며, 켜면 게임 시간 5초마다 일반 동행 신청을 시도한다. 일시정지 시 게임 시간이 멈추고, 신청 불가 행동·빙결·흡수 중이면 그 회차는 건너뛴다. 일반 신청 쿨다운은 5초다. 새 게임은 OFF로 시작한다.

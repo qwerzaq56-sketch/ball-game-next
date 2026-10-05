@@ -1,3 +1,7 @@
+## M79 완료 — 흡수·동상·전투 페이스·아트
+
+요청한 기능을 구현하고 대형 흡수·성장 페이스·성능을 측정했다. [현재 기획](M79_GAMEPLAY_UPDATE_DESIGN.md), [검증 보고](reports/M79-development.md). 파랑 이전 E/R은 교체 후보로 보존한다. 신규 세부 밸런스는 플레이 피드백으로 조정한다.
+
 ## M78 완료 — 지형 오브젝트 효과 개편
 
 치장·스택·주기 생성·분출 위험·호수 이동 환경과 시각 구분을 적용했다. [현재 기획](BIOME_OBJECT_CATALOG_DESIGN.md). 맑은 샘 교체는 [미확정 백로그](BIOME_OBJECT_IDEAS_BACKLOG.md)로 이관한다.

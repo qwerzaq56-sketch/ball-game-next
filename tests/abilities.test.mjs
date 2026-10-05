@@ -5,7 +5,7 @@ import {AIEntity} from '../js/ai.js';
 import {inCone,inWave,ABILITIES} from '../js/abilities.js';
 import {startAttack,startDodge,applyDamage,canStartAttack} from '../js/combat.js';
 function fixture(color='cyan'){
- const g=createGame(11);g.balance.abilitySkills.loadout.cyan={E:'cyan-chill',R:'cyan-freeze'};if(color==='red')g.balance.abilitySkills.loadout.red={E:'red-vigor',R:'red-rally'};const p=g.player;p.size=100;p.maxHp=p.hp=500;p.color=color;p.colorHex=g.balance.colors.find(c=>c.id===color).color;p.apex=true;p._specialApex=true;p.specialCooldown=0;p.attackStack=2;p.dodgeStack=2;
+ const g=createGame(11);g.balance.abilitySkills.loadout.cyan={E:'cyan-chill',R:'cyan-freeze'};g.balance.abilitySkills.loadout.blue={E:'blue-ripple',R:'blue-trident'};if(color==='red')g.balance.abilitySkills.loadout.red={E:'red-vigor',R:'red-rally'};const p=g.player;p.size=100;p.maxHp=p.hp=500;p.color=color;p.colorHex=g.balance.colors.find(c=>c.id===color).color;p.apex=true;p._specialApex=true;p.specialCooldown=0;p.attackStack=2;p.dodgeStack=2;
  const t=new AIEntity({x:p.x+100,y:p.y,color:'red',colorHex:'#f00',balance:g.balance,startSize:40});t.hp=t.maxHp=1000;t.score=0;g.entities=[p,t];g.buildGrid();return {g,p,t};
 }
 function ticks(g,n){for(let i=0;i<n;i++)g.abilities.update(1/60);}

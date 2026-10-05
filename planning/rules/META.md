@@ -42,3 +42,12 @@
   - test tests/autoplay-metrics.test.mjs :: observer samples once per second, keeps 600 rows and lifetime totals survive truncation
   - test tests/autoplay-metrics.test.mjs :: read-only export cannot mutate simulation/RNG and makes independent nested samples
   - test tests/runtime-events.test.mjs :: normal sessions bound raw events while lifetime special totals and apex history survive
+
+### R-META-005 · 빈 공격 검색과 반복 해제 최적화
+- 규칙: 공격 접촉 판정이 없는 READY/TELEGRAPH/RECOVERY에는 공격 대상 검색을 건너뛴다. 최대 몸 반경은 spatial grid 재구성 때 한번 산출해 AI 감지와 공격검색에서 공유한다. 사망 능력해제는 생애당 한번 처리한다.
+- 상태: 제안
+- 출처: 사용자 요청 2026-10-05 · M79
+- 확인:
+  - symbol js/game.js :: hostileTargetsFor
+  - test tests/m79-systems.test.mjs :: R-META-005 idle attacks
+- 변경 이력: M79 신규 카드. 세부 초기 수치는 미승인 변경(M79), 플레이 피드백으로 재조정한다.

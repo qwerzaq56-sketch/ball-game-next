@@ -1,3 +1,4 @@
+import {maintainDistanceFor} from './absorption.js';
 import {beginGrowthMotion} from './growthMotion.js';
 import {angleTo,wrap} from './topology.js';
 import { explorationDestination } from './exploration.js';
@@ -72,7 +73,7 @@ export function updateAI(ai, dt, game, balance) {
   pruneEncounters(ai,game,balance);
   if(ai.counterattacker && ai.dodgeState!=="DODGING"){ai.counterTimer=(ai.counterTimer ?? 1)-dt;if(ai.counterTimer<=0||!ai.counterattacker.alive||dist(ai,ai.counterattacker)>balance.ai.detectionRange)ai.counterattacker=null;}
 
-  if(ai.retaliateTarget){ai.retaliateTimer-=dt;if(ai.retaliateTimer<=0||!ai.retaliateTarget.alive||dist(ai,ai.retaliateTarget)>balance.ai.detectionRange)ai.retaliateTarget=null;}
+  if(ai.retaliateTarget){ai.retaliateTimer-=dt;if(ai.retaliateTimer<=0||!ai.retaliateTarget.alive||dist(ai,ai.retaliateTarget)>balance.ai.detectionRange+(ai.size+ai.retaliateTarget.size)/2)ai.retaliateTarget=null;}
 
   updateAttack(ai, dt, balance, game.hostileTargetsFor(ai), game);
   updateDodge(ai, dt, balance);
@@ -158,7 +159,7 @@ export function decideAI(ai, game, balance) {
   const environment=game.biomes.danger(ai,!!ai.environmentThreat);ai.environmentThreat=environment;
   if(environment){game.abilities?.endCommand(ai,'environment-escape');ai.state='flee';ai.target=environment;return;}
   const absorber=ai.escapeAbsorber;
-  const escapeDistance=absorber ? balance.absorption.baseMaintainDistance+absorber.size*balance.absorption.maintainDistancePerSize+80 : 0;
+  const escapeDistance=absorber ? maintainDistanceFor(absorber,balance,ai)+80 : 0;
   if(absorber?.alive && canAbsorb(absorber,ai) && dist(ai,absorber)<escapeDistance){
     game.abilities?.endCommand(ai,'absorption-escape');ai.state='flee';ai.target=absorber;return;
   }
@@ -174,7 +175,7 @@ export function decideAI(ai, game, balance) {
   ai.recovering=hp<=.3 || (ai.recovering && hp<.6);
   if(ai.challengeTarget && (ai.role!=='predator'||ai.apex||hp<=.4 || !ai.challengeTarget.alive || !ai.challengeTarget.apex ||
     ai.challengeTarget.hp/ai.challengeTarget.maxHp>.4 || dist(ai,ai.challengeTarget)>cfg.detectionRange))ai.challengeTarget=null;
-  const bodyMargin=ai.size/2+game.entities.reduce((m,e)=>e.alive&&e.behavior!=='orb'?Math.max(m,e.size/2):m,0);
+  const bodyMargin=ai.size/2+(game.maxUnitRadius??game.entities.reduce((m,e)=>e.alive&&e.behavior!=='orb'?Math.max(m,e.size/2):m,0));
   const nearby=game.getNearbyEntities(ai,Math.max(cfg.detectionRange,cfg.absorptionDetectionRange)+bodyMargin);
   const within=nearby.filter(e=>e.alive&&dist(ai,e)<=cfg.detectionRange+((ai.size>=300||e.size>=300)?(ai.size+e.size)/2:0));
   const threats=within.filter(e=>isHostile(ai,e)&&e.size>=ai.size*1.2&&!(ai.command?.kind==='rally'&&(e===ai.command.target||ai.command.targets?.has(e))));
@@ -213,6 +214,9 @@ export function decideAI(ai, game, balance) {
   ai.guardMode=false;
   if(ai.state==='flee'){ai.state='search';ai.target=null;}
   if(ai.recovering){game.abilities?.endCommand(ai,'recovery');ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
+  // R-AI-010: prioritize the actual aggressor over unrelated navigation/opportunities.
+  const aggressor=ai.retaliateTarget;
+  if(aggressor?.alive&&isHostile(ai,aggressor)&&hp>.3&&canStartAttack(ai)&&dist(ai,aggressor)<=cfg.detectionRange+(ai.size+aggressor.size)/2&&aggressor.size<=ai.size*2.8){game.abilities?.endCommand(ai,'retaliation');ai.state='chase_fight';ai.target=aggressor;return;}
   // Nearby combat can interrupt navigation and collection instead of waiting for route arrival.
   const interrupt=hp>.4&&canStartAttack(ai)?closest(within.filter(t=>isHostile(ai,t)&&t.size<=ai.size*1.15&&dist(ai,t)<=attackReach(ai,balance)+(ai.size+t.size)/2+90&&(ai.personality!=='cautious'||safe(t,t)))):null;
   if(interrupt){game.abilities?.endCommand(ai,'combat-opportunity');ai.state='chase_fight';ai.target=interrupt;return;}

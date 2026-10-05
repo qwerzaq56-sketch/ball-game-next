@@ -113,5 +113,6 @@ export class Entity {
 
 export function growthRewardFor(amount,e,balance){
  const g=balance.growth,t=Math.min(1,Math.max(0,(e.size-(g.rewardReductionStart??400))/Math.max(1,(g.rewardReductionFull??500)-(g.rewardReductionStart??400))));
- return amount*(1-t*(1-(g.largeRewardMultiplier??.5)));
+ // R-GROWTH-007: one multiplier for food, hunting and absorption; never compound.
+ return amount*(g.paceMultiplier??1)*(1-t*(1-(g.largeRewardMultiplier??.5)));
 }

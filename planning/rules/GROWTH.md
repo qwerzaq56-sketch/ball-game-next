@@ -69,3 +69,14 @@
   - config growth.lateThreshold = 25
   - config growth.lateMultiplier = 1.4
   - config growth.lateTransition = 50
+
+### R-GROWTH-007 · 성장 페이스 절반
+- 규칙: 먹이·직접 처치·사냥 드롭 회수·흡수의 최종 성장 수신을 공통 ×0.5로 낮춘다. 개별 생성 수·원본 보상·흡수 면적 계수까지 또 반으로 줄이지 않는다. 같은기회 스트림에서 목표 Size 도달 시간이 약2배가 목표이며 실제 탐색·전투 플레이는별도로 피드백한다.
+- 상태: 제안
+- 출처: 사용자 요청 2026-10-05 · M79
+- 확인:
+  - config growth.paceMultiplier = 0.5
+  - symbol js/entity.js :: growthRewardFor
+  - test tests/m79-systems.test.mjs :: R-GROWTH-007 half pace
+  - file tools/m79-balance-benchmark.mjs
+- 변경 이력: M79 신규 카드. 세부 초기 수치는 미승인 변경(M79), 플레이 피드백으로 재조정한다.

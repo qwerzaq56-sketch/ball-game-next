@@ -1,0 +1,187 @@
+{
+  "policy": "controlled equal food opportunities; three seeds; no travel/combat randomness; arrival times are calibration, not a live-player prediction",
+  "comparison": [
+    {
+      "size": 40,
+      "oldSeconds": 0.43333333333333335,
+      "newSeconds": 0.8000000000000002,
+      "ratio": 1.8461538461538465
+    },
+    {
+      "size": 100,
+      "oldSeconds": 4.9,
+      "newSeconds": 9.8,
+      "ratio": 2
+    },
+    {
+      "size": 350,
+      "oldSeconds": 54.300000000000004,
+      "newSeconds": 108.56666666666668,
+      "ratio": 1.9993861264579498
+    },
+    {
+      "size": 600,
+      "oldSeconds": 237.76666666666665,
+      "newSeconds": 475.56666666666666,
+      "ratio": 2.0001401934669847
+    }
+  ],
+  "growth": [
+    {
+      "pace": 1,
+      "seed": 7,
+      "times": {
+        "40": 0.4,
+        "100": 4.9,
+        "350": 54.300000000000004,
+        "600": 237.8
+      }
+    },
+    {
+      "pace": 1,
+      "seed": 11,
+      "times": {
+        "40": 0.4,
+        "100": 4.9,
+        "350": 54.300000000000004,
+        "600": 237.70000000000002
+      }
+    },
+    {
+      "pace": 1,
+      "seed": 23,
+      "times": {
+        "40": 0.5,
+        "100": 4.9,
+        "350": 54.300000000000004,
+        "600": 237.8
+      }
+    },
+    {
+      "pace": 0.5,
+      "seed": 7,
+      "times": {
+        "40": 0.8,
+        "100": 9.8,
+        "350": 108.60000000000001,
+        "600": 475.5
+      }
+    },
+    {
+      "pace": 0.5,
+      "seed": 11,
+      "times": {
+        "40": 0.8,
+        "100": 9.8,
+        "350": 108.5,
+        "600": 475.6
+      }
+    },
+    {
+      "pace": 0.5,
+      "seed": 23,
+      "times": {
+        "40": 0.8,
+        "100": 9.8,
+        "350": 108.60000000000001,
+        "600": 475.6
+      }
+    }
+  ],
+  "absorption": [
+    {
+      "size": 600,
+      "targetSize": 570,
+      "hpRatio": 1,
+      "oldReach": 330,
+      "bodyContactDistance": 585,
+      "seconds": 2.33333333333333,
+      "paid": 2999.9999999999977,
+      "completed": true
+    },
+    {
+      "size": 600,
+      "targetSize": 570,
+      "hpRatio": 0.25,
+      "oldReach": 330,
+      "bodyContactDistance": 585,
+      "seconds": 0.9333333333333346,
+      "paid": 1199.9999999999993,
+      "completed": true
+    },
+    {
+      "size": 700,
+      "targetSize": 665,
+      "hpRatio": 1,
+      "oldReach": 380,
+      "bodyContactDistance": 682.5,
+      "seconds": 2.6999999999999953,
+      "paid": 3000.0000000000005,
+      "completed": true
+    },
+    {
+      "size": 700,
+      "targetSize": 665,
+      "hpRatio": 0.25,
+      "oldReach": 380,
+      "bodyContactDistance": 682.5,
+      "seconds": 1.0833333333333344,
+      "paid": 1199.9999999999995,
+      "completed": true
+    },
+    {
+      "size": 1000,
+      "targetSize": 950,
+      "hpRatio": 1,
+      "oldReach": 530,
+      "bodyContactDistance": 975,
+      "seconds": 3.849999999999991,
+      "paid": 3000.0000000000064,
+      "completed": true
+    },
+    {
+      "size": 1000,
+      "targetSize": 950,
+      "hpRatio": 0.25,
+      "oldReach": 530,
+      "bodyContactDistance": 975,
+      "seconds": 1.5499999999999994,
+      "paid": 1200.0000000000018,
+      "completed": true
+    }
+  ],
+  "liveAbsorption": [
+    {
+      "size": 600,
+      "hp": 1,
+      "seconds": 2.3333333333333335,
+      "completed": true,
+      "targetDodgesRemaining": 0,
+      "paid": 3750.0000000000027
+    },
+    {
+      "size": 600,
+      "hp": 0.25,
+      "seconds": 0.9333333333333333,
+      "completed": true,
+      "targetDodgesRemaining": 0,
+      "paid": 1500.5350877192973
+    },
+    {
+      "size": 1000,
+      "hp": 1,
+      "seconds": 3.85,
+      "completed": true,
+      "targetDodgesRemaining": 0,
+      "paid": 3749.9999999999877
+    },
+    {
+      "size": 1000,
+      "hp": 0.25,
+      "seconds": 1.55,
+      "completed": true,
+      "targetDodgesRemaining": 0,
+      "paid": 1500.5210526315823
+    }
+  ]
+}
