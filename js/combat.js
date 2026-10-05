@@ -319,11 +319,23 @@ export function startDodge(entity, dirAngle, balance) {
   entity.currentDodgeDistance = dodgeDistanceForSize(entity.size, balance);
 }
 
+// R-ABS-012: weaken only an active target's dodge near its absorber, with a smooth release.
+export function absorptionDodgeDistance(entity,balance,fullDistance=entity.currentDodgeDistance){
+ const owner=entity.beingAbsorbedByRef,cfg=balance.absorption;
+ if(!owner?.alive||!entity.alive||entity.size>=owner.size)return fullDistance;
+ const surface=Math.max(0,dist(entity,owner)-(entity.size+owner.size)/2);
+ const range=cfg.escapeDodgeSurfaceRange??80;
+ if(range<=0||surface>=range)return fullDistance;
+ const t=surface/range,release=t*t*(3-2*t);
+ const reduced=Math.min(fullDistance*(cfg.escapeDodgeMultiplier??.35),cfg.escapeDodgeMaxDistance??90);
+ return reduced+(fullDistance-reduced)*release;
+}
+
 export function updateDodge(entity, dt, balance) {
   if (entity.dodgeState === 'DODGING') {
     const cfg = balance.dodge;
     entity.dodgeTimer += dt;
-    const speed = entity.currentDodgeDistance / cfg.dodgeDuration;
+    const speed = absorptionDodgeDistance(entity,balance) / cfg.dodgeDuration;
     entity.x += Math.cos(entity.dodgeDir) * speed * dt;
     entity.y += Math.sin(entity.dodgeDir) * speed * dt;
     entity.dodgeTrail.push({ x: entity.x, y: entity.y, life: balance.dodge.effectLifetime });

@@ -9,7 +9,7 @@ import { random } from './random.js';
 import {apexTerritoryRadius} from './skillCatalog.js';
 import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
 import { canAbsorb, canEatOrb, isHostile, dist } from './collision.js';
-import { canStartAttack, startAttack, updateAttack, canStartDodge, startDodge, updateDodge, attackRangeForSize, attackDamageForSize, applyDefense } from './combat.js';
+import { canStartAttack, startAttack, updateAttack, canStartDodge, startDodge, updateDodge, attackRangeForSize, attackDamageForSize, applyDefense } from './combat.js?art-release-01';
 
 // AI states, implemented in priority order per spec section 25:
 // Search -> Chase -> Eat(resolved centrally by Game) -> Attack -> Dodge -> Dead.

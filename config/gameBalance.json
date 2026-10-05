@@ -108,7 +108,7 @@
     "resistancePerSize": 0.02,
     "baseMaintainDistance": 30,
     "maintainDistancePerSize": 0.5,
-    "maxAbsorptionSpeed": 4.2,
+    "maxAbsorptionSpeed": 1.4,
     "pullForce": 1.2,
     "healthCostProgressFraction": 1,
     "successHealthRefundFraction": 1,
@@ -142,7 +142,10 @@
     "bluePullMultiplier": 1.3,
     "woundedTimeFloor": 0.2,
     "cancelDecaySeconds": 0.6,
-    "surfaceReachPerSize": 0.15
+    "surfaceReachPerSize": 0.15,
+    "escapeDodgeSurfaceRange": 80,
+    "escapeDodgeMultiplier": 0.35,
+    "escapeDodgeMaxDistance": 90
   },
   "combat": {
     "knockbackDuration": 0.15,

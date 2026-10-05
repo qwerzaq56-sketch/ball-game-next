@@ -1,7 +1,7 @@
 import {terrainDamageMultiplier} from './biomes.js';
 import {delta,angleTo} from './topology.js';
 import { boundCenter } from './worldBounds.js';
-import { attackChargeDistanceForSize, attackDamageForSize, applyDamage, canStartAttack } from './combat.js';
+import { attackChargeDistanceForSize, attackDamageForSize, applyDamage, canStartAttack } from './combat.js?art-release-01';
 import { cancelAbsorption } from './absorption.js';
 import { dist, isHostile, canAbsorb, canEatOrb } from './collision.js';
 import { random } from './random.js';

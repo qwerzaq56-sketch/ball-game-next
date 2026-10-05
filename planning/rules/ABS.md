@@ -119,3 +119,15 @@
   - config absorption.bluePullMultiplier = 1.3
   - test tests/m79-systems.test.mjs :: R-ABS-011 blue suction
 - 변경 이력: M79 신규 카드. 세부 초기 수치는 미승인 변경(M79), 플레이 피드백으로 재조정한다.
+
+### R-ABS-012 · 흡수 시간 3배와 근접 회피 제한
+- 규칙: maxAbsorptionSpeed 4.2→1.4. 같은 크기·HP·거리에서 흡수 시간은 기존3배. HP 비례 저항·흡수 비용·환급·유지 거리는 유지. 흡수당하는 개체만 상대 몸 표면80거리 안에서 회피 이동을 축소한다. 접촉 시 기존 거리×0.35와90 중 작은 값, 표면80까지 부드럽게 정상 거리로 복원한다. 매 프레임 현재 연결/거리를 확인해 반경 밖·연결 종료·흡수자 사망 시 정상 회피. 흡수자의 회피와 일반 회피는 유지.
+- 상태: 승인
+- 출처: 사용자 직접 요청2026-10-06. 상세80/0.35/90은 구현 튜닝 초깃값.
+- 확인:
+  - config absorption.maxAbsorptionSpeed = 1.4
+  - symbol js/combat.js :: absorptionDodgeDistance
+  - test tests/absorption-escape-balance.test.mjs :: R-ABS-012 absorption takes three times
+  - test tests/absorption-escape-balance.test.mjs :: R-ABS-012 large absorbed targets
+  - test tests/absorption-escape-balance.test.mjs :: R-ABS-012 dodge reduction smoothly releases
+- 변경 이력: 기존 R-ABS-008 단시간 완료 검증의5초기준은3배인15초로 변경. 플레이 피드백으로 근접 범위·제한 거리 조정 가능.
