@@ -31,6 +31,11 @@ test('one missing image does not disable continuous landmark images or change re
    art.drawRevisedLandmark(a.ctx,{candidate},true);art.drawRevisedLandmark(b.ctx,{candidate},false);
    assert.equal(a.commands[0][0],'drawImage');assert.deepEqual(a.commands,b.commands);
   }
+  const flowerReady=capture(),flowerPost=capture();
+  art.drawRevisedLandmark(flowerReady.ctx,{candidate:'snow-flowers'},true);
+  art.drawRevisedLandmark(flowerPost.ctx,{candidate:'snow-flowers'},false);
+  assert.equal(flowerReady.commands[0][0],'drawImage');
+  assert.notEqual(flowerReady.commands[0][1],flowerPost.commands[0][1],'harvest swaps cached petal state');
   const fallback=capture();art.drawRevisedLandmark(fallback.ctx,{candidate:'forest-tree'});
   assert.equal(fallback.commands.some(([name])=>name==='drawImage'),false);
  }finally{

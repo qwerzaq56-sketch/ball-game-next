@@ -9,10 +9,20 @@ export function loadLandmarkImages(){
   ['forest-tree','../assets/art-packs/forest-raster-v1/guardian-002-extracted.png'],
   ['snow-shelter','../assets/art-batches/scene-coherent-v1/snow-shelter/asset.png'],
   ['desert-oasis','../assets/art-batches/scene-coherent-v1/desert-oasis/asset.png'],
+  ['snow-flowers','../assets/art-batches/scene-coherent-v1/snow-flowers/overhead-states-002.png'],
  ].map(async([id,url])=>{
   try{
    const image=new Image();image.src=new URL(url,import.meta.url).href;await image.decode();
-   const c=document.createElement('canvas');c.width=c.height=256;c.getContext('2d').drawImage(image,0,0,256,256);landmarkImages.set(id,c);return true;
+   if(id==='snow-flowers'){
+    // Generated sheet: matched healthy bases, collectible petals on the left only.
+    for(const [state,index]of [['ready',0],['post',1]]){
+     const c=document.createElement('canvas');c.width=c.height=256;
+     c.getContext('2d').drawImage(image,index*image.naturalWidth/2,0,image.naturalWidth/2,image.naturalHeight,0,20,256,216);
+     landmarkImages.set(id+':'+state,c);
+    }
+   }else{
+    const c=document.createElement('canvas');c.width=c.height=256;c.getContext('2d').drawImage(image,0,0,256,256);landmarkImages.set(id,c);
+   }return true;
   }catch{return false;}
  })).then(results=>results.every(Boolean));return forestLoading;
 }
@@ -20,9 +30,9 @@ export function drawRevisedLandmark(ctx,o,ready=true){
  const id=o.candidate;
  if(!['forest-tree','snow-flowers','snow-shelter','desert-oasis'].includes(id))return false;
  loadLandmarkImages();
- const image=landmarkImages.get(id);
+ const image=landmarkImages.get(id==='snow-flowers'?id+':'+(ready?'ready':'post'):id);
  // Continuous shelters keep the same healthy body; benefit effects are drawn separately.
- if(image&&['snow-shelter','desert-oasis'].includes(id)){
+ if(image&&['snow-shelter','desert-oasis','snow-flowers'].includes(id)){
   ctx.drawImage(image,-35,-35,70,70);return true;
  }
  const oval=(x,y,rx,ry,color)=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();};
