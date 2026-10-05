@@ -1,0 +1,18 @@
+{
+  "source": "planning\\art-concepts\\effect-direction-v2\\absorption-003.png",
+  "sourceSize": [
+    2172,
+    724
+  ],
+  "boxFormat": "XYXY, right/bottom exclusive; actual crop 116x64, no padding",
+  "box": [
+    1055,
+    330,
+    1171,
+    394
+  ],
+  "sourceSHA256": "8c0d892db0ed069983baf19cc31233aad4aba9241a011c003c5760200e7a1d7b",
+  "crop": "assets\\art-packs\\absorption-raster-v2\\references\\absorption-flow-crop.png",
+  "cropSHA256": "d703371d7f5a371c61efb6c186735f3eafc4e54cd79e20ef10d0b55768082511",
+  "direction": "right small target to left large absorber"
+}

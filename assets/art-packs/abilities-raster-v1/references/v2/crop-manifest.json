@@ -1,0 +1,138 @@
+[
+  {
+    "id": "cyan-shield",
+    "source": "planning\\art-concepts\\effect-direction-v2\\abilities-002.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      174,
+      20,
+      414,
+      180
+    ],
+    "sourceSHA256": "76b217a55c41a6c8bec2959933c6bbd5344b4e4df16d04cda6aca2c79e06b35e",
+    "output": "assets\\art-packs\\abilities-raster-v1\\references\\v2\\cyan-shield.png",
+    "outputSHA256": "145b7eb81612aa237bc5740f03b14611dc73321c3eb25d134ee9ec79a001898b"
+  },
+  {
+    "id": "cyan-sweep",
+    "source": "planning\\art-concepts\\effect-direction-v2\\abilities-002.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      960,
+      28,
+      1148,
+      130
+    ],
+    "sourceSHA256": "76b217a55c41a6c8bec2959933c6bbd5344b4e4df16d04cda6aca2c79e06b35e",
+    "output": "assets\\art-packs\\abilities-raster-v1\\references\\v2\\cyan-sweep.png",
+    "outputSHA256": "0361afafef9c40b79d8ecf94f6f48ef4f4dfc4992911053c1cdb6013d553c4e5"
+  },
+  {
+    "id": "blue-wave",
+    "source": "planning\\art-concepts\\effect-direction-v2\\abilities-002.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      250,
+      292,
+      410,
+      372
+    ],
+    "sourceSHA256": "76b217a55c41a6c8bec2959933c6bbd5344b4e4df16d04cda6aca2c79e06b35e",
+    "output": "assets\\art-packs\\abilities-raster-v1\\references\\v2\\blue-wave.png",
+    "outputSHA256": "968af9e52603a7b6dd4487a2348f66bc540c7885682a09af17b8dc2080aa5640"
+  },
+  {
+    "id": "blue-vortex",
+    "source": "planning\\art-concepts\\effect-direction-v2\\abilities-002.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      966,
+      224,
+      1180,
+      382
+    ],
+    "sourceSHA256": "76b217a55c41a6c8bec2959933c6bbd5344b4e4df16d04cda6aca2c79e06b35e",
+    "output": "assets\\art-packs\\abilities-raster-v1\\references\\v2\\blue-vortex.png",
+    "outputSHA256": "11071150c3b15bf02f0452d0cd3f9a2a9ad7b3cef84d26af1ea73b390de51331"
+  },
+  {
+    "id": "green-call",
+    "source": "planning\\art-concepts\\effect-direction-v2\\abilities-002.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      239,
+      424,
+      496,
+      545
+    ],
+    "sourceSHA256": "76b217a55c41a6c8bec2959933c6bbd5344b4e4df16d04cda6aca2c79e06b35e",
+    "output": "assets\\art-packs\\abilities-raster-v1\\references\\v2\\green-call.png",
+    "outputSHA256": "f83439bdc530ef6a18879d37eb7b690d37cd9bf652fe8b339f9c2225fa4bb240"
+  },
+  {
+    "id": "red-embers",
+    "source": "planning\\art-concepts\\effect-direction-v2\\abilities-002.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      244,
+      605,
+      498,
+      771
+    ],
+    "sourceSHA256": "76b217a55c41a6c8bec2959933c6bbd5344b4e4df16d04cda6aca2c79e06b35e",
+    "output": "assets\\art-packs\\abilities-raster-v1\\references\\v2\\red-embers.png",
+    "outputSHA256": "e42c641834ad05a87813853d27ce8f2bf7b7f855cf36e5d222618d67207ceb7e"
+  },
+  {
+    "id": "red-muster",
+    "source": "planning\\art-concepts\\effect-direction-v2\\abilities-002.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      1008,
+      610,
+      1259,
+      754
+    ],
+    "sourceSHA256": "76b217a55c41a6c8bec2959933c6bbd5344b4e4df16d04cda6aca2c79e06b35e",
+    "output": "assets\\art-packs\\abilities-raster-v1\\references\\v2\\red-muster.png",
+    "outputSHA256": "948afc3a9940c210581b7e489e9341ce07ab7fb5bd37f8e736d68dc062597a5c"
+  },
+  {
+    "id": "yellow-dust",
+    "source": "planning\\art-concepts\\effect-direction-v2\\abilities-002.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      245,
+      820,
+      422,
+      946
+    ],
+    "sourceSHA256": "76b217a55c41a6c8bec2959933c6bbd5344b4e4df16d04cda6aca2c79e06b35e",
+    "output": "assets\\art-packs\\abilities-raster-v1\\references\\v2\\yellow-dust.png",
+    "outputSHA256": "98ee33593ef8dec642417c16bc83485f9a563182c6d22aa81066d54453e86109"
+  }
+]

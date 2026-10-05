@@ -1,0 +1,73 @@
+{
+  "items": [
+    {
+      "file": "absorption-flow-001.png",
+      "size": [
+        2172,
+        724
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "visibleBBoxAlpha64": [
+        423,
+        165,
+        1748,
+        575
+      ],
+      "SHA256": "63b7394d56aa30c80d9391c7efd96b539fd812c9b5013868c0c9ec4e956f8be6",
+      "selected": false,
+      "flowDirection": "right trailing target toward left leading absorber",
+      "leftLeadNormalized": [
+        0.225,
+        0.28
+      ],
+      "rightTrailNormalized": [
+        0.78,
+        0.65
+      ],
+      "pivotNormalized": [
+        0.5,
+        0.5
+      ],
+      "framing": "unlit two-stroke band, no actor/range arc/background",
+      "status": "provisional; sparse white fragments remain between strokes, actual small-size scene QC required"
+    },
+    {
+      "file": "absorption-flow-002.png",
+      "size": [
+        2163,
+        727
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "visibleBBoxAlpha64": [
+        484,
+        177,
+        1679,
+        545
+      ],
+      "SHA256": "4028259bf61f265124b050a4622a01b6eff22a144813af24f1ac9ff03c5fd9ae",
+      "selected": true,
+      "flowDirection": "right trailing target toward left leading absorber",
+      "leftLeadNormalized": [
+        0.225,
+        0.28
+      ],
+      "rightTrailNormalized": [
+        0.78,
+        0.65
+      ],
+      "pivotNormalized": [
+        0.5,
+        0.5
+      ],
+      "framing": "unlit two-stroke band, no actor/range arc/background",
+      "status": "provisional; sparse white fragments remain between strokes, actual small-size scene QC required"
+    }
+  ],
+  "runtimeDirectionWarning": "asset points LEFT. When drawing at target with target-to-eater vector aligned +X, must rotate by angle+PI or use caller explicitly handling left-to-right transform. Do not invert absorption semantics."
+}

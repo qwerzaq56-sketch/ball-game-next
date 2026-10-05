@@ -1,0 +1,53 @@
+{
+  "source": "ally-buffs-001.png",
+  "sourceSha256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+  "userAttachmentMatchesSource": true,
+  "items": [
+    {
+      "id": "combat-002",
+      "file": "combat-002.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "08dc938f102778419f545751176ac99241f758aa3dc385ba38d5c6382ffa6c8d",
+      "prompt": "combat-002-prompt.md",
+      "promptSha256": "7215758ec8b00ae87ea072543001c5d5a2eb762c7f41c5d84c66203d26e1e860",
+      "generatedOriginal": "exec-c100b170-8865-4f3b-af3b-85b5fb5676a3.png",
+      "reference": "references/empowerment-application.png + original ally-buffs-001.png",
+      "generator": "built-in image_gen"
+    },
+    {
+      "id": "abilities-002",
+      "file": "abilities-002.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "sha256": "76b217a55c41a6c8bec2959933c6bbd5344b4e4df16d04cda6aca2c79e06b35e",
+      "prompt": "abilities-002-prompt.md",
+      "promptSha256": "7abb7cc525c6e2788fd858d7a3d106ea667a783ebba7b5d6b436101f895f55b0",
+      "generatedOriginal": "exec-3148f695-4c54-4b11-bd75-182079e3dab5.png",
+      "reference": "references/empowerment-application.png + original ally-buffs-001.png",
+      "generator": "built-in image_gen"
+    },
+    {
+      "id": "absorption-003",
+      "file": "absorption-003.png",
+      "size": [
+        2172,
+        724
+      ],
+      "sha256": "8c0d892db0ed069983baf19cc31233aad4aba9241a011c003c5760200e7a1d7b",
+      "prompt": "absorption-003-prompt.md",
+      "promptSha256": "353768cc0c2f3fd1a6aaf00fda074ee7a087e2c55be2d8cc76546fda1eccf55f",
+      "generatedOriginal": "exec-17fabcfe-91ec-43b5-b24d-f6556ea60e3e.png",
+      "reference": "references/empowerment-application.png + original ally-buffs-001.png",
+      "generator": "built-in image_gen"
+    }
+  ],
+  "selectionNotes": [
+    "combat-002 absorption row rejected: ambiguous flow/recipient arc; use absorption-003 instead",
+    "Concept creation is not runtime asset acceptance; exact crop and actual scene verification follow"
+  ]
+}

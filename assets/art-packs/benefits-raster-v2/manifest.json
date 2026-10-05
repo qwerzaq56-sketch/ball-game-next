@@ -1,0 +1,144 @@
+{
+  "items": [
+    {
+      "file": "empowerment-001.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "visibleBBoxAlpha64": [
+        584,
+        394,
+        839,
+        765
+      ],
+      "sha256": "6bebf8a6b5044f11be9154e82fe4114d198b3fa0c2be1eb6929b8bc33b756733",
+      "selected": false
+    },
+    {
+      "file": "empowerment-002.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "visibleBBoxAlpha64": [
+        593,
+        391,
+        788,
+        679
+      ],
+      "sha256": "dbbb88ce1424755984ca47172e785902fa2ca61fdb32342c47ebab960f9359a0",
+      "selected": true,
+      "actorPivotNormalized": [
+        0.495,
+        0.53
+      ],
+      "actorRadiusNormalized": 0.12,
+      "framing": "thin upper-right recipient rim; small leaf above"
+    },
+    {
+      "file": "frost-clear-001.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "visibleBBoxAlpha64": [
+        424,
+        296,
+        881,
+        819
+      ],
+      "sha256": "8f51cdccfbd5b905fcc2b3b30cbfa70f6e68a2f9498f5c23fb6e387682503138",
+      "selected": true,
+      "actorPivotNormalized": [
+        0.5,
+        0.7
+      ],
+      "actorRadiusNormalized": 0.16,
+      "framing": "upward removal flecks, keep body below cluster"
+    },
+    {
+      "file": "heal-001.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "visibleBBoxAlpha64": [
+        226,
+        756,
+        1029,
+        1047
+      ],
+      "sha256": "6793e562828a33c5e9f88627671faeeb5f334d6ba86608400de17f690178d15b",
+      "selected": true,
+      "actorPivotNormalized": [
+        0.49,
+        0.62
+      ],
+      "actorRadiusNormalized": 0.25,
+      "framing": "two open lower ripples"
+    },
+    {
+      "file": "leaf-shield-001.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "visibleBBoxAlpha64": [
+        268,
+        214,
+        1082,
+        835
+      ],
+      "sha256": "87b99be34a6f67d7fb6fa69b5f473f6aab9a1d55ae1cc2534188857e83ab0721",
+      "selected": false
+    },
+    {
+      "file": "leaf-shield-002.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "visibleBBoxAlpha64": [
+        304,
+        257,
+        1032,
+        719
+      ],
+      "sha256": "370738db162f22a1e1d8be0982ec11d0d1f55bded184ae698e01f4dffd9ae93a",
+      "selected": true,
+      "actorPivotNormalized": [
+        0.4,
+        0.65
+      ],
+      "actorRadiusNormalized": 0.42,
+      "framing": "transfer decoration, not ongoing circle; arc runs from upper-left to right of actor"
+    }
+  ],
+  "pivotStatus": "manual provisional from inspected shape; parent must check scene registration, not full-frame-center by default",
+  "note": "No PNG crop/resize/edit after generation; bodyless source originals preserved"
+}

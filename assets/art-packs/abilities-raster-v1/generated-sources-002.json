@@ -1,0 +1,66 @@
+[
+  {
+    "id": "cyan-shield-002",
+    "runtime": "cyan-shield",
+    "file": "cyan-shield-002.png",
+    "prompt": "cyan-shield-002-prompt.txt",
+    "sourceCrop": "references/v2/cyan-shield.png",
+    "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-cc404274-98bb-4e1d-86fe-fe6fddff25fa.png"
+  },
+  {
+    "id": "cyan-sweep-002",
+    "runtime": "cyan-sweep",
+    "file": "cyan-sweep-002.png",
+    "prompt": "cyan-sweep-002-prompt.txt",
+    "sourceCrop": "references/v2/cyan-sweep.png",
+    "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-7a6bdd0e-8457-429f-841f-7334add32527.png"
+  },
+  {
+    "id": "blue-wave-002",
+    "runtime": "blue-wave",
+    "file": "blue-wave-002.png",
+    "prompt": "blue-wave-002-prompt.txt",
+    "sourceCrop": "references/v2/blue-wave.png",
+    "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-d2ef71d5-a07b-46b7-8fb7-11b5fb89e419.png"
+  },
+  {
+    "id": "blue-vortex-002",
+    "runtime": "blue-vortex",
+    "file": "blue-vortex-002.png",
+    "prompt": "blue-vortex-002-prompt.txt",
+    "sourceCrop": "references/v2/blue-vortex.png",
+    "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-c76e7080-d6a2-4aa9-819c-1c88096be9b4.png"
+  },
+  {
+    "id": "green-call-002",
+    "runtime": "green-call",
+    "file": "green-call-002.png",
+    "prompt": "green-call-002-prompt.txt",
+    "sourceCrop": "references/v2/green-call.png",
+    "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-7c6ee67d-a7bc-4b5d-849e-a7914b269606.png"
+  },
+  {
+    "id": "red-embers-002",
+    "runtime": "red-embers",
+    "file": "red-embers-002.png",
+    "prompt": "red-embers-002-prompt.txt",
+    "sourceCrop": "references/v2/red-embers.png",
+    "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-30b19888-1d12-490b-8ed4-41f1e6cf68b6.png"
+  },
+  {
+    "id": "red-muster-002",
+    "runtime": "red-muster",
+    "file": "red-muster-002.png",
+    "prompt": "red-muster-002-prompt.txt",
+    "sourceCrop": "references/v2/red-muster.png",
+    "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-3ae21195-471b-4ceb-a007-45458a47c4ad.png"
+  },
+  {
+    "id": "yellow-dust-002",
+    "runtime": "yellow-dust",
+    "file": "yellow-dust-002.png",
+    "prompt": "yellow-dust-002-prompt.txt",
+    "sourceCrop": "references/v2/yellow-dust.png",
+    "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-16d48f45-45e9-4ad6-8408-079a8d2acdc4.png"
+  }
+]

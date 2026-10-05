@@ -352,3 +352,7 @@ Work is confined to `codex/cloud-next-m4`; no main/integration push or merge, an
 ### Delivery status
 
 Local checkout: `/workspace/ball-game-next`, branch `codex/cloud-next-m4`. Pushing only this branch was attempted. Default HTTPS Git requested authentication; retry with the existing injected GH_TOKEN binding returned **HTTP 401**. The remote work branch is absent; push is **not complete**. No token value was printed or persisted. A verified full-history Git bundle is supplied at `/workspace/cloud-next-m4.bundle` so the work is recoverable without write credentials. Import on a local machine with `git fetch /path/to/cloud-next-m4.bundle codex/cloud-next-m4:codex/cloud-next-m4`, inspect/switch that branch, then push only `codex/cloud-next-m4` using authorized local GitHub authentication. Main and integration branches remain untouched. Restoring valid cloud GitHub write access is the alternative to local import.
+
+## 통합 검증 완료 · 08시 묶음
+407/407 테스트 통과. 실제 공통 효과6지역×줌.5/1 자산로드, 5색/40·100·200 및 단일cyan400, 이동회피·중첩·OFF 확인. 실제회복255/비수혜250, 서리해제0/비수혜1, 접촉점 피격 경로 유지. 흡수0/180관계·대상진행호/큰흡수자방향 확인. 기본E/R10시전 성공·범위밖샘플불변, movingwave+0.1/+0.2 및 냉기180/소환2/불씨1초/모래바람1초 추가확인. 브라우저오류·경고0. 전체자연플레이/모든매트릭스/FPS 합격을 뜻하지 않음.
+규칙추적117카드/109승인/106구현확인/93검증, 기존상충1·옛확인식3 유지(기존AIcooldown1.8vs1.5, 옛차징제목2, 옛파랑AI패턴1). 수치표222값/134연결/217설명/5미설명/10스킬. 수치/게임AI변경없음. 이미지실패독립폴백·흡수최단경로/방향 신규테스트 포함. 추가 원화 완벽일치·자연교전·대규모FPS는 잔여검수.

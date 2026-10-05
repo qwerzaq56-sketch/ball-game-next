@@ -1,6 +1,6 @@
 import {drawActionArt} from './actionArt.js';
-import {chargedAttackDistance} from './combat.js?characters-effects-01';
-import {BiomeObjects} from './biomeObjects.js?characters-effects-01';
+import {chargedAttackDistance} from './combat.js?effects-direction-02';
+import {BiomeObjects} from './biomeObjects.js?effects-direction-02';
 import {updateGrowthMotion} from './growthMotion.js';
 import {updateSprint} from './sprint.js';
 import {delta,angleTo,near,wrap} from './topology.js';
@@ -10,27 +10,27 @@ import { Autoplay } from './autoplay.js';
 import { RunMetrics } from './runMetrics.js';
 import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection,drawMatteBody } from './vectorArt.js';
 import {drawCharacterRasterBody} from './characterRasterArt.js';
-import {drawEntityEffectRaster,drawEffectRaster} from './effectRasterArt.js';
-import {drawGrowthRasterTexture} from './progressionRasterArt.js';
+import {drawEntityEffectRaster,drawEffectRaster} from './effectRasterArt.js?effects-direction-02';
+import {drawGrowthRasterTexture,drawAbsorptionRasterTexture} from './progressionRasterArt.js?effects-direction-02';
 import { Relics } from './relics.js';
 import { Era } from './era.js';
-import { Biomes } from './biomes.js?characters-effects-01';
+import { Biomes } from './biomes.js?effects-direction-02';
 import { AllyLinks } from './allyLinks.js';
 import { ApexHistory } from './apexHistory.js';
 import { scoreRanking, layoutNameLabels, debugRoleLabel, entityLabelRows } from './presentation.js';
-import { Abilities } from './abilities.js';
+import { Abilities } from './abilities.js?effects-direction-02';
 import { acceptsAbsorption } from './species.js';
 import { Ecology } from './ecology.js';
 import { random, resetRandom } from './random.js';
 import { resetEntityIds, growthRewardFor } from './entity.js';
 import { Player } from './player.js';
-import { AIEntity, updateAI } from './ai.js?characters-effects-01';
+import { AIEntity, updateAI } from './ai.js?effects-direction-02';
 import { canEatOrb, canAbsorb, isHostile, circlesOverlap, dist } from './collision.js';
 import {
   updateAttack, updateDodge, updateKnockback, updateHealthRegen,
   updateAttackStack, updateDodgeStack, attackChargeDistanceForSize,
   canStartAttack, startAttack, canStartDodge, startDodge,
-} from './combat.js?characters-effects-01';
+} from './combat.js?effects-direction-02';
 import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
 import {apexTerritoryRadius} from './skillCatalog.js';
 import { startAbsorption, cancelAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
@@ -885,6 +885,9 @@ export class Game {
       const d = dist(target,absorber);
       const proximity = 1 - Math.min(1, d / maintainDistance);
 
+      if(this.effectRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false)
+        drawAbsorptionRasterTexture(ctx,target,absorber,t,this.camera.zoom,'#fff5cf',this.balance.world);
+
       ctx.save();
       ctx.strokeStyle = this.withAlpha('#ffffff', 0.12 + proximity * 0.45 + t * 0.2);
       ctx.lineWidth = (1 + proximity * 3 + t * 1.5) / this.camera.zoom;
@@ -989,7 +992,7 @@ export class Game {
     // R-VIS-006: optional crop-referenced body; existing state selects the art stage.
     if(e.behavior!=='orb'){
       // R-VIS-003/006: ornaments behind the body; actual geometry stays above.
-      if(this.effectRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false)drawEntityEffectRaster(ctx,e,this,r,this.camera.zoom,{impact:false,healing:(e.healVisualUntil??0)>this.gameTime,frostCured:(e.frostClearVisualUntil??0)>this.gameTime});
+      if(this.effectRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false)drawEntityEffectRaster(ctx,e,this,r,this.camera.zoom,{impact:false,shield:e.shieldTextureKind!=='frost'||this.abilityRasterEnabled===false,healing:(e.healVisualUntil??0)>this.gameTime,frostCured:(e.frostClearVisualUntil??0)>this.gameTime});
       const stage=e.apex?'apex':e.attackUnlocked?'growth':'base';
       const raster=this.characterRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false&&drawCharacterRasterBody(ctx,e,r,this.camera.zoom,flashing,stage);
       if(!raster)drawMatteBody(ctx,e,r,this.camera.zoom,flashing);

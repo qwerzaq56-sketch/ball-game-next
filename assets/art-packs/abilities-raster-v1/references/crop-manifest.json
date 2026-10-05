@@ -1,0 +1,153 @@
+{
+  "version": 1,
+  "coordinateConvention": "Pillow XYXY exclusive right/bottom",
+  "items": [
+    {
+      "id": "cyan-frost",
+      "source": "planning/art-concepts/ally-buffs-001.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "cropXYXY": [
+        688,
+        574,
+        785,
+        710
+      ],
+      "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+      "output": "assets/art-packs/abilities-raster-v1/references/cyan-frost.png",
+      "outputSHA256": "d63913eab60b7d0d58697f704e2353c2327eef03ed062fe53b3b1ffe912ed494",
+      "role": "Actual icy fragments and recipient palette; attack/shield ornament is a derived new effect, not a cleansing event"
+    },
+    {
+      "id": "blue-current",
+      "source": "planning/art-concepts/gameplay-regions-a-001.png",
+      "sourceSize": [
+        1944,
+        809
+      ],
+      "cropXYXY": [
+        1490,
+        179,
+        1810,
+        303
+      ],
+      "sourceSHA256": "14e72f571c49500d455eb0039ad9cd2433b35f8e7eefb709873658dfd03ebfc0",
+      "output": "assets/art-packs/abilities-raster-v1/references/blue-current.png",
+      "outputSHA256": "b623aadec028e1432cf45ed7de5fbf61e06ef8b0b10e15e961b1bf25831778dc",
+      "role": "Existing water flow color planes; moving rectangular wave texture derivation"
+    },
+    {
+      "id": "blue-vortex",
+      "source": "planning/art-concepts/gameplay-regions-a-001.png",
+      "sourceSize": [
+        1944,
+        809
+      ],
+      "cropXYXY": [
+        1832,
+        627,
+        1944,
+        752
+      ],
+      "sourceSHA256": "14e72f571c49500d455eb0039ad9cd2433b35f8e7eefb709873658dfd03ebfc0",
+      "output": "assets/art-packs/abilities-raster-v1/references/blue-vortex.png",
+      "outputSHA256": "423c2411b72b506438b6f1bdc90f216afbecb99d642b53fb5f168d68a7128382",
+      "role": "Existing visible whirlpool inner spiral, excluding external red hazard border"
+    },
+    {
+      "id": "green-recipients",
+      "source": "planning/art-concepts/ally-buffs-001.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "cropXYXY": [
+        650,
+        283,
+        881,
+        430
+      ],
+      "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+      "output": "assets/art-packs/abilities-raster-v1/references/green-recipients.png",
+      "outputSHA256": "54352c85c7ef13e8c37f19aa4998c88be3d0048b2da601237f357877cb638f20",
+      "role": "Actual mint leaf transfer to green allies; field or recipient display only for existing ability results"
+    },
+    {
+      "id": "red-ember-material",
+      "source": "planning/art-concepts/gameplay-regions-b-001.png",
+      "sourceSize": [
+        1944,
+        809
+      ],
+      "cropXYXY": [
+        725,
+        178,
+        865,
+        269
+      ],
+      "sourceSHA256": "0aa4e235f143991240b0a08032d7420d130b6b5e8240151690b8617d846f79ad",
+      "output": "assets/art-packs/abilities-raster-v1/references/red-ember-material.png",
+      "outputSHA256": "119fd9779ef8af9909d2cf3a6278050f31bcf30d81d8b6093f3bd43cd8783180",
+      "role": "Actual volcanic glowing ground flecks; skill ember texture derivation"
+    },
+    {
+      "id": "red-group",
+      "source": "planning/art-concepts/gameplay-regions-a-001.png",
+      "sourceSize": [
+        1944,
+        809
+      ],
+      "cropXYXY": [
+        440,
+        495,
+        534,
+        587
+      ],
+      "sourceSHA256": "14e72f571c49500d455eb0039ad9cd2433b35f8e7eefb709873658dfd03ebfc0",
+      "output": "assets/art-packs/abilities-raster-v1/references/red-group.png",
+      "outputSHA256": "32893fe8e9b7eba9ff00dbf5a2a74d8b979df4cae5384904c910f36095044014",
+      "role": "Actual matte red species actor and satellites; non-damaging muster/rally ornament derivation"
+    },
+    {
+      "id": "yellow-sand",
+      "source": "planning/art-concepts/gameplay-regions-b-001.png",
+      "sourceSize": [
+        1944,
+        809
+      ],
+      "cropXYXY": [
+        1660,
+        455,
+        1905,
+        620
+      ],
+      "sourceSHA256": "0aa4e235f143991240b0a08032d7420d130b6b5e8240151690b8617d846f79ad",
+      "output": "assets/art-packs/abilities-raster-v1/references/yellow-sand.png",
+      "outputSHA256": "709ddccff917441f33056de9124d2dd9c641e4804ef798e0c7c7823dc2721851",
+      "role": "Actual quiet sand ripples; yellow dust field ornament derivation",
+      "selectedReference": false,
+      "reason": "Contains unrelated red actor; preserved but not used for yellow generation."
+    },
+    {
+      "id": "yellow-sand-clean",
+      "source": "planning/art-concepts/gameplay-regions-b-001.png",
+      "sourceSize": [
+        1944,
+        809
+      ],
+      "cropXYXY": [
+        1660,
+        455,
+        1745,
+        615
+      ],
+      "sourceSHA256": "0aa4e235f143991240b0a08032d7420d130b6b5e8240151690b8617d846f79ad",
+      "output": "assets/art-packs/abilities-raster-v1/references/yellow-sand-clean.png",
+      "outputSHA256": "8a913a3b60d0908b1a5f83a47cb8c479b67aae3c196ab3604191ca936cb53281",
+      "role": "Quiet sand ripple palette only; unrelated red body excluded",
+      "selectedReference": true
+    }
+  ]
+}

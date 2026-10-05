@@ -1,0 +1,202 @@
+[
+  {
+    "file": "blue-vortex-001.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha64": [
+      76,
+      40,
+      1176,
+      1182
+    ],
+    "suggestedCacheCropXYWH": [
+      52,
+      16,
+      1148,
+      1190
+    ],
+    "transparentFraction": 0.7072901007048576,
+    "SHA256": "f712580977d48b8c2802af71667f706748f1669a3eec5cb0f557d4071c518cff"
+  },
+  {
+    "file": "blue-wave-001.png",
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "visibleBBoxAlpha64": [
+      366,
+      64,
+      763,
+      1485
+    ],
+    "suggestedCacheCropXYWH": [
+      342,
+      40,
+      445,
+      1469
+    ],
+    "transparentFraction": 0.8142992655436198,
+    "SHA256": "36983afa623c52d684faf82e63198daf4093c923233a5afe21f15c9b245651a2"
+  },
+  {
+    "file": "cyan-shield-001.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha64": [
+      137,
+      163,
+      1136,
+      1098
+    ],
+    "suggestedCacheCropXYWH": [
+      113,
+      139,
+      1047,
+      983
+    ],
+    "transparentFraction": 0.9266423998229589,
+    "SHA256": "d6a9aabada526cb36b94b91f7a222175bd97ce27f02b3bdcb832d50407148890"
+  },
+  {
+    "file": "cyan-sweep-001.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "visibleBBoxAlpha64": [
+      98,
+      216,
+      1437,
+      830
+    ],
+    "suggestedCacheCropXYWH": [
+      74,
+      192,
+      1387,
+      662
+    ],
+    "transparentFraction": 0.8760121663411459,
+    "SHA256": "db74cf40e12f69553689b352c9058a63a40e1d4b80d7d7fdc8cd8790696e7b0c"
+  },
+  {
+    "file": "green-call-001.png",
+    "size": [
+      1572,
+      1001
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha64": [
+      120,
+      178,
+      1449,
+      875
+    ],
+    "suggestedCacheCropXYWH": [
+      96,
+      154,
+      1377,
+      745
+    ],
+    "transparentFraction": 0.9620100001779391,
+    "SHA256": "bddb2c90cbe8d296f11a93fb85a4f54c07696494b7869ca88265a43b031eefd1"
+  },
+  {
+    "file": "red-embers-001.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "alphaExtrema": [
+      0,
+      253
+    ],
+    "visibleBBoxAlpha64": [
+      179,
+      181,
+      1357,
+      838
+    ],
+    "suggestedCacheCropXYWH": [
+      155,
+      157,
+      1226,
+      705
+    ],
+    "transparentFraction": 0.9906266530354818,
+    "SHA256": "bd4b681db7fd1508172d240da5524766bbfba8f98b1038f3d5828fcb1f6e7aab"
+  },
+  {
+    "file": "red-muster-001.png",
+    "size": [
+      1278,
+      1230
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha64": [
+      265,
+      192,
+      1050,
+      967
+    ],
+    "suggestedCacheCropXYWH": [
+      241,
+      168,
+      833,
+      823
+    ],
+    "transparentFraction": 0.9853308650457396,
+    "SHA256": "a867777b6d53059c471c530f2b805faa15fcecf75dfedb3de89e6e425fe30287"
+  },
+  {
+    "file": "yellow-dust-001.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "visibleBBoxAlpha64": [
+      60,
+      60,
+      1490,
+      974
+    ],
+    "suggestedCacheCropXYWH": [
+      36,
+      36,
+      1478,
+      962
+    ],
+    "transparentFraction": 0.8405005137125651,
+    "SHA256": "4318d0413516603db49afdf51f63de17e93690de6330f95c5a2bca0ca5c0ab36"
+  }
+]

@@ -26,3 +26,18 @@ test('absorption texture follows short torus seam path with actual relationship'
  assert.equal(absorptionTextureGeometry(target,{...eater},.4,1,world),null);
  assert.ok(absorptionTextureGeometry(target,eater,.4,1,{...world,wrap:false}).length>1000);
 });
+
+test('a missing growth sprite does not prevent absorption; source points toward the actual eater',async()=>{
+ const oldImage=globalThis.Image,oldDocument=globalThis.document;
+ try{
+  globalThis.Image=class{async decode(){if(this.src.includes('growth-001'))throw Error('missing growth');}};
+  globalThis.document={createElement:()=>({getContext:()=>({drawImage(){},fillRect(){}})})};
+  const art=await import('../js/progressionRasterArt.js?partial-failure-v2');
+  assert.equal(await art.loadProgressionRaster(),false);
+  const commands=[],ctx=new Proxy({globalAlpha:1},{get:(t,k)=>k in t?t[k]:(...args)=>commands.push([k,...args])});
+  const eater={x:100,y:0},target={x:0,y:0,beingAbsorbedByRef:eater};
+  assert.equal(art.drawAbsorptionRasterTexture(ctx,target,eater,.5,1),true);
+  assert.ok(commands.some(([name,x,y])=>name==='scale'&&x===-1&&y===1),'leftward source is mirrored into target-to-eater axis');
+  const draw=commands.find(([name])=>name==='drawImage');assert.equal(draw[2],-100);assert.equal(draw[4],100,'mirrored image covers target-to-eater span');
+ }finally{if(oldImage===undefined)delete globalThis.Image;else globalThis.Image=oldImage;if(oldDocument===undefined)delete globalThis.document;else globalThis.document=oldDocument;}
+});

@@ -1,0 +1,544 @@
+{
+  "version": 1,
+  "created": "2026-10-06",
+  "generator": "built-in image_gen",
+  "role": "Optional ability texture ornaments; no gameplay state reads or writes",
+  "cropManifest": "references/crop-manifest.json",
+  "alphaMetrics": "alpha-metrics.json",
+  "selectedCount": 8,
+  "rawSourcePolicy": "Generated original PNGs and exact prompts preserved. Export-padding crop and alpha corrections occur in display cache only.",
+  "scope": "Five species current default E/R ability vocabulary, eight distinct texture roles. This is not a claim that every selectable variant has its own bespoke asset.",
+  "items": [
+    {
+      "id": "cyan-sweep-001",
+      "runtimeId": "cyan-sweep",
+      "file": "cyan-sweep-001.png",
+      "prompt": "cyan-sweep-001-prompt.txt",
+      "sourceCrop": "references/cyan-frost.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-7d3f7044-d08d-4c00-946c-be7745bf3940.png",
+      "status": "unselected-preserved-experiment",
+      "rawBakedBloom": true,
+      "cacheAlphaExponent": 2.2,
+      "cacheCropXYWH": [
+        74,
+        192,
+        1387,
+        662
+      ],
+      "pivotInRawImage": [
+        0,
+        0.5
+      ],
+      "directionalUnlit": true,
+      "actualGeometry": "Parent supplies existing vector shape via clip callback; texture has no independent range or hit test",
+      "provenance": "Derived ability ornament; dedicated ability art was not present in original concept crop",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "outputSHA256": "db74cf40e12f69553689b352c9058a63a40e1d4b80d7d7fdc8cd8790696e7b0c",
+      "promptSHA256": "c8a2b46fb9991653f9141b56baddbd9a2fb396133b555c2e99131906648863a2"
+    },
+    {
+      "id": "cyan-shield-001",
+      "runtimeId": "cyan-shield",
+      "file": "cyan-shield-001.png",
+      "prompt": "cyan-shield-001-prompt.txt",
+      "sourceCrop": "references/cyan-frost.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-f121d5cf-17b4-4cdf-8143-8b3d72076f20.png",
+      "status": "unselected-preserved-experiment",
+      "rawBakedBloom": false,
+      "cacheAlphaExponent": null,
+      "cacheCropXYWH": [
+        113,
+        139,
+        1047,
+        983
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "directionalUnlit": false,
+      "actualGeometry": "Parent supplies existing vector shape via clip callback; texture has no independent range or hit test",
+      "provenance": "Derived ability ornament; dedicated ability art was not present in original concept crop",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "d6a9aabada526cb36b94b91f7a222175bd97ce27f02b3bdcb832d50407148890",
+      "promptSHA256": "55149a96e3178a37f1e15f7ccff8497dfa8c82b79c72cb2057f11d731c4a32d1"
+    },
+    {
+      "id": "blue-wave-001",
+      "runtimeId": "blue-wave",
+      "file": "blue-wave-001.png",
+      "prompt": "blue-wave-001-prompt.txt",
+      "sourceCrop": "references/blue-current.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-af5fd114-8b61-461d-b246-066d6c149bb6.png",
+      "status": "unselected-preserved-experiment",
+      "rawBakedBloom": true,
+      "cacheAlphaExponent": 2.2,
+      "cacheCropXYWH": [
+        342,
+        40,
+        445,
+        1469
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "directionalUnlit": true,
+      "actualGeometry": "Parent supplies existing vector shape via clip callback; texture has no independent range or hit test",
+      "provenance": "Derived ability ornament; dedicated ability art was not present in original concept crop",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "outputSHA256": "36983afa623c52d684faf82e63198daf4093c923233a5afe21f15c9b245651a2",
+      "promptSHA256": "6f9e024c8310ad0d933ffa57723046edd474825dd596468a7b6ae997472e56ef"
+    },
+    {
+      "id": "blue-vortex-001",
+      "runtimeId": "blue-vortex",
+      "file": "blue-vortex-001.png",
+      "prompt": "blue-vortex-001-prompt.txt",
+      "sourceCrop": "references/blue-vortex.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-86a552ab-af3a-4406-806d-82f02f5fe5b6.png",
+      "status": "unselected-preserved-experiment",
+      "rawBakedBloom": false,
+      "cacheAlphaExponent": null,
+      "cacheCropXYWH": [
+        52,
+        16,
+        1148,
+        1190
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "directionalUnlit": false,
+      "actualGeometry": "Parent supplies existing vector shape via clip callback; texture has no independent range or hit test",
+      "provenance": "Derived ability ornament; dedicated ability art was not present in original concept crop",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "f712580977d48b8c2802af71667f706748f1669a3eec5cb0f557d4071c518cff",
+      "promptSHA256": "b3970e29d684aafc1ee0766de4407788a728878761785651e5be1f0df830b951"
+    },
+    {
+      "id": "green-call-001",
+      "runtimeId": "green-call",
+      "file": "green-call-001.png",
+      "prompt": "green-call-001-prompt.txt",
+      "sourceCrop": "references/green-recipients.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-5a1728e9-aabc-45d4-b216-c05f0a0bb739.png",
+      "status": "unselected-preserved-experiment",
+      "rawBakedBloom": false,
+      "cacheAlphaExponent": null,
+      "cacheCropXYWH": [
+        96,
+        154,
+        1377,
+        745
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "directionalUnlit": false,
+      "actualGeometry": "Parent supplies existing vector shape via clip callback; texture has no independent range or hit test",
+      "provenance": "Derived ability ornament; dedicated ability art was not present in original concept crop",
+      "size": [
+        1572,
+        1001
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "bddb2c90cbe8d296f11a93fb85a4f54c07696494b7869ca88265a43b031eefd1",
+      "promptSHA256": "3c0ba60a9c55c7a7787b250e296255f2999de6bb458959e686444cf29eb0ea9f"
+    },
+    {
+      "id": "red-embers-001",
+      "runtimeId": "red-embers",
+      "file": "red-embers-001.png",
+      "prompt": "red-embers-001-prompt.txt",
+      "sourceCrop": "references/red-ember-material.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-a4fc0109-80f1-44be-b805-97cd99478ebf.png",
+      "status": "unselected-preserved-experiment",
+      "rawBakedBloom": true,
+      "cacheAlphaExponent": 2.2,
+      "cacheCropXYWH": [
+        155,
+        157,
+        1226,
+        705
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "directionalUnlit": false,
+      "actualGeometry": "Parent supplies existing vector shape via clip callback; texture has no independent range or hit test",
+      "provenance": "Derived ability ornament; dedicated ability art was not present in original concept crop",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        253
+      ],
+      "outputSHA256": "bd4b681db7fd1508172d240da5524766bbfba8f98b1038f3d5828fcb1f6e7aab",
+      "promptSHA256": "284c449d65b22df9b84d00e9bdf98501cc30fa34e139ddea8edaa3084cee6dbe"
+    },
+    {
+      "id": "red-muster-001",
+      "runtimeId": "red-muster",
+      "file": "red-muster-001.png",
+      "prompt": "red-muster-001-prompt.txt",
+      "sourceCrop": "references/red-group.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-b5716b4b-37d7-4db4-a362-38781d095959.png",
+      "status": "unselected-preserved-experiment",
+      "rawBakedBloom": false,
+      "cacheAlphaExponent": null,
+      "cacheCropXYWH": [
+        241,
+        168,
+        833,
+        823
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "directionalUnlit": false,
+      "actualGeometry": "Parent supplies existing vector shape via clip callback; texture has no independent range or hit test",
+      "provenance": "Derived ability ornament; dedicated ability art was not present in original concept crop",
+      "size": [
+        1278,
+        1230
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "a867777b6d53059c471c530f2b805faa15fcecf75dfedb3de89e6e425fe30287",
+      "promptSHA256": "3792a638da168757e426332c38f3124b5b1b6ca1a5f884d19d5b04b72863f604"
+    },
+    {
+      "id": "yellow-dust-001",
+      "runtimeId": "yellow-dust",
+      "file": "yellow-dust-001.png",
+      "prompt": "yellow-dust-001-prompt.txt",
+      "sourceCrop": "references/yellow-sand-clean.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-52736d7b-0174-4c71-881d-087b0a7531f6.png",
+      "status": "unselected-preserved-experiment",
+      "rawBakedBloom": true,
+      "cacheAlphaExponent": 2.2,
+      "cacheCropXYWH": [
+        36,
+        36,
+        1478,
+        962
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "directionalUnlit": false,
+      "actualGeometry": "Parent supplies existing vector shape via clip callback; texture has no independent range or hit test",
+      "provenance": "Derived ability ornament; dedicated ability art was not present in original concept crop",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "outputSHA256": "4318d0413516603db49afdf51f63de17e93690de6330f95c5a2bca0ca5c0ab36",
+      "promptSHA256": "fbeb2a15a0f687265030d8f31a64e72a809c01188164b113930a106240fc6664"
+    },
+    {
+      "id": "cyan-shield-002",
+      "runtime": "cyan-shield",
+      "file": "cyan-shield-002.png",
+      "prompt": "cyan-shield-002-prompt.txt",
+      "sourceCrop": "references/v2/cyan-shield.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-cc404274-98bb-4e1d-86fe-fe6fddff25fa.png",
+      "status": "selected-002-exact-effect-crop",
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "SHA256": "3a78b5fed6cd74cf2efdfe4a2e79311f2dc2e4d412f61029097376c6777ad71b",
+      "promptSHA256": "b69d0601f34f7266750e2139ac78e4547ff0471d6dc4fb7f0e3e4d804a9c14e2",
+      "cacheCropXYWH": [
+        333,
+        101,
+        873,
+        715
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "cacheAlphaExponent": 2.5
+    },
+    {
+      "id": "cyan-sweep-002",
+      "runtime": "cyan-sweep",
+      "file": "cyan-sweep-002.png",
+      "prompt": "cyan-sweep-002-prompt.txt",
+      "sourceCrop": "references/v2/cyan-sweep.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-7a6bdd0e-8457-429f-841f-7334add32527.png",
+      "status": "selected-002-exact-effect-crop",
+      "size": [
+        1701,
+        924
+      ],
+      "mode": "RGBA",
+      "SHA256": "5e0e1af653d44e6393638271cc3b64976d65c5bc5e9829bb772b8f60c139178a",
+      "promptSHA256": "cc73f648b9db56403afc0dc02b142cb4cbe88166635f9f9403be833417c6ee79",
+      "cacheCropXYWH": [
+        268,
+        178,
+        1116,
+        556
+      ],
+      "pivotInRawImage": [
+        0,
+        0.5
+      ],
+      "cacheAlphaExponent": null
+    },
+    {
+      "id": "blue-wave-002",
+      "runtime": "blue-wave",
+      "file": "blue-wave-002.png",
+      "prompt": "blue-wave-002-prompt.txt",
+      "sourceCrop": "references/v2/blue-wave.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-d2ef71d5-a07b-46b7-8fb7-11b5fb89e419.png",
+      "status": "selected-002-exact-effect-crop",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "SHA256": "bc3816430c72c809c0c8c99d89c3a7e3530f95d80fc0168094ea4cdf62a56688",
+      "promptSHA256": "9ae72748f9730258a1b29a276f926931a98fa9b67cb0ce9471861fdf6c73e83c",
+      "cacheCropXYWH": [
+        446,
+        14,
+        342,
+        1495
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "cacheAlphaExponent": 2.5
+    },
+    {
+      "id": "blue-vortex-002",
+      "runtime": "blue-vortex",
+      "file": "blue-vortex-002.png",
+      "prompt": "blue-vortex-002-prompt.txt",
+      "sourceCrop": "references/v2/blue-vortex.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-c76e7080-d6a2-4aa9-819c-1c88096be9b4.png",
+      "status": "unselected-thick-crescent-actual-game-render",
+      "size": [
+        1460,
+        1078
+      ],
+      "mode": "RGBA",
+      "SHA256": "68c91806a4e62ff8e58b8f695d701153d704e2cdbadec8d19af258a65c96c8e8",
+      "promptSHA256": "e7933651e0a0763ec1cb5d1669f98635d5357ace40bc4dc4a617db46c4a74060",
+      "cacheCropXYWH": [
+        437,
+        191,
+        692,
+        785
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "cacheAlphaExponent": null
+    },
+    {
+      "id": "green-call-002",
+      "runtime": "green-call",
+      "file": "green-call-002.png",
+      "prompt": "green-call-002-prompt.txt",
+      "sourceCrop": "references/v2/green-call.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-7c6ee67d-a7bc-4b5d-849e-a7914b269606.png",
+      "status": "selected-002-exact-effect-crop",
+      "size": [
+        1828,
+        860
+      ],
+      "mode": "RGBA",
+      "SHA256": "4589743b84efefd8e5390a9bdc14a8d3d5f29ee09d833e589ee6c7a12988b28f",
+      "promptSHA256": "cc293d85b0218d20d760dbf994f983f1dbd403aea38078577968a32a3e69f9dd",
+      "cacheCropXYWH": [
+        100,
+        263,
+        1626,
+        338
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "cacheAlphaExponent": null
+    },
+    {
+      "id": "red-embers-002",
+      "runtime": "red-embers",
+      "file": "red-embers-002.png",
+      "prompt": "red-embers-002-prompt.txt",
+      "sourceCrop": "references/v2/red-embers.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-30b19888-1d12-490b-8ed4-41f1e6cf68b6.png",
+      "status": "selected-002-exact-effect-crop",
+      "size": [
+        1551,
+        1014
+      ],
+      "mode": "RGBA",
+      "SHA256": "984c284c0564ab834747a128089e35ab76b5b2a5fae7500122c27a286fd357ab",
+      "promptSHA256": "602a001a9537668ddd18f37165260e7ed28eebc3ea7795781cf6ed5748cfb87d",
+      "cacheCropXYWH": [
+        224,
+        92,
+        1236,
+        816
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "cacheAlphaExponent": 1.8
+    },
+    {
+      "id": "red-muster-002",
+      "runtime": "red-muster",
+      "file": "red-muster-002.png",
+      "prompt": "red-muster-002-prompt.txt",
+      "sourceCrop": "references/v2/red-muster.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-3ae21195-471b-4ceb-a007-45458a47c4ad.png",
+      "status": "selected-002-exact-effect-crop",
+      "size": [
+        1656,
+        950
+      ],
+      "mode": "RGBA",
+      "SHA256": "58558c8c0e3f90aede41f3c91a4e2c229b55b9db80f328eeae609be2381b147c",
+      "promptSHA256": "81c19db4a33fc64d8c5743cf8b32c33f31c9ec8d0b33b981d3257b086a21d03f",
+      "cacheCropXYWH": [
+        173,
+        67,
+        1221,
+        812
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "cacheAlphaExponent": null
+    },
+    {
+      "id": "yellow-dust-002",
+      "runtime": "yellow-dust",
+      "file": "yellow-dust-002.png",
+      "prompt": "yellow-dust-002-prompt.txt",
+      "sourceCrop": "references/v2/yellow-dust.png",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-16d48f45-45e9-4ad6-8408-079a8d2acdc4.png",
+      "status": "selected-002-exact-effect-crop",
+      "size": [
+        1486,
+        1058
+      ],
+      "mode": "RGBA",
+      "SHA256": "1be13a3ab2664e933150ec9920e1c5d1c5190fa34f275bf37f026f248250e5ff",
+      "promptSHA256": "a1c0ba9ee106a774126292e1d5aaeaed88da784edc1d1e6b9cacf8a5ce0a3e20",
+      "cacheCropXYWH": [
+        3,
+        160,
+        1469,
+        771
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "cacheAlphaExponent": null
+    },
+    {
+      "id": "blue-vortex-003",
+      "runtime": "blue-vortex",
+      "file": "blue-vortex-003.png",
+      "prompt": "blue-vortex-003-prompt.txt",
+      "sourceCrop": "references/v2/blue-vortex.png",
+      "generatedSource": "C:/Users/user/.codex/generated_images/01a10d93-6785-75c2-8fc3-60cc0b521baa/exec-4c919ea2-b623-4390-99a2-1896c6080b27.png",
+      "status": "selected-003-thin-open-curves",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "SHA256": "60c4493a8a471f181a3d93680033b5ace4da25431c3e00579ccf3212e8f0abf3",
+      "promptSHA256": "2e98935b8aac406cfa7aa27cacabe3e54b50b0af549bc435342610588c01d995",
+      "cacheCropXYWH": [
+        232,
+        229,
+        793,
+        779
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "cacheAlphaExponent": null,
+      "actualAlphaQC": {
+        "positive": 25859,
+        "above64": 16233,
+        "above128": 15185,
+        "alphaZeroNonzeroRGB": 356
+      }
+    }
+  ],
+  "selectedVersion": "002-with-blue-vortex-003",
+  "cropManifest002": "references/v2/crop-manifest.json"
+}

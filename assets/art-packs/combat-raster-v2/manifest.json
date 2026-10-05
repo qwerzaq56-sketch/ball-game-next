@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "status": "generated-alpha-checked-integration-candidates",
+  "sourceConcept": "planning/art-concepts/effect-direction-v2/combat-002.png",
+  "cropManifest": "references/crop-manifest.json",
+  "metrics": "asset-metrics.json",
+  "excludedRows": [3],
+  "note": "Parent applies cache crops, pivots, alpha and authoritative geometry; no source PNG pixel edits. Selection is provisional pending actual renderer comparison.",
+  "effects": {
+    "charge": {"file": "charge-001.png", "crop": [318,294,660,660], "pivot": [0.5,0.4985], "directional": true, "meaning": "Thin partial ivory charge ornament; existing charge geometry remains authoritative", "limitation": "Generated partial arc is about 180 degrees, wider than the requested 100-degree arc"},
+    "impact": {"file": "impact-001.png", "crop": [516,434,360,360], "pivot": [0.5,0.5], "directional": true, "meaning": "Three ivory flecks extend left from contact pivot at original pixel 696,614, not actor center", "shield": "Do not recolor this into cyan shield hit; keep existing vector cyan response"},
+    "dodge": {"file": "dodge-002.png", "crop": [500,385,750,255], "pivot": [0.8693,0.4980], "directional": true, "meaning": "Two quiet trailing cyan arc fragments, original implied actor anchor 1152,512", "alternatives": ["dodge-001.png","dodge-003.png"], "selectionReason": "002 has quieter alpha maximum 206; its broad colored RGB haze has alpha zero and is not visible in correct compositing"},
+    "growth": {"file": "growth-001.png", "crop": [214,213,826,826], "pivot": [0.5,0.5], "directional": false, "meaning": "One thin species-tone ring, centered at original pixel627,626; no actor disk"}
+  }
+}

@@ -1,0 +1,158 @@
+[
+  {
+    "file": "charge-001.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alphaZeroFraction": 0.9845674066273411,
+    "visibleAlpha32BBoxXYXY": [
+      648,
+      304,
+      968,
+      941
+    ],
+    "visibleAlpha128BBoxXYXY": [
+      653,
+      304,
+      967,
+      940
+    ],
+    "sha256": "55abdc453ff8c161b8429049822b11e6a4325ba1c62f5dc608aeeb3204208917"
+  },
+  {
+    "file": "dodge-001.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alphaZeroFraction": 0.9639418613228736,
+    "visibleAlpha32BBoxXYXY": [
+      119,
+      323,
+      774,
+      948
+    ],
+    "visibleAlpha128BBoxXYXY": [
+      149,
+      328,
+      675,
+      933
+    ],
+    "sha256": "d5e102bf195a7842b7292eff0dce32e65d014ebe7d1cde0f27d8e097f50c652c"
+  },
+  {
+    "file": "dodge-002.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      206
+    ],
+    "alphaZeroFraction": 0.9933624267578125,
+    "visibleAlpha32BBoxXYXY": [
+      521,
+      405,
+      866,
+      619
+    ],
+    "visibleAlpha128BBoxXYXY": [
+      522,
+      412,
+      861,
+      617
+    ],
+    "sha256": "07bd9417c65066d20f0033fb74b922da494a2cde2e4a72a73726eef228c4bfda"
+  },
+  {
+    "file": "dodge-003.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "alphaZeroFraction": 0.9946543375651041,
+    "visibleAlpha32BBoxXYXY": [
+      521,
+      403,
+      866,
+      619
+    ],
+    "visibleAlpha128BBoxXYXY": [
+      521,
+      404,
+      865,
+      619
+    ],
+    "sha256": "0580352d3c1f9dba315610e5e636be1a83055bfc50c406395771706525b122f6"
+  },
+  {
+    "file": "growth-001.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alphaZeroFraction": 0.9745007363995024,
+    "visibleAlpha32BBoxXYXY": [
+      226,
+      226,
+      1028,
+      1026
+    ],
+    "visibleAlpha128BBoxXYXY": [
+      226,
+      227,
+      1028,
+      1025
+    ],
+    "sha256": "c67f6effba6eca4399d2082ef8646f179193d14ffea8b781001b7a453c289758"
+  },
+  {
+    "file": "impact-001.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alphaZeroFraction": 0.9947606256470523,
+    "visibleAlpha32BBoxXYXY": [
+      538,
+      455,
+      696,
+      772
+    ],
+    "visibleAlpha128BBoxXYXY": [
+      540,
+      457,
+      695,
+      771
+    ],
+    "sha256": "dbb9f68e358163ebe865bdc8110ab98219ad9ea9ad62113b35942b4de9ce72cd"
+  }
+]

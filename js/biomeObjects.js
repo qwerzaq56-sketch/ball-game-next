@@ -31,7 +31,7 @@ export class BiomeObjects{
    const e=actors.find(e=>c.effect!=='heal'||e.hp<e.maxHp);if(!e)continue;this.cooldowns.set(o.id,now+c.cooldown);
    if(c.effect==='food')this.spawnRewards(o);
    if(c.effect==='heal'){const before=e.hp;e.hp=Math.min(e.maxHp,e.hp+e.maxHp*c.power);if(e.hp>before)e.healVisualUntil=now+.22;}
-   if(c.effect==='shield'){e.shieldHp=Math.max(e.shieldHp??0,e.maxHp*c.power);e.shieldRemaining=Math.max(e.shieldRemaining??0,c.duration);}
+   if(c.effect==='shield'){e.shieldHp=Math.max(e.shieldHp??0,e.maxHp*c.power);e.shieldRemaining=Math.max(e.shieldRemaining??0,c.duration);e.shieldTextureKind='leaf';}
    if(c.effect==='speed'){e.objectSpeedUntil=now+c.duration;e.objectSpeedMultiplier=1+c.power;if(c.hpCost)applyDamage(e,e.maxHp*c.hpCost,g,null,g.balance,{kind:'field',ignoreDefense:true,knockback:false});}
    if(c.effect==='charm'){e.companionCharmUntil=now+c.duration;e.companionCharmPower=c.power;e.companionDecoration=o.candidate==='lake-garland'?'shell':'flower';}
    if(c.effect==='wind-stack'){e.windStoneStacks=(e.windStoneStacks??0)+1;if(e.windStoneStacks>=c.stacksRequired){e.windStoneStacks=0;e.objectSpeedUntil=now+c.duration;e.objectSpeedMultiplier=1+c.power;}g.spawnFloatingText(e.x,e.y,`바람 ${e.windStoneStacks}/${c.stacksRequired}`,'#7dd3fc');}

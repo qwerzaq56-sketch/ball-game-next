@@ -8,6 +8,7 @@ import { random } from './random.js';
 import {scaledSkill} from './skillCatalog.js';
 import {AIEntity} from './ai.js?forest-composition-01';
 import {AbilityMetrics} from './abilityMetrics.js';
+import {drawAbilityPresentation} from './abilityPresentation.js?effects-direction-02';
 export const ABILITIES = {
   cyan:{windup:.6,cooldown:10,radius:260}, blue:{windup:.6,cooldown:10,length:400,width:180},
   green:{windup:.5,cooldown:12,radius:350},red:{windup:.8,cooldown:12,radius:250},yellow:{windup:.8,cooldown:14,radius:360},
@@ -117,7 +118,7 @@ export class Abilities {
   this.log('special-fire',e,{slot:'E',skill:cfg.id,cast:cast.id});
   // R-ABIL-004: same swept projectile and shared hit registry for one/three lanes.
   if(cfg.effect==='wave'){const hit=new Set(),dirs=cast.directions??(cfg.lanes===3?blueWaveDirections(cast.dir):[cast.dir]);for(const dir of dirs)this.waves.push({owner:e,cast:cast.id,x:e.x,y:e.y,dir,time:0,hit,skill:cfg,metricKey:cast.metricKey,slot:cast.slot});return;}
-  if(cfg.effect==='shield'){for(const t of units)if(!isHostile(e,t)&&(t===e||t.color===e.color||e.companionGroup&&e.companionGroup===t.companionGroup)&&dist(e,t)<=cfg.radius){t.shieldHp=Math.max(t.shieldHp??0,t.maxHp*cfg.shieldHpFraction);t.shieldRemaining=cfg.shieldDuration;this.metrics.count(e,cast,'buffs');}return;}
+  if(cfg.effect==='shield'){for(const t of units)if(!isHostile(e,t)&&(t===e||t.color===e.color||e.companionGroup&&e.companionGroup===t.companionGroup)&&dist(e,t)<=cfg.radius){t.shieldHp=Math.max(t.shieldHp??0,t.maxHp*cfg.shieldHpFraction);t.shieldRemaining=cfg.shieldDuration;t.shieldTextureKind='frost';this.metrics.count(e,cast,'buffs');}return;}
   // R-ABIL-006: recruitment probability changes without weakening existing ally buffs.
   if(cfg.effect==='invite'){
    const attemptedGroups=new Set();
@@ -324,6 +325,7 @@ export class Abilities {
     else if(e.color==='yellow')ctx.arc(point.x,point.y,cfg.radius,0,Math.PI*2);
     else ctx.arc(e.x,e.y,cfg.radius,0,Math.PI*2);
   };
+  drawAbilityPresentation(ctx,this,zoom,shape);
   for(const e of this.units())if(e.specialCast){ctx.save();ctx.beginPath();shape(e,e.specialCast.dir,e.specialCast.point);ctx.fillStyle=this.game.withAlpha(e.colorHex,['shield','invite','vigor','muster','summon'].includes(e.specialCast.skill?.effect)?.02:.09);ctx.fill();ctx.strokeStyle=e.colorHex;ctx.lineWidth=2/zoom;ctx.setLineDash([8/zoom,5/zoom]);ctx.stroke();ctx.setLineDash([]);if(e.color==='red'&&e.specialCast.target){const t=e.specialCast.target;ctx.beginPath();ctx.arc(t.x,t.y,t.size/2+10,0,Math.PI*2);ctx.stroke();}ctx.restore();}
   const labels={cyan:'냉기 휘두르기',blue:'삼중 파도',green:'사기 진작',red:'사냥 지휘',yellow:'모래바람'};
   for(const flash of this.flashes){

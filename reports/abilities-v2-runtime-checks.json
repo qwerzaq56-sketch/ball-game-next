@@ -1,0 +1,282 @@
+[
+  {
+    "selected": "cyan:E",
+    "actual": "cyan:E",
+    "start": true,
+    "phase": "fire",
+    "fields": {
+      "waves": 0,
+      "vortices": 0,
+      "fields": 0,
+      "embers": 0,
+      "musters": 0,
+      "flashes": 1
+    },
+    "outside": [
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      },
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      }
+    ]
+  },
+  {
+    "selected": "cyan:R",
+    "actual": "cyan:R",
+    "start": true,
+    "phase": "fire",
+    "fields": {
+      "waves": 0,
+      "vortices": 0,
+      "fields": 0,
+      "embers": 0,
+      "musters": 0,
+      "flashes": 1
+    },
+    "outside": [
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      },
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      }
+    ]
+  },
+  {
+    "selected": "blue:E",
+    "actual": "blue:E",
+    "start": true,
+    "phase": "fire",
+    "fields": {
+      "waves": 1,
+      "vortices": 0,
+      "fields": 0,
+      "embers": 0,
+      "musters": 0,
+      "flashes": 1
+    },
+    "outside": [
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      },
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      }
+    ]
+  },
+  {
+    "selected": "blue:R",
+    "actual": "blue:R",
+    "start": true,
+    "phase": "fire",
+    "fields": {
+      "waves": 0,
+      "vortices": 1,
+      "fields": 0,
+      "embers": 0,
+      "musters": 0,
+      "flashes": 0
+    },
+    "outside": [
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      },
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      }
+    ]
+  },
+  {
+    "selected": "green:E",
+    "actual": "green:E",
+    "start": true,
+    "phase": "fire",
+    "fields": {
+      "waves": 0,
+      "vortices": 0,
+      "fields": 0,
+      "embers": 0,
+      "musters": 0,
+      "flashes": 1
+    },
+    "outside": [
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      },
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      }
+    ]
+  },
+  {
+    "selected": "green:R",
+    "actual": "green:R",
+    "start": true,
+    "phase": "fire",
+    "fields": {
+      "waves": 0,
+      "vortices": 0,
+      "fields": 0,
+      "embers": 0,
+      "musters": 0,
+      "flashes": 1
+    },
+    "outside": [
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      },
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      }
+    ]
+  },
+  {
+    "selected": "red:E",
+    "actual": "red:E",
+    "start": true,
+    "phase": "fire",
+    "fields": {
+      "waves": 0,
+      "vortices": 0,
+      "fields": 0,
+      "embers": 1,
+      "musters": 0,
+      "flashes": 1
+    },
+    "outside": [
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      },
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      }
+    ]
+  },
+  {
+    "selected": "red:R",
+    "actual": "red:R",
+    "start": true,
+    "phase": "fire",
+    "fields": {
+      "waves": 0,
+      "vortices": 0,
+      "fields": 0,
+      "embers": 0,
+      "musters": 1,
+      "flashes": 0
+    },
+    "outside": [
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      },
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      }
+    ]
+  },
+  {
+    "selected": "yellow:E",
+    "actual": "yellow:E",
+    "start": true,
+    "phase": "fire",
+    "fields": {
+      "waves": 0,
+      "vortices": 0,
+      "fields": 0,
+      "embers": 0,
+      "musters": 0,
+      "flashes": 1
+    },
+    "outside": [
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      },
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      }
+    ]
+  },
+  {
+    "selected": "yellow:R",
+    "actual": "yellow:R",
+    "start": true,
+    "phase": "fire",
+    "fields": {
+      "waves": 0,
+      "vortices": 0,
+      "fields": 1,
+      "embers": 0,
+      "musters": 0,
+      "flashes": 1
+    },
+    "outside": [
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      },
+      {
+        "hp": 250,
+        "shield": 0,
+        "frozen": 0,
+        "command": null
+      }
+    ]
+  }
+]

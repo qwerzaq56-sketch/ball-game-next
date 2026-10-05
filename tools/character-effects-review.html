@@ -12,16 +12,17 @@
 <button id="move">이동 시작 / 정지</button><button id="terrain">지형 ON / OFF</button><button id="body">래스터 몸체 ON / OFF</button><button id="effects">래스터 이펙트 ON / OFF</button><button id="rerender">같은 장면 다시 렌더</button>
 <button id="heal">실제 회복 수혜 / 비수혜</button><button id="shield">실제 보호막 수혜 / 비수혜</button><button id="frost">실제 피난처 해제 / 비수혜</button><button id="reset">통제 장면 복원</button>
 <button id="contact">실제 피격 생성 함수 · 접촉점</button><button id="shield-contact">실제 보호막 피격 생성 함수 · 접촉점</button>
+<button id="absorption">흡수 관계 · 대상→흡수자 방향</button>
 <p id="state">로딩 중</p><p id="assets">자산 상태 확인 중</p><canvas width="1280" height="720"></canvas><pre id="probe"></pre>
 <details><summary>검수 원칙·범위</summary><ul><li>5색의 몸체·방향·전조를 식생 위에서도 구분. 크기400은 단일 종족도 비교하여 겹침을 분리.</li><li>원화는 비스듬한 탑뷰. 방향이 바뀌어도 몸체에 구워진 광원은 회전하지 않아야 함.</li><li>장식/이펙트 외곽과 실제 공격·혜택·위험 범위를 구분. 필수 범위·방향 코드는 숨기지 않음.</li><li>알파·로드 실패 시 기존 렌더가 남는지는 별도 실패 주입 검증 필요. 이 페이지의 지형OFF가 캐릭터 이미지 실패를 뜻하지 않음.</li><li>리소스 생성은 정확한 원화 크롭을 직접 입력. 좌표·원본 SHA256·크롭 경로·정확한 프롬프트·실패 시안 보존.</li><li>처음 장면 진입/캐시 재사용 렌더 시간을 분리. 값은 이 통제 장면의 단일 렌더 시간이며 실제 FPS가 아님.</li></ul></details>
 <script type="module">
-import {Game} from '../js/game.js?characters-effects-01';
+import {Game} from '../js/game.js?effects-direction-02';
 import {AIEntity} from '../js/ai.js';
 import {loadLandmarkImages} from '../js/landmarkArt.js?forest-composition-01';
 import {loadEnvironmentImages} from '../js/environmentArt.js?forest-composition-01';
 import {loadCharacterRaster,characterRasterStatus} from '../js/characterRasterArt.js';
-import {loadEffectRaster,effectRasterStatus} from '../js/effectRasterArt.js';
-import {loadProgressionRaster} from '../js/progressionRasterArt.js';
+import {loadEffectRaster,effectRasterStatus} from '../js/effectRasterArt.js?effects-direction-02';
+import {loadProgressionRaster} from '../js/progressionRasterArt.js?effects-direction-02';
 await Promise.all([loadLandmarkImages(),loadEnvironmentImages(),loadCharacterRaster(),loadEffectRaster(),loadProgressionRaster()]);
 const balance=await(await fetch('../config/gameBalance.json')).json(),canvas=document.querySelector('canvas'),$=id=>document.getElementById(id);
 let g,origins=[],moving=false,epoch=0,terrain=true,rasterBody=true,rasterEffects=true,firstRender=true,probeMode=false,building=false,pendingBuild=false;
@@ -82,12 +83,23 @@ function contact(shield=false){
  const result={kind:shield?'shield-contact':'hit-contact',note:'실제 spawnHitImpact 생성 함수의 통제시각 호출. 피해50은 시각강도 입력이며 실제 데미지 판정/HP감소 테스트 아님.',shield,hpBefore,hpAfter:target.hp,bodyCenter:{x:target.x,y:target.y},attacker:{x:attacker.x,y:attacker.y},contact:ring?{x:ring.x,y:ring.y,color:ring.color,type:ring.type}:null,contactMinusBodyCenter:{x:dx,y:dy,distance:Math.hypot(dx,dy)},expectedBodyRadius:target.size/2,hitVisualUntil:target.hitVisualUntil,particleCount:g.particles.length};
  $('probe').textContent=JSON.stringify(result,null,2);render();return result;
 }
+function absorptionProbe(){
+ if(building)return;moving=false;probeMode=true;g.gameTime=20;g.biomeObjects.objects=[];g.particles=[];
+ const eater=g.player,size=Number($('size').value),angle=Number($('direction').value)*Math.PI/180;
+ Object.assign(eater,{size,visualSize:size,scalePulseTimer:0,attackState:'READY',dodgeState:'READY',attackHoldProgress:0,shieldHp:0,shieldRemaining:0,vigorUntil:0,frostbiteRemaining:0,frostExposure:0,apex:false});eater.trail=[];eater.dodgeTrail=[];
+ eater.x=g.camera.x;eater.y=g.camera.y;
+ const target=new AIEntity({x:eater.x-Math.cos(angle)*(size*.9),y:eater.y-Math.sin(angle)*(size*.9),color:eater.color,colorHex:eater.colorHex,balance:g.balance,startSize:size*.4});
+ target.beingAbsorbedByRef=eater;target.absorptionRequired=6;target.absorptionProgress=3;
+ g.entities=[eater,target];g.input.mouseDown=false;
+ $('probe').textContent=JSON.stringify({kind:'absorption-direction',note:'실제 렌더 관계 통제, 자연 흡수 시간/성공 판정 측정 아님. 작은 대상에 진행호, 큰 흡수자 방향으로 흐름.',target:{x:target.x,y:target.y,size:target.size},eater:{x:eater.x,y:eater.y,size:eater.size},progress:.5,direction:angle},null,2);render();
+}
 for(const id of ['biome','size','color'])$(id).onchange=build;
 for(const id of ['combat','status','direction'])$(id).oninput=()=>{applyState();render();};$('zoom').onchange=render;
  $('move').onclick=()=>{if(probeMode)return;moving=!moving;if(moving){epoch=performance.now();requestAnimationFrame(frame);}else render();};
  $('terrain').onclick=()=>{terrain=!terrain;render();};$('body').onclick=()=>{rasterBody=!rasterBody;render();};$('effects').onclick=()=>{rasterEffects=!rasterEffects;render();};$('rerender').onclick=render;$('reset').onclick=build;
  for(const kind of ['heal','shield','frost'])$(kind).onclick=()=>probe(kind);
  $('contact').onclick=()=>contact(false);$('shield-contact').onclick=()=>contact(true);
+ $('absorption').onclick=absorptionProbe;
  window.artReview={get game(){return g;},metrics,render,probe,contact,async set(options={}){for(const [id,value]of Object.entries(options))if($(id))$(id).value=String(value);await build();},stop(){moving=false;},snapshot(){return {region:$('biome').value,zoom:g?.camera.zoom,rasterBody,rasterEffects,characterAssets:characterRasterStatus(),effectAssets:effectRasterStatus(),entities:g?.entities.map(e=>({color:e.color,size:e.size,x:e.x,y:e.y,hp:e.hp,attack:e.attackState})),lastRender:metrics.at(-1),probe:$('probe').textContent};}};
  await build();
 </script></html>

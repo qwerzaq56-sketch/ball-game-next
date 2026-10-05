@@ -1,9 +1,9 @@
 import {DesignerReview} from './designerReview.js';
-import {loadObjectPreset} from './biomeObjectCatalog.js?characters-effects-01';
+import {loadObjectPreset} from './biomeObjectCatalog.js?effects-direction-02';
 import {installMovablePanels} from './movablePanels.js';
 import { DiagnosticsUI } from './diagnosticsUI.js';
-import { Game } from './game.js?characters-effects-01';
-import { UI } from './ui.js?characters-effects-01';
+import { Game } from './game.js?effects-direction-02';
+import { UI } from './ui.js?effects-direction-02';
 import { loadMuted, saveMuted } from './storage.js';
 import { AIInspector } from './aiInspector.js';
 import { PlayerSetup, loadPlayerProfile } from './playerProfile.js';

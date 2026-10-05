@@ -1,0 +1,186 @@
+[
+  {
+    "id": "cyan-shield-002",
+    "size": [
+      1536,
+      1024
+    ],
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "alpha64Bounds": [
+      349,
+      117,
+      1190,
+      800
+    ],
+    "cacheCropXYWH": [
+      333,
+      101,
+      873,
+      715
+    ]
+  },
+  {
+    "id": "cyan-sweep-002",
+    "size": [
+      1701,
+      924
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alpha64Bounds": [
+      284,
+      194,
+      1368,
+      718
+    ],
+    "cacheCropXYWH": [
+      268,
+      178,
+      1116,
+      556
+    ]
+  },
+  {
+    "id": "blue-wave-002",
+    "size": [
+      1024,
+      1536
+    ],
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "alpha64Bounds": [
+      462,
+      30,
+      772,
+      1493
+    ],
+    "cacheCropXYWH": [
+      446,
+      14,
+      342,
+      1495
+    ]
+  },
+  {
+    "id": "blue-vortex-002",
+    "size": [
+      1460,
+      1078
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alpha64Bounds": [
+      453,
+      207,
+      1113,
+      960
+    ],
+    "cacheCropXYWH": [
+      437,
+      191,
+      692,
+      785
+    ]
+  },
+  {
+    "id": "green-call-002",
+    "size": [
+      1828,
+      860
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alpha64Bounds": [
+      116,
+      279,
+      1710,
+      585
+    ],
+    "cacheCropXYWH": [
+      100,
+      263,
+      1626,
+      338
+    ]
+  },
+  {
+    "id": "red-embers-002",
+    "size": [
+      1551,
+      1014
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alpha64Bounds": [
+      240,
+      108,
+      1444,
+      892
+    ],
+    "cacheCropXYWH": [
+      224,
+      92,
+      1236,
+      816
+    ]
+  },
+  {
+    "id": "red-muster-002",
+    "size": [
+      1656,
+      950
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alpha64Bounds": [
+      189,
+      83,
+      1378,
+      863
+    ],
+    "cacheCropXYWH": [
+      173,
+      67,
+      1221,
+      812
+    ]
+  },
+  {
+    "id": "yellow-dust-002",
+    "size": [
+      1486,
+      1058
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "alpha64Bounds": [
+      19,
+      176,
+      1456,
+      915
+    ],
+    "cacheCropXYWH": [
+      3,
+      160,
+      1469,
+      771
+    ]
+  }
+]

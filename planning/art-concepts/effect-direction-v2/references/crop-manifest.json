@@ -1,0 +1,70 @@
+[
+  {
+    "id": "shield-application",
+    "source": "planning\\art-concepts\\ally-buffs-001.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      515,
+      2,
+      1021,
+      251
+    ],
+    "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+    "output": "planning\\art-concepts\\effect-direction-v2\\references\\shield-application.png",
+    "outputSHA256": "5db6c3e27d752d43ade7e8247105ef3768c0d21956232e30889a8f7ecbdd44d5"
+  },
+  {
+    "id": "empowerment-application",
+    "source": "planning\\art-concepts\\ally-buffs-001.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      515,
+      258,
+      1021,
+      508
+    ],
+    "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+    "output": "planning\\art-concepts\\effect-direction-v2\\references\\empowerment-application.png",
+    "outputSHA256": "60b075d77f2e35a8fb3913f268f9a057a33befba247bc838357586e4d7b64185"
+  },
+  {
+    "id": "frost-application",
+    "source": "planning\\art-concepts\\ally-buffs-001.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      515,
+      515,
+      1021,
+      767
+    ],
+    "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+    "output": "planning\\art-concepts\\effect-direction-v2\\references\\frost-application.png",
+    "outputSHA256": "ae07a6c22779b9af328f6f94e245ea2dc19e1d2d77ace6f770d24664f7c4b788"
+  },
+  {
+    "id": "heal-application",
+    "source": "planning\\art-concepts\\ally-buffs-001.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "cropXYXY": [
+      515,
+      773,
+      1021,
+      1023
+    ],
+    "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+    "output": "planning\\art-concepts\\effect-direction-v2\\references\\heal-application.png",
+    "outputSHA256": "82fe278f0030fdb38b5774daa59baeb8c9c1fae6c2043038d65e8ea0ff44ba9b"
+  }
+]

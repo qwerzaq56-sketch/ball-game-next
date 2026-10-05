@@ -1,0 +1,49 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>기본 능력 10종 실제 렌더 검증</title>
+<style>body{margin:16px;background:#101923;color:#e2e8f0;font:14px system-ui}label,button{display:inline-block;margin:5px}select,button{padding:7px}canvas{width:100%;max-width:1280px;border:1px solid #536577}pre{white-space:pre-wrap;max-height:550px;overflow:auto}</style>
+<h1>기본 E/R 10종 · 실제 능력 통제 검증</h1><p>실제 Abilities.start/fire/update와 Game.render를 사용합니다. 직위·배치·시점을 통제하며 자연 플레이의 교전·밸런스·FPS 검증이 아닙니다. 확률형 초대 결과를 성공으로 강제하지 않습니다.</p>
+<label>스킬 <select id="skill"></select></label><label>크기 <select id="size"><option>100</option><option>200</option><option>400</option></select></label>
+<label>지역 <select id="biome"><option>forest</option><option>grassland</option><option>lake</option><option>snow</option><option>volcano</option><option>desert</option></select></label>
+<label>배율 <select id="zoom"><option value=".5">0.5</option><option value="1">1</option></select></label><label>방향 <select id="direction"><option value="0">0°</option><option value="180">180°</option></select></label>
+<label>시점 <select id="phase"><option value="idle">미시전</option><option value="windup">전조</option><option value="fire">발동 직후</option><option value="active">지속 1초</option></select></label>
+<button id="reset">선택 장면 다시 구성</button><button id="art">능력 래스터 ON / OFF</button><button id="step">실제 능력 업데이트 +0.1초</button><button id="render">캐시 재사용 렌더</button>
+<p id="state">로딩 중</p><p id="assets"></p><canvas width="1280" height="720"></canvas><pre id="result"></pre>
+<details><summary>범위·대상·검수 기준</summary><p>공격 스킬의 실제 원뿔·움직이는 파도·장판 경계와 비공격 보호막·초대·소환·집결·먼지 표현을 구별합니다. 심해 흡인은 이동 효과이며 직접 피해가 아닙니다. 생성 texture 외곽은 판정이 아닙니다. 실제 geometry 설정과 대상 결과는 아래 JSON으로 확인합니다.</p><p>R 비교는 크기와 별개로 기존 실제 해금 조건인 apex=true를 fixture에 부여하며 자연 직위 획득으로 주장하지 않습니다. 크기400에서 범위가 화면을 벗어날 수 있으므로 JSON과 배율 비교를 함께 사용합니다. 원화 정확 크롭·좌표·원본 SHA256·프롬프트·실패 시안 보존은 생성 필수 원칙입니다. 방향을 바꿀 때 몸체 광원은 고정하고 방향 에너지 표현만 허용된 회전을 사용합니다.</p></details>
+<script type="module">
+import {Game} from '../js/game.js?effects-direction-02';
+import {AIEntity} from '../js/ai.js';
+import {DEFAULT_SKILLS,SKILL_CATALOG} from '../js/skillCatalog.js';
+import {loadCharacterRaster} from '../js/characterRasterArt.js';
+import {loadEffectRaster} from '../js/effectRasterArt.js?effects-direction-02';
+import {loadProgressionRaster} from '../js/progressionRasterArt.js?effects-direction-02';
+import {loadAbilityRaster,abilityRasterStatus} from '../js/abilityRasterArt.js?effects-direction-02';
+import {loadLandmarkImages} from '../js/landmarkArt.js?forest-composition-01';
+import {loadEnvironmentImages} from '../js/environmentArt.js?forest-composition-01';
+await Promise.all([loadCharacterRaster(),loadEffectRaster(),loadProgressionRaster(),loadAbilityRaster(),loadLandmarkImages(),loadEnvironmentImages()]);
+const $=id=>document.getElementById(id),canvas=document.querySelector('canvas'),balance=await(await fetch('../config/gameBalance.json')).json();
+for(const [color,slots]of Object.entries(DEFAULT_SKILLS))for(const [slot,id]of Object.entries(slots)){const option=document.createElement('option');option.value=`${color}:${slot}`;option.textContent=`${color} ${slot} · ${SKILL_CATALOG[id].name}`;$('skill').append(option);}
+let g,building=false,pending=false,raster=true,cfg,probeUnits=[],before,castResult=false,first=true;
+const metrics=[];
+function snapshot(e){return {id:e.id,tag:e.fixtureTag??(e===g.player?'시전자':'소환체'),color:e.color,size:e.size,alive:e.alive,hp:e.hp,maxHp:e.maxHp,x:e.x,y:e.y,frozen:e.frozen??0,shieldHp:e.shieldHp??0,shieldRemaining:e.shieldRemaining??0,companionGroup:e.companionGroup??null,inviteBuffs:e.inviteBuffs?.length??0,morale:e.morale?.size??0,rallyBuffs:e.rallyBuffs?.size??0,command:e.command?.kind??null,dustUntil:e.dustUntil??0,summoned:!!e.summoned};}
+async function build(){if(building){pending=true;return;}building=true;first=true;$('state').textContent='선택 장면 로딩 중';
+ const clone=structuredClone(balance);clone.abilitySkills??={};clone.abilitySkills.loadout=structuredClone(DEFAULT_SKILLS);
+ const input={keys:new Set(),mouseX:1000,mouseY:360,mouseDown:false,consumeDodge:()=>false},ui={showUnlock(){},showDefeatMessage(){},preferences:{names:false}};
+ g=new Game(clone,canvas,input,ui,{seed:44});g.gameTime=20;const [color,slot]=$('skill').value.split(':'),size=Number($('size').value),dir=Number($('direction').value)*Math.PI/180,label=g.biomes.labels.find(r=>r.id===$('biome').value),owner=g.player;
+ const hex=balance.colors.find(c=>c.id===color).color;Object.assign(owner,{x:label.x,y:label.y,size,visualSize:size,color,colorHex:hex,maxHp:size*5,hp:size*5,apex:slot==='R'||size>=400,_specialApex:slot==='R'||size>=400,attackUnlocked:true,attackStack:1,normalSkillCooldown:0,specialCooldown:0,facing:dir});
+ g.camera={x:owner.x,y:owner.y,zoom:Number($('zoom').value)};g.entities=[owner];g.biomeObjects.sync();g.biomeObjects.objects=[];
+ cfg=g.abilities.skill(owner,slot);const range=cfg.radius??cfg.length??size/2+100,point=slot==='R'&&color==='yellow'?{x:owner.x+Math.cos(dir)*(cfg.castRange??350),y:owner.y+Math.sin(dir)*(cfg.castRange??350)}:{x:owner.x,y:owner.y};
+ const enemyColor=balance.colors.find(c=>c.id!==color),nearDistance=Math.min(range*.35,180),farDistance=range+120;
+ function unit(tag,same,far){const x=point.x+Math.cos(dir)*(far?farDistance:nearDistance),y=point.y+Math.sin(dir)*(far?farDistance:nearDistance)+(same?50:-50);const e=new AIEntity({x,y,color:same?color:enemyColor.id,colorHex:same?hex:enemyColor.color,balance:g.balance,startSize:Math.min(60,size*.5)});e.fixtureTag=tag;e.attackUnlocked=true;e.attackStack=1;g.entities.push(e);return e;}
+ probeUnits=[owner,unit('근처 동족',true,false),unit('범위 밖 동족',true,true),unit('근처 적',false,false),unit('범위 밖 적',false,true)];before=probeUnits.map(snapshot);g.buildGrid();
+ const phase=$('phase').value;castResult=false;
+ if(phase!=='idle'){castResult=g.abilities.start(owner,dir,point,null,slot);if(castResult){if(phase==='windup')g.abilities.update(Math.min(.1,cfg.windup*.5));else {const cast=owner.specialCast;owner.specialCast=null;g.abilities.fire(owner,cast);if(phase==='active')for(let i=0;i<10;i++){g.gameTime+=.1;g.buildGrid();g.abilities.update(.1);}}}}
+ await g.biomes.terrainArt.loading;building=false;if(pending){pending=false;return build();}render();
+}
+function result(){const [color,slot]=$('skill').value.split(':'),geometry={};for(const key of ['radius','length','width','castRange','buffRadius','commandRadius','blastRadius','visualRadiusMultiplier','fieldDuration','waveDuration','windup','cooldown'])if(cfg[key]!=null)geometry[key]=cfg[key];
+ const type={shield:'비공격 보호막',invite:'비공격 초대/확률 모집',summon:'비공격 소환/동족 강화',muster:'비공격 집결/명령',dust:'비공격 자기 장막',vortex:'흡인 이동/직접 피해 없음',wave:'공격 움직이는 파도',embers:'공격 지속 장판'}[cfg.effect]??(color==='cyan'?'공격 원뿔':color==='yellow'?'공격 지속 장판':'실제 catalog 참조');
+ const fields={waves:g.abilities.waves.length,vortices:g.abilities.vortices.length,fields:g.abilities.fields.length,embers:g.abilities.embers.length,musters:g.abilities.musters.length,flashes:g.abilities.flashes.length};
+ return {note:'통제 시전 결과. 자연 플레이/전체 밸런스 합격 아님. 범위 밖 샘플은 실제 결과로 확인하며 자동 수혜 판정 아님.',color,slot,skill:cfg.id,effect:cfg.effect,type,phase:$('phase').value,startSucceeded:castResult,unlocked:g.abilities.unlocked(g.player,slot),fixtureApex:g.player.apex,geometry,fields,before,after:probeUnits.map(snapshot),spawned:g.entities.filter(e=>!probeUnits.includes(e)).map(snapshot),events:g.abilities.events.slice(-12)};
+}
+function render(){if(!g||building)return;g.camera.zoom=Number($('zoom').value);g.abilityRasterEnabled=raster;const start=performance.now();g.render();const ms=performance.now()-start;metrics.push({kind:first?'scene-first':'cache-reuse',ms,skill:cfg.id,zoom:g.camera.zoom});if(metrics.length>100)metrics.shift();$('state').textContent=`${first?'장면 첫 렌더':'캐시 재사용'} ${ms.toFixed(2)}ms · 능력texture ${raster?'ON':'OFF'} · ${cfg.id} · ${$('phase').value} · 게임시간${g.gameTime.toFixed(2)} · 자연플레이/FPS아님`;first=false;$('assets').textContent=JSON.stringify(abilityRasterStatus())+' · 일부 미로딩/실패는 제작·연결 상태 확인 대상, 시각 합격 아님';$('result').textContent=JSON.stringify(result(),null,2);}
+for(const id of ['skill','size','biome','direction','phase'])$(id).onchange=build;$('zoom').onchange=render;$('reset').onclick=build;$('render').onclick=render;$('art').onclick=()=>{raster=!raster;render();};$('step').onclick=()=>{if(!g||building)return;g.gameTime+=.1;g.buildGrid();g.abilities.update(.1);render();};
+window.abilityReview={get game(){return g;},metrics,render,result,async set(options={}){for(const [id,value]of Object.entries(options))if($(id))$(id).value=String(value);await build();}};await build();
+</script></html>

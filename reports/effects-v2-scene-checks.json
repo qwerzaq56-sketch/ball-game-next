@@ -1,0 +1,74 @@
+[
+  {
+    "biome": "forest",
+    "zoom": ".5",
+    "state": "같은 장면 캐시 재사용 2.20ms · forest · zoom 0.5 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "forest",
+    "zoom": "1",
+    "state": "같은 장면 캐시 재사용 4.00ms · forest · zoom 1 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "grassland",
+    "zoom": ".5",
+    "state": "같은 장면 캐시 재사용 77.80ms · grassland · zoom 0.5 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "grassland",
+    "zoom": "1",
+    "state": "같은 장면 캐시 재사용 1.40ms · grassland · zoom 1 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "lake",
+    "zoom": ".5",
+    "state": "같은 장면 캐시 재사용 21.50ms · lake · zoom 0.5 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "lake",
+    "zoom": "1",
+    "state": "같은 장면 캐시 재사용 0.90ms · lake · zoom 1 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "snow",
+    "zoom": ".5",
+    "state": "같은 장면 캐시 재사용 11.00ms · snow · zoom 0.5 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "snow",
+    "zoom": "1",
+    "state": "같은 장면 캐시 재사용 1.00ms · snow · zoom 1 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "volcano",
+    "zoom": ".5",
+    "state": "같은 장면 캐시 재사용 10.10ms · volcano · zoom 0.5 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "volcano",
+    "zoom": "1",
+    "state": "같은 장면 캐시 재사용 0.90ms · volcano · zoom 1 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "desert",
+    "zoom": ".5",
+    "state": "같은 장면 캐시 재사용 32.50ms · desert · zoom 0.5 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  },
+  {
+    "biome": "desert",
+    "zoom": "1",
+    "state": "같은 장면 캐시 재사용 0.80ms · desert · zoom 1 · size 40 · 몸체 래스터 ON · 효과 래스터 ON · 지형 ON · 정지 · 자연 플레이/FPS 측정 아님",
+    "assets": "몸체 {\"ready\":true,\"colorCache\":5,\"cacheLimit\":32} · 효과 {\"loaded\":[\"charge\",\"impact\",\"shield\",\"strength\",\"frost-clear\",\"heal\",\"dodge\"],\"failed\":[],\"requested\":[],\"cacheLimit\":7} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음"
+  }
+]

@@ -1,0 +1,234 @@
+[
+  {
+    "id": "blue-vortex-002",
+    "pixels": 1573880,
+    "alphaBands": {
+      "0-0": 1467590,
+      "1-15": 11839,
+      "16-63": 1454,
+      "64-127": 1478,
+      "128-254": 90182,
+      "255-255": 1337
+    },
+    "alphaZeroNonzeroRGB": 570,
+    "alphaZeroRGBInvisibleInCanvas": true,
+    "visibleRGBBounds": {
+      "R": [
+        0,
+        255
+      ],
+      "G": [
+        0,
+        255
+      ],
+      "B": [
+        0,
+        255
+      ]
+    },
+    "interpretation": "Alpha-zero RGB cannot establish visible haze. Positive low-alpha pixels may contribute faint haze; assess cached alpha curve and actual Canvas composition."
+  },
+  {
+    "id": "blue-wave-002",
+    "pixels": 1572864,
+    "alphaBands": {
+      "0-0": 1425060,
+      "1-15": 14220,
+      "16-63": 1715,
+      "64-127": 1445,
+      "128-254": 130424,
+      "255-255": 0
+    },
+    "alphaZeroNonzeroRGB": 935041,
+    "alphaZeroRGBInvisibleInCanvas": true,
+    "visibleRGBBounds": {
+      "R": [
+        0,
+        240
+      ],
+      "G": [
+        0,
+        255
+      ],
+      "B": [
+        0,
+        255
+      ]
+    },
+    "interpretation": "Alpha-zero RGB cannot establish visible haze. Positive low-alpha pixels may contribute faint haze; assess cached alpha curve and actual Canvas composition."
+  },
+  {
+    "id": "cyan-shield-002",
+    "pixels": 1572864,
+    "alphaBands": {
+      "0-0": 1513759,
+      "1-15": 18958,
+      "16-63": 1585,
+      "64-127": 1162,
+      "128-254": 37400,
+      "255-255": 0
+    },
+    "alphaZeroNonzeroRGB": 1073186,
+    "alphaZeroRGBInvisibleInCanvas": true,
+    "visibleRGBBounds": {
+      "R": [
+        0,
+        254
+      ],
+      "G": [
+        0,
+        255
+      ],
+      "B": [
+        0,
+        255
+      ]
+    },
+    "interpretation": "Alpha-zero RGB cannot establish visible haze. Positive low-alpha pixels may contribute faint haze; assess cached alpha curve and actual Canvas composition."
+  },
+  {
+    "id": "cyan-sweep-002",
+    "pixels": 1571724,
+    "alphaBands": {
+      "0-0": 1478954,
+      "1-15": 8344,
+      "16-63": 1266,
+      "64-127": 1231,
+      "128-254": 80636,
+      "255-255": 1293
+    },
+    "alphaZeroNonzeroRGB": 698,
+    "alphaZeroRGBInvisibleInCanvas": true,
+    "visibleRGBBounds": {
+      "R": [
+        0,
+        255
+      ],
+      "G": [
+        0,
+        255
+      ],
+      "B": [
+        0,
+        255
+      ]
+    },
+    "interpretation": "Alpha-zero RGB cannot establish visible haze. Positive low-alpha pixels may contribute faint haze; assess cached alpha curve and actual Canvas composition."
+  },
+  {
+    "id": "green-call-002",
+    "pixels": 1572080,
+    "alphaBands": {
+      "0-0": 1493479,
+      "1-15": 14880,
+      "16-63": 8235,
+      "64-127": 4566,
+      "128-254": 50725,
+      "255-255": 195
+    },
+    "alphaZeroNonzeroRGB": 129,
+    "alphaZeroRGBInvisibleInCanvas": true,
+    "visibleRGBBounds": {
+      "R": [
+        0,
+        255
+      ],
+      "G": [
+        0,
+        255
+      ],
+      "B": [
+        0,
+        255
+      ]
+    },
+    "interpretation": "Alpha-zero RGB cannot establish visible haze. Positive low-alpha pixels may contribute faint haze; assess cached alpha curve and actual Canvas composition."
+  },
+  {
+    "id": "red-embers-002",
+    "pixels": 1572714,
+    "alphaBands": {
+      "0-0": 1390187,
+      "1-15": 118834,
+      "16-63": 3228,
+      "64-127": 1710,
+      "128-254": 57888,
+      "255-255": 867
+    },
+    "alphaZeroNonzeroRGB": 128,
+    "alphaZeroRGBInvisibleInCanvas": true,
+    "visibleRGBBounds": {
+      "R": [
+        0,
+        255
+      ],
+      "G": [
+        0,
+        255
+      ],
+      "B": [
+        0,
+        255
+      ]
+    },
+    "interpretation": "Alpha-zero RGB cannot establish visible haze. Positive low-alpha pixels may contribute faint haze; assess cached alpha curve and actual Canvas composition."
+  },
+  {
+    "id": "red-muster-002",
+    "pixels": 1573200,
+    "alphaBands": {
+      "0-0": 1504255,
+      "1-15": 10431,
+      "16-63": 1778,
+      "64-127": 1470,
+      "128-254": 54173,
+      "255-255": 1093
+    },
+    "alphaZeroNonzeroRGB": 437,
+    "alphaZeroRGBInvisibleInCanvas": true,
+    "visibleRGBBounds": {
+      "R": [
+        0,
+        255
+      ],
+      "G": [
+        0,
+        255
+      ],
+      "B": [
+        0,
+        255
+      ]
+    },
+    "interpretation": "Alpha-zero RGB cannot establish visible haze. Positive low-alpha pixels may contribute faint haze; assess cached alpha curve and actual Canvas composition."
+  },
+  {
+    "id": "yellow-dust-002",
+    "pixels": 1572188,
+    "alphaBands": {
+      "0-0": 1453886,
+      "1-15": 39828,
+      "16-63": 10234,
+      "64-127": 5410,
+      "128-254": 61735,
+      "255-255": 1095
+    },
+    "alphaZeroNonzeroRGB": 347,
+    "alphaZeroRGBInvisibleInCanvas": true,
+    "visibleRGBBounds": {
+      "R": [
+        0,
+        255
+      ],
+      "G": [
+        0,
+        255
+      ],
+      "B": [
+        0,
+        255
+      ]
+    },
+    "interpretation": "Alpha-zero RGB cannot establish visible haze. Positive low-alpha pixels may contribute faint haze; assess cached alpha curve and actual Canvas composition."
+  }
+]

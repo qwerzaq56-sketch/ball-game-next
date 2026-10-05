@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "rowsExcluded": [
+    3
+  ],
+  "items": [
+    {
+      "id": "charge",
+      "source": "planning/art-concepts/effect-direction-v2/combat-002.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "sourceSha256": "08dc938f102778419f545751176ac99241f758aa3dc385ba38d5c6382ffa6c8d",
+      "boxXYXY": [
+        700,
+        116,
+        832,
+        223
+      ],
+      "crop": "assets/art-packs/combat-raster-v2/references/charge-combat-002.png",
+      "cropSha256": "56156817790b55df14c10eb869eea4d64fb52cce7744faceaec4b0be544d1f15"
+    },
+    {
+      "id": "impact",
+      "source": "planning/art-concepts/effect-direction-v2/combat-002.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "sourceSha256": "08dc938f102778419f545751176ac99241f758aa3dc385ba38d5c6382ffa6c8d",
+      "boxXYXY": [
+        876,
+        113,
+        946,
+        199
+      ],
+      "crop": "assets/art-packs/combat-raster-v2/references/impact-combat-002.png",
+      "cropSha256": "a98e4690d27b98d0e6f59514e8643c4adc5b665c72c7f95bc72e0b3c3b54a7b6"
+    },
+    {
+      "id": "dodge",
+      "source": "planning/art-concepts/effect-direction-v2/combat-002.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "sourceSha256": "08dc938f102778419f545751176ac99241f758aa3dc385ba38d5c6382ffa6c8d",
+      "boxXYXY": [
+        646,
+        377,
+        780,
+        482
+      ],
+      "crop": "assets/art-packs/combat-raster-v2/references/dodge-combat-002.png",
+      "cropSha256": "daf4c01ec8fc66c80015a4f04a9a09ff467ba850d80643fb879c09146760a58e"
+    },
+    {
+      "id": "growth",
+      "source": "planning/art-concepts/effect-direction-v2/combat-002.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "sourceSha256": "08dc938f102778419f545751176ac99241f758aa3dc385ba38d5c6382ffa6c8d",
+      "boxXYXY": [
+        705,
+        810,
+        839,
+        934
+      ],
+      "crop": "assets/art-packs/combat-raster-v2/references/growth-combat-002.png",
+      "cropSha256": "ba8e9f43b5bd583156a4be16cc0c69b97f3813dfe84dc059d6b60eb6d56269ab"
+    }
+  ]
+}

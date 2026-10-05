@@ -1,0 +1,86 @@
+[
+  {
+    "id": "leaf-shield",
+    "source": "planning\\art-concepts\\ally-buffs-001.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "box": [
+      642,
+      42,
+      780,
+      165
+    ],
+    "actorCenterInCrop": [
+      111,
+      89
+    ],
+    "output": "assets\\art-packs\\benefits-raster-v2\\references\\leaf-shield-crop.png",
+    "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+    "cropSHA256": "be9b1cdd67fb66dd3343f6d91e0aac722fe66be41821b85674ccca755ba06b91"
+  },
+  {
+    "id": "empowerment",
+    "source": "planning\\art-concepts\\ally-buffs-001.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "box": [
+      1135,
+      324,
+      1234,
+      418
+    ],
+    "actorCenterInCrop": [
+      74,
+      59
+    ],
+    "output": "assets\\art-packs\\benefits-raster-v2\\references\\empowerment-crop.png",
+    "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+    "cropSHA256": "07b39fb8c2604e58780c8588b3ee005ccf38504713b9130202c685de7fa28486"
+  },
+  {
+    "id": "frost-clear",
+    "source": "planning\\art-concepts\\ally-buffs-001.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "box": [
+      690,
+      575,
+      783,
+      712
+    ],
+    "actorCenterInCrop": [
+      40,
+      100
+    ],
+    "output": "assets\\art-packs\\benefits-raster-v2\\references\\frost-clear-crop.png",
+    "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+    "cropSHA256": "0b7d65e72f611bd8558db9b5a67ec09a187e59c9ae484f76c108863629eff638"
+  },
+  {
+    "id": "heal",
+    "source": "planning\\art-concepts\\ally-buffs-001.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "box": [
+      1220,
+      834,
+      1338,
+      948
+    ],
+    "actorCenterInCrop": [
+      59,
+      49
+    ],
+    "output": "assets\\art-packs\\benefits-raster-v2\\references\\heal-crop.png",
+    "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+    "cropSHA256": "9dc91587dceea6c103d4029ddde5c496e4f1bc4259750064f6dc7690c08fdf15"
+  }
+]
