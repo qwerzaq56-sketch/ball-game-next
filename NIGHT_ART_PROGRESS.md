@@ -169,3 +169,4 @@ scene-coherent-v1의 snow-shelter/desert-oasis PNG를 실제 landmarkArt256캐�
 원본 gameplay-regions-a-001과 A003을 직접 참조해 grass-raster-v1/ground-001.png 제작, 프롬프트·생성본 보존. 큰 잎과 조용한 올리브 색면, 수집물/기능오브젝트/공 제외. 800world 캐시와 동일 광원 crop으로 실제 초원 연결, 반전 없음. 실패 시 기존SVG 폴백. rasterBiomes로 숲 외 PNG의800phase 지원, 음수좌표 crop 테스트 확장. 관련16테스트 통과(추가phase검사후지형6재확인). 실제Game.render6지역 0.5/1배율·아트OFF 폴백·콘솔오류경고0, reports/grass-raster-six-regions-001.png/-zoom1.png.
 
 전체렌더에서 이전 모듈 캐시 때문에 환경3종이 다시 구벡터로 보인 문제 발견. index→main→Game→BiomeObjects 및 art-review import에 art-batch-13 버전키 연결, 재확인에서 해류/소용돌이/분출구PNG 정상 표시. 게임규칙 변경 없음. 원화의 나무 가장자리 구성과 현재 격자형지역경계·나무분포는 아직 다르고, PNG바닥 반복/이음새 가능성 남음. 초원과 숲만 PNG바닥, 호수·설원·화산·사막은 기존SVG. 다음은 원화의 지역별 색면/큰환경형상 맞춤 우선.
+`n사용자 직접 요청: 실제 배치 후 색보정·상대 크기/비율·이펙트·범위 표시를 원화에 맞추는 필수 검수 루프를 워크플로우/제안서와 기획 정본에 추가. 표시와 판정 범위 일치·게임규칙 유지·전후 캡처 보존 명시. 보정 완료로 기록하지 않음.
