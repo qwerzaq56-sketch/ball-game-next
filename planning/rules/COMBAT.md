@@ -79,6 +79,7 @@
 - 확인:
   - config combatScaling.maxChargeDistance = 600
   - symbol js/combat.js :: attackChargeDistanceForSize
+  - code js/combat.js :: \(apex\?\.7:1\)
   - test tests/large-size-play.test.mjs :: large attack travels capped distance and preview uses the same distance
 
 ### R-COMBAT-008 · AI 충전과 공격 간격

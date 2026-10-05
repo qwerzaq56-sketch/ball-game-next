@@ -3,7 +3,7 @@
 이 지침은 `CLOUD_BRIEF.md`와 `IDEAS_2026-10-03.md`에 **추가**된다. 충돌하면 이 문서가 더 최신이다.
 
 ## 무엇이 추가됐나
-- `planning/rules/` — 승인된 규칙 78개를 **규칙 카드**로 만든 것(전투·흡수·생태계·능력·동행·월드·조작·표현·측정 9개 도메인). 형식·운영 규칙은 `planning/rules/README.md`.
+- `planning/rules/` — 승인된 규칙 99개를 **규칙 카드**로 만든 것(전투·흡수·생태계·능력·동행·월드·조작·표현·측정 12개 도메인). 형식·운영 규칙은 `planning/rules/README.md`.
 - `tools/spec-trace.mjs` — 카드를 코드와 자동 대조(수치·함수·테스트 제목 존재). `tools/balance-sheet.mjs` — 조절 수치 전부와 의도를 한 표로 생성.
 - 이 브랜치(`codex/spec-sync`)는 `codex/cloud-next-m4`의 마지막 커밋(`2fd3bd8`)에서 **새 파일만** 추가했다. 기존 파일은 바꾸지 않았으므로 작업 브랜치에 그대로 합쳐도(merge 또는 cherry-pick) 충돌하지 않는다. main에는 합치지 않는다.
 
