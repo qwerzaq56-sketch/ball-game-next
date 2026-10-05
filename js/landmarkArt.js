@@ -1,13 +1,26 @@
 // Approved T3-r2: healthy landmarks persist; readiness only changes transferable leaves/petals.
 // Geometry is presentation-only, in screen pixels. No gameplay state or randomness is read/write.
+let forestImage=null,forestLoading=null;
+export function loadLandmarkImages(){
+ if(forestLoading)return forestLoading;
+ if(typeof document==='undefined'||typeof Image==='undefined')return Promise.resolve(false);
+ forestLoading=(async()=>{
+  try{
+   const image=new Image();image.src=new URL('../assets/art-packs/forest-raster-v1/tree-001.png',import.meta.url).href;await image.decode();
+   const c=document.createElement('canvas');c.width=c.height=256;c.getContext('2d').drawImage(image,0,0,256,256);forestImage=c;return true;
+  }catch{return false;}
+ })();return forestLoading;
+}
 export function drawRevisedLandmark(ctx,o,ready=true){
  const id=o.candidate;
  if(!['forest-tree','snow-flowers','snow-shelter','desert-oasis'].includes(id))return false;
  const oval=(x,y,rx,ry,color)=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();};
  const path=(points,color)=>{ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=color;ctx.fill();};
  if(id==='forest-tree'){
-  oval(0,18,27,7,'#102e29');path([[-8,17],[-5,-17],[5,-17],[9,17],[17,21],[3,19],[-16,21]],'#8c7152');
-  oval(-13,-10,16,14,'#225c45');oval(12,-13,18,15,'#2e7051');oval(-1,-24,20,16,'#3b7e5b');
+  loadLandmarkImages();
+  if(forestImage)ctx.drawImage(forestImage,-35,-35,70,70);
+  else{oval(0,18,27,7,'#102e29');path([[-8,17],[-5,-17],[5,-17],[9,17],[17,21],[3,19],[-16,21]],'#8c7152');
+   oval(-13,-10,16,14,'#225c45');oval(12,-13,18,15,'#2e7051');oval(-1,-24,20,16,'#3b7e5b');}
   for(const [x,y]of [[-15,-12],[11,-16],[0,-29]])oval(x,y,ready?5:2.5,ready?2.8:1.8,ready?'#badf91':'#729b65');
  }else if(id==='snow-flowers'){
   oval(0,17,25,6,'#384c66');

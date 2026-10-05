@@ -17,3 +17,5 @@
 변환 재현: `pip install vtracer==0.6.15 Pillow` 후 프로젝트 루트에서 `python tools/trace-forest-pilot.py`. 격리 설치를 쓸 경우 `--dependency-dir 경로`. 이번 설치 위치는 프로젝트 밖 cloud-review/art-tools-vtracer이며 게임 런타임 의존성이 아니다.
 
 후속002: 나무 반전4종 캐시·셀 안 위치 변화·크기140~184world로 반복 감소. 관련4테스트 통과, forest-raster-002.png. 원본 PNG는 수정하지 않음.
+
+후속003: 수호 고목 본체에도 tree-001 PNG 캐시 적용. 준비/쿨다운은 밝은 전달 잎 차이 유지; 기능·판정 변경 없음. 이미지 실패 시 기존 SVG. 관련5테스트 및 실제BiomeObjects.draw 1.0/0.5줌 검증·콘솔0. landmark-raster-001.png / -half.png. 고목 전용 원화는 아직 별도 제작하지 않았음.

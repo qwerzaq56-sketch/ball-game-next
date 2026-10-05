@@ -1,5 +1,6 @@
 <!doctype html><meta charset="utf-8"><title>Landmark art review</title><style>body{background:#182434;color:#eee;font:16px system-ui}canvas{border:1px solid #536575;max-width:100%}button{padding:8px}p{max-width:900px}</style><h1>오브젝트 준비 / 수혜 후 비교</h1><p>실제 BiomeObjects.draw 호출. 위: 준비, 아래: 쿨다운. 본체는 유지하고 고목 잎·서리꽃 꽃잎만 변한다. 효과 대상과 수치는 그대로다.</p><button id="zoom">배율 0.5 / 1 전환</button><p id="state"></p><canvas width="1000" height="520"></canvas><script type="module">
 import {BiomeObjects} from '../js/biomeObjects.js';import {BIOME_OBJECTS} from '../js/biomeObjectCatalog.js';
+import {loadLandmarkImages} from '../js/landmarkArt.js';await loadLandmarkImages();
 const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d');let zoom=1;
 const game={canvas,biomes:{enabled:true},camera:{x:500,y:260},gameTime:2};const objects=new BiomeObjects(game);objects.sync=()=>{};
 for(const [i,candidate]of ['forest-tree','snow-flowers','snow-shelter','desert-oasis'].entries())for(const ready of [true,false]){const id=candidate+ready;objects.objects.push({id,candidate,x:130+i*240,y:ready?145:390,config:BIOME_OBJECTS[candidate]});objects.cooldowns.set(id,ready?0:14);}
