@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant} from '../js/terrainArt.js';
+import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights} from '../js/terrainArt.js';
 import {resetRandom,random} from '../js/random.js';
 test('R-VIS-006 terrain variant remains stable for a 2x2 block without gameplay RNG',()=>{
  resetRandom(34);const expected=random('world');resetRandom(34);
@@ -82,3 +82,16 @@ test('regional raster failure leaves its SVG usable without blocking other regio
   assert.equal(art.forestRaster,true);assert.equal(art.masks.size,8);
  }finally{for(const [key,value]of Object.entries(old)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
 });
+
+ test('terrain boundary weights remain continuous across straight edges and four-biome corners',()=>{
+  for(let p=0;p<=200;p+=.5){const w=terrainBlendWeights(p);assert(Math.abs(w.reduce((a,b)=>a+b,0)-1)<1e-12);assert(w.every(v=>v>=0&&v<=1));}
+  assert.deepEqual(terrainBlendWeights(0),[.5,.5,0]);assert.deepEqual(terrainBlendWeights(200),[0,.5,.5]);
+  for(const y of [0,30,100,170,200]){const wy=terrainBlendWeights(y);for(let j=0;j<3;j++)assert.equal(terrainBlendWeights(200)[2]*wy[j],terrainBlendWeights(0)[1]*wy[j]);}
+ });
+ test('neighbor artwork uses destination texture coordinates and merges repeated biome contributions',()=>{
+  const art=new TerrainArt();art.ready=true;art.tiles.set('grass',[{width:800,height:800}]);art.tiles.set('desert',[{width:800,height:800}]);art.rasterBiomes=new Set(['grassland','desert']);
+  const previous=globalThis.document,crops=[];
+  globalThis.document={createElement(){return {getContext(){return {createImageData(){return {data:new Uint8ClampedArray(200*200*4)};},putImageData(){},drawImage(...a){if(a.length===9)crops.push(a.slice(1,3));}};}};}};
+  try{art.drawTile({drawImage(){}},{x:400,y:600,region:{id:'grassland'}},{game:{balance:{world:{worldWidth:8000,worldHeight:8000}}},regionAt(p){return {id:p.x>=600?'desert':'grassland'};}});assert.deepEqual(crops,[[400,600],[400,600]]);}
+  finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+ });

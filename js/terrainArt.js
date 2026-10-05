@@ -3,6 +3,13 @@ export function terrainVariant(x,y){return ((Math.imul(Math.floor(x/400),7385609
 export function forestGroundVariant(x,y){return ((Math.imul(Math.floor(x/800),73856093)^Math.imul(Math.floor(y/800),19349663))>>>0)%3;}
 const biomeKey=id=>id==='grassland'?'grass':id;
 const modulo=(x,n)=>(x%n+n)%n;
+// A continuous partition of unity: shared edges meet at 1/2, corners at 1/4.
+export function terrainBlendWeights(position){
+ const smooth=t=>t*t*(3-2*t);
+ const before=position<60?.5*(1-smooth(position/60)):0;
+ const after=position>140?.5*smooth((position-140)/60):0;
+ return [before,1-before-after,after];
+}
 export function forestDecoration(x,y){
  const h=(Math.imul(x/200,83492791)^Math.imul(y/200,19349663))>>>0;
  if(h%5!==0)return null;
@@ -76,17 +83,45 @@ export class TerrainArt {
   if(!this.enabled||!this.ready)return false;
   const {x,y,region}=tile,texture=this.texture(region.id,x,y);if(!texture)return false;
   const sx=modulo(x,texture.width||400),sy=modulo(y,texture.height||400);ctx.drawImage(texture,sx,sy,200,200,x,y,200,200);
+  const world=biomes.game.balance.world,ids=[];
+  for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+   const nx=modulo(x+dx*200,world.worldWidth),ny=modulo(y+dy*200,world.worldHeight);
+   ids.push(biomes.regionAt({x:nx+100,y:ny+100})?.id||region.id);
+  }
+  if(ids.every(id=>id===region.id)){
+   if(region.id==='forest'&&this.forestTrees){const d=forestDecoration(x,y);if(d)ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);}
+   return true;
+  }
+  const key='blend:'+ids.map(id=>`${id}:${this.variant(id,x,y)}`).join(',')+`:${modulo(x,800)}:${modulo(y,800)}`;
+  let composed=this.layers.get(key);
+  if(!composed){
+   composed=document.createElement('canvas');composed.width=composed.height=200;
+   const output=composed.getContext('2d');
+   const weights=Array.from({length:200},(_,p)=>terrainBlendWeights(p+.5));
+   for(const id of new Set(ids)){
+    const image=this.texture(id,x,y);if(!image)continue;
+    const mask=document.createElement('canvas');mask.width=mask.height=200;
+    const mc=mask.getContext('2d'),pixels=mc.createImageData(200,200);
+    for(let py=0;py<200;py++)for(let px=0;px<200;px++){
+     const wx=weights[px],wy=weights[py];let weight=0;
+     for(let j=0;j<3;j++)for(let i=0;i<3;i++)if(ids[j*3+i]===id)weight+=wx[i]*wy[j];
+     const n=(py*200+px)*4;pixels.data[n]=pixels.data[n+1]=pixels.data[n+2]=255;pixels.data[n+3]=Math.round(weight*255);
+    }
+    mc.putImageData(pixels,0,0);
+    mc.globalCompositeOperation='source-in';
+    // Sample every biome at the destination world position, never the neighbor position.
+    mc.drawImage(image,modulo(x,image.width||400),modulo(y,image.height||400),200,200,0,0,200,200);
+    output.globalCompositeOperation='lighter';output.drawImage(mask,0,0);
+   }
+   if(this.layers.size>=96)this.layers.delete(this.layers.keys().next().value);
+   this.layers.set(key,composed);
+  }
+  ctx.drawImage(composed,x,y);
   if(region.id==='forest'&&this.forestTrees){
    const d=forestDecoration(x,y);
    if(d)ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);
   }
-  const neighbors=[['north',0,-200],['east',200,0],['south',0,200],['west',-200,0],['nw',-200,-200],['ne',200,-200],['se',200,200],['sw',-200,200]];
-  const world=biomes.game.balance.world;
-  for(const [direction,dx,dy]of neighbors){
-   const nx=modulo(x+dx,world.worldWidth),ny=modulo(y+dy,world.worldHeight),n=biomes.regionAt({x:nx+100,y:ny+100});
-   if(!n||n.id===region.id)continue;
-   const layer=this.layer(n.id,nx,ny,direction);if(layer)ctx.drawImage(layer,x,y);
-  }
+
   return true;
  }
 }

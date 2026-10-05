@@ -82,3 +82,6 @@ scene-coherent-v1의 snow-shelter/desert-oasis PNG를 실제 landmarkArt256캐�
 환경3종 독립캐시, 조용한수면/통로클립/소용돌이실영역crop·낮은범위표시, 분출휴식별도rest002. 용암124폭·좌표·판정유지하고도로중앙점선을비정형색면으로교체. 이득중앙다이아제거·범위1.2px·부드러운녹회색. grass/forest기존PNG+4지역신규PNG=6지역이미지지원. 설원001바위더미반복오인발견후002낮은눈바닥재제작, 모든원본/프롬프트보존.
 
 전체375/375, spec115카드/승인107구현107/verified93/conflicts0/broken0(이전제목2연결정정). 실제6지역0.5/1·OFF폴백·13종상태확인오류경고0, parallel-six-regions/parallel-objects 증거보존. 최신카탈로그/UI/renderer캐시갱신 art-parallel-02. 미완료: 눈타일밝기이음새·블록/식생반복·원화의큰자연배경구성. 원본source/main/public배포불변. 다음은이음새/반복감소·큰지형색면구성. 세부컨펌반복없이승인된범위내계속.
+
+## 지역 경계 블렌딩 수정 · 05:00 KST
+사용자 스크린샷의 사각형 끊김 수정. 이웃 텍스처를 이웃 셀 좌표로 잘라 현재 셀에 복제하던 오류 제거. 모든 혼합 텍스처는 목적지 월드 좌표를 사용. 변/대각 마스크 중복 합성 대신 연속적인 3×3 가중치(변 1/2, 모서리 1/4, 총합1)로 동일 지역 기여를 합쳐 캐시. 60월드 폭 부드러운 전환, 96개 캐시 상한. 지역 판정·난수·효과 범위 불변. 브라우저 import art-boundary-01 갱신. tools/terrain-boundary-review.html 직선/모서리 실제 TerrainArt 검증 및 reports/terrain-boundary-fixed.png 보존. 전체377/377, 브라우저 오류/경고0. PNG 자체의 800단위 반복 이음새는 별개 잔여 과제.

@@ -1,7 +1,7 @@
 export function terrainDamageMultiplier(size,balance){return 1/(1+Math.max(0,size-40)/(balance.biomes.terrainDefenseScale??200));}
 export function lavaResistance(e,balance){const c=balance.biomes;return e.color==='red'?Math.min(Math.max(0,c.maxRedLavaResistance??.85),.95,Math.max(0,e.size*(c.redLavaResistancePerSize??0))):0;}
 import {delta,angleTo,wrap} from './topology.js';
-import {TerrainArt} from './terrainArt.js?art-parallel-02';
+import {TerrainArt} from './terrainArt.js?art-boundary-01';
 import {dist} from './collision.js';
 import { boundCenter } from './worldBounds.js';
 import {random} from './random.js';
