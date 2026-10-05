@@ -57,3 +57,7 @@ VTracer처럼 색상 이미지를 SVG로 추적하는 기존 엔진을 먼저 �
 - MDN drawImage: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage — 이미지와 SVG·ImageBitmap 등 Canvas 입력 지원.
 
 위 근거는 형식/엔진 가능성을 뒷받침하며 우리 원화의 재현 품질을 보장하지 않는다. 품질·유지보수 판단은 Codex의 프로젝트 제안이다.
+
+## 원화 일치 실험에서 얻은 제작 절차 · 잠정
+
+원화 전체를 참고한 신규 디자인001은 사용자에게 스타일 불일치 평가를 받았다. 고목 영역을 직접 잘라 제공하고 기존 형태 유지/배경·효과 제거만 요청한002는 색면·윤곽·줄기 비율이 더 가까워졌다는 Codex 관찰이다. 대표 자산의 잠정 개선이며 사용자 최종평가/다른 자산 검증은 남음. 생성 추출은 원본 픽셀 보존을 보장하지 않는다. 후속은 원화 영역 crop→정확한 추출 프롬프트→나란히 비교→실제 게임 검증 순서. 과정·좌표·실제 프롬프트·실패 결과를 reports/ART_FIDELITY_PROCESS.md에 보존한다.
