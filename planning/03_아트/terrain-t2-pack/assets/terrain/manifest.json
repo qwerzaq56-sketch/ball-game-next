@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "status": "T2 SVG draft, game integration pending",
+  "tileWorldSize": 400,
+  "cellWorldSize": 200,
+  "variantSelection": "(cellPairX*73856093 ^ cellPairY*19349663) unsigned modulo 3; no gameplay RNG",
+  "biomes": {
+    "grass": {
+      "label": "초원",
+      "baseColor": "#35502a",
+      "files": [
+        "terrain-grass-tile-01.svg",
+        "terrain-grass-tile-02.svg",
+        "terrain-grass-tile-03.svg"
+      ],
+      "variants": 3
+    },
+    "forest": {
+      "label": "숲",
+      "baseColor": "#1b4a31",
+      "files": [
+        "terrain-forest-tile-01.svg",
+        "terrain-forest-tile-02.svg",
+        "terrain-forest-tile-03.svg"
+      ],
+      "variants": 3
+    },
+    "lake": {
+      "label": "호수",
+      "baseColor": "#143e5c",
+      "files": [
+        "terrain-lake-tile-01.svg",
+        "terrain-lake-tile-02.svg",
+        "terrain-lake-tile-03.svg"
+      ],
+      "variants": 3
+    },
+    "snow": {
+      "label": "설원",
+      "baseColor": "#4d6076",
+      "files": [
+        "terrain-snow-tile-01.svg",
+        "terrain-snow-tile-02.svg",
+        "terrain-snow-tile-03.svg"
+      ],
+      "variants": 3
+    },
+    "volcano": {
+      "label": "화산",
+      "baseColor": "#5e2b24",
+      "files": [
+        "terrain-volcano-tile-01.svg",
+        "terrain-volcano-tile-02.svg",
+        "terrain-volcano-tile-03.svg"
+      ],
+      "variants": 3
+    },
+    "desert": {
+      "label": "사막",
+      "baseColor": "#7c6035",
+      "files": [
+        "terrain-desert-tile-01.svg",
+        "terrain-desert-tile-02.svg",
+        "terrain-desert-tile-03.svg"
+      ],
+      "variants": 3
+    }
+  },
+  "transitionMasks": {
+    "north": "mask-edge-north.svg",
+    "east": "mask-edge-east.svg",
+    "south": "mask-edge-south.svg",
+    "west": "mask-edge-west.svg",
+    "nw": "mask-corner-nw.svg",
+    "ne": "mask-corner-ne.svg",
+    "se": "mask-corner-se.svg",
+    "sw": "mask-corner-sw.svg"
+  }
+}
