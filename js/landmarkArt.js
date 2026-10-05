@@ -6,7 +6,7 @@ export function loadLandmarkImages(){
  if(typeof document==='undefined'||typeof Image==='undefined')return Promise.resolve(false);
  forestLoading=(async()=>{
   try{
-   const image=new Image();image.src=new URL('../assets/art-packs/forest-raster-v1/tree-001.png',import.meta.url).href;await image.decode();
+   const image=new Image();image.src=new URL('../assets/art-packs/forest-raster-v1/guardian-001.png',import.meta.url).href;await image.decode();
    const c=document.createElement('canvas');c.width=c.height=256;c.getContext('2d').drawImage(image,0,0,256,256);forestImage=c;return true;
   }catch{return false;}
  })();return forestLoading;
