@@ -36,6 +36,16 @@ test('one missing image does not disable continuous landmark images or change re
   art.drawRevisedLandmark(flowerPost.ctx,{candidate:'snow-flowers'},false);
   assert.equal(flowerReady.commands[0][0],'drawImage');
   assert.notEqual(flowerReady.commands[0][1],flowerPost.commands[0][1],'harvest swaps cached petal state');
+  for(const candidate of ['grass-garland','grass-wind-stack','forest-berry-grove','lake-garland','desert-obelisk','volcano-obsidian-stack']){
+   const sample=capture();assert.equal(art.drawRevisedLandmark(sample.ctx,{candidate}),true);
+   assert.equal(sample.commands[0][0],'drawImage');
+  }
+  const current=capture(),object={candidate:'lake-current',width:120};
+  art.drawEnvironmentalArt(current.ctx,object,{a:{x:0,y:0},b:{x:0,y:200}});
+  assert.deepEqual(current.commands.find(([name])=>name==='rotate'),['rotate',Math.PI/2]);
+  assert.deepEqual(current.commands.find(([name])=>name==='drawImage').slice(2),[-100,-60,200,120]);
+  const vortex=capture();art.drawEnvironmentalArt(vortex.ctx,{candidate:'lake-vortex',x:50,y:70,config:{radius:180}});
+  assert.deepEqual(vortex.commands.find(([name])=>name==='drawImage').slice(2),[-130,-110,360,360]);
   const fallback=capture();art.drawRevisedLandmark(fallback.ctx,{candidate:'forest-tree'});
   assert.equal(fallback.commands.some(([name])=>name==='drawImage'),false);
  }finally{

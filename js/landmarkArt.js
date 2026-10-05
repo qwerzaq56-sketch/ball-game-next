@@ -1,11 +1,13 @@
 // Approved T3-r2: healthy landmarks persist; readiness only changes transferable leaves/petals.
 // Geometry is presentation-only, in screen pixels. No gameplay state or randomness is read/write.
 const landmarkImages=new Map();
+const batchIds=['grass-garland','grass-wind-stack','forest-berry-grove','lake-garland','lake-current','lake-vortex','desert-obelisk','volcano-obsidian-stack','volcano-vent-cycle'];
 let forestLoading=null;
 export function loadLandmarkImages(){
  if(forestLoading)return forestLoading;
  if(typeof document==='undefined'||typeof Image==='undefined')return Promise.resolve(false);
  forestLoading=Promise.all([
+  ...batchIds.map(id=>[id,`../assets/art-batches/scene-coherent-v1/${id}/asset.png`]),
   ['forest-tree','../assets/art-packs/forest-raster-v1/guardian-002-extracted.png'],
   ['snow-shelter','../assets/art-batches/scene-coherent-v1/snow-shelter/asset.png'],
   ['desert-oasis','../assets/art-batches/scene-coherent-v1/desert-oasis/asset.png'],
@@ -28,13 +30,14 @@ export function loadLandmarkImages(){
 }
 export function drawRevisedLandmark(ctx,o,ready=true){
  const id=o.candidate;
- if(!['forest-tree','snow-flowers','snow-shelter','desert-oasis'].includes(id))return false;
+ if(![...batchIds,'forest-tree','snow-flowers','snow-shelter','desert-oasis'].includes(id))return false;
  loadLandmarkImages();
  const image=landmarkImages.get(id==='snow-flowers'?id+':'+(ready?'ready':'post'):id);
  // Continuous shelters keep the same healthy body; benefit effects are drawn separately.
- if(image&&['snow-shelter','desert-oasis','snow-flowers'].includes(id)){
+ if(image&&id!=='forest-tree'){
   ctx.drawImage(image,-35,-35,70,70);return true;
  }
+ if(batchIds.includes(id))return false;
  const oval=(x,y,rx,ry,color)=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();};
  const path=(points,color)=>{ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=color;ctx.fill();};
  if(id==='forest-tree'){
@@ -68,4 +71,21 @@ export function drawRevisedLandmark(ctx,o,ready=true){
   for(const [x,y]of [[3,-16],[17,-27],[33,-17]])path([[19,-11],[x,y],[x+3,y+7]],'#59834f');
  }
  return true;
+}
+
+// Water overlays follow geometry; only unlit water patterns rotate, never lit landmarks.
+export function drawEnvironmentalArt(ctx,o,{a,b,active=true}={}){
+ loadLandmarkImages();const image=landmarkImages.get(o.candidate);if(!image)return false;
+ ctx.save();
+ if(o.candidate==='lake-current'&&a&&b){
+  const length=Math.hypot(b.x-a.x,b.y-a.y);
+  ctx.translate((a.x+b.x)/2,(a.y+b.y)/2);ctx.rotate(Math.atan2(b.y-a.y,b.x-a.x));
+  ctx.drawImage(image,-length/2,-o.width/2,length,o.width);
+ }else if(o.candidate==='lake-vortex'){
+  const r=o.config.radius;ctx.drawImage(image,o.x-r,o.y-r,r*2,r*2);
+ }else if(o.candidate==='volcano-vent-cycle'){
+  ctx.globalAlpha*=active?1:.3;const r=70*(o.visualScale??1);
+  ctx.drawImage(image,o.x-r,o.y-r,r*2,r*2);
+ }else{ctx.restore();return false;}
+ ctx.restore();return true;
 }
