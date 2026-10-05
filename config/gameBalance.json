@@ -108,7 +108,7 @@
     "resistancePerSize": 0.02,
     "baseMaintainDistance": 30,
     "maintainDistancePerSize": 0.5,
-    "maxAbsorptionSpeed": 5,
+    "maxAbsorptionSpeed": 4.2,
     "pullForce": 1.2,
     "healthCostProgressFraction": 1,
     "successHealthRefundFraction": 1,
