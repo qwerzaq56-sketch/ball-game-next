@@ -1,0 +1,13 @@
+{
+  "lastReleaseAtUtc": "2026-10-05T21:16:00Z",
+  "lastReleaseAtKst": "2026-10-06 06:16",
+  "nextMilestoneTargetUtc": "2026-10-05T23:16:00Z",
+  "deadlineUtc": "2026-10-06T04:00:00Z",
+  "tag": "art-20261006-canopy-01",
+  "commit": "b85e221d3f9fe02eefe00a4abdbd7af55e3247ea",
+  "releaseUrl": "https://github.com/qwerzaq56-sketch/ball-game-next/releases/tag/art-20261006-canopy-01",
+  "playUrl": "https://raw.githack.com/qwerzaq56-sketch/ball-game-next/b85e221d3f9fe02eefe00a4abdbd7af55e3247ea/index.html",
+  "pages": "main pushed, live release.json not yet confirmed",
+  "next": "Character resources and common combat/state effect resources, then render integration and 6-biome moving readability checks",
+  "publicationMethod": "git push plus existing authenticated GitHub browser; gh CLI unauthenticated, credential extraction rejected and must not retry"
+}
