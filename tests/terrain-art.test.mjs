@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {TerrainArt,terrainVariant,forestDecoration} from '../js/terrainArt.js';
+import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant} from '../js/terrainArt.js';
 import {resetRandom,random} from '../js/random.js';
 test('R-VIS-006 terrain variant remains stable for a 2x2 block without gameplay RNG',()=>{
  resetRandom(34);const expected=random('world');resetRandom(34);
@@ -40,4 +40,13 @@ test('forest decorations stay within their cell, vary appearance and leave gamep
  }
  assert.equal(variants.size,4);assert(occupied/total>.15&&occupied/total<.25);
  assert.equal(random('world'),expected);
+});
+test('forest ground keeps one image orientation across every 800-world block',()=>{
+ for(const x of [-800,0,800,1600])for(const y of [-800,0,800,1600]){
+  const v=forestGroundVariant(x,y);assert(v>=0&&v<3);
+  for(const dx of [0,200,400,600])for(const dy of [0,200,400,600])assert.equal(forestGroundVariant(x+dx,y+dy),v);
+ }
+ const art=new TerrainArt(),textures=[{width:800},{width:800},{width:800}];art.tiles.set('forest',textures);art.forestRaster=true;
+ assert.equal(art.texture('forest',600,600),textures[forestGroundVariant(600,600)]);
+ art.forestRaster=false;assert.equal(art.texture('forest',600,600),textures[terrainVariant(600,600)]);
 });

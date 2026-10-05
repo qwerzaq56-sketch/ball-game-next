@@ -1,5 +1,6 @@
 // R-VIS-001: presentation-only SVG cache; no gameplay RNG, classification or physics.
 export function terrainVariant(x,y){return ((Math.imul(Math.floor(x/400),73856093)^Math.imul(Math.floor(y/400),19349663))>>>0)%3;}
+export function forestGroundVariant(x,y){return ((Math.imul(Math.floor(x/800),73856093)^Math.imul(Math.floor(y/800),19349663))>>>0)%3;}
 const biomeKey=id=>id==='grassland'?'grass':id;
 const modulo=(x,n)=>(x%n+n)%n;
 export function forestDecoration(x,y){
@@ -27,10 +28,12 @@ export class TerrainArt {
    // Approved image-asset pilot. Optional loading keeps the original vector pack usable.
    try{
     const pack=new URL('../assets/art-packs/forest-raster-v1/',import.meta.url);
-    const ground=new Image(),tree=new Image();ground.src=new URL('ground-001.png',pack).href;tree.src=new URL('tree-001.png',pack).href;
+    const ground=new Image(),tree=new Image();ground.src=new URL('ground-002.png',pack).href;tree.src=new URL('tree-001.png',pack).href;
     await Promise.all([ground.decode(),tree.decode()]);
-    const c=document.createElement('canvas');c.width=c.height=800;c.getContext('2d').drawImage(ground,0,0,800,800);
-    this.tiles.set('forest',[c,c,c]);
+    this.tiles.set('forest',Array.from({length:3},(_,v)=>{
+     const c=document.createElement('canvas');c.width=c.height=800;const ctx=c.getContext('2d');
+     ctx.translate(v&1?800:0,v&2?800:0);ctx.scale(v&1?-1:1,v&2?-1:1);ctx.drawImage(ground,0,0,800,800);return c;
+    }));this.forestRaster=true;
     this.forestTrees=Array.from({length:4},(_,v)=>{
      const tc=document.createElement('canvas');tc.width=tc.height=256;const ctx=tc.getContext('2d');
      ctx.translate(v&1?256:0,v&2?256:0);ctx.scale(v&1?-1:1,v&2?-1:1);ctx.drawImage(tree,0,0,256,256);return tc;
@@ -39,14 +42,17 @@ export class TerrainArt {
    this.ready=['grass','forest','lake','snow','volcano','desert'].every(id=>this.tiles.has(id));
   }catch(error){this.error=String(error);this.ready=false;this.tiles.clear();this.masks.clear();this.layers.clear();}
  }
- texture(id,x,y){return this.tiles.get(biomeKey(id))?.[terrainVariant(x,y)];}
+ variant(id,x,y){return id==='forest'&&this.forestRaster?forestGroundVariant(x,y):terrainVariant(x,y);}
+ texture(id,x,y){return this.tiles.get(biomeKey(id))?.[this.variant(id,x,y)];}
  layer(id,x,y,sx,sy,direction){
-  const key=`${id}:${terrainVariant(x,y)}:${sx}:${sy}:${direction}`;
-  if(this.layers.has(key))return this.layers.get(key);
   const texture=this.texture(id,x,y),mask=this.masks.get(direction);if(!texture||!mask)return null;
+  // Cache the actual neighbor crop, including its 800-world raster phase.
+  const tx=modulo(x,texture.width||400),ty=modulo(y,texture.height||400);
+  const key=`${id}:${this.variant(id,x,y)}:${tx}:${ty}:${direction}`;
+  if(this.layers.has(key))return this.layers.get(key);
   const c=document.createElement('canvas');c.width=c.height=200;const ctx=c.getContext('2d');
   // Meet at a shared 50/50 mixture instead of swapping both colors at the seam.
-  ctx.globalAlpha=.5;ctx.drawImage(texture,modulo(x,texture.width||400),modulo(y,texture.height||400),200,200,0,0,200,200);ctx.globalAlpha=1;
+  ctx.globalAlpha=.5;ctx.drawImage(texture,tx,ty,200,200,0,0,200,200);ctx.globalAlpha=1;
   ctx.globalCompositeOperation='destination-in';ctx.drawImage(mask,0,0,200,200);
   if(this.layers.size>=96)this.layers.delete(this.layers.keys().next().value);
   this.layers.set(key,c);return c;
