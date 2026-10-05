@@ -6,7 +6,8 @@
 import {Game} from '../js/game.js';import {AIEntity} from '../js/ai.js';
 const balance=await (await fetch('../config/gameBalance.json')).json(),scenes=[];
 let zoom=.5,enabled=true;
-for(const id of ['grassland','forest','lake','snow','volcano','desert']){
+const onlyBiome=new URLSearchParams(location.search).get('biome');
+for(const id of ['grassland','forest','lake','snow','volcano','desert'].filter(id=>!onlyBiome||id===onlyBiome)){
  const section=document.createElement('section');section.innerHTML=`<h2>${id}</h2><canvas width="1280" height="720"></canvas>`;document.querySelector('main').append(section);
  const canvas=section.querySelector('canvas'),input={keys:new Set(),mouseX:1000,mouseY:360,mouseDown:false,consumeDodge:()=>false},ui={showUnlock(){},showDefeatMessage(){},preferences:{names:false}};
  const g=new Game(structuredClone(balance),canvas,input,ui,{seed:44});
@@ -20,7 +21,8 @@ for(const id of ['grassland','forest','lake','snow','volcano','desert']){
  input.mouseDown=true;g.player.attackHoldProgress=.6;g.biomeObjects.sync();
  await g.biomes.terrainArt.loading;scenes.push(g);
 }
-const render=()=>{for(const g of scenes){g.camera.zoom=zoom;g.biomes.terrainArt.setEnabled(enabled);g.render();}document.querySelector('#state').textContent=`${scenes.every(g=>g.biomes.terrainArt.ready)?'SVG 로딩 완료':'단색 폴백'} · 배율 ${zoom} · 아트 ${enabled?'ON':'OFF'}`;};
+const render=()=>{for(const g of scenes){g.camera.zoom=zoom;g.biomes.terrainArt.setEnabled(enabled);g.render();}document.querySelector('#state').textContent=`${scenes.every(g=>g.biomes.terrainArt.ready)?'아트 로딩 완료':'단색 폴백'} · 배율 ${zoom} · 아트 ${enabled?'ON':'OFF'}`;};
 document.querySelector('#attack-state').onclick=()=>{for(const g of scenes)g.player.attackStack=g.player.attackStack?0:1;render();};
 document.querySelector('#zoom').onclick=()=>{zoom=zoom===.5?1:.5;render();};document.querySelector('#art').onclick=()=>{enabled=!enabled;render();};render();
 </script></html>
+

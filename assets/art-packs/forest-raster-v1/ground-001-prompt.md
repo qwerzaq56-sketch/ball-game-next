@@ -1,0 +1,6 @@
+# Actual image asset · ground-001
+
+Reference: planning/art-concepts/concept-002-vector.png
+User approved pilot execution. Generated with built-in image_gen; original retained.
+
+Use case: stylized-concept. Asset type: actual seamless repeating ground texture for top-down 2D ball game, square full bleed, not a screenshot. Reference image: copy the visual language of the left forest panel: matte layered flat vector-painterly shapes, moss green open ground, irregular overlapping patches, a few readable large fern/leaf tufts and small angular grey stones. Create ONLY the forest floor; remove all trees, water, balls, characters, food, UI, text, circles, fire. Low contrast and mostly open moss ground so bright colored balls remain readable. Plants must be chunky recognizable foliage rather than speckles. Soft olive dark forest greens, roughly #35502a to #4d683b; restrained shadow shapes, no gloss, no fine noise. Orthographic straight overhead. Seamless edge-to-edge repeating texture with natural distribution, no border, no margins, no grid or obvious central focal point, identical light and color at all edges. This will cover 800 world units, reused as game ground. Preserve the reference style as closely as possible.

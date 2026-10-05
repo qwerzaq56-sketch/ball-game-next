@@ -1,0 +1,16 @@
+{
+  "engine": "vtracer 0.6.15",
+  "seconds": 0.42974129999856814,
+  "pngBytes": 1300743,
+  "svgBytes": 389054,
+  "paths": 2602,
+  "pngSize": [
+    1254,
+    1254
+  ],
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "selectedRuntime": "PNG; SVG comparison only pending visual review"
+}
