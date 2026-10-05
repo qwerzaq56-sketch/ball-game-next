@@ -1,0 +1,85 @@
+{
+  "method": "Exact source pixel crop; no repaint/rescale/color edit",
+  "items": [
+    {
+      "id": "canopy-crop-001",
+      "source": "user-gameplay-forest-001.png",
+      "sourceSize": [
+        458,
+        559
+      ],
+      "cropPixels": [
+        18,
+        14,
+        440,
+        140
+      ],
+      "path": "canopy-crop-001.png",
+      "sourceSha256": "c0ed49947e6e66a2e016243279625d110ef5d44013a3c89e281d6896884f995e"
+    },
+    {
+      "id": "edge-crop-001",
+      "source": "user-gameplay-forest-001.png",
+      "sourceSize": [
+        458,
+        559
+      ],
+      "cropPixels": [
+        220,
+        34,
+        440,
+        240
+      ],
+      "path": "edge-crop-001.png",
+      "sourceSha256": "c0ed49947e6e66a2e016243279625d110ef5d44013a3c89e281d6896884f995e"
+    },
+    {
+      "id": "understory-crop-001",
+      "source": "user-gameplay-forest-001.png",
+      "sourceSize": [
+        458,
+        559
+      ],
+      "cropPixels": [
+        9,
+        291,
+        206,
+        542
+      ],
+      "path": "understory-crop-001.png",
+      "sourceSha256": "c0ed49947e6e66a2e016243279625d110ef5d44013a3c89e281d6896884f995e"
+    },
+    {
+      "id": "scene-crop-001",
+      "source": "user-gameplay-forest-001.png",
+      "sourceSize": [
+        458,
+        559
+      ],
+      "cropPixels": [
+        21,
+        14,
+        440,
+        545
+      ],
+      "path": "scene-crop-001.png",
+      "sourceSha256": "c0ed49947e6e66a2e016243279625d110ef5d44013a3c89e281d6896884f995e"
+    },
+    {
+      "id": "berry-crop-001",
+      "source": "user-gameplay-forest-001.png",
+      "sourceSize": [
+        458,
+        559
+      ],
+      "cropPixels": [
+        12,
+        218,
+        112,
+        334
+      ],
+      "path": "berry-crop-001.png",
+      "sourceSha256": "c0ed49947e6e66a2e016243279625d110ef5d44013a3c89e281d6896884f995e"
+    }
+  ]
+}

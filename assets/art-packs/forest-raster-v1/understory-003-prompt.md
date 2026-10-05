@@ -1,0 +1,5 @@
+Source: exec-2cf3d079-b925-40ca-b26c-192d9e7a6aed.png
+References: F:/GPT/ball-game/ball-game-next-art/assets/art-packs/forest-raster-v1/references/canopy-crop-001.png, F:/GPT/ball-game/ball-game-next-art/assets/art-packs/forest-raster-v1/references/scene-crop-001.png
+Exact crop coordinates: references/crop-manifest.json
+
+Paint a SQUARE FULL-BLEED OPAQUE low forest floor texture in EXACT style and muted palette of these approved gameplay painting crops. Every edge and corner is painted moss ground. No outside background, NO checkerboard, no transparency, no isolated object, no sprite padding. Mostly quiet moss-green ground with subtle leaf litter and tiny low clover plants, shallow teal shaded mottling. NO berries, NO red dots, NO standalone round bush clumps, NO tree crowns, NO large fern rosettes, NO characters or UI. Diffuse soft light from upper left, near-overhead slightly oblique painted vector-like 2D gameplay. This is noninteractive transitional ground. Tile repeats seamlessly horizontally and vertically; small plants considerably smaller than tree crowns. The scene crop is context; ignore all colored balls and red berries.

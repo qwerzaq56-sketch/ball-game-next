@@ -57,8 +57,14 @@ export function forestLayout(x,y){
  return {density,kind:nearest<=1?'clearing':distance<=26?'path':nearest<1.65||distance<120?'transition':'shrubs'};
 }
 export function forestDensity(x,y){return forestLayout(x,y).density;}
+// Smooth deterministic variation prevents different tiles from making block seams.
+export function forestVegetationWeights(x,y){
+ const tau=Math.PI*2,a=tau*modulo(x,8000)/2000+.65*Math.sin(tau*modulo(y,8000)/1600);
+ const weights=[0,1,2].map(i=>Math.pow(1+Math.cos(a+i*tau/3),10)),sum=weights.reduce((a,b)=>a+b,0);
+ return weights.map(w=>w/sum);
+}
 export class TerrainArt {
- constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();this.blendMasks=new Map();this.rasterBiomes=new Set();this.forestChunks=new Map();
+ constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();this.blendMasks=new Map();this.rasterBiomes=new Set();this.forestChunks=new Map();this.objectGrounds=new Map();
   if(typeof document!=='undefined'&&typeof Image!=='undefined')this.loading=this.load();
  }
  setEnabled(enabled){this.enabled=!!enabled;}
@@ -89,10 +95,14 @@ export class TerrainArt {
     }));
    }catch(error){this.imagePackError=String(error);}
    try{
-    const canopy=new Image();canopy.src=new URL('../assets/art-packs/forest-raster-v1/canopy-001.png',import.meta.url).href;await canopy.decode();
-    this.forestUnderstory=this.tiles.get('forest')?.[0];const cached=periodicForestGround(canopy,800,60,'saturate(0.90) contrast(0.90) brightness(0.96)');
-    this.tiles.set('forest',[cached,cached,cached]);this.forestCanopy=true;
-    const edge=new Image();edge.src=new URL('../assets/art-packs/forest-raster-v1/edge-001.png',import.meta.url).href;await edge.decode();this.forestEdge=edge;
+    const pack=new URL('../assets/art-packs/forest-raster-v1/',import.meta.url),variants=await Promise.all([7,8,9].map(async n=>{
+     let image=new Image();image.src=new URL(`canopy-${String(n).padStart(3,'0')}.png`,pack).href;
+     try{await image.decode();}catch(error){this.canopyVariantError=String(error);image=new Image();image.src=new URL('canopy-001.png',pack).href;await image.decode();}
+     return periodicForestGround(image,800,60,'saturate(0.90) contrast(0.90) brightness(0.96)');
+    }));
+    this.forestUnderstory=this.tiles.get('forest')?.[0];this.tiles.set('forest',variants);this.forestCanopy=true;
+    try{const low=new Image();low.src=new URL('understory-003.png',pack).href;await low.decode();this.forestUnderstory=periodicForestGround(low,800,60,'saturate(0.90) contrast(0.90) brightness(0.96)');}catch(error){this.understoryPackError=String(error);}
+    const edge=new Image();edge.src=new URL('edge-003.png',pack).href;await edge.decode();this.forestEdge=edge;
    }catch(error){this.canopyPackError=String(error);}
    try{this.forestDecals=await Promise.all([1,2,3].map(async n=>{const i=new Image();i.src=new URL(`../assets/art-packs/forest-raster-v1/decal-${String(n).padStart(3,'0')}.svg`,import.meta.url).href;await i.decode();return i;}));}catch(error){this.decalPackError=String(error);}
    // Each regional image is optional independently. Preserve loaded SVGs on failure.
@@ -120,15 +130,29 @@ export class TerrainArt {
  const bx=Math.floor(modulo(x,8000)/800)*800,by=Math.floor(modulo(y,8000)/800)*800,key=`${bx}:${by}`;
  if(this.forestChunks.has(key))return this.forestChunks.get(key);
  const c=document.createElement('canvas');c.width=c.height=800;const ctx=c.getContext('2d');ctx.drawImage(this.forestFloor,0,0);
- const mask=document.createElement('canvas');mask.width=mask.height=80;const mc=mask.getContext('2d'),pixels=mc.createImageData(80,80);
- for(let py=0;py<80;py++)for(let px=0;px<80;px++){const n=(py*80+px)*4;pixels.data[n]=pixels.data[n+1]=pixels.data[n+2]=255;pixels.data[n+3]=Math.round(255*forestDensity(bx+(px+.5)*10,by+(py+.5)*10));}
+ const mask=document.createElement('canvas');mask.width=mask.height=80;const mc=mask.getContext('2d'),pixels=mc.createImageData(80,80),variantWeights=this.forestCanopy?new Float32Array(80*80*3):null;
+ for(let py=0;py<80;py++)for(let px=0;px<80;px++){
+  const n=(py*80+px)*4,x=bx+(px+.5)*10,y=by+(py+.5)*10;
+  pixels.data[n]=pixels.data[n+1]=pixels.data[n+2]=255;pixels.data[n+3]=Math.round(255*forestDensity(x,y));
+  if(variantWeights)variantWeights.set(forestVegetationWeights(x,y),(py*80+px)*3);
+ }
  if(this.forestUnderstory){
   const edgeMask=document.createElement('canvas');edgeMask.width=edgeMask.height=80;const em=edgeMask.getContext('2d'),ep=em.createImageData(80,80);
   for(let i=0;i<80*80;i++){const density=pixels.data[i*4+3]/255;ep.data[i*4]=ep.data[i*4+1]=ep.data[i*4+2]=255;ep.data[i*4+3]=Math.round(255*4*density*(1-density)*.7);}
   em.putImageData(ep,0,0);const under=document.createElement('canvas');under.width=under.height=800;const uc=under.getContext('2d');uc.drawImage(edgeMask,0,0,800,800);uc.globalCompositeOperation='source-in';uc.drawImage(this.forestUnderstory,0,0);ctx.drawImage(under,0,0);
  }
- mc.putImageData(pixels,0,0);const foliage=document.createElement('canvas');foliage.width=foliage.height=800;const fc=foliage.getContext('2d');fc.drawImage(mask,0,0,800,800);fc.globalCompositeOperation='source-in';fc.drawImage(dense,0,0);ctx.drawImage(foliage,0,0);
- if(this.forestChunks.size>=12)this.forestChunks.delete(this.forestChunks.keys().next().value);this.forestChunks.set(key,c);return c;
+ const canopy=document.createElement('canvas');canopy.width=canopy.height=800;const cc=canopy.getContext('2d');
+ const variants=this.forestCanopy?this.tiles.get('forest'):[dense];
+ for(let v=0;v<variants.length;v++){
+  const cm=document.createElement('canvas');cm.width=cm.height=80;const cmc=cm.getContext('2d'),cp=cmc.createImageData(80,80);
+  for(let py=0;py<80;py++)for(let px=0;px<80;px++){
+   const n=(py*80+px)*4,w=variants.length===1?1:variantWeights[(py*80+px)*3+v];
+   cp.data[n]=cp.data[n+1]=cp.data[n+2]=255;cp.data[n+3]=Math.round(pixels.data[n+3]*w);
+  }
+  cmc.putImageData(cp,0,0);const foliage=document.createElement('canvas');foliage.width=foliage.height=800;const fc=foliage.getContext('2d');fc.drawImage(cm,0,0,800,800);fc.globalCompositeOperation='source-in';fc.drawImage(variants[v],0,0);cc.globalCompositeOperation='lighter';cc.drawImage(foliage,0,0);
+ }
+ ctx.drawImage(canopy,0,0);
+ if(this.forestChunks.size>=24)this.forestChunks.delete(this.forestChunks.keys().next().value);this.forestChunks.set(key,c);return c;
  }
  layer(id,x,y,direction){
   const texture=this.texture(id,x,y),mask=this.masks.get(direction);if(!texture||!mask)return null;
@@ -144,10 +168,31 @@ export class TerrainArt {
   this.layers.set(key,c);return c;
  }
  drawForestDetails(ctx,x,y){
-  const d=forestDecoration(x,y);if(d&&this.forestTrees&&[[-1,-1],[1,-1],[-1,1],[1,1]].every(([dx,dy])=>forestDensity(d.x+dx*d.size/2,d.y+dy*d.size/2)>.75))ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);
-  const edgeDensity=forestDensity(x+100,y+100);if(this.forestEdge&&edgeDensity>.35&&edgeDensity<.75)ctx.drawImage(this.forestEdge,x+45,y+45,110,110);
+  // Full canopy tiles already contain complete crowns. Old standalone trees are
+  // fallback-only, avoiding a second, differently painted canopy on top.
+  const d=forestDecoration(x,y);if(d&&!this.forestCanopy&&this.forestTrees&&[[-1,-1],[1,-1],[-1,1],[1,1]].every(([dx,dy])=>forestDensity(d.x+dx*d.size/2,d.y+dy*d.size/2)>.75))ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);
+  const edgeDensity=forestDensity(x+100,y+100);if(this.forestEdge&&edgeDensity>.35&&edgeDensity<.75){const e=this.forestEdge,s=110/Math.max(e.width,e.height),w=e.width*s,h=e.height*s;ctx.drawImage(e,x+100-w/2,y+100-h/2,w,h);}
   const h=(Math.imul(x/200,73856093)^Math.imul(y/200,19349663))>>>0;
   if(this.forestDecals&&h%3===0){const px=x+35+(h>>>8)%130,py=y+35+(h>>>16)%130,size=18+(h>>>24)%12;ctx.drawImage(this.forestDecals[(h>>>5)%3],px-size/2,py-size/2,size,size);}
+ }
+ // Quiet ground around functional vegetation separates it from passive canopy.
+ // The feathered clearing is not a range indicator; callers draw the real radius.
+ drawObjectGround(ctx,o){
+  const footprint={'forest-berry-grove':[176,136],'forest-tree':[230,194]}[o.candidate];
+  if(!this.enabled||this.objectGroundEnabled===false||!this.forestFloor||!footprint||typeof document==='undefined')return false;
+  const scale=o.visualScale??1,w=Math.ceil(footprint[0]*scale),h=Math.ceil(footprint[1]*scale);
+  const floor=this.forestFloor,sx=modulo(o.x-w/2,floor.width),sy=modulo(o.y-h/2,floor.height),key=`${o.candidate}:${w}:${h}:${sx}:${sy}`;
+  let patch=this.objectGrounds.get(key);
+  if(!patch){
+   patch=document.createElement('canvas');patch.width=w;patch.height=h;const pc=patch.getContext('2d');
+   for(const dx of [0,floor.width])for(const dy of [0,floor.height])pc.drawImage(floor,dx-sx,dy-sy);
+   const mask=document.createElement('canvas');mask.width=w;mask.height=h;const mc=mask.getContext('2d');
+   mc.translate(w/2,h/2);mc.scale(w/2,h/2);const g=mc.createRadialGradient(0,0,0,0,0,1);
+   for(const [stop,alpha]of [[0,.97],[.55,.97],[.8,.65],[1,0]])g.addColorStop(stop,`rgba(255,255,255,${alpha})`);
+   mc.fillStyle=g;mc.fillRect(-1,-1,2,2);pc.globalCompositeOperation='destination-in';pc.drawImage(mask,0,0);
+   if(this.objectGrounds.size>=40)this.objectGrounds.delete(this.objectGrounds.keys().next().value);this.objectGrounds.set(key,patch);
+  }
+  ctx.drawImage(patch,o.x-w/2,o.y-h/2);return true;
  }
  drawTile(ctx,tile,biomes){
   if(!this.enabled||!this.ready)return false;

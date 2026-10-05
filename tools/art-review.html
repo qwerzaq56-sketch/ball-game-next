@@ -2,10 +2,10 @@
 <style>body{margin:18px;background:#0b1020;color:#e2e8f0;font:15px system-ui}canvas{width:100%;max-width:1280px;border:1px solid #334155}button{padding:9px;margin:5px}h2{font-size:18px}</style>
 <h1>실제 Game.render · 6지역 통제 장면</h1><p>실제 게임 렌더러로 고정 개체를 배치한 검증 화면. 자연 플레이 결과는 별도 확인.</p>
 <button id="zoom">배율 0.5 / 1.0</button><button id="art">지형 아트 ON / OFF</button><p id="state">자산 로딩 중</p><main></main>
-<button id="motion">이동 분리 검증 시작 / 정지</button><button id="attack-state">공격 가능 / 불가 비교</button><script type="module">
-import {Game} from '../js/game.js?forest-canopy-01';import {AIEntity} from '../js/ai.js';
-import {loadLandmarkImages} from '../js/landmarkArt.js?forest-canopy-01';await loadLandmarkImages();
-import {loadEnvironmentImages} from '../js/environmentArt.js?forest-canopy-01';await loadEnvironmentImages();
+<button id="motion">이동 분리 검증 시작 / 정지</button><button id="attack-state">공격 가능 / 불가 비교</button><button id="object-ground">기능 식생 주변 바닥 ON / OFF</button><script type="module">
+import {Game} from '../js/game.js?forest-composition-01';import {AIEntity} from '../js/ai.js';
+import {loadLandmarkImages} from '../js/landmarkArt.js?forest-composition-01';await loadLandmarkImages();
+import {loadEnvironmentImages} from '../js/environmentArt.js?forest-composition-01';await loadEnvironmentImages();
 const balance=await (await fetch('../config/gameBalance.json')).json(),scenes=[];
 let zoom=.5,enabled=true;
 const onlyBiome=new URLSearchParams(location.search).get('biome');
@@ -21,10 +21,16 @@ for(const id of ['grassland','forest','lake','snow','volcano','desert'].filter(i
  }
  g.entities.push(new AIEntity({x:label.x-90,y:label.y,color:g.player.color,colorHex:g.player.colorHex,balance:g.balance,startSize:30}));
  input.mouseDown=true;g.player.attackHoldProgress=.6;g.biomeObjects.sync();
+ if(id==='forest'&&new URLSearchParams(location.search).has('objects')){
+  g.biomeObjects.objects=['forest-berry-grove','forest-tree'].map(id=>g.biomeObjects.objects.find(o=>o.candidate===id)).filter(Boolean);
+  for(const [i,o]of g.biomeObjects.objects.entries()){o.x=label.x-180+i*360;o.y=label.y-70;}
+  section.querySelector('h2').textContent='forest · 열매 덤불/수호 고목은 기능 객체, 열매 없는 수관은 장식';
+ }
  await g.biomes.terrainArt.loading;scenes.push(g);
 }
-const render=()=>{for(const g of scenes){g.camera.zoom=zoom;g.biomes.terrainArt.setEnabled(enabled);g.render();}document.querySelector('#state').textContent=`${scenes.every(g=>g.biomes.terrainArt.ready)?'아트 로딩 완료':'단색 폴백'} · 배율 ${zoom} · 아트 ${enabled?'ON':'OFF'}`;};
+const render=()=>{const frameStart=performance.now();for(const g of scenes){g.camera.zoom=zoom;g.biomes.terrainArt.setEnabled(enabled);g.render();}document.querySelector('#state').textContent=`${scenes.every(g=>g.biomes.terrainArt.ready)?'아트 로딩 완료':'단색 폴백'} · 배율 ${zoom} · 아트 ${enabled?'ON':'OFF'} · 샘플 렌더 ${(performance.now()-frameStart).toFixed(1)}ms`;};
 document.querySelector('#attack-state').onclick=()=>{for(const g of scenes)g.player.attackStack=g.player.attackStack?0:1;render();};
+document.querySelector('#object-ground').onclick=()=>{for(const g of scenes)g.biomes.terrainArt.objectGroundEnabled=g.biomes.terrainArt.objectGroundEnabled===false;render();};
 document.querySelector('#zoom').onclick=()=>{zoom=zoom===.5?1:.5;render();};document.querySelector('#art').onclick=()=>{enabled=!enabled;render();};render();
 let moving=false,start=0;
 const origins=scenes.map(g=>({g,positions:[g.player,...g.entities].map(e=>({e,x:e.x,y:e.y}))}));

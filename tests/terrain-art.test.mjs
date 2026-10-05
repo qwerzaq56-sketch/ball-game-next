@@ -1,8 +1,38 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights,forestDensity,forestLayout} from '../js/terrainArt.js';
+import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights,forestDensity,forestLayout,forestVegetationWeights} from '../js/terrainArt.js';
 import {resetRandom,random} from '../js/random.js';
+test('functional forest ground preserves gameplay, wraps with the floor and skips passive vegetation',()=>{
+ const art=new TerrainArt(),previous=globalThis.document,draws=[];
+ const context=()=>({drawImage(){},translate(){},scale(){},fillRect(){},createRadialGradient(){return {addColorStop(){}};}});
+ globalThis.document={createElement(){return {getContext:context};}};
+ art.forestFloor={width:800,height:800};
+ const o={candidate:'forest-berry-grove',x:790,y:790,visualScale:1,config:{radius:78,cooldown:14}},before=JSON.stringify(o);
+ const ctx={drawImage(...args){draws.push(args);}};
+ resetRandom(82);const expected=random('world');resetRandom(82);
+ try{
+  assert.equal(art.drawObjectGround(ctx,o),true);assert.equal(art.objectGrounds.size,1);
+  assert.equal(art.drawObjectGround(ctx,{...o,x:o.x+8000,y:o.y-8000}),true);
+  assert.equal(draws[0][0],draws[1][0]);assert.equal(art.objectGrounds.size,1);
+  assert.equal(art.drawObjectGround(ctx,{...o,candidate:'passive-bush'}),false);
+  art.enabled=false;assert.equal(art.drawObjectGround(ctx,o),false);
+  assert.equal(random('world'),expected);assert.equal(JSON.stringify(o),before);
+ }finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+});
+test('missing canopy variant uses the previous canopy without disabling other forest assets',async()=>{
+ const old={document:globalThis.document,Image:globalThis.Image,fetch:globalThis.fetch},sources=[];
+ const manifest=JSON.parse(fs.readFileSync(new URL('../assets/terrain/manifest.json',import.meta.url)));
+ globalThis.document={createElement(){return {getContext(){return {drawImage(image){if(image.src)sources.push(image.src);}};}};}};
+ globalThis.Image=class{width=100;height=100;async decode(){if(this.src.endsWith('/canopy-007.png'))throw new Error('missing canopy fixture');}};
+ globalThis.fetch=async()=>({ok:true,json:async()=>manifest});
+ try{
+  const art=new TerrainArt();await art.loading;
+  assert.equal(art.ready,true);assert.equal(art.forestCanopy,true);assert.equal(art.tiles.get('forest').length,3);
+  assert.match(art.canopyVariantError,/missing canopy fixture/);
+  for(const file of ['canopy-001.png','canopy-008.png','canopy-009.png','understory-003.png'])assert(sources.some(src=>src.endsWith('/'+file)));
+ }finally{for(const [key,value]of Object.entries(old)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
+});
 test('R-VIS-006 terrain variant remains stable for a 2x2 block without gameplay RNG',()=>{
  resetRandom(34);const expected=random('world');resetRandom(34);
  for(const x of [-800,0,400,7600])for(const y of [-400,0,1200]){
@@ -133,4 +163,10 @@ test('forest layout keeps shrubs dominant and separates empty cores from transit
  const kinds={};let covered=0,total=0;
  for(let x=0;x<8000;x+=40)for(let y=0;y<8000;y+=40){const v=forestLayout(x,y);kinds[v.kind]=(kinds[v.kind]||0)+1;covered+=v.density>.75?1:0;total++;if(v.kind==='clearing'||v.kind==='path')assert.equal(v.density,0);}
  assert(covered/total>.75);for(const k of ['clearing','path','transition','shrubs'])assert(kinds[k]>0);
+});
+
+test('forest vegetation variants blend continuously without consuming gameplay RNG',()=>{
+ resetRandom(31);const expected=random('world');resetRandom(31);const seen=new Set();
+ for(let x=0;x<8000;x+=20){const w=forestVegetationWeights(x,500);assert(Math.abs(w.reduce((a,b)=>a+b,0)-1)<1e-12);assert(w.every(v=>v>=0&&v<=1));seen.add(w.indexOf(Math.max(...w)));for(let i=0;i<3;i++){assert(Math.abs(w[i]-forestVegetationWeights(x+8000,500)[i])<1e-10);assert(Math.abs(w[i]-forestVegetationWeights(x,8500)[i])<1e-10);}}
+ assert.equal(seen.size,3);assert.equal(random('world'),expected);
 });

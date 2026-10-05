@@ -1,0 +1,1 @@
+Experimental generation begun before user reiterated exact-crop workflow. Full scene references; preserved for comparison only, NOT runtime selection. Runtime replacements use cropped gameplay sources and canopy004/005/006, understory002, edge003.

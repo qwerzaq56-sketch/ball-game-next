@@ -1,5 +1,5 @@
 <!doctype html><meta charset="utf-8"><title>6지역 · 15쌍 경계 검증</title><style>body{margin:12px;background:#111b24;color:#d5e0e7;font:14px sans-serif}main{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}canvas{width:100%}h2{font-size:14px;margin:6px 0}</style><h1>6지역 · 15쌍 실제 지형 경계</h1><p id="status">로딩 중</p><main></main><script type="module">
-import {TerrainArt} from '../js/terrainArt.js?forest-canopy-01';const art=new TerrainArt();await art.loading;
+import {TerrainArt} from '../js/terrainArt.js?forest-composition-01';const art=new TerrainArt();await art.loading;
 const ids=['grassland','forest','lake','snow','volcano','desert'];let count=0;
 for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){
  const section=document.createElement('section'),title=document.createElement('h2'),canvas=document.createElement('canvas');title.textContent=ids[i]+' / '+ids[j];canvas.width=canvas.height=800;section.append(title,canvas);document.querySelector('main').append(section);

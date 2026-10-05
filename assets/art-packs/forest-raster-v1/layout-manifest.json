@@ -1,15 +1,10 @@
 {
-  "version": "forest-canopy-001",
+  "version": "forest-composition-001",
   "worldRepeat": 800,
   "logicalModule": 400,
   "layers": {
     "floor": "floor-002.png",
     "dense": "ground-005.png",
-    "tree": [
-      "tree-004.png",
-      "tree-005.png",
-      "tree-007.png"
-    ],
     "decals": [
       {
         "file": "decal-001.svg",
@@ -36,12 +31,31 @@
         "interactive": false
       }
     ],
-    "canopy": "canopy-001.png",
-    "understory": "ground-005.png: transition only",
-    "edge": "edge-001.png"
+    "canopy": [
+      "canopy-007.png",
+      "canopy-008.png",
+      "canopy-009.png"
+    ],
+    "understory": "understory-003.png: transition only",
+    "edge": "edge-003.png",
+    "treeFallbackOnly": [
+      "tree-004.png",
+      "tree-005.png",
+      "tree-007.png"
+    ],
+    "functionalBerry": {
+      "file": "berry-002.png",
+      "candidate": "forest-berry-grove",
+      "interactive": true,
+      "worldFootprint": [
+        132,
+        92
+      ],
+      "range": "existing config radius * object visualScale"
+    }
   },
-  "density": "forestLayout: shrub-dominant, empty clearing/path cores, sparse transition belts",
-  "notes": "Canopy-first woodland. Shared raster coverage 800 world; clearings/path cores empty. Prior fern-rich ground retained for transitional understory only.",
+  "density": "forestLayout: canopy-dominant, empty clearing/path cores, sparse transition belts",
+  "notes": "Exact-crop referenced canopy and ground. Common coverage 800 world. No rotating baked light. Previous standalone decorative trees only used if canopy pack unavailable. Coral berries reserved for actual functional objects.",
   "treePresentation": {
     "worldFootprint": [
       140,
@@ -54,6 +68,36 @@
     "references": [
       "planning/art-concepts/gameplay-regions-a-001.png: middle forest panel",
       "user-palette-reference-001.png: lower gameplay palette"
+    ]
+  },
+  "composition": {
+    "references": "references/crop-manifest.json",
+    "variation": "continuous normalized world-space weights, 8000 wrap",
+    "light": "diffuse upper-left, no rotation or mirror",
+    "canopyTone": "saturate(.90) contrast(.90) brightness(.96)",
+    "objectGround": "quiet same-phase floor under functional berry/tree; feathered ellipse; not an effect boundary",
+    "objectGroundFootprints": {
+      "forest-berry-grove": [
+        176,
+        136
+      ],
+      "forest-tree": [
+        230,
+        194
+      ]
+    },
+    "canopyChunkCacheLimit": 24,
+    "objectGroundCacheLimit": 40,
+    "semantics": {
+      "passive": "canopy, leaf litter, small clover; no berries or rewards",
+      "functional": "coherent isolated berry bush with coral fruit, real radius and actual spawned rewards"
+    },
+    "failedNotSelected": [
+      "canopy-004.png",
+      "canopy-005.png",
+      "canopy-006.png",
+      "understory-002.png",
+      "experiments/full-scene-variants/"
     ]
   }
 }
