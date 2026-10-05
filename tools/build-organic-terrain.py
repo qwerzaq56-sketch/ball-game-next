@@ -25,6 +25,23 @@ for index,(key,b) in enumerate(m['biomes'].items()):
    elif key=='desert':shapes.append(f'<path d="M{x-16} {y+3}q15 -9 31 -1 M{x-9} {y+8}q11 -5 21 -1" fill="none" stroke="{ink}" stroke-width="1.5" opacity=".45"/>')
    elif key=='snow':shapes.append(f'<path d="M{x-12} {y+4}q8 -10 23 -2" fill="none" stroke="{ink}" stroke-width="3" opacity=".3" stroke-linecap="round"/>')
    else:shapes.append(f'<path d="M{x-9} {y+6}l2 -11 9 -3 8 9 -6 9Z" fill="#342d2b" opacity=".45"/><path d="M{x-4} {y+2}l3 -5 5 2" fill="none" stroke="{ink}" opacity=".6"/>')
+  if key=='forest':
+   # Large layered forest silhouettes sit entirely in the ground layer, below combatants.
+   for n in range(3):
+    x,y=rng.randint(90,310),rng.randint(90,310)
+    r=rng.randint(40,65)
+    shapes.append(f'<ellipse cx="{x}" cy="{y+12}" rx="{r*1.12}" ry="{r*.65}" fill="#122e25" opacity=".58"/>')
+    for j in range(5):
+     a=j*math.tau/5; ex=x+math.cos(a)*r*1.25;ey=y+math.sin(a)*r*1.1
+     shapes.append(f'<path d="M{x} {y+5} Q{x+math.cos(a)*r*.4:.1f} {y+math.sin(a)*r*.5:.1f} {ex:.1f} {ey:.1f}" fill="none" stroke="#1b3328" stroke-width="3"/>')
+    for dx,dy,k,color in [(-r*.28,r*.04,.8,'#264b30'),(r*.3,-r*.05,.8,'#2f5935'),(0,-r*.3,.92,'#3f683b')]:
+     pts=[]
+     for j in range(14):
+      a=j*math.tau/14;radius=r*k*(.92 if j%2 else 1)
+      pts.append((x+dx+math.cos(a)*radius,y+dy+math.sin(a)*radius*.88))
+     d='M'+' L'.join(f'{px:.1f} {py:.1f}' for px,py in pts)+'Z'
+     shapes.append(f'<path d="{d}" fill="{color}"/>')
+    shapes.append(f'<path d="M{x-r*.4:.1f} {y-r*.65:.1f}Q{x:.1f} {y-r*.95:.1f} {x+r*.35:.1f} {y-r*.6:.1f}" fill="none" stroke="#517845" stroke-width="5" opacity=".4"/>')
   (root/file).write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400"><rect width="400" height="400" fill="{b["baseColor"]}"/>'+''.join(shapes)+'</svg>',encoding='utf-8')
 m['version']=2;m['status']='Integrated organic ground revision; concept fidelity work in progress'
 (root/'manifest.json').write_text(json.dumps(m,ensure_ascii=False,indent=2),encoding='utf-8')
