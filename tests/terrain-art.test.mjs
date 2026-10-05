@@ -38,7 +38,7 @@ test('forest decorations stay within their cell, vary appearance and leave gamep
   assert(d.x-d.size/2>=x&&d.x+d.size/2<=x+200);
   assert(d.y-d.size/2>=y&&d.y+d.size/2<=y+200);
  }
- assert.equal(variants.size,4);assert(occupied/total>.15&&occupied/total<.25);
+ assert.equal(variants.size,3);assert(occupied/total>.15&&occupied/total<.25);
  assert.equal(random('world'),expected);
 });
 test('forest ground keeps one image orientation across every 800-world block',()=>{
@@ -117,4 +117,14 @@ test('forest density is continuous across chunk edges and world wrap with clear 
  for(const p of [0,800,1600,7999]){assert(Math.abs(forestDensity(p,500)-forestDensity(p+8000,500))<1e-10);assert(Math.abs(forestDensity(300,p)-forestDensity(300,p+8000))<1e-10);}
  assert.equal(forestDensity(0,1000),0);
  for(let x=0;x<8000;x+=200){for(let y=0;y<8000;y+=200){const d=forestDensity(x,y);assert(d>=0&&d<=1);assert(Math.abs(d-forestDensity(x+.01,y))<.001);}}
+});
+
+test('tree variants load distinct sprites and one missing variant preserves the forest pack',async()=>{
+ const old={document:globalThis.document,Image:globalThis.Image,fetch:globalThis.fetch};
+ const manifest=JSON.parse(fs.readFileSync(new URL('../assets/terrain/manifest.json',import.meta.url)));
+ globalThis.document={createElement(){const canvas={};canvas.getContext=()=>({drawImage(image){canvas.source=image.src;}});return canvas;}};
+ globalThis.Image=class{async decode(){if(this.src.endsWith('tree-005.png'))throw new Error('missing variant');}};
+ globalThis.fetch=async()=>({ok:true,json:async()=>manifest});
+ try{const art=new TerrainArt();await art.loading;assert.equal(art.ready,true);assert.equal(art.forestRaster,true);assert.equal(art.forestTrees.length,3);assert.match(art.forestTrees[0].source,/tree-004.png$/);assert.match(art.forestTrees[1].source,/tree-003.png$/);assert.match(art.forestTrees[2].source,/tree-006.png$/);assert.match(art.treePackError,/missing variant/);}
+ finally{for(const [key,value]of Object.entries(old)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
 });

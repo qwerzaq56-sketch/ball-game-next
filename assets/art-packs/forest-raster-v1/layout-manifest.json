@@ -1,11 +1,15 @@
 {
-  "version": "forest-layout-001",
+  "version": "forest-trees-001",
   "worldRepeat": 800,
   "logicalModule": 400,
   "layers": {
     "floor": "floor-002.png",
     "dense": "ground-005.png",
-    "tree": "tree-003.png",
+    "tree": [
+      "tree-004.png",
+      "tree-005.png",
+      "tree-006.png"
+    ],
     "decals": [
       {
         "file": "decal-001.svg",
@@ -34,5 +38,15 @@
     ]
   },
   "density": "forestDensity(worldX,worldY), periodic at 8000",
-  "notes": "First compositing pass; dedicated grass/path/connectors not yet produced."
+  "notes": "First compositing pass; dedicated grass/path/connectors not yet produced.",
+  "treePresentation": {
+    "worldFootprint": [
+      140,
+      184
+    ],
+    "preserveAspectRatio": true,
+    "bakedLight": "upper-left, no rotations",
+    "cacheFilter": "saturate(0.86) contrast(0.88) brightness(0.94) blur(0.35px)",
+    "variantFallback": "tree-003.png"
+  }
 }

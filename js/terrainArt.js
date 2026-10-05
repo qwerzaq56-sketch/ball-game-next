@@ -14,7 +14,7 @@ export function forestDecoration(x,y){
  const h=(Math.imul(x/200,83492791)^Math.imul(y/200,19349663))>>>0;
  if(h%5!==0)return null;
  const size=140+(h>>>8)%45,margin=(200-size)/2;
- return {size,x:x+100+(((h>>>14)%101)/50-1)*margin,y:y+100+(((h>>>21)%101)/50-1)*margin,variant:(h>>>6)%4};
+ return {size,x:x+100+(((h>>>14)%101)/50-1)*margin,y:y+100+(((h>>>21)%101)/50-1)*margin,variant:(h>>>6)%3};
 }
 // Rendering cache only: crossfade overlapping edge samples without mirroring baked light.
 export function periodicForestGround(image,size=800,overlap=60){
@@ -69,10 +69,14 @@ export class TerrainArt {
     const ground=new Image(),tree=new Image(),floor=new Image();floor.src=new URL('floor-002.png',pack).href;ground.src=new URL('ground-005.png',pack).href;tree.src=new URL('tree-003.png',pack).href;
     await Promise.all([ground.decode(),tree.decode(),floor.decode()]);
     this.forestFloor=periodicForestGround(floor);const cachedGround=periodicForestGround(ground);this.tiles.set('forest',[cachedGround,cachedGround,cachedGround]);this.forestRaster=true;
-    this.forestTrees=Array.from({length:4},(_,v)=>{
+    this.forestTrees=await Promise.all([4,5,6].map(async n=>{
+     let sprite=tree;try{const candidate=new Image();candidate.src=new URL(`tree-${String(n).padStart(3,'0')}.png`,pack).href;await candidate.decode();sprite=candidate;}catch(error){this.treePackError=String(error);}
      const tc=document.createElement('canvas');tc.width=tc.height=256;const ctx=tc.getContext('2d');
-     ctx.drawImage(tree,0,0,256,256);return tc;
-    });
+     // Correct only this cached sprite, never apply a per-frame world filter.
+     ctx.filter='saturate(0.86) contrast(0.88) brightness(0.94) blur(0.35px)';
+     const width=sprite.width||256,height=sprite.height||256,scale=256/Math.max(width,height);
+     ctx.drawImage(sprite,(256-width*scale)/2,(256-height*scale)/2,width*scale,height*scale);return tc;
+    }));
    }catch(error){this.imagePackError=String(error);}
    try{this.forestDecals=await Promise.all([1,2,3].map(async n=>{const i=new Image();i.src=new URL(`../assets/art-packs/forest-raster-v1/decal-${String(n).padStart(3,'0')}.svg`,import.meta.url).href;await i.decode();return i;}));}catch(error){this.decalPackError=String(error);}
    // Each regional image is optional independently. Preserve loaded SVGs on failure.
