@@ -10,6 +10,7 @@ import { Autoplay } from './autoplay.js';
 import { RunMetrics } from './runMetrics.js';
 import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection,drawMatteBody } from './vectorArt.js';
 import {drawCharacterRasterBody} from './characterRasterArt.js';
+import {drawShieldState} from './shieldStateArt.js';
 import {drawEntityEffectRaster,drawEffectRaster} from './effectRasterArt.js?effects-direction-02';
 import {drawGrowthRasterTexture,drawAbsorptionRasterTexture} from './progressionRasterArt.js?effects-direction-02';
 import { Relics } from './relics.js';
@@ -1011,7 +1012,7 @@ export class Game {
     if((e.windStoneStacks??0)>0||(e.obsidianStacks??0)>0){ctx.save();ctx.fillStyle='#c4b5fd';ctx.font=`bold ${11/this.camera.zoom}px system-ui`;ctx.textAlign='center';ctx.fillText(`바람 ${e.windStoneStacks??0} · 흑요석 ${e.obsidianStacks??0}`,e.x,e.y+r+16/this.camera.zoom);ctx.restore();}
     if((e.companionCharmUntil??0)>this.gameTime){ctx.save();const shell=e.companionDecoration==='shell';ctx.strokeStyle=shell?'#fef3c7':'#f9a8d4';ctx.lineWidth=2/this.camera.zoom;for(let i=0;i<5;i++){const a=i*Math.PI*2/5,x=e.x+Math.cos(a)*(r+9/this.camera.zoom),y=e.y+Math.sin(a)*(r+9/this.camera.zoom);ctx.beginPath();if(shell){ctx.arc(x,y,6/this.camera.zoom,Math.PI,Math.PI*2);ctx.lineTo(x,y+3/this.camera.zoom);ctx.closePath();for(let j=-1;j<=1;j++){ctx.moveTo(x,y+3/this.camera.zoom);ctx.lineTo(x+j*4/this.camera.zoom,y-4/this.camera.zoom);}}else{for(let j=0;j<5;j++){const aa=j*Math.PI*2/5;ctx.moveTo(x+Math.cos(aa)*3/this.camera.zoom+2/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom);ctx.arc(x+Math.cos(aa)*3/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom,2/this.camera.zoom,0,Math.PI*2);}}ctx.stroke();}ctx.restore();}
     drawActionArt(ctx,e,this,r,this.camera.zoom);
-    if((e.shieldHp??0)>0){ctx.beginPath();ctx.arc(e.x,e.y,r+7/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#a5f3fc';ctx.lineWidth=3/this.camera.zoom;ctx.stroke();}
+    drawShieldState(ctx,e,r,this.camera.zoom,{rich:this.effectRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false});
     if(this.abilities.frostMarks.some(m=>m.target===e)){ctx.beginPath();ctx.arc(e.x,e.y,r+12/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#67e8f9';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([5/this.camera.zoom,4/this.camera.zoom]);ctx.stroke();ctx.setLineDash([]);}
     if((e.frostbiteRemaining??0)>0||(this.biomes.enabled&&this.biomes.regionAt(e)?.id==='lake')){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.fillStyle=(e.frostbiteRemaining??0)>0?'rgba(185,225,255,.42)':'rgba(25,110,230,.30)';ctx.fill();ctx.restore();}
     drawSpeciesMark(ctx,e,this.camera.zoom);
