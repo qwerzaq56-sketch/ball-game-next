@@ -95,3 +95,14 @@ test('regional raster failure leaves its SVG usable without blocking other regio
   try{art.drawTile({drawImage(){}},{x:400,y:600,region:{id:'grassland'}},{game:{balance:{world:{worldWidth:8000,worldHeight:8000}}},regionAt(p){return {id:p.x>=600?'desert':'grassland'};}});assert.deepEqual(crops,[[400,600],[400,600]]);}
   finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
  });
+
+test('revisiting a boundary layout at a different texture phase reuses its bounded alpha masks',()=>{
+ const art=new TerrainArt();art.ready=true;art.tiles.set('grass',Array.from({length:3},()=>({width:800,height:800})));art.tiles.set('desert',Array.from({length:3},()=>({width:800,height:800})));art.rasterBiomes=new Set(['grassland','desert']);
+ const previous=globalThis.document;let generated=0;
+ globalThis.document={createElement(){return {getContext(){return {createImageData(){generated++;return {data:new Uint8ClampedArray(200*200*4)};},putImageData(){},drawImage(){}};}};}};
+ try{
+  const biomes={game:{balance:{world:{worldWidth:8000,worldHeight:8000}}},regionAt(p){return {id:p.x>=600?'desert':'grassland'};}};
+  for(const y of [200,400,600])art.drawTile({drawImage(){}},{x:400,y,region:{id:'grassland'}},biomes);
+  assert.equal(generated,2);assert.equal(art.blendMasks.size,1);assert.equal(art.layers.size,3);
+ }finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+});

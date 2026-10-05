@@ -17,7 +17,7 @@ export function forestDecoration(x,y){
  return {size,x:x+100+(((h>>>14)%101)/50-1)*margin,y:y+100+(((h>>>21)%101)/50-1)*margin,variant:(h>>>6)%4};
 }
 export class TerrainArt {
- constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();this.rasterBiomes=new Set();
+ constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();this.blendMasks=new Map();this.rasterBiomes=new Set();
   if(typeof document!=='undefined'&&typeof Image!=='undefined')this.loading=this.load();
  }
  setEnabled(enabled){this.enabled=!!enabled;}
@@ -62,7 +62,7 @@ export class TerrainArt {
     }catch(error){this.rasterPackErrors.set(id,String(error));if(id==='grassland')this.grassPackError=String(error);}
    }));
    this.ready=['grass','forest','lake','snow','volcano','desert'].every(id=>this.tiles.has(id));
-  }catch(error){this.error=String(error);this.ready=false;this.tiles.clear();this.masks.clear();this.layers.clear();}
+  }catch(error){this.error=String(error);this.ready=false;this.tiles.clear();this.masks.clear();this.layers.clear();this.blendMasks.clear();}
  }
  variant(id,x,y){return (id==='forest'&&this.forestRaster)||this.rasterBiomes.has(id)?forestGroundVariant(x,y):terrainVariant(x,y);}
  texture(id,x,y){return this.tiles.get(biomeKey(id))?.[this.variant(id,x,y)];}
@@ -97,17 +97,27 @@ export class TerrainArt {
   if(!composed){
    composed=document.createElement('canvas');composed.width=composed.height=200;
    const output=composed.getContext('2d');
-   const weights=Array.from({length:200},(_,p)=>terrainBlendWeights(p+.5));
-   for(const id of new Set(ids)){
+   const topology=ids.join(',');
+   let masks=this.blendMasks.get(topology);
+   if(!masks){
+    masks=new Map();const weights=Array.from({length:200},(_,p)=>terrainBlendWeights(p+.5));
+    for(const id of new Set(ids)){
+     const mask=document.createElement('canvas');mask.width=mask.height=200;
+     const mc=mask.getContext('2d'),pixels=mc.createImageData(200,200);
+     for(let py=0;py<200;py++)for(let px=0;px<200;px++){
+      const wx=weights[px],wy=weights[py];let weight=0;
+      for(let j=0;j<3;j++)for(let i=0;i<3;i++)if(ids[j*3+i]===id)weight+=wx[i]*wy[j];
+      const n=(py*200+px)*4;pixels.data[n]=pixels.data[n+1]=pixels.data[n+2]=255;pixels.data[n+3]=Math.round(weight*255);
+     }
+     mc.putImageData(pixels,0,0);masks.set(id,mask);
+    }
+    if(this.blendMasks.size>=32)this.blendMasks.delete(this.blendMasks.keys().next().value);
+    this.blendMasks.set(topology,masks);
+   }
+   for(const [id,alpha]of masks){
     const image=this.texture(id,x,y);if(!image)continue;
     const mask=document.createElement('canvas');mask.width=mask.height=200;
-    const mc=mask.getContext('2d'),pixels=mc.createImageData(200,200);
-    for(let py=0;py<200;py++)for(let px=0;px<200;px++){
-     const wx=weights[px],wy=weights[py];let weight=0;
-     for(let j=0;j<3;j++)for(let i=0;i<3;i++)if(ids[j*3+i]===id)weight+=wx[i]*wy[j];
-     const n=(py*200+px)*4;pixels.data[n]=pixels.data[n+1]=pixels.data[n+2]=255;pixels.data[n+3]=Math.round(weight*255);
-    }
-    mc.putImageData(pixels,0,0);
+    const mc=mask.getContext('2d');mc.drawImage(alpha,0,0);
     mc.globalCompositeOperation='source-in';
     // Sample every biome at the destination world position, never the neighbor position.
     mc.drawImage(image,modulo(x,image.width||400),modulo(y,image.height||400),200,200,0,0,200,200);

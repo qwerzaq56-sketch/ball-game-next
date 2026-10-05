@@ -1,7 +1,10 @@
 <!doctype html><meta charset="utf-8"><title>지역 경계 블렌딩 검증</title><style>body{margin:0;background:#111;color:white;font:14px sans-serif}canvas{width:100%;max-width:800px;display:block}</style><p>초원·사막 직선 / 모서리 경계 — 실제 TerrainArt</p><canvas width="800" height="800"></canvas><script type="module">
-import {TerrainArt} from '../js/terrainArt.js?art-boundary-01';
+import {TerrainArt} from '../js/terrainArt.js?art-boundary-02';
 const art=new TerrainArt();await art.loading;
 const biomes={game:{balance:{world:{worldWidth:8000,worldHeight:8000}}},regionAt({x,y}){return {id:x>=400&&y<600?'desert':'grassland'};}};
-const ctx=document.querySelector('canvas').getContext('2d');for(let y=0;y<800;y+=200)for(let x=0;x<800;x+=200)art.drawTile(ctx,{x,y,region:biomes.regionAt({x:x+100,y:y+100})},biomes);
+const ctx=document.querySelector('canvas').getContext('2d'),started=performance.now();for(let y=0;y<800;y+=200)for(let x=0;x<800;x+=200)art.drawTile(ctx,{x,y,region:biomes.regionAt({x:x+100,y:y+100})},biomes);
+const first=performance.now()-started,warm=performance.now();
+for(let y=0;y<800;y+=200)for(let x=0;x<800;x+=200)art.drawTile(ctx,{x,y,region:biomes.regionAt({x:x+100,y:y+100})},biomes);
+const status=document.createElement('p');status.textContent=`첫 렌더 ${first.toFixed(1)}ms · 캐시 재사용 ${(performance.now()-warm).toFixed(1)}ms · 혼합 타일 ${art.layers.size} · 경계 마스크 ${art.blendMasks.size}`;document.body.append(status);
 document.title='지역 경계 검증 · 완료';
 </script>

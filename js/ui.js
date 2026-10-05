@@ -1,5 +1,5 @@
 import {SkillInfluenceUI} from './skillInfluenceUI.js';
-import {BiomeObjectUI} from './biomeObjectUI.js?art-boundary-01';
+import {BiomeObjectUI} from './biomeObjectUI.js?art-boundary-02';
 // HUD rendering (DOM overlay) + live-editable Debug/Balance panel.
 
 import {SkillTuningUI} from './skillTuningUI.js';
