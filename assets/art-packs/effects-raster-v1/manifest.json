@@ -1,0 +1,304 @@
+{
+  "version": 1,
+  "created": "2026-10-06",
+  "generator": "built-in image_gen",
+  "role": "Decorative texture layer; exact vector geometry and gameplay remain authoritative",
+  "cropManifest": "references/crop-manifest.json",
+  "alphaMetrics": "alpha-metrics.json",
+  "runtimeModule": "js/effectRasterArt.js",
+  "selectedCount": 7,
+  "rawSourcePolicy": "All generated original images and rejected variants preserved; runtime crop/alpha correction never modifies source PNG",
+  "items": [
+    {
+      "id": "charge-001",
+      "sourceCrop": "references/charge-body.png",
+      "prompt": "charge-001-prompt.txt",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-c13193ff-d701-4f4b-a258-1c976e042b2b.png",
+      "output": "charge-001.png",
+      "selected": false,
+      "runtimeId": null,
+      "status": "rejected-preserved",
+      "reason": "Mint leaves made generic charging look like green species buff",
+      "cacheCropXYWH": null,
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "rotate": false,
+      "restrainBloom": false,
+      "size": [
+        1307,
+        1203
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "3d9d042df5b45e4a8f0102710fba0a69018a4f202ab3ab96cecc4a4c714111f3",
+      "promptSHA256": "4d21ee51a9903cee090c256e39da8ad15bc8836a59c904070f3ddd82e63ce97c"
+    },
+    {
+      "id": "impact-001",
+      "sourceCrop": "references/charge-body.png",
+      "prompt": "impact-001-prompt.txt",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-79222ef2-271f-45b6-9ebb-24969f3a525f.png",
+      "output": "impact-001.png",
+      "selected": true,
+      "runtimeId": "impact",
+      "status": "candidate-ready-for-runtime-review",
+      "reason": "Direct visual inspection passed; actual scene integration review by parent",
+      "cacheCropXYWH": [
+        430,
+        265,
+        500,
+        630
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "rotate": false,
+      "restrainBloom": false,
+      "size": [
+        1314,
+        1197
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "7b8841083d6de0a664f9a1a2c48e591fde59790551817d2907b1d76712b3dee0",
+      "promptSHA256": "39209301e87abf566652f933aff0975da4a6434340fd34063f973959d04b8bc6"
+    },
+    {
+      "id": "dodge-001",
+      "sourceCrop": "references/dodge-body.png",
+      "prompt": "dodge-001-prompt.txt",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-12304d68-cf07-44eb-953d-8cd251bd7bc7.png",
+      "output": "dodge-001.png",
+      "selected": true,
+      "runtimeId": "dodge",
+      "status": "candidate-ready-for-runtime-review",
+      "reason": "Direct visual inspection passed; actual scene integration review by parent",
+      "cacheCropXYWH": [
+        260,
+        230,
+        1220,
+        470
+      ],
+      "pivotInRawImage": [
+        0.75,
+        0.5
+      ],
+      "rotate": true,
+      "restrainBloom": false,
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "810dc152f3760a1614b8c44af6b2caa71bd7c9157e967be15ef3f745cc40b315",
+      "promptSHA256": "71d343ce644f67b46115bb1174c9b430819fc4c93bb08787d27bb88f78196d6d"
+    },
+    {
+      "id": "shield-001",
+      "sourceCrop": "references/shield-recipient.png",
+      "prompt": "shield-001-prompt.txt",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-0407ad11-c597-41de-bd83-4c19a5774ee8.png",
+      "output": "shield-001.png",
+      "selected": true,
+      "runtimeId": "shield",
+      "status": "candidate-ready-for-runtime-review",
+      "reason": "Wide generated bloom reduced by alpha curve during display cache; raw PNG preserved",
+      "cacheCropXYWH": [
+        180,
+        55,
+        1176,
+        860
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "rotate": false,
+      "restrainBloom": true,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "outputSHA256": "e1f9510efaeb1532c5657d336bf3c04a8b47ca3b64604273c5bdd15cb84794cf",
+      "promptSHA256": "2f093726711ca56f8a0a75fef30e75ae0e9da89143638ea5779f18867b8a9988"
+    },
+    {
+      "id": "strength-001",
+      "sourceCrop": "references/strength-recipient.png",
+      "prompt": "strength-001-prompt.txt",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-ad6611ab-6f6e-4a4f-805f-5806c0dac414.png",
+      "output": "strength-001.png",
+      "selected": true,
+      "runtimeId": "strength",
+      "status": "candidate-ready-for-runtime-review",
+      "reason": "Direct visual inspection passed; actual scene integration review by parent",
+      "cacheCropXYWH": [
+        245,
+        235,
+        865,
+        845
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "rotate": false,
+      "restrainBloom": false,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "15b8c5ed393474f63f5425245ce671e88ed687b6c1dc5abd5bea758fc35fa283",
+      "promptSHA256": "09653d4aeae837b62cbc927795d114724e975c2cd8d37256b47def2b99470934"
+    },
+    {
+      "id": "frost-clear-001",
+      "sourceCrop": "references/frost-clear-recipient.png",
+      "prompt": "frost-clear-001-prompt.txt",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-ecb82374-c744-4c76-a2c0-c67d92de2a1b.png",
+      "output": "frost-clear-001.png",
+      "selected": false,
+      "runtimeId": null,
+      "status": "rejected-preserved",
+      "reason": "Thick off-center ice arch and bloom obscured empty actor center",
+      "cacheCropXYWH": null,
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "rotate": false,
+      "restrainBloom": false,
+      "size": [
+        1262,
+        1246
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "8c88807ba65f14a3f3b3ff12ab3482559ffd37725a69add559f128a18aa2d216",
+      "promptSHA256": "9419667f75cab64a07475475b0d893e2a537e69e2e5f55236d31abcdbc304a34"
+    },
+    {
+      "id": "heal-001",
+      "sourceCrop": "references/heal-recipient.png",
+      "prompt": "heal-001-prompt.txt",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-e5324398-c6e1-4c61-9e2a-4cdadbd922d8.png",
+      "output": "heal-001.png",
+      "selected": true,
+      "runtimeId": "heal",
+      "status": "candidate-ready-for-runtime-review",
+      "reason": "Wide generated bloom reduced by alpha curve during display cache; raw PNG preserved",
+      "cacheCropXYWH": [
+        220,
+        220,
+        1100,
+        700
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "rotate": false,
+      "restrainBloom": true,
+      "size": [
+        1536,
+        1024
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        254
+      ],
+      "outputSHA256": "c2fa420582c7814813da545af667b3051aa03d757f49f94985635eb60ea8f55b",
+      "promptSHA256": "4beff64c19b49d016e25a1109f9a77d5b834db035fd4fb6d1ea96f97729d1a08"
+    },
+    {
+      "id": "charge-002",
+      "sourceCrop": "references/charge-neutral.png",
+      "prompt": "charge-002-prompt.txt",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-cb9c8865-2f53-4329-b921-6f1c229492d3.png",
+      "output": "charge-002.png",
+      "selected": true,
+      "runtimeId": "charge",
+      "status": "candidate-ready-for-runtime-review",
+      "reason": "Direct visual inspection passed; actual scene integration review by parent",
+      "cacheCropXYWH": null,
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "rotate": false,
+      "restrainBloom": false,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "1768132813a955d898972ed434e62ca8b1feab8f1a37f5bf49a9d25bca8d3f91",
+      "promptSHA256": "d3c03e81b193e5bcb7d0eec06d03afb5932fc0689087ff493f504a5c1f7548ea"
+    },
+    {
+      "id": "frost-clear-002",
+      "sourceCrop": "references/frost-clear-recipient.png",
+      "prompt": "frost-clear-002-prompt.txt",
+      "generatedSource": "C:\\Users\\user\\.codex\\generated_images\\01a10d93-6785-75c2-8fc3-60cc0b521baa\\exec-3171e31b-889b-4d6b-a702-a34234d4c81d.png",
+      "output": "frost-clear-002.png",
+      "selected": true,
+      "runtimeId": "frost-clear",
+      "status": "candidate-ready-for-runtime-review",
+      "reason": "Direct visual inspection passed; actual scene integration review by parent",
+      "cacheCropXYWH": [
+        170,
+        150,
+        980,
+        930
+      ],
+      "pivotInRawImage": [
+        0.5,
+        0.5
+      ],
+      "rotate": false,
+      "restrainBloom": false,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "outputSHA256": "48f6ff62365bb47925fd33c92fefa81fadd77c38048aa1d2f326321fe8b35194",
+      "promptSHA256": "3336f94f066e8f9be74fed7d6b007fbdf18af6b1e903369786bab27320954d91"
+    }
+  ]
+}

@@ -4,6 +4,16 @@ import {createGame} from '../tools/headless.mjs';
 import {BIOME_OBJECTS,DEFAULT_OBJECT_IDS,OBJECT_REGIONS,defaultObjectPreset,applyObjectPreset} from '../js/biomeObjectCatalog.js';
 import {LANDMARK_PRESENTATION} from '../js/landmarkArt.js';
 function setup(id){const g=createGame(7),p=g.player;g.entities=[p];g.biomes.enabled=true;const preset=defaultObjectPreset();preset.enabled=[id];preset.countPerType=1;applyObjectPreset(g.balance,preset);g.biomeObjects.sync();const o=g.biomeObjects.objects[0];p.x=o.x;p.y=o.y;p.hp=p.maxHp=1000;g.buildGrid();return {g,p,o};}
+test('R-VIS-003 recovery decoration requires successful benefit, not proximity',()=>{
+ const {g,p,o}=setup('desert-oasis');g.gameTime=10;
+ g.biomeObjects.update(1);assert.equal(p.healVisualUntil,undefined);
+ p.hp=500;g.biomeObjects.update(1);assert(p.hp>500);assert.equal(p.healVisualUntil,10.22);
+ delete p.healVisualUntil;p.x=o.x+o.config.radius+p.size/2+1;g.buildGrid();const hp=p.hp;
+ g.biomeObjects.update(1);assert.equal(p.hp,hp);assert.equal(p.healVisualUntil,undefined);
+ const shelter=setup('snow-shelter');shelter.g.gameTime=12;shelter.p.frostbiteRemaining=1;shelter.p.frostExposure=6;
+ shelter.g.biomes.update(.1);assert.equal(shelter.p.frostbiteRemaining,0);assert.equal(shelter.p.frostClearVisualUntil,12.3);
+ delete shelter.p.frostClearVisualUntil;shelter.g.biomes.update(.1);assert.equal(shelter.p.frostClearVisualUntil,undefined);
+});
 test('R-WORLD-016 scaled landmark ranges match presentation and continuous contact stops outside',()=>{
  for(const [id,profile]of Object.entries(LANDMARK_PRESENTATION)){
   const {o}=setup(id);assert.equal(BIOME_OBJECTS[id].radius,profile.radius);

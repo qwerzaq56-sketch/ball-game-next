@@ -119,9 +119,11 @@ export class Biomes {
    const cold=this.blizzard()&&this.regionAt(e)?.id==='snow',resistance=this.frostResistance(e);
    // R-WORLD-004: capped buildup gauge, hysteresis until fully recovered.
    const sheltered=this.game.biomeObjects?.inFrostShelter(e)??false,limit=c.frostExposureSeconds??6;e.frostbiteRemaining??=0;
+   const previouslyFrostbitten=e.frostbiteRemaining>0;
    e.frostExposure=Math.max(0,Math.min(limit,(e.frostExposure??0)+(cold&&!sheltered?dt*(1-resistance*.5):-dt*(sheltered?(c.shelterRecoveryPerSecond??4):(c.frostRecoveryPerSecond??2)))));
    if(sheltered||e.frostExposure<=0)e.frostbiteRemaining=0;
    else if(e.frostExposure>=limit)e.frostbiteRemaining=1;
+   if(previouslyFrostbitten&&e.frostbiteRemaining===0)e.frostClearVisualUntil=this.game.gameTime+.3;
 
   }
   this.damageTimer+=dt;this.encounterTimer-=dt;

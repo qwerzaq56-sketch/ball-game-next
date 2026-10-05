@@ -1,6 +1,6 @@
 import {drawActionArt} from './actionArt.js';
-import {chargedAttackDistance} from './combat.js?forest-composition-01';
-import {BiomeObjects} from './biomeObjects.js?forest-composition-01';
+import {chargedAttackDistance} from './combat.js?characters-effects-01';
+import {BiomeObjects} from './biomeObjects.js?characters-effects-01';
 import {updateGrowthMotion} from './growthMotion.js';
 import {updateSprint} from './sprint.js';
 import {delta,angleTo,near,wrap} from './topology.js';
@@ -9,9 +9,12 @@ import { clampEntity } from './worldBounds.js';
 import { Autoplay } from './autoplay.js';
 import { RunMetrics } from './runMetrics.js';
 import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection,drawMatteBody } from './vectorArt.js';
+import {drawCharacterRasterBody} from './characterRasterArt.js';
+import {drawEntityEffectRaster,drawEffectRaster} from './effectRasterArt.js';
+import {drawGrowthRasterTexture} from './progressionRasterArt.js';
 import { Relics } from './relics.js';
 import { Era } from './era.js';
-import { Biomes } from './biomes.js?forest-composition-01';
+import { Biomes } from './biomes.js?characters-effects-01';
 import { AllyLinks } from './allyLinks.js';
 import { ApexHistory } from './apexHistory.js';
 import { scoreRanking, layoutNameLabels, debugRoleLabel, entityLabelRows } from './presentation.js';
@@ -21,13 +24,13 @@ import { Ecology } from './ecology.js';
 import { random, resetRandom } from './random.js';
 import { resetEntityIds, growthRewardFor } from './entity.js';
 import { Player } from './player.js';
-import { AIEntity, updateAI } from './ai.js?forest-composition-01';
+import { AIEntity, updateAI } from './ai.js?characters-effects-01';
 import { canEatOrb, canAbsorb, isHostile, circlesOverlap, dist } from './collision.js';
 import {
   updateAttack, updateDodge, updateKnockback, updateHealthRegen,
   updateAttackStack, updateDodgeStack, attackChargeDistanceForSize,
   canStartAttack, startAttack, canStartDodge, startDodge,
-} from './combat.js?forest-composition-01';
+} from './combat.js?characters-effects-01';
 import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
 import {apexTerritoryRadius} from './skillCatalog.js';
 import { startAbsorption, cancelAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
@@ -423,7 +426,7 @@ export class Game {
           if (!canEatOrb(eater, target, b)) continue;
           if (!circlesOverlap(eater, target)) continue;
           target.alive = false;
-          if(target.healFraction){const healed=Math.min(eater.maxHp-eater.hp,eater.maxHp*target.healFraction);eater.hp+=healed;this.spawnFloatingText(eater.x,eater.y,`회복 +${Math.round(healed)}`,'#f9a8d4');this.spawnGrowthParticles(target.x,target.y,'#f472b6');if(eater===this.player)this.audio.growth();continue;}
+          if(target.healFraction){const healed=Math.min(eater.maxHp-eater.hp,eater.maxHp*target.healFraction);eater.hp+=healed;if(healed>0)eater.healVisualUntil=this.gameTime+.22;this.spawnFloatingText(eater.x,eater.y,`회복 +${Math.round(healed)}`,'#f9a8d4');this.spawnGrowthParticles(target.x,target.y,'#f472b6');if(eater===this.player)this.audio.growth();continue;}
           const received=growthRewardFor(target.growthValue*this.relics.growthMultiplier(eater),eater,b);
           this.balanceLog?.pickup(target,eater,received);
           eater.addGrowth(received, b);
@@ -983,7 +986,14 @@ export class Game {
     if(e.attackState==='CHARGING'){ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.strokeStyle='#ffffff';ctx.lineWidth=4/this.camera.zoom;ctx.stroke();}
     // R-VIS-001: matte combat units, keep passive food rendering unchanged.
     const flashing=(e.hitVisualUntil!=null?e.hitVisualUntil-this.gameTime>.12:e.hitFlash>0);
-    if(e.behavior!=='orb')drawMatteBody(ctx,e,r,this.camera.zoom,flashing);
+    // R-VIS-006: optional crop-referenced body; existing state selects the art stage.
+    if(e.behavior!=='orb'){
+      // R-VIS-003/006: ornaments behind the body; actual geometry stays above.
+      if(this.effectRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false)drawEntityEffectRaster(ctx,e,this,r,this.camera.zoom,{impact:false,healing:(e.healVisualUntil??0)>this.gameTime,frostCured:(e.frostClearVisualUntil??0)>this.gameTime});
+      const stage=e.apex?'apex':e.attackUnlocked?'growth':'base';
+      const raster=this.characterRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false&&drawCharacterRasterBody(ctx,e,r,this.camera.zoom,flashing,stage);
+      if(!raster)drawMatteBody(ctx,e,r,this.camera.zoom,flashing);
+    }
     else {
       ctx.beginPath();ctx.fillStyle='rgba(0,0,0,0.35)';
       ctx.ellipse(e.x,e.y+r*.15,r*.95,r*.6,0,0,Math.PI*2);ctx.fill();
@@ -1002,6 +1012,7 @@ export class Game {
     if(this.abilities.frostMarks.some(m=>m.target===e)){ctx.beginPath();ctx.arc(e.x,e.y,r+12/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#67e8f9';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([5/this.camera.zoom,4/this.camera.zoom]);ctx.stroke();ctx.setLineDash([]);}
     if((e.frostbiteRemaining??0)>0||(this.biomes.enabled&&this.biomes.regionAt(e)?.id==='lake')){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.fillStyle=(e.frostbiteRemaining??0)>0?'rgba(185,225,255,.42)':'rgba(25,110,230,.30)';ctx.fill();ctx.restore();}
     drawSpeciesMark(ctx,e,this.camera.zoom);
+    if(this.effectRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false)drawGrowthRasterTexture(ctx,e,this.camera.zoom);
     drawGrowthPulse(ctx,e,this.camera.zoom);
     if((e===this.player||e.attackState!=='TELEGRAPH')&&(e!==this.player||!this.touchAim))drawPlayerDirection(ctx,e,this.camera.zoom);
 
@@ -1079,6 +1090,8 @@ export class Game {
       ctx.beginPath();
       ctx.fillStyle = this.withAlpha(p.color, alpha);
       if (p.type === 'ring'||p.type==='impact-ring') {
+        // Contact position belongs to the existing impact particle, not body center.
+        if(p.type==='impact-ring'&&p.color!=='#a5f3fc'&&this.effectRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false)drawEffectRaster(ctx,'impact',{x:p.x,y:p.y,radius:p.size*(1-alpha)*3+p.size,alpha:alpha*.28});
         ctx.arc(p.x, p.y, p.size * (1 - alpha) * 3 + p.size, 0, Math.PI * 2);
         ctx.lineWidth = p.type==='impact-ring'?2.5/this.camera.zoom:2;
         ctx.strokeStyle = this.withAlpha(p.color, alpha);

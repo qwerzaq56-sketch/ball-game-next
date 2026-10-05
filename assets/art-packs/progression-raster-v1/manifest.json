@@ -1,0 +1,60 @@
+{
+  "versions": [
+    {
+      "source": "progression-sheet-001.png",
+      "size": [
+        1774,
+        887
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "45f051f6c9a67535fd98f988548ee5a432f907639907e91721fac8a48204f3f2",
+      "boxes": [
+        [
+          83,
+          86,
+          805,
+          797
+        ],
+        [
+          968,
+          365,
+          1705,
+          539
+        ]
+      ],
+      "assessment": "002 ring smoother than001; streak texture retains distressed patches. Ring provisionally selected; absorption streak must remain low-alpha decorative experiment and never replace progress/direction."
+    },
+    {
+      "source": "progression-sheet-002.png",
+      "size": [
+        1774,
+        887
+      ],
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "sha256": "a0f24b94ade6884e77fc3177c8579a0e617fbc6d96e5fb1facdebf4e29ac3dd4",
+      "boxes": [
+        [
+          82,
+          83,
+          806,
+          802
+        ],
+        [
+          1034,
+          392,
+          1665,
+          535
+        ]
+      ],
+      "assessment": "002 ring smoother than001; streak texture retains distressed patches. Ring provisionally selected; absorption streak must remain low-alpha decorative experiment and never replace progress/direction."
+    }
+  ],
+  "selectedRing": "002",
+  "absorptionStatus": "experimental low-alpha only"
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "source": "planning/art-concepts/ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "box": [
+      151,
+      480,
+      434,
+      747
+    ],
+    "output": "assets\\art-packs\\progression-raster-v1\\references\\apex-thin-aura.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "41bd92dcd4684a32b0cfdcfe981e5f299930fa1039cf4502d1838bf73e595836"
+  },
+  {
+    "source": "planning/art-concepts/gameplay-regions-a-001.png",
+    "sourceSize": [
+      1944,
+      809
+    ],
+    "box": [
+      278,
+      350,
+      366,
+      406
+    ],
+    "output": "assets\\art-packs\\progression-raster-v1\\references\\gameplay-restrained-arc.png",
+    "sourceSHA256": "14e72f571c49500d455eb0039ad9cd2433b35f8e7eefb709873658dfd03ebfc0",
+    "cropSHA256": "5e0a014dec2393e9139b6a4d34b55f2ec2d0d523977d961bd4cb58d2eff5a2d2"
+  }
+]

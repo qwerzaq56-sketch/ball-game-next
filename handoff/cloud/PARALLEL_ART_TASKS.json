@@ -6,9 +6,48 @@
   "integrationOwner": "/root",
   "sharedFiles": "기존 game/vectorArt/actionArt, 캐시 버전, 기획, NIGHT, git/릴리즈는 통합 담당만 수정",
   "tasks": [
-    {"agent":"/root/objects","scope":"캐릭터 리소스 + 선택적 캐시 모듈","owns":["assets/art-packs/characters-raster-v1/**","js/characterRasterArt.js","tests/character-raster-art.test.mjs","reports/PARALLEL_CHARACTERS.md"],"status":"dispatched"},
-    {"agent":"/root/environment","scope":"공통 전투/상태 이펙트 리소스 + 선택적 캐시 모듈","owns":["assets/art-packs/effects-raster-v1/**","js/effectRasterArt.js","tests/effect-raster-art.test.mjs","reports/PARALLEL_EFFECTS.md"],"status":"dispatched"},
-    {"agent":"/root/tiles","scope":"실제 게임 렌더 검토 화면/검증 준비","owns":["tools/character-effects-review.html","reports/PARALLEL_ART_VALIDATION.md"],"status":"dispatched"}
+    {
+      "agent": "/root/objects",
+      "scope": "캐릭터 리소스 + 선택적 캐시 모듈",
+      "owns": [
+        "assets/art-packs/characters-raster-v1/**",
+        "js/characterRasterArt.js",
+        "tests/character-raster-art.test.mjs",
+        "reports/PARALLEL_CHARACTERS.md"
+      ],
+      "status": "integrated-and-fixture-verified"
+    },
+    {
+      "agent": "/root/environment",
+      "scope": "공통 전투/상태 이펙트 리소스 + 선택적 캐시 모듈",
+      "owns": [
+        "assets/art-packs/effects-raster-v1/**",
+        "js/effectRasterArt.js",
+        "tests/effect-raster-art.test.mjs",
+        "reports/PARALLEL_EFFECTS.md"
+      ],
+      "status": "integrated-and-fixture-verified"
+    },
+    {
+      "agent": "/root/tiles",
+      "scope": "실제 게임 렌더 검토 화면/검증 준비",
+      "owns": [
+        "tools/character-effects-review.html",
+        "reports/PARALLEL_ART_VALIDATION.md"
+      ],
+      "status": "integrated-and-fixture-verified"
+    }
   ],
-  "rules":["기존 에이전트 상태/결과부터 확인해 작업 중복 금지","동일 파일 동시 수정 금지","담당 자산별 원화 exact crop/좌표/SHA256/정확 프롬프트/실패/채택 보존","게임 수치/판정/대상/쿨다운/RNG 유지","공통 월드 축척/고정광원/5색 구분","필수 범위/방향/수혜 정보와 장식층 구분","에이전트가 공유 렌더러·커밋·push·릴리즈를 직접 수정하지 않음","통합 후 이동/중첩/6지역/줌.5와1/폴백 검증","성과 확인 후 워크플로우 반영; 병목/우회/잔여 기록"]
+  "rules": [
+    "기존 에이전트 상태/결과부터 확인해 작업 중복 금지",
+    "동일 파일 동시 수정 금지",
+    "담당 자산별 원화 exact crop/좌표/SHA256/정확 프롬프트/실패/채택 보존",
+    "게임 수치/판정/대상/쿨다운/RNG 유지",
+    "공통 월드 축척/고정광원/5색 구분",
+    "필수 범위/방향/수혜 정보와 장식층 구분",
+    "에이전트가 공유 렌더러·커밋·push·릴리즈를 직접 수정하지 않음",
+    "통합 후 이동/중첩/6지역/줌.5와1/폴백 검증",
+    "성과 확인 후 워크플로우 반영; 병목/우회/잔여 기록"
+  ],
+  "next": "abilities-raster-v1 assets/module by environment; absorption texture quality hold, no runtime connection"
 }

@@ -1,0 +1,93 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><title>캐릭터·이펙트 실제 렌더 검증</title>
+<style>body{margin:16px;background:#101923;color:#e2e8f0;font:14px system-ui}label,button{display:inline-block;margin:5px}select,button,input{padding:7px}canvas{width:100%;max-width:1280px;border:1px solid #536577}pre{white-space:pre-wrap}details{max-width:1280px}</style>
+<h1>캐릭터·이펙트 · 실제 Game.render 통제 장면</h1>
+<p>게임 업데이트 루프를 돌리지 않고 보이는 상태를 구성합니다. 자연 플레이의 전투·밸런스·FPS 측정이 아닙니다. 수혜 비교 버튼은 실제 오브젝트 규칙을 한 번 호출하고 전후 값을 기록합니다.</p>
+<label>지역 <select id="biome"><option>forest</option><option>grassland</option><option>lake</option><option>snow</option><option>volcano</option><option>desert</option></select></label>
+<label>배율 <select id="zoom"><option value=".5">0.5</option><option value="1">1</option></select></label>
+<label>크기 <select id="size"><option value="40">40</option><option value="100">100</option><option value="200">200 성장 비교</option><option value="400">400 최상위 비교</option></select></label>
+<label>종족 <select id="color"><option value="all">5색</option><option>cyan</option><option>blue</option><option>green</option><option>red</option><option>yellow</option></select></label>
+<label>전투 상태 <select id="combat"><option value="idle">대기</option><option value="hold">풀차징 준비</option><option value="telegraph">공격 전조</option><option value="charge">공격 돌진</option><option value="dodge">회피</option><option value="hit">피격</option><option value="cooldown">공격 재사용 대기</option><option value="locked">공격 미해금</option></select></label>
+<label>상태 중첩 <select id="status"><option value="none">없음</option><option value="shield">보호막</option><option value="buff">강화</option><option value="frost">동상</option><option value="growth">성장</option><option value="overlap">보호막+강화+동상+성장</option></select></label>
+<label>방향 <input id="direction" type="range" min="0" max="360" step="15" value="0"></label>
+<button id="move">이동 시작 / 정지</button><button id="terrain">지형 ON / OFF</button><button id="body">래스터 몸체 ON / OFF</button><button id="effects">래스터 이펙트 ON / OFF</button><button id="rerender">같은 장면 다시 렌더</button>
+<button id="heal">실제 회복 수혜 / 비수혜</button><button id="shield">실제 보호막 수혜 / 비수혜</button><button id="frost">실제 피난처 해제 / 비수혜</button><button id="reset">통제 장면 복원</button>
+<button id="contact">실제 피격 생성 함수 · 접촉점</button><button id="shield-contact">실제 보호막 피격 생성 함수 · 접촉점</button>
+<p id="state">로딩 중</p><p id="assets">자산 상태 확인 중</p><canvas width="1280" height="720"></canvas><pre id="probe"></pre>
+<details><summary>검수 원칙·범위</summary><ul><li>5색의 몸체·방향·전조를 식생 위에서도 구분. 크기400은 단일 종족도 비교하여 겹침을 분리.</li><li>원화는 비스듬한 탑뷰. 방향이 바뀌어도 몸체에 구워진 광원은 회전하지 않아야 함.</li><li>장식/이펙트 외곽과 실제 공격·혜택·위험 범위를 구분. 필수 범위·방향 코드는 숨기지 않음.</li><li>알파·로드 실패 시 기존 렌더가 남는지는 별도 실패 주입 검증 필요. 이 페이지의 지형OFF가 캐릭터 이미지 실패를 뜻하지 않음.</li><li>리소스 생성은 정확한 원화 크롭을 직접 입력. 좌표·원본 SHA256·크롭 경로·정확한 프롬프트·실패 시안 보존.</li><li>처음 장면 진입/캐시 재사용 렌더 시간을 분리. 값은 이 통제 장면의 단일 렌더 시간이며 실제 FPS가 아님.</li></ul></details>
+<script type="module">
+import {Game} from '../js/game.js?characters-effects-01';
+import {AIEntity} from '../js/ai.js';
+import {loadLandmarkImages} from '../js/landmarkArt.js?forest-composition-01';
+import {loadEnvironmentImages} from '../js/environmentArt.js?forest-composition-01';
+import {loadCharacterRaster,characterRasterStatus} from '../js/characterRasterArt.js';
+import {loadEffectRaster,effectRasterStatus} from '../js/effectRasterArt.js';
+import {loadProgressionRaster} from '../js/progressionRasterArt.js';
+await Promise.all([loadLandmarkImages(),loadEnvironmentImages(),loadCharacterRaster(),loadEffectRaster(),loadProgressionRaster()]);
+const balance=await(await fetch('../config/gameBalance.json')).json(),canvas=document.querySelector('canvas'),$=id=>document.getElementById(id);
+let g,origins=[],moving=false,epoch=0,terrain=true,rasterBody=true,rasterEffects=true,firstRender=true,probeMode=false,building=false,pendingBuild=false;
+const metrics=[];
+async function build(){
+ if(building){pendingBuild=true;return;}building=true;moving=false;probeMode=false;firstRender=true;$('probe').textContent='';$('state').textContent='현재 선택 장면 로딩 중';
+ const input={keys:new Set(),mouseX:1000,mouseY:360,mouseDown:false,consumeDodge:()=>false},ui={showUnlock(){},showDefeatMessage(){},preferences:{names:false}};
+ g=new Game(structuredClone(balance),canvas,input,ui,{seed:44});g.gameTime=20;
+ const label=g.biomes.labels.find(r=>r.id===$('biome').value);g.camera={x:label.x,y:label.y,zoom:Number($('zoom').value)};
+ g.entities=[g.player];const colors=balance.colors.filter(c=>$('color').value==='all'||c.id===$('color').value);
+ const size=Number($('size').value);g.player.color=colors[0].id;g.player.colorHex=colors[0].color;
+ const units=colors.map((c,i)=>i?new AIEntity({x:label.x,y:label.y,color:c.id,colorHex:c.color,balance:g.balance,startSize:size}):g.player);
+ for(const [i,e]of units.entries()){e.x=label.x+(i-(units.length-1)/2)*240;e.y=label.y;e.size=e.visualSize=size;e.hp=e.maxHp=size*5;e.alive=true;if(i)g.entities.push(e);}
+ g.biomeObjects.sync();g.biomeObjects.objects=[];origins=units.map(e=>({e,x:e.x,y:e.y}));
+ await g.biomes.terrainArt.loading;building=false;if(pendingBuild){pendingBuild=false;return build();}applyState();render();
+}
+function applyState(){if(!g||probeMode)return;const angle=Number($('direction').value)*Math.PI/180,state=$('combat').value,status=$('status').value;
+ for(const {e}of origins){Object.assign(e,{facing:angle,attackDir:angle,dodgeDir:angle,attackState:'READY',dodgeState:'READY',attackUnlocked:true,attackStack:1,attackMaxStack:1,attackHoldProgress:0,hitFlash:0,hitVisualUntil:0,shieldHp:0,shieldRemaining:0,vigorUntil:0,frostExposure:0,frostbiteRemaining:0,scalePulseTimer:0,healVisualUntil:0,frostClearVisualUntil:0,apex:Number($('size').value)>=400});e.trail=[];e.dodgeTrail=[];
+  if(state==='hold')e.attackHoldProgress=1;
+  if(state==='telegraph'){e.attackState='TELEGRAPH';e.attackHoldProgress=1;e.currentTelegraphTime=.5;}
+  if(state==='charge'){e.attackState='CHARGING';e.currentChargeDistance=300;e.currentChargeDuration=.5;e.attackTimer=.1;e.trail=[1,2,3].map(i=>({x:e.x-Math.cos(angle)*i*25,y:e.y-Math.sin(angle)*i*25}));}
+  if(state==='dodge'){e.dodgeState='DODGING';e.dodgeTrail=[1,2,3].map(i=>({x:e.x-Math.cos(angle)*i*25,y:e.y-Math.sin(angle)*i*25,life:Math.max(.01,g.balance.dodge.effectLifetime*(1-i*.2))}));}
+  if(state==='hit'){e.hitFlash=.1;e.hitVisualUntil=g.gameTime+.15;}
+  if(state==='cooldown'){e.attackState='RECOVERY';e.attackStack=0;}
+  if(state==='locked'){e.attackUnlocked=false;e.attackStack=0;}
+  if(['shield','overlap'].includes(status)){e.shieldHp=e.maxHp*.2;e.shieldRemaining=5;}
+  if(['buff','overlap'].includes(status))e.vigorUntil=g.gameTime+5;
+  if(['frost','overlap'].includes(status)){e.frostExposure=6;e.frostbiteRemaining=1;}
+  if(['growth','overlap'].includes(status))e.scalePulseTimer=.18;
+ }
+ g.input.mouseDown=['hold','cooldown','locked'].includes(state);
+}
+function render(){if(!g||building)return;g.camera.zoom=Number($('zoom').value);g.characterRasterEnabled=rasterBody;g.effectRasterEnabled=rasterEffects;g.biomes.terrainArt.setEnabled(terrain);const start=performance.now();g.render();const ms=performance.now()-start;
+ const region=probeMode?g.biomes.regionAt(g.player)?.id:$('biome').value;metrics.push({kind:firstRender?'scene-first':'cache-reuse',ms,biome:region,zoom:g.camera.zoom});if(metrics.length>120)metrics.shift();
+ $('state').textContent=`${firstRender?'장면 첫 렌더':'같은 장면 캐시 재사용'} ${ms.toFixed(2)}ms · ${region} · zoom ${g.camera.zoom} · size ${probeMode?100:$('size').value} · 몸체 ${rasterBody?'래스터 ON':'기존 폴백'} · 효과 ${rasterEffects?'래스터 ON':'기존 폴백'} · 지형 ${terrain?'ON':'OFF'} · ${moving?'좌표 이동':'정지'} · 자연 플레이/FPS 측정 아님${Number($('size').value)>=400&&$('color').value==='all'?' · 400/5색은 겹침 비교, 단일색도 확인':''}`;firstRender=false;
+ $('assets').textContent=`몸체 ${JSON.stringify(characterRasterStatus())} · 효과 ${JSON.stringify(effectRasterStatus())} · 미로딩/실패 항목은 생성·연결 상태 확인 대상, 전체 완료를 뜻하지 않음`;
+}
+function frame(now){if(!moving)return;const t=(now-epoch)/1000;g.gameTime=20+t;for(const [i,o]of origins.entries()){o.e.x=o.x+150*Math.sin(t*.8+i*.2);o.e.y=o.y+110*Math.sin(t*.7+i*.3);}applyState();render();requestAnimationFrame(frame);}
+function probe(kind){if(building)return;moving=false;probeMode=true;g.gameTime=20;g.biomeObjects.signature='';g.biomeObjects.sync();const candidate={heal:'desert-oasis',shield:'forest-tree',frost:'snow-shelter'}[kind],o=g.biomeObjects.objects.find(o=>o.candidate===candidate);
+ if(!o){$('probe').textContent='이 월드의 대상 오브젝트가 없습니다.';return;}
+ const a=g.player,c=balance.colors.find(c=>c.id===a.color),b=new AIEntity({x:o.x,y:o.y,color:a.color,colorHex:c.color,balance:g.balance,startSize:100});
+ a.size=a.visualSize=100;a.maxHp=500;a.hp=250;a.shieldHp=0;a.shieldRemaining=0;a.frostExposure=6;a.frostbiteRemaining=1;a.attackHoldProgress=0;a.attackState='READY';a.dodgeState='READY';a.trail=[];a.dodgeTrail=[];a.vigorUntil=0;a.apex=false;a.healVisualUntil=0;a.frostClearVisualUntil=0;a.hitVisualUntil=0;
+ b.hp=b.maxHp*.5;b.frostExposure=6;b.frostbiteRemaining=1;a.x=o.x;a.y=o.y;b.x=o.x+o.config.radius+b.size/2+80;b.y=o.y;
+ g.entities=[a,b];g.biomeObjects.objects=[o];g.camera.x=(a.x+b.x)/2;g.camera.y=o.y;g.input.mouseDown=false;g.buildGrid();
+ const snap=e=>({hp:e.hp,shieldHp:e.shieldHp??0,frostExposure:e.frostExposure,frostbiteRemaining:e.frostbiteRemaining,healVisualUntil:e.healVisualUntil??0,frostClearVisualUntil:e.frostClearVisualUntil??0});const before=[snap(a),snap(b)];
+ if(kind==='frost')g.biomes.update(.01);else g.biomeObjects.update(1);
+ const after=[snap(a),snap(b)];$('probe').textContent=JSON.stringify({kind,candidate,radius:o.config.radius,note:'왼쪽/중앙 수혜 대상, 오른쪽 범위 밖 비수혜. 실제 규칙 단일 호출, 자연 플레이 아님.',before,after},null,2);render();return {before,after};
+}
+function contact(shield=false){
+ if(building)return;moving=false;probeMode=true;g.gameTime=20;g.biomeObjects.objects=[];g.particles=[];g.input.mouseDown=false;
+ const target=g.player,angle=Number($('direction').value)*Math.PI/180;
+ Object.assign(target,{size:100,visualSize:100,maxHp:500,hp:500,attackState:'READY',dodgeState:'READY',attackHoldProgress:0,shieldHp:shield?100:0,shieldRemaining:shield?5:0,frostExposure:0,frostbiteRemaining:0,vigorUntil:0,healVisualUntil:0,frostClearVisualUntil:0,hitFlash:0,apex:false,nextImpactVisualAt:-1});target.trail=[];target.dodgeTrail=[];
+ target.x=g.camera.x;target.y=g.camera.y;
+ const attacker=new AIEntity({x:target.x-Math.cos(angle)*200,y:target.y-Math.sin(angle)*200,color:'red',colorHex:balance.colors.find(c=>c.id==='red').color,balance:g.balance,startSize:100});
+ g.entities=[target,attacker];const hpBefore=target.hp;
+ g.spawnHitImpact(target,attacker,50,{shield});
+ const ring=g.particles.find(p=>p.type==='impact-ring'),dx=(ring?.x??target.x)-target.x,dy=(ring?.y??target.y)-target.y;
+ const result={kind:shield?'shield-contact':'hit-contact',note:'실제 spawnHitImpact 생성 함수의 통제시각 호출. 피해50은 시각강도 입력이며 실제 데미지 판정/HP감소 테스트 아님.',shield,hpBefore,hpAfter:target.hp,bodyCenter:{x:target.x,y:target.y},attacker:{x:attacker.x,y:attacker.y},contact:ring?{x:ring.x,y:ring.y,color:ring.color,type:ring.type}:null,contactMinusBodyCenter:{x:dx,y:dy,distance:Math.hypot(dx,dy)},expectedBodyRadius:target.size/2,hitVisualUntil:target.hitVisualUntil,particleCount:g.particles.length};
+ $('probe').textContent=JSON.stringify(result,null,2);render();return result;
+}
+for(const id of ['biome','size','color'])$(id).onchange=build;
+for(const id of ['combat','status','direction'])$(id).oninput=()=>{applyState();render();};$('zoom').onchange=render;
+ $('move').onclick=()=>{if(probeMode)return;moving=!moving;if(moving){epoch=performance.now();requestAnimationFrame(frame);}else render();};
+ $('terrain').onclick=()=>{terrain=!terrain;render();};$('body').onclick=()=>{rasterBody=!rasterBody;render();};$('effects').onclick=()=>{rasterEffects=!rasterEffects;render();};$('rerender').onclick=render;$('reset').onclick=build;
+ for(const kind of ['heal','shield','frost'])$(kind).onclick=()=>probe(kind);
+ $('contact').onclick=()=>contact(false);$('shield-contact').onclick=()=>contact(true);
+ window.artReview={get game(){return g;},metrics,render,probe,contact,async set(options={}){for(const [id,value]of Object.entries(options))if($(id))$(id).value=String(value);await build();},stop(){moving=false;},snapshot(){return {region:$('biome').value,zoom:g?.camera.zoom,rasterBody,rasterEffects,characterAssets:characterRasterStatus(),effectAssets:effectRasterStatus(),entities:g?.entities.map(e=>({color:e.color,size:e.size,x:e.x,y:e.y,hp:e.hp,attack:e.attackState})),lastRender:metrics.at(-1),probe:$('probe').textContent};}};
+ await build();
+</script></html>

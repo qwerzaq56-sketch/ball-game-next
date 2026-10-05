@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "coordinateConvention": "Pillow left, top, right, bottom; exclusive right/bottom",
+  "items": [
+    {
+      "id": "charge-body",
+      "source": "planning/art-concepts/gameplay-regions-a-001.png",
+      "sourceSize": [
+        1944,
+        809
+      ],
+      "cropXYXY": [
+        877,
+        316,
+        1040,
+        490
+      ],
+      "sourceSHA256": "14e72f571c49500d455eb0039ad9cd2433b35f8e7eefb709873658dfd03ebfc0",
+      "output": "assets/art-packs/effects-raster-v1/references/charge-body.png",
+      "outputSHA256": "bff47c92937b0d57c1a1897ae5af0841f0384a0c0da9f34ea5af89deddec5334",
+      "role": "Existing attack cue and matte cyan actor; charge texture style reference, not new reach geometry"
+    },
+    {
+      "id": "dodge-body",
+      "source": "planning/art-concepts/gameplay-regions-b-001.png",
+      "sourceSize": [
+        1944,
+        809
+      ],
+      "cropXYXY": [
+        815,
+        288,
+        1028,
+        430
+      ],
+      "sourceSHA256": "0aa4e235f143991240b0a08032d7420d130b6b5e8240151690b8617d846f79ad",
+      "output": "assets/art-packs/effects-raster-v1/references/dodge-body.png",
+      "outputSHA256": "e922a1318a9b104944ecb67716014d82cbdd83517d698ec3dbfc7af170549cef",
+      "role": "Actual oblique top-down cyan actor and small movement trail; neutral dodge derivation"
+    },
+    {
+      "id": "shield-recipient",
+      "source": "planning/art-concepts/ally-buffs-001.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "cropXYXY": [
+        636,
+        302,
+        878,
+        425
+      ],
+      "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+      "output": "assets/art-packs/effects-raster-v1/references/shield-recipient.png",
+      "outputSHA256": "abb136683af219301b87579172979507d050f26ea4f541f8a1a4dfa83da19f98",
+      "role": "Existing recipient aura and leaf transfer; protective arc style"
+    },
+    {
+      "id": "frost-clear-recipient",
+      "source": "planning/art-concepts/ally-buffs-001.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "cropXYXY": [
+        688,
+        574,
+        785,
+        710
+      ],
+      "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+      "output": "assets/art-packs/effects-raster-v1/references/frost-clear-recipient.png",
+      "outputSHA256": "d63913eab60b7d0d58697f704e2353c2327eef03ed062fe53b3b1ffe912ed494",
+      "role": "Existing frost shelter recipient and pale clearing fragments"
+    },
+    {
+      "id": "heal-recipient",
+      "source": "planning/art-concepts/ally-buffs-001.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "cropXYXY": [
+        1186,
+        844,
+        1328,
+        977
+      ],
+      "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+      "output": "assets/art-packs/effects-raster-v1/references/heal-recipient.png",
+      "outputSHA256": "2dca5ce8b06d6bcd8726c6d27ca82625a028af7932103ce5d371e7019a536712",
+      "role": "Existing oasis recipient water drops and recovery ripples"
+    },
+    {
+      "id": "strength-recipient",
+      "source": "planning/art-concepts/ally-buffs-001.png",
+      "sourceSize": [
+        1536,
+        1024
+      ],
+      "cropXYXY": [
+        1191,
+        327,
+        1267,
+        414
+      ],
+      "sourceSHA256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+      "output": "assets/art-packs/effects-raster-v1/references/strength-recipient.png",
+      "outputSHA256": "bdb869e86a06dea6e3ac647cd6261f15550d53422a0a8cbdeb8ab0bcd6af2f8d",
+      "role": "Existing recipient mint leaf and aura; strengthening texture"
+    },
+    {
+      "id": "charge-neutral",
+      "source": "planning/art-concepts/gameplay-regions-a-001.png",
+      "sourceSize": [
+        1944,
+        809
+      ],
+      "cropXYXY": [
+        925,
+        367,
+        1018,
+        458
+      ],
+      "sourceSHA256": "14e72f571c49500d455eb0039ad9cd2433b35f8e7eefb709873658dfd03ebfc0",
+      "output": "assets/art-packs/effects-raster-v1/references/charge-neutral.png",
+      "outputSHA256": "5c895e90c2ae2b3d4972cf2ab0085e19136db28756182492c655062c8b66d10b",
+      "role": "Only cyan actor and white attack cue; mint leaf excluded after wrong species-specific charge ornament"
+    }
+  ]
+}

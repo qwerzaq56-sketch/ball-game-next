@@ -27,10 +27,10 @@ export class BiomeObjects{
      if(c.effect==='vortex'&&dist(o,e)>c.radius)continue;const v=c.effect==='current'?this.currentVector(o,e):delta(e,o),len=Math.hypot(v.x,v.y);if(!len)continue;const resistance=e.behavior==='orb'?c.speed:Math.min(c.speed,e.moveSpeed*(g.biomes.moveMultiplier(e)??1)*.25);const move=c.effect==='current'?resistance*dt:Math.min(len,c.speed*dt*Math.max(.15,1-len/c.radius));e.x=wrap(e.x+v.x/len*move,g.balance.world.worldWidth);e.y=wrap(e.y+v.y/len*move,g.balance.world.worldHeight);
     }if(c.effect==='vent'&&ready&&this.activeVent(o))this.cooldowns.set(o.id,now+c.tickInterval);continue;}
    // User: these landmarks benefit every actor remaining inside; no shared consumption.
-   if(continuous){for(const e of actors){if(c.effect==='heal')e.hp=Math.min(e.maxHp,e.hp+e.maxHp*c.power/Math.max(.001,c.cooldown)*dt);}continue;}
+   if(continuous){for(const e of actors){if(c.effect==='heal'){const before=e.hp;e.hp=Math.min(e.maxHp,e.hp+e.maxHp*c.power/Math.max(.001,c.cooldown)*dt);if(e.hp>before)e.healVisualUntil=now+.22;}}continue;}
    const e=actors.find(e=>c.effect!=='heal'||e.hp<e.maxHp);if(!e)continue;this.cooldowns.set(o.id,now+c.cooldown);
    if(c.effect==='food')this.spawnRewards(o);
-   if(c.effect==='heal')e.hp=Math.min(e.maxHp,e.hp+e.maxHp*c.power);
+   if(c.effect==='heal'){const before=e.hp;e.hp=Math.min(e.maxHp,e.hp+e.maxHp*c.power);if(e.hp>before)e.healVisualUntil=now+.22;}
    if(c.effect==='shield'){e.shieldHp=Math.max(e.shieldHp??0,e.maxHp*c.power);e.shieldRemaining=Math.max(e.shieldRemaining??0,c.duration);}
    if(c.effect==='speed'){e.objectSpeedUntil=now+c.duration;e.objectSpeedMultiplier=1+c.power;if(c.hpCost)applyDamage(e,e.maxHp*c.hpCost,g,null,g.balance,{kind:'field',ignoreDefense:true,knockback:false});}
    if(c.effect==='charm'){e.companionCharmUntil=now+c.duration;e.companionCharmPower=c.power;e.companionDecoration=o.candidate==='lake-garland'?'shell':'flower';}

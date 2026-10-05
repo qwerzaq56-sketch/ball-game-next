@@ -1,0 +1,66 @@
+[
+  {
+    "source": "planning/art-concepts/ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "box": [
+      250,
+      260,
+      405,
+      425
+    ],
+    "output": "assets\\art-packs\\characters-raster-v1\\references\\approved-growth-cyan.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "0979635bbe199e58371910d1aa2f6a6a7f3a96182bd90f9b1276edf76ecddf46"
+  },
+  {
+    "source": "planning/art-concepts/ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "box": [
+      286,
+      73,
+      390,
+      178
+    ],
+    "output": "assets\\art-packs\\characters-raster-v1\\references\\approved-basic-cyan.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "3a743a35a50a00cfe828591373e5bee5dac6c23969c0192c7fd00ababf548164"
+  },
+  {
+    "source": "planning/art-concepts/ball-002-refined.png",
+    "sourceSize": [
+      1942,
+      809
+    ],
+    "box": [
+      210,
+      525,
+      390,
+      715
+    ],
+    "output": "assets\\art-packs\\characters-raster-v1\\references\\approved-apex-cyan.png",
+    "sourceSHA256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+    "cropSHA256": "2dc8c69939530a72e869619baf603590deb1517d8c55d8824b798958e07e09db"
+  },
+  {
+    "source": "planning/art-concepts/gameplay-regions-a-001.png",
+    "sourceSize": [
+      1944,
+      809
+    ],
+    "box": [
+      281,
+      373,
+      343,
+      433
+    ],
+    "output": "assets\\art-packs\\characters-raster-v1\\references\\gameplay-cyan-body.png",
+    "sourceSHA256": "14e72f571c49500d455eb0039ad9cd2433b35f8e7eefb709873658dfd03ebfc0",
+    "cropSHA256": "ef08315a7e388e84846e241d649c667fe696baa6f63fc7e84d22c420d6afca33"
+  }
+]

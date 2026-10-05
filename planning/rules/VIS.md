@@ -8,7 +8,7 @@
   - symbol js/vectorArt.js :: drawMatteBody
   - file assets/terrain/manifest.json
   - symbol js/terrainArt.js :: TerrainArt
-  - test tests/matte-body.test.mjs :: R-VIS-001 matte body keeps exact silhouette
+  - test tests/matte-body.test.mjs :: R-VIS-001 matte body keeps exact colored silhouette
   - test tests/terrain-art.test.mjs :: R-VIS-006 terrain variant remains stable
   - test tests/terrain-art.test.mjs :: R-VIS-006 terrain loading/off states preserve original fallback
 - 변경 이력: 야간 첫 연결본. 경계 페더링과 단순 패턴은 원화 유기적 형태 개선·코너/토러스 추가 검증을 이어간다.

@@ -1,0 +1,191 @@
+[
+  {
+    "file": "charge-001.png",
+    "size": [
+      1307,
+      1203
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha32": [
+      212,
+      150,
+      1116,
+      973
+    ],
+    "opaqueFraction": 0.013298811120629948,
+    "transparentFraction": 0.9124593514937471,
+    "SHA256": "3d9d042df5b45e4a8f0102710fba0a69018a4f202ab3ab96cecc4a4c714111f3"
+  },
+  {
+    "file": "impact-001.png",
+    "size": [
+      1314,
+      1197
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha32": [
+      460,
+      295,
+      891,
+      853
+    ],
+    "opaqueFraction": 0.017963477949058337,
+    "transparentFraction": 0.9316022171105084,
+    "SHA256": "7b8841083d6de0a664f9a1a2c48e591fde59790551817d2907b1d76712b3dee0"
+  },
+  {
+    "file": "dodge-001.png",
+    "size": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha32": [
+      231,
+      272,
+      1434,
+      653
+    ],
+    "opaqueFraction": 0.005363709042933822,
+    "transparentFraction": 0.8540047968336323,
+    "SHA256": "810dc152f3760a1614b8c44af6b2caa71bd7c9157e967be15ef3f745cc40b315"
+  },
+  {
+    "file": "shield-001.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "visibleBBoxAlpha32": [
+      221,
+      86,
+      1314,
+      884
+    ],
+    "opaqueFraction": 0.008266448974609375,
+    "transparentFraction": 0.8428777058919271,
+    "SHA256": "e1f9510efaeb1532c5657d336bf3c04a8b47ca3b64604273c5bdd15cb84794cf"
+  },
+  {
+    "file": "strength-001.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha32": [
+      280,
+      273,
+      1075,
+      1039
+    ],
+    "opaqueFraction": 0.014744524062076316,
+    "transparentFraction": 0.9733910497572044,
+    "SHA256": "15b8c5ed393474f63f5425245ce671e88ed687b6c1dc5abd5bea758fc35fa283"
+  },
+  {
+    "file": "frost-clear-001.png",
+    "size": [
+      1262,
+      1246
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha32": [
+      345,
+      101,
+      989,
+      1043
+    ],
+    "opaqueFraction": 0.031338317481233134,
+    "transparentFraction": 0.8340400851663516,
+    "SHA256": "8c88807ba65f14a3f3b3ff12ab3482559ffd37725a69add559f128a18aa2d216"
+  },
+  {
+    "file": "heal-001.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "visibleBBoxAlpha32": [
+      256,
+      262,
+      1281,
+      865
+    ],
+    "opaqueFraction": 0.029308319091796875,
+    "transparentFraction": 0.9501393636067709,
+    "SHA256": "c2fa420582c7814813da545af667b3051aa03d757f49f94985635eb60ea8f55b"
+  },
+  {
+    "file": "charge-002.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha32": [
+      135,
+      147,
+      1121,
+      1076
+    ],
+    "opaqueFraction": 0.01684116409626357,
+    "transparentFraction": 0.8670073945193563,
+    "SHA256": "1768132813a955d898972ed434e62ca8b1feab8f1a37f5bf49a9d25bca8d3f91"
+  },
+  {
+    "file": "frost-clear-002.png",
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "visibleBBoxAlpha32": [
+      199,
+      181,
+      1118,
+      1045
+    ],
+    "opaqueFraction": 0.005840322133447291,
+    "transparentFraction": 0.9910767203640535,
+    "SHA256": "48f6ff62365bb47925fd33c92fefa81fadd77c38048aa1d2f326321fe8b35194"
+  }
+]

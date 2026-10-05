@@ -1,0 +1,56 @@
+{
+  "source": "body-sheet-001.png",
+  "size": [
+    2172,
+    724
+  ],
+  "mode": "RGBA",
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "sha256": "411ff20265a366aeef5c43350c0f25219b13bdb1b788f609841b77bd413cfc69",
+  "sprites": [
+    {
+      "stage": "base",
+      "box": [
+        130,
+        106,
+        632,
+        615
+      ],
+      "localPivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "stage": "growth",
+      "box": [
+        834,
+        105,
+        1336,
+        615
+      ],
+      "localPivot": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "stage": "apex",
+      "box": [
+        1530,
+        100,
+        2043,
+        619
+      ],
+      "localPivot": [
+        0.5,
+        0.5
+      ]
+    }
+  ],
+  "selected": true,
+  "assessment": "Matte disk and restrained rim accepted provisionally. Inner gray texture and thick rim are reduced during runtime color caching; original preserved. Actual game comparison remains parent integration."
+}
