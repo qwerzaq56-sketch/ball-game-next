@@ -32,11 +32,11 @@ export class TerrainArt {
     await Promise.all([ground.decode(),tree.decode()]);
     this.tiles.set('forest',Array.from({length:3},(_,v)=>{
      const c=document.createElement('canvas');c.width=c.height=800;const ctx=c.getContext('2d');
-     ctx.translate(v&1?800:0,v&2?800:0);ctx.scale(v&1?-1:1,v&2?-1:1);ctx.drawImage(ground,0,0,800,800);return c;
+     ctx.drawImage(ground,0,0,800,800);return c;
     }));this.forestRaster=true;
     this.forestTrees=Array.from({length:4},(_,v)=>{
      const tc=document.createElement('canvas');tc.width=tc.height=256;const ctx=tc.getContext('2d');
-     ctx.translate(v&1?256:0,v&2?256:0);ctx.scale(v&1?-1:1,v&2?-1:1);ctx.drawImage(tree,0,0,256,256);return tc;
+     ctx.drawImage(tree,0,0,256,256);return tc;
     });
    }catch(error){this.imagePackError=String(error);}
    this.ready=['grass','forest','lake','snow','volcano','desert'].every(id=>this.tiles.has(id));
