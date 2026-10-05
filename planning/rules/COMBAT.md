@@ -92,7 +92,7 @@
   - config ai.attackCooldown = 1.8
   - symbol js/combat.js :: aiAttackCharge
   - symbol js/combat.js :: aiAttackGateTimer
-  - test tests/charge-weather-risk.test.mjs :: AI charge varies with target distance and fills the same hold meter before release
+  - test tests/charge-weather-risk.test.mjs :: AI prefers full charge and only shortens for incoming contact strikes
 - 변경 이력: **AI 공격 간격이 v0.6의 2.5초에서 1.8초로 줄었다(구현 추인 카탈로그에 없던 변경을 이 카드 작성 중 발견).** 의도는 "AI가 공격을 너무 안 한다"는 플레이 피드백 대응으로 추정된다.
 
 ### R-COMBAT-009 · 피해와 방어

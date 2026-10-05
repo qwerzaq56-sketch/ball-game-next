@@ -66,3 +66,19 @@ test('boundary cache distinguishes 800-world forest crops and remains bounded',(
   assert.equal(art.layers.size,96);
  }finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
 });
+test('regional raster failure leaves its SVG usable without blocking other region images',async()=>{
+ const old={document:globalThis.document,Image:globalThis.Image,fetch:globalThis.fetch};
+ const manifest=JSON.parse(fs.readFileSync(new URL('../assets/terrain/manifest.json',import.meta.url)));
+ globalThis.document={createElement(){return {getContext(){return {drawImage(){}};}};}};
+ globalThis.Image=class{async decode(){if(this.src.endsWith('/snow-ground-002.png'))throw new Error('fixture missing snow');}};
+ globalThis.fetch=async()=>({ok:true,json:async()=>manifest});
+ try{
+  const art=new TerrainArt();await art.loading;assert.equal(art.ready,true);
+  assert.equal(art.tiles.get('snow')[0].width,400);assert.equal(art.rasterBiomes.has('snow'),false);
+  assert.match(art.rasterPackErrors.get('snow'),/fixture missing snow/);
+  for(const id of ['grassland','lake','volcano','desert']){
+   assert.equal(art.rasterBiomes.has(id),true);assert.equal(art.texture(id,-200,-200).width,800);
+  }
+  assert.equal(art.forestRaster,true);assert.equal(art.masks.size,8);
+ }finally{for(const [key,value]of Object.entries(old)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
+});

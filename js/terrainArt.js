@@ -39,11 +39,21 @@ export class TerrainArt {
      ctx.drawImage(tree,0,0,256,256);return tc;
     });
    }catch(error){this.imagePackError=String(error);}
-   try{
-    const ground=new Image();ground.src=new URL('../assets/art-packs/grass-raster-v1/ground-001.png',import.meta.url).href;await ground.decode();
-    const c=document.createElement('canvas');c.width=c.height=800;c.getContext('2d').drawImage(ground,0,0,800,800);
-    this.tiles.set('grass',[c,c,c]);this.rasterBiomes.add('grassland');
-   }catch(error){this.grassPackError=String(error);}
+   // Each regional image is optional independently. Preserve loaded SVGs on failure.
+   this.rasterPackErrors=new Map();
+   await Promise.all([
+    ['grassland','grass-raster-v1/ground-001.png'],
+    ['lake','regions-raster-v1/lake-ground-001.png'],
+    ['snow','regions-raster-v1/snow-ground-002.png'],
+    ['volcano','regions-raster-v1/volcano-ground-001.png'],
+    ['desert','regions-raster-v1/desert-ground-001.png'],
+   ].map(async([id,file])=>{
+    try{
+     const ground=new Image();ground.src=new URL('../assets/art-packs/'+file,import.meta.url).href;await ground.decode();
+     const c=document.createElement('canvas');c.width=c.height=800;c.getContext('2d').drawImage(ground,0,0,800,800);
+     this.tiles.set(biomeKey(id),[c,c,c]);this.rasterBiomes.add(id);
+    }catch(error){this.rasterPackErrors.set(id,String(error));if(id==='grassland')this.grassPackError=String(error);}
+   }));
    this.ready=['grass','forest','lake','snow','volcano','desert'].every(id=>this.tiles.has(id));
   }catch(error){this.error=String(error);this.ready=false;this.tiles.clear();this.masks.clear();this.layers.clear();}
  }

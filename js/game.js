@@ -1,6 +1,6 @@
 import {drawActionArt} from './actionArt.js';
 import {chargedAttackDistance} from './combat.js';
-import {BiomeObjects} from './biomeObjects.js?art-batch-13';
+import {BiomeObjects} from './biomeObjects.js?art-parallel-02';
 import {updateGrowthMotion} from './growthMotion.js';
 import {updateSprint} from './sprint.js';
 import {delta,angleTo,near,wrap} from './topology.js';
@@ -11,7 +11,7 @@ import { RunMetrics } from './runMetrics.js';
 import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection,drawMatteBody } from './vectorArt.js';
 import { Relics } from './relics.js';
 import { Era } from './era.js';
-import { Biomes } from './biomes.js';
+import { Biomes } from './biomes.js?art-parallel-02';
 import { AllyLinks } from './allyLinks.js';
 import { ApexHistory } from './apexHistory.js';
 import { scoreRanking, layoutNameLabels, debugRoleLabel, entityLabelRows } from './presentation.js';

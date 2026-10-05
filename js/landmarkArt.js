@@ -1,7 +1,44 @@
 // Approved T3-r2: healthy landmarks persist; readiness only changes transferable leaves/petals.
 // Geometry is presentation-only, in screen pixels. No gameplay state or randomness is read/write.
+// World dimensions before per-object visualScale. Renderer uses local coordinates at 2x.
+// Radius is exported for catalog/default tuning; callers still own actual gameplay config.
+export const LANDMARK_PRESENTATION=Object.freeze({
+ 'grass-garland':{width:104,height:78,radius:65,tint:'#65794a',tintAlpha:.08},
+ 'grass-wind-stack':{width:90,height:112,radius:65,tint:'#727e6d',tintAlpha:.08},
+ 'forest-berry-grove':{width:132,height:92,radius:78,tint:'#365b44',tintAlpha:.10},
+ 'forest-tree':{width:186,height:160,radius:108,tint:'#315a42',tintAlpha:.06},
+ 'lake-garland':{width:112,height:76,radius:68,tint:'#417d83',tintAlpha:.06},
+ 'snow-flowers':{width:126,height:100,radius:76,tint:'#a7c5d0',tintAlpha:.04},
+ 'snow-shelter':{width:182,height:128,radius:112,tint:'#839da9',tintAlpha:.06},
+ 'desert-oasis':{width:228,height:154,radius:140,tint:'#827b56',tintAlpha:.07},
+ 'desert-obelisk':{width:96,height:136,radius:72,tint:'#a88d5c',tintAlpha:.08},
+ 'volcano-obsidian-stack':{width:128,height:116,radius:80,tint:'#66596f',tintAlpha:.08},
+});
+// Ignore near-transparent export halos; preserve every opaque part and its shadow.
+export function alphaContentBounds(data,width,height,threshold=12){
+ let left=width,top=height,right=-1,bottom=-1;
+ for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(data[(y*width+x)*4+3]>=threshold){left=Math.min(left,x);top=Math.min(top,y);right=Math.max(right,x);bottom=Math.max(bottom,y);}
+ return right<left?{x:0,y:0,width,height}:{x:left,y:top,width:right-left+1,height:bottom-top+1};
+}
+function cacheLandmarkImage(image,id,source){
+ const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d');
+ if(source)ctx.drawImage(image,...source,0,0,256,256);else ctx.drawImage(image,0,0,256,256);
+ const profile=LANDMARK_PRESENTATION[id];
+ if(profile&&typeof ctx.getImageData==='function'){
+  const b=alphaContentBounds(ctx.getImageData(0,0,256,256).data,256,256);
+  const cropped=document.createElement('canvas');cropped.width=b.width;cropped.height=b.height;
+  const out=cropped.getContext('2d');out.drawImage(c,b.x,b.y,b.width,b.height,0,0,b.width,b.height);
+  out.globalCompositeOperation='source-atop';out.globalAlpha=profile.tintAlpha;out.fillStyle=profile.tint;out.fillRect(0,0,b.width,b.height);
+  out.globalAlpha=1;out.globalCompositeOperation='source-over';return cropped;
+ }return c;
+}
+function drawLandmarkBody(ctx,image,id){
+ const p=LANDMARK_PRESENTATION[id];const width=(p?.width??140)/2,height=(p?.height??140)/2;
+ ctx.drawImage(image,-width/2,-height/2,width,height);
+}
+
 const landmarkImages=new Map();
-const batchIds=['grass-garland','grass-wind-stack','forest-berry-grove','lake-garland','lake-current','lake-vortex','desert-obelisk','volcano-obsidian-stack','volcano-vent-cycle'];
+const batchIds=['grass-garland','grass-wind-stack','forest-berry-grove','lake-garland','desert-obelisk','volcano-obsidian-stack'];
 let forestLoading=null;
 export function loadLandmarkImages(){
  if(forestLoading)return forestLoading;
@@ -18,12 +55,11 @@ export function loadLandmarkImages(){
    if(id==='snow-flowers'){
     // Generated sheet: matched healthy bases, collectible petals on the left only.
     for(const [state,index]of [['ready',0],['post',1]]){
-     const c=document.createElement('canvas');c.width=c.height=256;
-     c.getContext('2d').drawImage(image,index*image.naturalWidth/2,0,image.naturalWidth/2,image.naturalHeight,0,20,256,216);
+     const c=cacheLandmarkImage(image,id,[index*image.naturalWidth/2,0,image.naturalWidth/2,image.naturalHeight]);
      landmarkImages.set(id+':'+state,c);
     }
    }else{
-    const c=document.createElement('canvas');c.width=c.height=256;c.getContext('2d').drawImage(image,0,0,256,256);landmarkImages.set(id,c);
+    const c=cacheLandmarkImage(image,id);landmarkImages.set(id,c);
    }return true;
   }catch{return false;}
  })).then(results=>results.every(Boolean));return forestLoading;
@@ -35,13 +71,13 @@ export function drawRevisedLandmark(ctx,o,ready=true){
  const image=landmarkImages.get(id==='snow-flowers'?id+':'+(ready?'ready':'post'):id);
  // Continuous shelters keep the same healthy body; benefit effects are drawn separately.
  if(image&&id!=='forest-tree'){
-  ctx.drawImage(image,-35,-35,70,70);return true;
+  drawLandmarkBody(ctx,image,id);return true;
  }
  if(batchIds.includes(id))return false;
  const oval=(x,y,rx,ry,color)=>{ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();};
  const path=(points,color)=>{ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.fillStyle=color;ctx.fill();};
  if(id==='forest-tree'){
-  if(image)ctx.drawImage(image,-35,-35,70,70);
+  if(image)drawLandmarkBody(ctx,image,id);
   else{oval(0,18,27,7,'#102e29');path([[-8,17],[-5,-17],[5,-17],[9,17],[17,21],[3,19],[-16,21]],'#8c7152');
    oval(-13,-10,16,14,'#225c45');oval(12,-13,18,15,'#2e7051');oval(-1,-24,20,16,'#3b7e5b');}
   for(const [x,y]of [[-15,-12],[11,-16],[0,-26]]){
@@ -73,19 +109,3 @@ export function drawRevisedLandmark(ctx,o,ready=true){
  return true;
 }
 
-// Water overlays follow geometry; only unlit water patterns rotate, never lit landmarks.
-export function drawEnvironmentalArt(ctx,o,{a,b,active=true}={}){
- loadLandmarkImages();const image=landmarkImages.get(o.candidate);if(!image)return false;
- ctx.save();
- if(o.candidate==='lake-current'&&a&&b){
-  const length=Math.hypot(b.x-a.x,b.y-a.y);
-  ctx.translate((a.x+b.x)/2,(a.y+b.y)/2);ctx.rotate(Math.atan2(b.y-a.y,b.x-a.x));
-  ctx.drawImage(image,-length/2,-o.width/2,length,o.width);
- }else if(o.candidate==='lake-vortex'){
-  const r=o.config.radius;ctx.drawImage(image,o.x-r,o.y-r,r*2,r*2);
- }else if(o.candidate==='volcano-vent-cycle'){
-  ctx.globalAlpha*=active?1:.3;const r=70*(o.visualScale??1);
-  ctx.drawImage(image,o.x-r,o.y-r,r*2,r*2);
- }else{ctx.restore();return false;}
- ctx.restore();return true;
-}

@@ -1,12 +1,41 @@
 export function terrainDamageMultiplier(size,balance){return 1/(1+Math.max(0,size-40)/(balance.biomes.terrainDefenseScale??200));}
 export function lavaResistance(e,balance){const c=balance.biomes;return e.color==='red'?Math.min(Math.max(0,c.maxRedLavaResistance??.85),.95,Math.max(0,e.size*(c.redLavaResistancePerSize??0))):0;}
 import {delta,angleTo,wrap} from './topology.js';
-import {TerrainArt} from './terrainArt.js';
+import {TerrainArt} from './terrainArt.js?art-parallel-02';
 import {dist} from './collision.js';
 import { boundCenter } from './worldBounds.js';
 import {random} from './random.js';
 import {spawnOrb} from './spawning.js';
 import {applyDamage} from './combat.js';
+// The 124-world-unit dark bank remains the exact existing lava corridor.
+// Uneven inner color planes and sparse molten seams replace the road-like
+// yellow center dashes without changing river points, collision or randomness.
+export function drawLavaSurface(ctx,rivers,time=0){
+ const chains=[];let chain=[];
+ for(const point of rivers){if(chain.length&&dist(chain.at(-1),point)>110){chains.push(chain);chain=[];}chain.push(point);}if(chain.length)chains.push(chain);
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([]);
+ const closed=(points,color)=>{ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);for(let i=1;i<points.length;i++)ctx.lineTo(points[i].x,points[i].y);ctx.closePath();ctx.fillStyle=color;ctx.fill();};
+ for(const points of chains){
+  ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);for(const p of points.slice(1))ctx.lineTo(p.x,p.y);ctx.strokeStyle='#8b3a2c';ctx.lineWidth=124;ctx.stroke();
+  if(points.length===1){for(const [radius,color]of [[62,'#8b3a2c'],[52,'#ca5833']]){ctx.beginPath();ctx.arc(points[0].x,points[0].y,radius,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();}continue;}
+  const left=[],right=[];
+  for(let i=0;i<points.length;i++){
+   const p=points[i],a=points[Math.max(0,i-1)],b=points[Math.min(points.length-1,i+1)],angle=Math.atan2(b.y-a.y,b.x-a.x),nx=-Math.sin(angle),ny=Math.cos(angle);
+   const width=49+Math.sin(p.x*.017+p.y*.009)*6,drift=Math.sin(p.x*.011-p.y*.014)*4;
+   left.push({x:p.x+nx*(width+drift),y:p.y+ny*(width+drift)});right.push({x:p.x-nx*(width-drift),y:p.y-ny*(width-drift)});
+  }
+  closed([...left,...right.reverse()],'#ce5934');
+  for(let i=1;i<points.length;i++){
+   const a=points[i-1],b=points[i],dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy);if(!len)continue;
+   const nx=-dy/len,ny=dx/len,phase=(Math.sin(a.x*.021+a.y*.013)*.5+.5),side=Math.sin(a.x*.01-a.y*.02)*21;
+   const at=(t,offset)=>({x:a.x+dx*t+nx*offset,y:a.y+dy*t+ny*offset});
+   // Off-center rust islands make broad, irregular molten planes, not stripes.
+   if(i%2===0)closed([at(.12,side-12),at(.42,side-20),at(.83,side-5),at(.64,side+8),at(.2,side+5)],'#a84630');
+   if(phase>.38){const t=.14+((time*.045+phase)%1)*.25;closed([at(t,side-3),at(t+.18,side-7),at(t+.55,side+1),at(t+.23,side+5)],'#e78a48');}
+  }
+ }
+ ctx.restore();
+}
 export class Biomes {
  constructor(game){
   this.game=game;this.terrainArt=new TerrainArt();this.enabled=game.balance.biomes?.enabled!==false;this.encounterTimer=45;this.damageTimer=0;this.encounters=0;this.sandstorms=[];this.sandstormTimer=5;
@@ -154,12 +183,7 @@ export class Biomes {
     else {ctx.moveTo(x-9,y+5);ctx.lineTo(x,y-6);ctx.lineTo(x+9,y+5);}ctx.stroke();
    }}
   }
-  if(this.rivers.length){
-   const path=()=>{ctx.beginPath();let previous=null;for(const h of this.rivers){if(!previous||dist(previous,h)>110)ctx.moveTo(h.x,h.y);else ctx.lineTo(h.x,h.y);previous=h;}};
-   ctx.lineCap='round';ctx.lineJoin='round';path();ctx.strokeStyle='#b63420';ctx.lineWidth=124;ctx.stroke();
-   path();ctx.strokeStyle='#f97316';ctx.lineWidth=86;ctx.stroke();
-   path();ctx.strokeStyle='#ffcc68';ctx.lineWidth=20;ctx.setLineDash([32,60]);ctx.lineDashOffset=-time*90;ctx.stroke();ctx.setLineDash([]);
-  }
+  if(this.rivers.length)drawLavaSurface(ctx,this.rivers,time);
   for(const f of this.sandstorms){ctx.save();ctx.beginPath();ctx.arc(f.x,f.y,f.radius,0,Math.PI*2);ctx.fillStyle='rgba(234,179,8,.14)';ctx.fill();ctx.strokeStyle='rgba(253,224,71,.65)';ctx.lineWidth=2/zoom;ctx.setLineDash([16/zoom,10/zoom]);ctx.stroke();ctx.setLineDash([]);for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(f.x,f.y,f.radius*(.35+i*.2),time*.8+i,time*.8+i+Math.PI*1.25);ctx.stroke();}ctx.font=`bold ${12/zoom}px system-ui`;ctx.fillStyle='#fde68a';ctx.textAlign='center';ctx.fillText(`모래바람 ${Math.ceil(f.remaining)}s`,f.x,f.y-f.radius-10/zoom);ctx.restore();}
   for(const r of this.labels){ctx.fillStyle='#e2e8f0';ctx.font=`bold ${Math.min(20/zoom,60)}px system-ui`;ctx.textAlign='center';ctx.fillText(r.name+(r.id==='snow'&&this.blizzard()?' · 눈보라':''),r.x,r.y);}
   ctx.restore();

@@ -74,3 +74,11 @@ scene-coherent-v1의 snow-shelter/desert-oasis PNG를 실제 landmarkArt256캐�
 원본 gameplay-regions-a-001과 A003을 직접 참조해 grass-raster-v1/ground-001.png 제작, 프롬프트·생성본 보존. 큰 잎과 조용한 올리브 색면, 수집물/기능오브젝트/공 제외. 800world 캐시와 동일 광원 crop으로 실제 초원 연결, 반전 없음. 실패 시 기존SVG 폴백. rasterBiomes로 숲 외 PNG의800phase 지원, 음수좌표 crop 테스트 확장. 관련16테스트 통과(추가phase검사후지형6재확인). 실제Game.render6지역 0.5/1배율·아트OFF 폴백·콘솔오류경고0, reports/grass-raster-six-regions-001.png/-zoom1.png.
 
 전체렌더에서 이전 모듈 캐시 때문에 환경3종이 다시 구벡터로 보인 문제 발견. index→main→Game→BiomeObjects 및 art-review import에 art-batch-13 버전키 연결, 재확인에서 해류/소용돌이/분출구PNG 정상 표시. 게임규칙 변경 없음. 원화의 나무 가장자리 구성과 현재 격자형지역경계·나무분포는 아직 다르고, PNG바닥 반복/이음새 가능성 남음. 초원과 숲만 PNG바닥, 호수·설원·화산·사막은 기존SVG. 다음은 원화의 지역별 색면/큰환경형상 맞춤 우선.
+
+## 전 오브젝트·타일 병렬 보정 통합 · 04:50 KST
+
+사용자 명시 병렬요청으로3담당 수행, 병목 reports/ART_WORKFLOW_BOTTLENECKS.md 및 PARALLEL_*에 기록. 이득10종 alpha crop/4~10%지역색혼합/종류별본체크기 적용. 사용자 최신승인에 따라 실제효과반경도본체에맞춤: 꽃65 바람65 열매78 고목108 진주68 꽃76 피난112 오아시스140 비석72 흑요석80, 각visualScale유지. 오아시스기존추가1.6배는중복제거. 반경override보존, 경계접촉안팎테스트. 규칙R-WORLD016추가·정본append, R15조건대체기록.
+
+환경3종 독립캐시, 조용한수면/통로클립/소용돌이실영역crop·낮은범위표시, 분출휴식별도rest002. 용암124폭·좌표·판정유지하고도로중앙점선을비정형색면으로교체. 이득중앙다이아제거·범위1.2px·부드러운녹회색. grass/forest기존PNG+4지역신규PNG=6지역이미지지원. 설원001바위더미반복오인발견후002낮은눈바닥재제작, 모든원본/프롬프트보존.
+
+전체375/375, spec115카드/승인107구현107/verified93/conflicts0/broken0(이전제목2연결정정). 실제6지역0.5/1·OFF폴백·13종상태확인오류경고0, parallel-six-regions/parallel-objects 증거보존. 최신카탈로그/UI/renderer캐시갱신 art-parallel-02. 미완료: 눈타일밝기이음새·블록/식생반복·원화의큰자연배경구성. 원본source/main/public배포불변. 다음은이음새/반복감소·큰지형색면구성. 세부컨펌반복없이승인된범위내계속.

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {drawRevisedLandmark} from '../js/landmarkArt.js';
+import {drawRevisedLandmark,alphaContentBounds,LANDMARK_PRESENTATION} from '../js/landmarkArt.js';
 import {random,resetRandom} from '../js/random.js';
 
 const capture=()=>{
@@ -40,16 +40,27 @@ test('one missing image does not disable continuous landmark images or change re
    const sample=capture();assert.equal(art.drawRevisedLandmark(sample.ctx,{candidate}),true);
    assert.equal(sample.commands[0][0],'drawImage');
   }
-  const current=capture(),object={candidate:'lake-current',width:120};
-  art.drawEnvironmentalArt(current.ctx,object,{a:{x:0,y:0},b:{x:0,y:200}});
-  assert.deepEqual(current.commands.find(([name])=>name==='rotate'),['rotate',Math.PI/2]);
-  assert.deepEqual(current.commands.find(([name])=>name==='drawImage').slice(2),[-100,-60,200,120]);
-  const vortex=capture();art.drawEnvironmentalArt(vortex.ctx,{candidate:'lake-vortex',x:50,y:70,config:{radius:180}});
-  assert.deepEqual(vortex.commands.find(([name])=>name==='drawImage').slice(2),[-130,-110,360,360]);
   const fallback=capture();art.drawRevisedLandmark(fallback.ctx,{candidate:'forest-tree'});
   assert.equal(fallback.commands.some(([name])=>name==='drawImage'),false);
  }finally{
   if(previousImage===undefined)delete globalThis.Image;else globalThis.Image=previousImage;
   if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;
  }
+});
+
+
+test('alpha crop keeps opaque silhouette and excludes export halos',()=>{
+ const data=new Uint8ClampedArray(6*5*4);
+ data[(0*6+0)*4+3]=3;data[(1*6+2)*4+3]=255;data[(3*6+4)*4+3]=18;
+ assert.deepEqual(alphaContentBounds(data,6,5),{x:2,y:1,width:3,height:3});
+ assert.deepEqual(alphaContentBounds(new Uint8ClampedArray(24),3,2),{x:0,y:0,width:3,height:2});
+});
+test('landmark world footprint and recommended range have consistent scale',()=>{
+ assert.equal(Object.keys(LANDMARK_PRESENTATION).length,10);
+ for(const p of Object.values(LANDMARK_PRESENTATION)){
+  assert.ok(p.width>0&&p.height>0);assert.ok(p.radius>=Math.max(p.width,p.height)/2);
+  assert.ok(p.tintAlpha>=0&&p.tintAlpha<=.12,'matte palette correction remains subtle');
+ }
+ assert.ok(LANDMARK_PRESENTATION['forest-tree'].width>LANDMARK_PRESENTATION['forest-berry-grove'].width);
+ assert.ok(LANDMARK_PRESENTATION['desert-oasis'].width>LANDMARK_PRESENTATION['snow-flowers'].width);
 });

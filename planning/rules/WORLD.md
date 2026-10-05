@@ -187,8 +187,20 @@
   - test tests/biome-objects.test.mjs :: oasis continuously heals all occupants without shared cooldown, and stops on exit
 
 ### R-WORLD-015 · 역주행과 객체 크기 다양화
-- 규칙: 해류의 전투 개체 표류 속도를 실제 기본 이동 능력25% 이하로 제한하여 역주행 허용, 먹이 표류 유지. 객체는 seed 고정0.8~1.2배 본체/범위, 작은 오아시스는 개수1/3·추가반경1.6배·회복2배. 기존 오아시스 기본6개/초당0.5%는 기본2개/초당1%로 대체.
+- 규칙: 해류의 전투 개체 표류 속도를 실제 기본 이동 능력25% 이하로 제한하여 역주행 허용, 먹이 표류 유지. 객체는 seed 고정0.8~1.2배 본체/범위, 작은 오아시스는 개수1/3·회복2배. 기존 오아시스 기본6개/초당0.5%는 기본2개/초당1%로 대체. 추가반경1.6배는 R-WORLD-016의 본체별 기본반경으로 대체한다.
 - 상태: 승인
 - 출처: 사용자 직접 요청2026-10-06, 비율은 Codex 구현 선택
 - 확인:
   - test tests/biome-objects.test.mjs :: current counterflow cannot overpower ordinary actor movement and object scales repeat deterministically
+
+### R-WORLD-016 · 원화 크기와 직관적인 효과 범위
+- 규칙: 원화에 맞춘 본체 크기와 효과 영역을 함께 조정한다. 기본 반경(world)은 꽃무리65, 바람돌65, 열매78, 고목108, 진주68, 서리꽃76, 피난처112, 오아시스140, 비석72, 흑요석80. 본체/범위는 동일 deterministic visualScale을 적용하되 별도 오아시스1.6배는 중복 적용하지 않는다. 개인 프리셋의 반경 override는 유지한다. 접촉 판정은 범위와 개체 몸 반지름의 겹침으로 적용하며 표시 원은 오브젝트 효과영역을 나타낸다. 이후 범위만 또는 본체·범위를 함께 튜닝할 수 있다.
+- 상태: 승인
+- 출처: 사용자 직접 요청2026-10-06, 개별 기본반경은 Codex 보정 선택
+- 변경 이력: 기존 고목75→108, 피난처80→112, 오아시스80×1.6→140(기본 반경), 나머지는 js/biomeObjectCatalog.js와 presentation 표를 함께 적용. 수혜 대상·보상·쿨다운·게임 난수는 유지.
+- 확인:
+  - obj forest-tree radius = 108
+  - obj snow-shelter radius = 112
+  - obj desert-oasis radius = 140
+  - symbol js/landmarkArt.js :: LANDMARK_PRESENTATION
+  - test tests/biome-objects.test.mjs :: scaled landmark ranges match presentation and continuous contact stops outside
