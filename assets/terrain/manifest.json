@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "status": "T2 SVG draft, game integration pending",
+  "version": 2,
+  "status": "Integrated organic ground revision; concept fidelity work in progress",
   "tileWorldSize": 400,
   "cellWorldSize": 200,
   "variantSelection": "(cellPairX*73856093 ^ cellPairY*19349663) unsigned modulo 3; no gameplay RNG",
