@@ -2,7 +2,7 @@
 <style>body{margin:18px;background:#0b1020;color:#e2e8f0;font:15px system-ui}canvas{width:100%;max-width:1280px;border:1px solid #334155}button{padding:9px;margin:5px}h2{font-size:18px}</style>
 <h1>실제 Game.render · 6지역 통제 장면</h1><p>실제 게임 렌더러로 고정 개체를 배치한 검증 화면. 자연 플레이 결과는 별도 확인.</p>
 <button id="zoom">배율 0.5 / 1.0</button><button id="art">지형 아트 ON / OFF</button><p id="state">자산 로딩 중</p><main></main>
-<button id="attack-state">공격 가능 / 불가 비교</button><script type="module">
+<button id="motion">이동 분리 검증 시작 / 정지</button><button id="attack-state">공격 가능 / 불가 비교</button><script type="module">
 import {Game} from '../js/game.js?forest-clearing-01';import {AIEntity} from '../js/ai.js';
 import {loadLandmarkImages} from '../js/landmarkArt.js?forest-clearing-01';await loadLandmarkImages();
 import {loadEnvironmentImages} from '../js/environmentArt.js?forest-clearing-01';await loadEnvironmentImages();
@@ -26,5 +26,12 @@ for(const id of ['grassland','forest','lake','snow','volcano','desert'].filter(i
 const render=()=>{for(const g of scenes){g.camera.zoom=zoom;g.biomes.terrainArt.setEnabled(enabled);g.render();}document.querySelector('#state').textContent=`${scenes.every(g=>g.biomes.terrainArt.ready)?'아트 로딩 완료':'단색 폴백'} · 배율 ${zoom} · 아트 ${enabled?'ON':'OFF'}`;};
 document.querySelector('#attack-state').onclick=()=>{for(const g of scenes)g.player.attackStack=g.player.attackStack?0:1;render();};
 document.querySelector('#zoom').onclick=()=>{zoom=zoom===.5?1:.5;render();};document.querySelector('#art').onclick=()=>{enabled=!enabled;render();};render();
+let moving=false,start=0;
+const origins=scenes.map(g=>({g,positions:[g.player,...g.entities].map(e=>({e,x:e.x,y:e.y}))}));
+document.querySelector('#motion').onclick=()=>{moving=!moving;if(moving){start=performance.now();requestAnimationFrame(frame);}};
+function frame(now){if(!moving)return;const t=(now-start)/1000;
+ for(const {g,positions} of origins){g.gameTime=2+t;for(const [i,{e,x,y}]of positions.entries()){e.x=x+240*Math.sin(t*.7+i*.5);e.y=y+130*Math.sin(t*.9+i*.4);}}
+ render();requestAnimationFrame(frame);
+}
 </script></html>
 
