@@ -309,6 +309,7 @@ html, body {
 }
 
 #controls-hint {
+  pointer-events: none;
   position: fixed;
   bottom: 12px;
   left: 50%;
