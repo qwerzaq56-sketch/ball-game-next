@@ -1,0 +1,38 @@
+{
+  "version": "forest-layout-001",
+  "worldRepeat": 800,
+  "logicalModule": 400,
+  "layers": {
+    "floor": "floor-002.png",
+    "dense": "ground-005.png",
+    "tree": "tree-003.png",
+    "decals": [
+      {
+        "file": "decal-001.svg",
+        "worldSize": [
+          18,
+          29
+        ],
+        "interactive": false
+      },
+      {
+        "file": "decal-002.svg",
+        "worldSize": [
+          18,
+          29
+        ],
+        "interactive": false
+      },
+      {
+        "file": "decal-003.svg",
+        "worldSize": [
+          18,
+          29
+        ],
+        "interactive": false
+      }
+    ]
+  },
+  "density": "forestDensity(worldX,worldY), periodic at 8000",
+  "notes": "First compositing pass; dedicated grass/path/connectors not yet produced."
+}

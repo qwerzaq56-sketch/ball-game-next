@@ -17,7 +17,7 @@ export function forestDecoration(x,y){
  return {size,x:x+100+(((h>>>14)%101)/50-1)*margin,y:y+100+(((h>>>21)%101)/50-1)*margin,variant:(h>>>6)%4};
 }
 // Rendering cache only: crossfade overlapping edge samples without mirroring baked light.
-export function periodicForestGround(image,size=1600,overlap=120){
+export function periodicForestGround(image,size=800,overlap=60){
  const source=document.createElement('canvas');source.width=source.height=size+2*overlap;
  const sc=source.getContext('2d');sc.drawImage(image,0,0,source.width,source.height);
  if(typeof sc.createLinearGradient!=='function'){source.width=source.height=size;sc.drawImage(image,0,0,size,size);return source;}
@@ -37,8 +37,18 @@ export function periodicForestGround(image,size=1600,overlap=120){
  }
  return axis(axis(source,true),false);
 }
+// World-space density, continuous across chunk borders and the 8000-world wrap.
+export function forestDensity(x,y){
+ const tau=Math.PI*2;
+ const center=1000+260*Math.sin(tau*x/8000);
+ const distance=Math.abs(modulo(y-center+1000,2000)-1000);
+ const path=Math.max(0,Math.min(1,(distance-48)/110));
+ const clusters=.48+.23*Math.sin(tau*x/1600)+.21*Math.cos(tau*y/2000)+.12*Math.sin(tau*(x+y)/1000);
+ const patch=Math.max(0,Math.min(1,(clusters-.25)/.4));
+ return path*patch*patch*(3-2*patch);
+}
 export class TerrainArt {
- constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();this.blendMasks=new Map();this.rasterBiomes=new Set();
+ constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();this.blendMasks=new Map();this.rasterBiomes=new Set();this.forestChunks=new Map();
   if(typeof document!=='undefined'&&typeof Image!=='undefined')this.loading=this.load();
  }
  setEnabled(enabled){this.enabled=!!enabled;}
@@ -56,14 +66,15 @@ export class TerrainArt {
    // Approved image-asset pilot. Optional loading keeps the original vector pack usable.
    try{
     const pack=new URL('../assets/art-packs/forest-raster-v1/',import.meta.url);
-    const ground=new Image(),tree=new Image();ground.src=new URL('ground-005.png',pack).href;tree.src=new URL('tree-003.png',pack).href;
-    await Promise.all([ground.decode(),tree.decode()]);
-    const cachedGround=periodicForestGround(ground);this.tiles.set('forest',[cachedGround,cachedGround,cachedGround]);this.forestRaster=true;
+    const ground=new Image(),tree=new Image(),floor=new Image();floor.src=new URL('floor-002.png',pack).href;ground.src=new URL('ground-005.png',pack).href;tree.src=new URL('tree-003.png',pack).href;
+    await Promise.all([ground.decode(),tree.decode(),floor.decode()]);
+    this.forestFloor=periodicForestGround(floor);const cachedGround=periodicForestGround(ground);this.tiles.set('forest',[cachedGround,cachedGround,cachedGround]);this.forestRaster=true;
     this.forestTrees=Array.from({length:4},(_,v)=>{
      const tc=document.createElement('canvas');tc.width=tc.height=256;const ctx=tc.getContext('2d');
      ctx.drawImage(tree,0,0,256,256);return tc;
     });
    }catch(error){this.imagePackError=String(error);}
+   try{this.forestDecals=await Promise.all([1,2,3].map(async n=>{const i=new Image();i.src=new URL(`../assets/art-packs/forest-raster-v1/decal-${String(n).padStart(3,'0')}.svg`,import.meta.url).href;await i.decode();return i;}));}catch(error){this.decalPackError=String(error);}
    // Each regional image is optional independently. Preserve loaded SVGs on failure.
    this.rasterPackErrors=new Map();
    await Promise.all([
@@ -83,12 +94,22 @@ export class TerrainArt {
   }catch(error){this.error=String(error);this.ready=false;this.tiles.clear();this.masks.clear();this.layers.clear();this.blendMasks.clear();}
  }
  variant(id,x,y){return (id==='forest'&&this.forestRaster)||this.rasterBiomes.has(id)?forestGroundVariant(x,y):terrainVariant(x,y);}
- texture(id,x,y){return this.tiles.get(biomeKey(id))?.[this.variant(id,x,y)];}
+ texture(id,x,y){
+ const dense=this.tiles.get(biomeKey(id))?.[this.variant(id,x,y)];
+ if(id!=='forest'||!this.forestFloor)return dense;
+ const bx=Math.floor(modulo(x,8000)/800)*800,by=Math.floor(modulo(y,8000)/800)*800,key=`${bx}:${by}`;
+ if(this.forestChunks.has(key))return this.forestChunks.get(key);
+ const c=document.createElement('canvas');c.width=c.height=800;const ctx=c.getContext('2d');ctx.drawImage(this.forestFloor,0,0);
+ const mask=document.createElement('canvas');mask.width=mask.height=80;const mc=mask.getContext('2d'),pixels=mc.createImageData(80,80);
+ for(let py=0;py<80;py++)for(let px=0;px<80;px++){const n=(py*80+px)*4;pixels.data[n]=pixels.data[n+1]=pixels.data[n+2]=255;pixels.data[n+3]=Math.round(255*forestDensity(bx+(px+.5)*10,by+(py+.5)*10));}
+ mc.putImageData(pixels,0,0);const foliage=document.createElement('canvas');foliage.width=foliage.height=800;const fc=foliage.getContext('2d');fc.drawImage(mask,0,0,800,800);fc.globalCompositeOperation='source-in';fc.drawImage(dense,0,0);ctx.drawImage(foliage,0,0);
+ if(this.forestChunks.size>=12)this.forestChunks.delete(this.forestChunks.keys().next().value);this.forestChunks.set(key,c);return c;
+ }
  layer(id,x,y,direction){
   const texture=this.texture(id,x,y),mask=this.masks.get(direction);if(!texture||!mask)return null;
   // Cache the actual neighbor crop, including its 800-world raster phase.
   const tx=modulo(x,texture.width||400),ty=modulo(y,texture.height||400);
-  const key=`${id}:${this.variant(id,x,y)}:${tx}:${ty}:${direction}`;
+  const key=`${id}:${id==='forest'&&this.forestFloor?Math.floor(modulo(x,8000)/800)+','+Math.floor(modulo(y,8000)/800):''}:${this.variant(id,x,y)}:${tx}:${ty}:${direction}`;
   if(this.layers.has(key))return this.layers.get(key);
   const c=document.createElement('canvas');c.width=c.height=200;const ctx=c.getContext('2d');
   // Meet at a shared 50/50 mixture instead of swapping both colors at the seam.
@@ -96,6 +117,11 @@ export class TerrainArt {
   ctx.globalCompositeOperation='destination-in';ctx.drawImage(mask,0,0,200,200);
   if(this.layers.size>=96)this.layers.delete(this.layers.keys().next().value);
   this.layers.set(key,c);return c;
+ }
+ drawForestDetails(ctx,x,y){
+  const d=forestDecoration(x,y);if(d&&this.forestTrees&&forestDensity(d.x,d.y)>.4)ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);
+  const h=(Math.imul(x/200,73856093)^Math.imul(y/200,19349663))>>>0;
+  if(this.forestDecals&&h%3===0){const px=x+35+(h>>>8)%130,py=y+35+(h>>>16)%130,size=18+(h>>>24)%12;ctx.drawImage(this.forestDecals[(h>>>5)%3],px-size/2,py-size/2,size,size);}
  }
  drawTile(ctx,tile,biomes){
   if(!this.enabled||!this.ready)return false;
@@ -107,10 +133,10 @@ export class TerrainArt {
    ids.push(biomes.regionAt({x:nx+100,y:ny+100})?.id||region.id);
   }
   if(ids.every(id=>id===region.id)){
-   if(region.id==='forest'&&this.forestTrees){const d=forestDecoration(x,y);if(d)ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);}
+   if(region.id==='forest')this.drawForestDetails(ctx,x,y);
    return true;
   }
-  const key='blend:'+ids.map(id=>{const t=this.texture(id,x,y);return `${id}:${this.variant(id,x,y)}:${modulo(x,t?.width||400)}:${modulo(y,t?.height||400)}`;}).join(',');
+  const key='blend:'+ids.map(id=>{const t=this.texture(id,x,y);return `${id}:${id==='forest'&&this.forestFloor?Math.floor(modulo(x,8000)/800)+','+Math.floor(modulo(y,8000)/800):''}:${this.variant(id,x,y)}:${modulo(x,t?.width||400)}:${modulo(y,t?.height||400)}`;}).join(',');
   let composed=this.layers.get(key);
   if(!composed){
    composed=document.createElement('canvas');composed.width=composed.height=200;
@@ -145,10 +171,7 @@ export class TerrainArt {
    this.layers.set(key,composed);
   }
   ctx.drawImage(composed,x,y);
-  if(region.id==='forest'&&this.forestTrees){
-   const d=forestDecoration(x,y);
-   if(d)ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);
-  }
+  if(region.id==='forest')this.drawForestDetails(ctx,x,y);
 
   return true;
  }

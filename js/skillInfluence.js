@@ -1,5 +1,5 @@
 // R-META-002: use actual skill effects rather than species/slot guesses.
-import {scaledSkill} from './skillCatalog.js';import {attackDamageForSize} from './combat.js?forest-palette-04';import {delta} from './topology.js';import {isHostile} from './collision.js';
+import {scaledSkill} from './skillCatalog.js';import {attackDamageForSize} from './combat.js?forest-layout-01';import {delta} from './topology.js';import {isHostile} from './collision.js';
 export function influenceCoefficients({area,worldArea,affected=0,population=0,duration=1,cooldown=1,damageFraction=0,controlSeconds=0,sizeRatio=1}){
  const mapCoverage=Math.min(1,Math.max(0,area)/Math.max(1,worldArea)),objectCoverage=population>0?Math.max(0,Math.min(1,affected/population)):0,duty=Math.min(1,Math.max(0,duration)/Math.max(.001,cooldown)),severity=1-Math.exp(-Math.max(0,damageFraction)),sizeWeight=Math.sqrt(Math.max(.25,Math.min(4,sizeRatio))),control=Math.min(1,Math.max(0,controlSeconds)/Math.max(1,duration));
  return {mapCoverage,objectCoverage,duty,damageFraction,severity,sizeWeight,mapDominance:100*mapCoverage*duty,objectDominance:100*objectCoverage*duty,influence:100*objectCoverage*duty*(severity+(1-severity)*control),pressure:100*duty*(severity+(1-severity)*control)*sizeWeight};

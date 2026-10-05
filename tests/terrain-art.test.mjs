@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights} from '../js/terrainArt.js';
+import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights,forestDensity} from '../js/terrainArt.js';
 import {resetRandom,random} from '../js/random.js';
 test('R-VIS-006 terrain variant remains stable for a 2x2 block without gameplay RNG',()=>{
  resetRandom(34);const expected=random('world');resetRandom(34);
@@ -111,4 +111,10 @@ test('expanded forest ground does not alias boundary crops 800 world units apart
  const art=new TerrainArt();art.ready=true;art.forestRaster=true;art.tiles.set('forest',Array.from({length:3},()=>({width:1600,height:1600})));art.tiles.set('desert',Array.from({length:3},()=>({width:800,height:800})));
  const old=globalThis.document,crops=[];globalThis.document={createElement(){return {getContext(){return {createImageData(){return {data:new Uint8ClampedArray(200*200*4)};},putImageData(){},drawImage(...a){if(a.length===9&&a[0].width===1600)crops.push(a.slice(1,3));}};}};}};
  try{const b={game:{balance:{world:{worldWidth:8000,worldHeight:8000}}},regionAt(p){return {id:p.x%800>=600?'desert':'forest'};}};for(const x of [400,1200])art.drawTile({drawImage(){}},{x,y:200,region:{id:'forest'}},b);assert.deepEqual(crops,[[400,200],[1200,200]]);assert.equal(art.layers.size,2);}finally{if(old===undefined)delete globalThis.document;else globalThis.document=old;}
+});
+
+test('forest density is continuous across chunk edges and world wrap with clear paths',()=>{
+ for(const p of [0,800,1600,7999]){assert(Math.abs(forestDensity(p,500)-forestDensity(p+8000,500))<1e-10);assert(Math.abs(forestDensity(300,p)-forestDensity(300,p+8000))<1e-10);}
+ assert.equal(forestDensity(0,1000),0);
+ for(let x=0;x<8000;x+=200){for(let y=0;y<8000;y+=200){const d=forestDensity(x,y);assert(d>=0&&d<=1);assert(Math.abs(d-forestDensity(x+.01,y))<.001);}}
 });

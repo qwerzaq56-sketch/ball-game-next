@@ -1,6 +1,6 @@
 import {near} from './topology.js';
 import {dist} from './collision.js';
-import {applyDamage} from './combat.js?forest-palette-04';
+import {applyDamage} from './combat.js?forest-layout-01';
 import {spawnOrb} from './spawning.js';
 import {random} from './random.js';
 export const ERA_PHASES=[{id:'abundance',name:'영양기',end:180,encounter:30},{id:'competition',name:'경쟁기',end:360,encounter:45},{id:'war',name:'전쟁기',end:480,encounter:45},{id:'decline',name:'쇠퇴기',end:540,encounter:60}];

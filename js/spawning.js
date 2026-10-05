@@ -1,7 +1,7 @@
 import { random } from './random.js';
 import {growthFromSize} from './entity.js';
 import { Entity } from './entity.js';
-import { AIEntity } from './ai.js?forest-palette-04';
+import { AIEntity } from './ai.js?forest-layout-01';
 
 function randomColor(balance) {
   return balance.colors[Math.floor(random('world') * balance.colors.length)];

@@ -3,9 +3,9 @@
 <h1>실제 Game.render · 6지역 통제 장면</h1><p>실제 게임 렌더러로 고정 개체를 배치한 검증 화면. 자연 플레이 결과는 별도 확인.</p>
 <button id="zoom">배율 0.5 / 1.0</button><button id="art">지형 아트 ON / OFF</button><p id="state">자산 로딩 중</p><main></main>
 <button id="attack-state">공격 가능 / 불가 비교</button><script type="module">
-import {Game} from '../js/game.js?forest-palette-04';import {AIEntity} from '../js/ai.js';
-import {loadLandmarkImages} from '../js/landmarkArt.js?forest-palette-04';await loadLandmarkImages();
-import {loadEnvironmentImages} from '../js/environmentArt.js?forest-palette-04';await loadEnvironmentImages();
+import {Game} from '../js/game.js?forest-layout-01';import {AIEntity} from '../js/ai.js';
+import {loadLandmarkImages} from '../js/landmarkArt.js?forest-layout-01';await loadLandmarkImages();
+import {loadEnvironmentImages} from '../js/environmentArt.js?forest-layout-01';await loadEnvironmentImages();
 const balance=await (await fetch('../config/gameBalance.json')).json(),scenes=[];
 let zoom=.5,enabled=true;
 const onlyBiome=new URLSearchParams(location.search).get('biome');

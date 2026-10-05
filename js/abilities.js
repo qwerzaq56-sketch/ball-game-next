@@ -1,12 +1,12 @@
 import {terrainDamageMultiplier} from './biomes.js';
 import {delta,angleTo} from './topology.js';
 import { boundCenter } from './worldBounds.js';
-import { attackChargeDistanceForSize, attackDamageForSize, applyDamage, canStartAttack } from './combat.js?forest-palette-04';
+import { attackChargeDistanceForSize, attackDamageForSize, applyDamage, canStartAttack } from './combat.js?forest-layout-01';
 import { cancelAbsorption } from './absorption.js';
 import { dist, isHostile, canAbsorb, canEatOrb } from './collision.js';
 import { random } from './random.js';
 import {scaledSkill} from './skillCatalog.js';
-import {AIEntity} from './ai.js?forest-palette-04';
+import {AIEntity} from './ai.js?forest-layout-01';
 import {AbilityMetrics} from './abilityMetrics.js';
 export const ABILITIES = {
   cyan:{windup:.6,cooldown:10,radius:260}, blue:{windup:.6,cooldown:10,length:400,width:180},
