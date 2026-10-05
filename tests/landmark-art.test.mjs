@@ -18,3 +18,23 @@ test('approved landmarks preserve gameplay and healthy shelter/oasis across cool
  }
  const unknown=capture();assert.equal(drawRevisedLandmark(unknown.ctx,{candidate:'lake-garland'}),false);assert.deepEqual(unknown.commands,[]);
 });
+
+test('one missing image does not disable continuous landmark images or change readiness',async()=>{
+ const previousImage=globalThis.Image,previousDocument=globalThis.document;
+ try{
+  globalThis.Image=class{async decode(){if(this.src.includes('guardian-002'))throw new Error('missing asset');}};
+  globalThis.document={createElement:()=>({getContext:()=>({drawImage(){}})})};
+  const art=await import('../js/landmarkArt.js?partial-image-failure');
+  assert.equal(await art.loadLandmarkImages(),false);
+  for(const candidate of ['snow-shelter','desert-oasis']){
+   const a=capture(),b=capture();
+   art.drawRevisedLandmark(a.ctx,{candidate},true);art.drawRevisedLandmark(b.ctx,{candidate},false);
+   assert.equal(a.commands[0][0],'drawImage');assert.deepEqual(a.commands,b.commands);
+  }
+  const fallback=capture();art.drawRevisedLandmark(fallback.ctx,{candidate:'forest-tree'});
+  assert.equal(fallback.commands.some(([name])=>name==='drawImage'),false);
+ }finally{
+  if(previousImage===undefined)delete globalThis.Image;else globalThis.Image=previousImage;
+  if(previousDocument===undefined)delete globalThis.document;else globalThis.document=previousDocument;
+ }
+});
