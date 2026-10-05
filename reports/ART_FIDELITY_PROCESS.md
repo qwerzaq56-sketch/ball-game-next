@@ -30,3 +30,7 @@ Extract and reconstruct the guardian tree from the supplied cropped ORIGINAL CON
 관찰(Codex의 잠정 평가):001보다 줄기가 짧아지고 색면/윤곽이 원화에 가까움. 원화와002 나란히 비교 및 실제BiomeObjects.draw 검증, 행동불변 테스트1통과·콘솔0. 다만 원본 픽셀의 단순 배경 제거가 아니라 생성 재구성이므로 잎 덩어리 일부가 달라짐. 사용자 최종 스타일 평가 전까지 '완전 일치/확정 성공' 아님.
 
 비교: tools/guardian-fidelity-review.html, reports/guardian-fidelity-002.png 및 guardian-extracted-game-002.png. 제작 제안서에는 **대표 자산의 잠정 개선 사례**로만 반영하며 모든 자산에 일반화하지 않음.
+
+## 03 · 전달 가능 잎 형상 개선
+
+원화의 작은 뾰족한 잎 쌍을 코드로 분리 표현. 타원→직선면 첫시도는 각져 보여 곡선으로 수정. guardian-002 본체/게임기능 유지. 준비 때 밝은 잎, 수혜후 작고 어두운 잎. 기존동작불변 테스트1통과·브라우저검증. reports/guardian-leaves-003.png. 원화의4잎 발광과 완전히 일치한 것은 아니며 과한 bloom 없이 최소 형태를 우선.

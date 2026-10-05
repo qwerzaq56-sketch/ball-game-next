@@ -21,7 +21,14 @@ export function drawRevisedLandmark(ctx,o,ready=true){
   if(forestImage)ctx.drawImage(forestImage,-35,-35,70,70);
   else{oval(0,18,27,7,'#102e29');path([[-8,17],[-5,-17],[5,-17],[9,17],[17,21],[3,19],[-16,21]],'#8c7152');
    oval(-13,-10,16,14,'#225c45');oval(12,-13,18,15,'#2e7051');oval(-1,-24,20,16,'#3b7e5b');}
-  for(const [x,y]of [[-15,-12],[11,-16],[0,-29]])oval(x,y,ready?5:2.5,ready?2.8:1.8,ready?'#badf91':'#729b65');
+  for(const [x,y]of [[-15,-12],[11,-16],[0,-26]]){
+   const s=ready?1:.45;
+   // Separate transferable leaves, matching the original concept's pointed pairs.
+   for(const [side,color]of [[-1,'#c7f3bb'],[1,'#a7e8b3']]){
+    ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+side*7*s,y-1*s,x+side*6*s,y-8*s);
+    ctx.quadraticCurveTo(x+side*.5*s,y-7*s,x,y);ctx.fillStyle=ready?color:'#729b65';ctx.fill();
+   }
+  }
  }else if(id==='snow-flowers'){
   oval(0,17,25,6,'#384c66');
   for(const [x,y]of [[-15,4],[0,-8],[15,7]]){
