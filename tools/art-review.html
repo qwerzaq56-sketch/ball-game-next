@@ -4,6 +4,7 @@
 <button id="zoom">배율 0.5 / 1.0</button><button id="art">지형 아트 ON / OFF</button><p id="state">자산 로딩 중</p><main></main>
 <button id="attack-state">공격 가능 / 불가 비교</button><script type="module">
 import {Game} from '../js/game.js';import {AIEntity} from '../js/ai.js';
+import {loadLandmarkImages} from '../js/landmarkArt.js';await loadLandmarkImages();
 const balance=await (await fetch('../config/gameBalance.json')).json(),scenes=[];
 let zoom=.5,enabled=true;
 const onlyBiome=new URLSearchParams(location.search).get('biome');

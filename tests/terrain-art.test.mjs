@@ -50,3 +50,16 @@ test('forest ground keeps one image orientation across every 800-world block',()
  assert.equal(art.texture('forest',600,600),textures[forestGroundVariant(600,600)]);
  art.forestRaster=false;assert.equal(art.texture('forest',600,600),textures[terrainVariant(600,600)]);
 });
+test('boundary cache distinguishes 800-world forest crops and remains bounded',()=>{
+ const art=new TerrainArt(),previous=globalThis.document,crops=[];
+ art.tiles.set('forest',Array.from({length:3},()=>({width:800,height:800})));art.forestRaster=true;art.masks.set('north',{});
+ globalThis.document={createElement(){return {getContext(){return {drawImage(...args){if(args.length===9)crops.push(args.slice(1,3));}}}};}};
+ try{
+  const first=art.layer('forest',0,0,'north'),second=art.layer('forest',400,0,'north');
+  assert.notEqual(first,second);assert.deepEqual(crops,[[0,0],[400,0]]);
+  assert.equal(art.layer('forest',0,0,'north'),first);assert.equal(crops.length,2);
+  art.layer('forest',-200,-200,'north');assert.deepEqual(crops.at(-1),[600,600]);
+  for(let i=0;i<150;i++){art.masks.set('d'+i,{});art.layer('forest',0,0,'d'+i);}
+  assert.equal(art.layers.size,96);
+ }finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
+});

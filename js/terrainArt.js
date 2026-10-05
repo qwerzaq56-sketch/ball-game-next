@@ -44,7 +44,7 @@ export class TerrainArt {
  }
  variant(id,x,y){return id==='forest'&&this.forestRaster?forestGroundVariant(x,y):terrainVariant(x,y);}
  texture(id,x,y){return this.tiles.get(biomeKey(id))?.[this.variant(id,x,y)];}
- layer(id,x,y,sx,sy,direction){
+ layer(id,x,y,direction){
   const texture=this.texture(id,x,y),mask=this.masks.get(direction);if(!texture||!mask)return null;
   // Cache the actual neighbor crop, including its 800-world raster phase.
   const tx=modulo(x,texture.width||400),ty=modulo(y,texture.height||400);
@@ -70,7 +70,7 @@ export class TerrainArt {
   for(const [direction,dx,dy]of neighbors){
    const nx=modulo(x+dx,world.worldWidth),ny=modulo(y+dy,world.worldHeight),n=biomes.regionAt({x:nx+100,y:ny+100});
    if(!n||n.id===region.id)continue;
-   const layer=this.layer(n.id,nx,ny,sx,sy,direction);if(layer)ctx.drawImage(layer,x,y);
+   const layer=this.layer(n.id,nx,ny,direction);if(layer)ctx.drawImage(layer,x,y);
   }
   return true;
  }
