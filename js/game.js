@@ -216,6 +216,8 @@ export class Game {
     return this.getNearbyEntities(entity, range).filter((o) => isHostile(entity, o));
   }
 
+  updateAIEntity(e,dt,b){updateAI(e,dt,this,b);}
+
   // ---------- update ----------
 
   update(dt) {
@@ -230,12 +232,12 @@ export class Game {
     this.biomeObjects.update(dt);
     this.allyLinks.update(dt);
     this.abilities.update(dt);
-    for(const e of this.entities)if(e.alive&&e.behavior==='ai'&&e.apex)this.abilities.considerAI(e);
+    for(const e of this.entities)if(e.alive&&e.behavior==='ai'&&e.apex&&(!this.options.simulationRoom||e.roomBehavior==='ai'))this.abilities.considerAI(e);
     this.autoplay.update(dt);
     this.updatePlayer(dt);
 
     for (const e of this.entities) {
-      if (e.behavior === 'ai' && e.alive) updateAI(e, dt, this, b);
+      if (e.behavior === 'ai' && e.alive) this.updateAIEntity(e,dt,b);
     }
 
     for (const e of this.entities) {

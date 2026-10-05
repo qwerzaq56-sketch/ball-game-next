@@ -1,3 +1,4 @@
+import {DesignerReview} from './designerReview.js';
 import {loadObjectPreset} from './biomeObjectCatalog.js';
 import {installMovablePanels} from './movablePanels.js';
 import { DiagnosticsUI } from './diagnosticsUI.js';
@@ -104,6 +105,9 @@ async function main() {
   const diagnosticsUI=new DiagnosticsUI(game,ui,{requestSeedReset:seed=>requestReset(seed)});
   const playerSetup = new PlayerSetup(game, input);
   playerSetup.open();
+  const designerReview=new DesignerReview(()=>game);window.__designerReview=designerReview;designerReview.start();
+  const labLink=document.createElement('a');labLink.href='simulation-room.html';labLink.textContent='시뮬레이션 룸';labLink.className='hud-btn';ui.debugPanel.append(labLink);
+  const answerButton=document.createElement('button');answerButton.textContent='기획 의견 JSON';answerButton.onclick=()=>designerReview.export();ui.debugPanel.append(answerButton);
   window.__game = game; // debug inspection hook
   const playControls=new PlayControls(game,input);
   const touchControls=new TouchControls(game,input,canvas);
