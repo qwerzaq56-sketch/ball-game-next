@@ -10,7 +10,7 @@ export function forestDecoration(x,y){
  return {size,x:x+100+(((h>>>14)%101)/50-1)*margin,y:y+100+(((h>>>21)%101)/50-1)*margin,variant:(h>>>6)%4};
 }
 export class TerrainArt {
- constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();
+ constructor(){this.enabled=true;this.ready=false;this.error=null;this.tiles=new Map();this.masks=new Map();this.layers=new Map();this.rasterBiomes=new Set();
   if(typeof document!=='undefined'&&typeof Image!=='undefined')this.loading=this.load();
  }
  setEnabled(enabled){this.enabled=!!enabled;}
@@ -39,10 +39,15 @@ export class TerrainArt {
      ctx.drawImage(tree,0,0,256,256);return tc;
     });
    }catch(error){this.imagePackError=String(error);}
+   try{
+    const ground=new Image();ground.src=new URL('../assets/art-packs/grass-raster-v1/ground-001.png',import.meta.url).href;await ground.decode();
+    const c=document.createElement('canvas');c.width=c.height=800;c.getContext('2d').drawImage(ground,0,0,800,800);
+    this.tiles.set('grass',[c,c,c]);this.rasterBiomes.add('grassland');
+   }catch(error){this.grassPackError=String(error);}
    this.ready=['grass','forest','lake','snow','volcano','desert'].every(id=>this.tiles.has(id));
   }catch(error){this.error=String(error);this.ready=false;this.tiles.clear();this.masks.clear();this.layers.clear();}
  }
- variant(id,x,y){return id==='forest'&&this.forestRaster?forestGroundVariant(x,y):terrainVariant(x,y);}
+ variant(id,x,y){return (id==='forest'&&this.forestRaster)||this.rasterBiomes.has(id)?forestGroundVariant(x,y):terrainVariant(x,y);}
  texture(id,x,y){return this.tiles.get(biomeKey(id))?.[this.variant(id,x,y)];}
  layer(id,x,y,direction){
   const texture=this.texture(id,x,y),mask=this.masks.get(direction);if(!texture||!mask)return null;

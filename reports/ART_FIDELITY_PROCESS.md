@@ -68,3 +68,9 @@ scene-coherent-v1의 snow-shelter/desert-oasis PNG를 실제 landmarkArt256캐�
 기본13종 모두 PNG 렌더 경로 연결. 고목은 guardian-002, 서리꽃은 최신 상태쌍, 나머지는 scene-coherent-v1 asset.png. 해류는 실제 각 segment 길이/폭에 맞춰 unlit 수면 패턴만 회전하고 기존 방향 화살표 유지. 소용돌이는 실제 범위 크기에 맞춰 PNG 표시, 로딩 실패 때 기존 나선 폴백. 분출구는 활성/휴식에 이미지 밝기만 구분(휴식 전용 자산 미제작). 이득 오브젝트 쿨다운 흐림, 고목 전달잎, 서리꽃 상태쌍, 지속 수혜 본체 유지. 기존 수치/효과/판정/난수 불변.
 
 전체369/369 테스트 통과 reports/all-object-art-tests.txt. 실제 BiomeObjects.draw 13종 준비/수혜후 브라우저 확인·오류경고0, reports/all-object-runtime-ready.png 및 -post.png. 브라우저가 기존 biomeObjects 모듈을 캐시해 환경3종이 구 렌더로 보인 현상은 검증페이지의 해당 import 버전 키로 해소. 게임 페이지 기존 탭은 강제 새로고침 필요할 수 있음. tools/object-runtime-review.html 비교용 배치로 실제 월드 배치·지역 배경 일치 완료를 뜻하지 않음. 휴식 분출구에 불꽃이 희미하게 남는 한계 보존. 원화003은 비교 후보이고 배경 전체 일치는 후속. 원래source/planning/main/공개배포 변경 없음.
+
+## 초원 바닥 PNG · 04:27 KST
+
+원본 gameplay-regions-a-001과 A003을 직접 참조해 grass-raster-v1/ground-001.png 제작, 프롬프트·생성본 보존. 큰 잎과 조용한 올리브 색면, 수집물/기능오브젝트/공 제외. 800world 캐시와 동일 광원 crop으로 실제 초원 연결, 반전 없음. 실패 시 기존SVG 폴백. rasterBiomes로 숲 외 PNG의800phase 지원, 음수좌표 crop 테스트 확장. 관련16테스트 통과(추가phase검사후지형6재확인). 실제Game.render6지역 0.5/1배율·아트OFF 폴백·콘솔오류경고0, reports/grass-raster-six-regions-001.png/-zoom1.png.
+
+전체렌더에서 이전 모듈 캐시 때문에 환경3종이 다시 구벡터로 보인 문제 발견. index→main→Game→BiomeObjects 및 art-review import에 art-batch-13 버전키 연결, 재확인에서 해류/소용돌이/분출구PNG 정상 표시. 게임규칙 변경 없음. 원화의 나무 가장자리 구성과 현재 격자형지역경계·나무분포는 아직 다르고, PNG바닥 반복/이음새 가능성 남음. 초원과 숲만 PNG바닥, 호수·설원·화산·사막은 기존SVG. 다음은 원화의 지역별 색면/큰환경형상 맞춤 우선.

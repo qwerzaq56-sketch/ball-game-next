@@ -2,7 +2,7 @@ import {DesignerReview} from './designerReview.js';
 import {loadObjectPreset} from './biomeObjectCatalog.js';
 import {installMovablePanels} from './movablePanels.js';
 import { DiagnosticsUI } from './diagnosticsUI.js';
-import { Game } from './game.js';
+import { Game } from './game.js?art-batch-13';
 import { UI } from './ui.js';
 import { loadMuted, saveMuted } from './storage.js';
 import { AIInspector } from './aiInspector.js';

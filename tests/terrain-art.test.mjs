@@ -49,6 +49,9 @@ test('forest ground keeps one image orientation across every 800-world block',()
  const art=new TerrainArt(),textures=[{width:800},{width:800},{width:800}];art.tiles.set('forest',textures);art.forestRaster=true;
  assert.equal(art.texture('forest',600,600),textures[forestGroundVariant(600,600)]);
  art.forestRaster=false;assert.equal(art.texture('forest',600,600),textures[terrainVariant(600,600)]);
+ art.tiles.set('grass',textures);art.rasterBiomes.add('grassland');
+ assert.equal(art.texture('grassland',600,600),textures[forestGroundVariant(600,600)]);
+ assert.equal(art.texture('grassland',-200,-200),textures[forestGroundVariant(-200,-200)]);
 });
 test('boundary cache distinguishes 800-world forest crops and remains bounded',()=>{
  const art=new TerrainArt(),previous=globalThis.document,crops=[];

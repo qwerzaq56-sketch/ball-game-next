@@ -1,6 +1,6 @@
 import {drawActionArt} from './actionArt.js';
 import {chargedAttackDistance} from './combat.js';
-import {BiomeObjects} from './biomeObjects.js';
+import {BiomeObjects} from './biomeObjects.js?art-batch-13';
 import {updateGrowthMotion} from './growthMotion.js';
 import {updateSprint} from './sprint.js';
 import {delta,angleTo,near,wrap} from './topology.js';
