@@ -33,3 +33,16 @@ test('ice flowers double their food value during a blizzard',()=>{const {g}=setu
 test('oasis continuously heals all occupants without shared cooldown, and stops on exit',()=>{const {g,p,o}=setup('desert-oasis');const a={...p,id:p.id+100,hp:500};p.hp=500;g.entities=[p,a];g.buildGrid();g.biomeObjects.cooldowns.set(o.id,100);g.biomeObjects.update(2);assert.equal(p.hp,520);assert.equal(a.hp,520);p.x=o.x+o.config.radius+p.size/2+1;g.buildGrid();g.biomeObjects.update(2);assert.equal(p.hp,520);assert.equal(a.hp,540);g.biomes.enabled=false;g.biomeObjects.update(2);assert.equal(a.hp,540);});
 
 test('current counterflow cannot overpower ordinary actor movement and object scales repeat deterministically',()=>{const {g,p,o}=setup('lake-current');p.size=40;p.moveSpeed=100;p.x=o.points[0].x;p.y=o.points[0].y;g.buildGrid();const vector=g.biomeObjects.currentVector(o,p),before={x:p.x,y:p.y};g.biomeObjects.update(.1);const moved=Math.hypot(p.x-before.x,p.y-before.y);assert(moved<=100*g.biomes.moveMultiplier(p)*.25*.1+1e-6);assert(vector);const a=createGame(7),b=createGame(7);a.biomeObjects.sync();b.biomeObjects.sync();assert.deepEqual(a.biomeObjects.objects.map(o=>o.visualScale),b.biomeObjects.objects.map(o=>o.visualScale));assert(new Set(a.biomeObjects.objects.map(o=>o.visualScale)).size>5);assert.equal(a.biomeObjects.objects.filter(o=>o.candidate==='desert-oasis').length,2);});
+
+test('approved larger oasis preserves variation, count and healing power while scaling body/range together',()=>{
+ const a=createGame(7),b=createGame(7);a.biomeObjects.sync();b.biomeObjects.sync();
+ const objects=a.biomeObjects.objects.filter(o=>o.candidate==='desert-oasis');assert.equal(objects.length,2);
+ let hash=7;for(const char of 'desert-oasis')hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;
+ for(const [i,o]of objects.entries()){
+  const oldVariation=.8+((hash+i*73)%401)/1000;
+  assert.equal(o.visualScale,oldVariation*1.4);
+  assert.equal(o.config.radius,BIOME_OBJECTS['desert-oasis'].radius*o.visualScale);
+  assert.equal(o.config.power,BIOME_OBJECTS['desert-oasis'].power*2);
+ }
+ assert.deepEqual(objects,b.biomeObjects.objects.filter(o=>o.candidate==='desert-oasis'));
+});

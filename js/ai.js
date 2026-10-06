@@ -111,7 +111,8 @@ export function updateAI(ai, dt, game, balance) {
   }
 
   if(ai.state==='relationship' && ai.relationshipOwner && (ai.role!=='predator'||ai.apex||!ai.relationshipOwner.alive||!ai.relationshipOwner.apex||dist(ai,ai.relationshipOwner)>apexTerritoryRadius(ai.relationshipOwner,balance))){ai.target=null;ai.state='search';ai.decisionTimer=0;}
-  if(ai.target && ai.state!=="relationship" && ai.state!=="flee" && ai.state!=="guard" && ai.state!=="command_move" && ai.state!=="war_move" && (!ai.target.alive || dist(ai,ai.target)>game.biomes.sensingRange(ai,ai.state==="chase_eat" && (ai.target.behavior!=="orb"&&ai.target.behavior!=="relic") ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
+  if(ai.target && ai.state!=="seek_refuge" && ai.state!=="relationship" && ai.state!=="flee" && ai.state!=="guard" && ai.state!=="command_move" && ai.state!=="war_move" && (!ai.target.alive || dist(ai,ai.target)>game.biomes.sensingRange(ai,ai.state==="chase_eat" && (ai.target.behavior!=="orb"&&ai.target.behavior!=="relic") ? balance.ai.absorptionDetectionRange : balance.ai.detectionRange))){ai.target=null;ai.state="search";ai.decisionTimer=0;}
+  if(ai.state==='seek_refuge' && (!game.biomes.enabled || !(game.biomeObjects?.objects??[]).includes(ai.target))){ai.state='search';ai.target=null;ai.decisionTimer=0;}
   ai.decisionTimer -= dt;
   if (ai.decisionTimer <= 0) {
     ai.decisionTimer = 0.2 + random('ai') * 0.15;
@@ -213,9 +214,18 @@ export function decideAI(ai, game, balance) {
   }
   ai.guardMode=false;
   if(ai.state==='flee'){ai.state='search';ai.target=null;}
+  const aggressor=ai.retaliateTarget;
+  if(ai.recovering && aggressor?.alive && isHostile(ai,aggressor) && canStartAttack(ai) &&
+    dist(ai,aggressor)<=cfg.detectionRange+(ai.size+aggressor.size)/2 && aggressor.size<=ai.size*2.8 && safe(aggressor,aggressor) &&
+    recoveryRetaliationAllowed(ai,aggressor,balance)){
+    game.abilities?.endCommand(ai,'recovery-retaliation');ai.state='chase_fight';ai.target=aggressor;return;
+  }
+  const refugeKind=game.biomes.enabled && game.biomes.regionAt(ai)?.id==='snow'&&game.biomes.blizzard()?'snow-shelter':game.biomes.enabled&&ai.recovering?'desert-oasis':null;
+  const refuge=refugeKind && closest((game.biomeObjects?.objects??[]).filter(o=>o.candidate===refugeKind && dist(ai,o)<=cfg.detectionRange+(o.config?.radius??0) && safe(o) &&
+    !game.biomes.danger({...ai,x:o.x,y:o.y}) && !fields.some(f=>dist(o,f)<=(f.radius??360)+ai.size/2)));
+  if(refuge){game.abilities?.endCommand(ai,'refuge');ai.state='seek_refuge';ai.target=refuge;return;}
   if(ai.recovering){game.abilities?.endCommand(ai,'recovery');ai.state='chase_eat';ai.target=closest(food.filter(safe));if(!ai.target)ai.state='search';return;}
   // R-AI-010: prioritize the actual aggressor over unrelated navigation/opportunities.
-  const aggressor=ai.retaliateTarget;
   if(aggressor?.alive&&isHostile(ai,aggressor)&&hp>.3&&canStartAttack(ai)&&dist(ai,aggressor)<=cfg.detectionRange+(ai.size+aggressor.size)/2&&aggressor.size<=ai.size*2.8){game.abilities?.endCommand(ai,'retaliation');ai.state='chase_fight';ai.target=aggressor;return;}
   // User: safe high-value death drops outrank optional combat, after survival/retaliation.
   const reward=food.filter(e=>e.rewardSource!=null&&(e.growthValue??0)>=80&&safe(e)).sort((a,b)=>(b.growthValue/Math.max(40,dist(ai,b)))-(a.growthValue/Math.max(40,dist(ai,a)))||a.id-b.id)[0];
@@ -302,10 +312,40 @@ export function shouldDodgeThreat(ai,other,balance){
  const damage=applyDefense(attackDamageForSize(other.size,balance)*(other.currentAttackPower??1),ai.size,balance);
  return hp<=.35 || damage>=ai.hp*(balance.ai.dodgeThreatHpFraction??.25);
 }
+// One decision per aggressor hit episode, never per decision tick.
+export function recoveryRetaliationAllowed(ai,other,balance,roll=()=>random('ai')){
+ ai.recoveryRetaliations??=new WeakMap();
+ const token=ai.retaliateHitToken??ai.lastHitToken??ai.damageReceived??0;
+ const old=ai.recoveryRetaliations.get(other),timer=ai.retaliateTimer??0;
+ if(!old||old.token!==token||timer>old.timer+1e-6){ai.recoveryRetaliations.set(other,{token,timer,allowed:roll()<(balance.ai.recoveryRetaliationChance??.2)});}
+ const entry=ai.recoveryRetaliations.get(other);entry.timer=timer;
+ if(!entry.allowed||entry.consumed)return false;
+ entry.consumed=true;return true;
+}
+// Observe even inactive/irrelevant phases so a later attack by the same entity is fresh.
+export function recoveryDodgeAllowed(ai,other,balance,now,eligible=true,roll=()=>random('ai')){
+ ai.recoveryDodges??=new WeakMap();
+ const active=!!other.specialCast||['TELEGRAPH','CHARGING'].includes(other.attackState);
+ const timer=other.attackTimer??0,token=other.attackToken??other.attackSerial??other.specialCast??null;
+ let entry=ai.recoveryDodges.get(other);
+ const fresh=!entry||!entry.active||entry.token!==token||(other.attackState==='TELEGRAPH'&&timer<entry.timer-1e-6);
+ if(!active){if(entry)entry.active=false;return false;}
+ if(fresh)entry={active:true,phase:other.attackState,token,timer,allowed:null,noticedAt:now};
+ entry.timer=timer;entry.phase=other.attackState;ai.recoveryDodges.set(other,entry);
+ if(!eligible)return false;
+ if(entry.allowed===null){entry.allowed=roll()<(balance.ai.recoveryDodgeDelayChance??1/3);entry.noticedAt=now;}
+ return !entry.allowed||now-entry.noticedAt>=(balance.ai.recoveryDodgeReactionSeconds??.18);
+}
 function reactToThreats(ai, game, balance) {
  if (!ai.dodgeUnlocked || !canStartDodge(ai)) return;
  const range = Math.min(game.biomes.sensingRange(ai), attackRangeForSize(ai.size, balance) * 1.5);
- const threat=game.getNearbyEntities(ai,range).find(other=>dist(ai,other)<range&&shouldDodgeThreat(ai,other,balance));
+ const recovering=ai.recovering||ai.hp/ai.maxHp<=.3;
+ const candidates=game.getNearbyEntities(ai,range);
+ let threat=null;for(const other of candidates){
+  const eligible=dist(ai,other)<range&&shouldDodgeThreat(ai,other,balance);
+  const ready=recoveryDodgeAllowed(ai,other,balance,game.gameTime,recovering&&eligible);
+  if(!threat && eligible && (!recovering||ready))threat=other;
+ }
  if(!threat)return;
  if(ai.color==='blue'){ai.counterattacker=threat;ai.counterTimer=1;}
  startDodge(ai,angleTo(threat,ai),balance);
@@ -324,6 +364,10 @@ function moveAI(ai, dt, balance,game) {
     // v0.3: fleeing a low-HP threat gets a burst of speed, but fleeing an absorption grab
     // (spec §1) does not — you're still partly held, so the absorber gets a fair chance.
     speed *= ai.beingAbsorbedByRef ? 1.0 : 1.3;
+  } else if(ai.state==='seek_refuge'&&ai.target){
+    const distance=dist(ai,ai.target),radius=(ai.target.config?.radius??0)+ai.size/2;
+    if(distance<=radius)return;
+    targetAngle=angleTo(ai,ai.target);speed=Math.min(speed,(distance-radius)/Math.max(dt,1e-8));
   } else if((ai.state==='command_move'||ai.state==='war_move')&&ai.target){targetAngle=angleTo(ai,ai.target);speed=Math.min(speed*(ai.state==='war_move'?.75:1),dist(ai,ai.target)/Math.max(dt,1e-8));
   } else if(ai.state==='relationship'&&ai.target){
     targetAngle=angleTo(ai,ai.target);speed*=.55;
@@ -355,7 +399,7 @@ function moveAI(ai, dt, balance,game) {
   }
 
   if (targetAngle !== null) {
-    if(game&&!ai.environmentThreat){const point=game.biomes.routePoint(ai,{x:ai.x+Math.cos(targetAngle)*300,y:ai.y+Math.sin(targetAngle)*300});targetAngle=angleTo(ai,point);}
+    if(game&&!ai.environmentThreat&&ai.state!=='seek_refuge'){const point=game.biomes.routePoint(ai,{x:ai.x+Math.cos(targetAngle)*300,y:ai.y+Math.sin(targetAngle)*300});targetAngle=angleTo(ai,point);}
     ai.facing = targetAngle;
     ai.x += Math.cos(targetAngle) * speed * dt;
     ai.y += Math.sin(targetAngle) * speed * dt;

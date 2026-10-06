@@ -194,7 +194,10 @@
     "guardSurfaceDistance": 140,
     "retaliationSeconds": 6,
     "attackGateSeconds": 0,
-    "dodgeThreatHpFraction": 0.25
+    "dodgeThreatHpFraction": 0.25,
+    "recoveryDodgeDelayChance": 0.3333333333333333,
+    "recoveryDodgeReactionSeconds": 0.18,
+    "recoveryRetaliationChance": 0.2
   },
   "world": {
     "wrap": true,

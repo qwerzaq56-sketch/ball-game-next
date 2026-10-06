@@ -1,6 +1,6 @@
 import {drawActionArt} from './actionArt.js';
 import {chargedAttackDistance} from './combat.js?effects-direction-02';
-import {BiomeObjects} from './biomeObjects.js?effects-direction-02';
+import {BiomeObjects} from './biomeObjects.js?ai-refuge-01';
 import {updateGrowthMotion} from './growthMotion.js';
 import {updateSprint} from './sprint.js';
 import {delta,angleTo,near,wrap} from './topology.js';
@@ -9,7 +9,7 @@ import { clampEntity } from './worldBounds.js';
 import { Autoplay } from './autoplay.js';
 import { RunMetrics } from './runMetrics.js';
 import { drawSpeciesMark,drawGrowthPulse,drawPlayerDirection,drawMatteBody } from './vectorArt.js';
-import {drawCharacterRasterBody} from './characterRasterArt.js';
+import {drawCharacterRasterBody} from './characterRasterArt.js?character-shadow-01';
 import {drawShieldState} from './shieldStateArt.js';
 import {drawEntityEffectRaster,drawEffectRaster} from './effectRasterArt.js?effects-direction-02';
 import {drawGrowthRasterTexture,drawAbsorptionRasterTexture} from './progressionRasterArt.js?effects-direction-02';
@@ -25,7 +25,7 @@ import { Ecology } from './ecology.js';
 import { random, resetRandom } from './random.js';
 import { resetEntityIds, growthRewardFor } from './entity.js';
 import { Player } from './player.js';
-import { AIEntity, updateAI } from './ai.js?effects-direction-02';
+import { AIEntity, updateAI } from './ai.js?ai-refuge-01';
 import { canEatOrb, canAbsorb, isHostile, circlesOverlap, dist } from './collision.js';
 import {
   updateAttack, updateDodge, updateKnockback, updateHealthRegen,
