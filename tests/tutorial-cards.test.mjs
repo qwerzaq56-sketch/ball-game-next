@@ -42,7 +42,7 @@ test('terrain cards cover all six regions with their enabled objects and real ef
   const by = Object.fromEntries(cards.map((c) => [c.region, c]));
   assert.deepEqual(by.lake.objects.map((o) => o.name), ['진주 조개밭', '해류', '소용돌이']);
   assert(by.volcano.objects.find((o) => o.name === '열기 분출구').danger);
-  assert.match(by.desert.objects.find((o) => o.name === '작은 오아시스').text, /안에 있는 동안 초당 최대 체력 0\.5% 회복/);
+  assert.match(by.desert.objects.find((o) => o.name === '작은 오아시스').text, /안에 있는 동안 초당 최대 체력 1% 회복/);
   assert(by.volcano.lines.some((l) => /빨강 종족이 이곳에 강합니다/.test(l)));
   assert.match(terrainHint(by.snow), /^설원 · .*동상/);
   const cfg = defaultObjectPreset(); cfg.enabled = ['forest-tree']; applyObjectPreset(g.balance, cfg);
@@ -52,4 +52,14 @@ test('terrain cards cover all six regions with their enabled objects and real ef
 
 test('every catalogued object has a card line', () => {
   for (const [id, c] of Object.entries(BIOME_OBJECTS)) assert.notEqual(objectCardLine(c), '', id);
+});
+
+test('R-WORLD-015 the oasis help line shows the healing a placed oasis actually gives', () => {
+  const g = createGame(7);
+  g.biomeObjects.sync();
+  const placed = g.biomeObjects.objects.find(o => o.candidate === 'desert-oasis').config;
+  const perSecond = Math.round(1000 * placed.power / placed.cooldown) / 10;
+  const line = terrainCards(balance()).find(c => c.region === 'desert').objects.find(o => o.id === 'desert-oasis').text;
+  assert.match(line, new RegExp(`초당 최대 체력 ${perSecond}% 회복`));
+  assert.equal(perSecond, 1);
 });

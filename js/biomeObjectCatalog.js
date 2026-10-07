@@ -25,6 +25,8 @@ export const BIOME_OBJECTS={
  'lake-vortex':{region:'lake',name:'소용돌이',effect:'vortex',radius:180,cooldown:2,speed:95},
 };
 export const DEFAULT_OBJECT_IDS=['grass-garland','grass-wind-stack','forest-berry-grove','forest-tree','lake-garland','lake-current','lake-vortex','snow-flowers','snow-shelter','desert-oasis','desert-obelisk','volcano-obsidian-stack','volcano-vent-cycle'];
+// R-WORLD-015: the oasis heals twice its catalog power once placed (fewer, larger oases).
+export function placedObjectConfig(id,cfg){return id==='desert-oasis'?{...cfg,power:cfg.power*2}:cfg;}
 export const OBJECT_PRESET_KEY='ball-next-biome-objects-v1';
 export function defaultObjectPreset(){return {format:'ball-next-objects-v2',countPerType:6,enabled:[...DEFAULT_OBJECT_IDS],overrides:{}};}
 export function normalizeObjectPreset(raw){

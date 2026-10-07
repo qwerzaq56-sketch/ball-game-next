@@ -1,7 +1,7 @@
 // R-CTRL-005: tutorial cards for the basic abilities, each species and each terrain with its objects.
 // Pure data built from the live balance so numbers on the cards follow tuning. No DOM here.
 import {selectedSkill} from './skillCatalog.js';
-import {BIOME_OBJECTS, OBJECT_REGIONS, objectPreset} from './biomeObjectCatalog.js';
+import {BIOME_OBJECTS, OBJECT_REGIONS, objectPreset, placedObjectConfig} from './biomeObjectCatalog.js';
 
 export const COLOR_NAMES = {cyan: '하늘', blue: '파랑', green: '초록', red: '빨강', yellow: '노랑'};
 export const DECKS = [
@@ -134,7 +134,7 @@ export function terrainCards(balance, regions) {
   return list.map((r) => {
     const t = TERRAIN[r.id] ?? {lines: () => [], strong: null};
     const objects = enabled.filter((id) => BIOME_OBJECTS[id]?.region === r.id).map((id) => {
-      const c = {...BIOME_OBJECTS[id], ...overrides[id], continuous: CONTINUOUS.includes(id)};
+      const c = {...placedObjectConfig(id, {...BIOME_OBJECTS[id], ...overrides[id]}), continuous: CONTINUOUS.includes(id)};
       return {id, name: c.name.split(' · ')[0], text: objectCardLine(c), danger: c.effect === 'vent'};
     });
     const lines = [...t.lines(b)];
