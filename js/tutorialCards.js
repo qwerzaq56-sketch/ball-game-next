@@ -33,7 +33,7 @@ export function basicCards(balance) {
         '흡수에 성공하면 크게 자랍니다. 흡수하는 동안 체력이 들고, 성공하면 돌려받습니다.',
         '초록 소환 동행은 초록 "흡수 불가" 표시가 사라진 뒤에만 흡수할 수 있습니다.']},
     {id: 'sprint', deck: 'basic', title: '달리기', accent: '#7dd3fc',
-      keys: {desktop: 'Space를 0.18초 넘게 누르고 있기', touch: '회피 버튼을 누르고 있기'},
+      keys: {desktop: 'Space를 꾹 누르기', touch: '회피 버튼을 꾹 누르기'},
       lines: [`크기 ${s.unlockSize}에 열립니다. 이동 속도 ×${num(s.speedMultiplier)}.`,
         `게이지는 체력바 바로 밑에 있습니다. 최대 ${num(s.capacitySeconds)}초 달릴 수 있고, 쉬면 다시 찹니다.`,
         '도망치거나 먹이를 먼저 차지할 때 씁니다.']},

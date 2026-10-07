@@ -36,7 +36,7 @@ import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
 import {apexTerritoryRadius} from './skillCatalog.js';
 import { startAbsorption, cancelAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
 import { AudioManager } from './audio.js';
-import {statusChips,drawStatusChips,textWidth} from './statusLabels.js';
+import {statusChips,drawStatusChips,textWidth,shieldAmount} from './statusLabels.js';
 import {pickRespawnPoint} from './respawn.js';
 
 const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '관계추종', companion:'대열 동행',war_move:'전선 이동', recover: '회복' };
@@ -430,7 +430,7 @@ export class Game {
           if (!canEatOrb(eater, target, b)) continue;
           if (!circlesOverlap(eater, target)) continue;
           target.alive = false;
-          if(target.healFraction){const healed=Math.min(eater.maxHp-eater.hp,eater.maxHp*target.healFraction);eater.hp+=healed;if(healed>0)eater.healVisualUntil=this.gameTime+.22;this.spawnFloatingText(eater.x,eater.y,`회복 +${Math.round(healed)}`,'#f9a8d4');this.spawnGrowthParticles(target.x,target.y,'#f472b6');if(eater===this.player)this.audio.growth();continue;}
+          if(target.healFraction){const healed=Math.min(eater.maxHp-eater.hp,eater.maxHp*target.healFraction);eater.hp+=healed;if(healed>0)eater.healVisualUntil=this.gameTime+.22;this.spawnFloatingText(eater.x,eater.y,healed>0?`회복 +${Math.round(healed)}`:'체력 가득','#f9a8d4');this.spawnGrowthParticles(target.x,target.y,'#f472b6');if(eater===this.player)this.audio.growth();continue;}
           const received=growthRewardFor(target.growthValue*this.relics.growthMultiplier(eater),eater,b);
           this.balanceLog?.pickup(target,eater,received);
           eater.addGrowth(received, b);
@@ -1027,12 +1027,15 @@ export class Game {
       ctx.stroke();
     }
 
-    if (e.invincible || e.dustInvulnerableRemaining>0 || e.respawnInvulnerableRemaining>0) {
-      ctx.beginPath();
-      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-      ctx.lineWidth = 2 / this.camera.zoom;
-      ctx.arc(e.x, e.y, r + 5, 0, Math.PI * 2);
-      ctx.stroke();
+    // Invulnerability (yellow dust, respawn) reads as a pulsing gold shell; it blinks in its last 0.3 s.
+    const invulnerableLeft=Math.max(e.dustInvulnerableRemaining??0,e.respawnInvulnerableRemaining??0);
+    if ((e.invincible || invulnerableLeft>0) && (e.invincible || invulnerableLeft>.3 || Math.floor(this.gameTime*10)%2===0)) {
+      const z=this.camera.zoom,pulse=.5+.5*Math.sin(this.gameTime*14),shell=r+6/z;
+      ctx.save();
+      ctx.fillStyle='rgba(253,224,71,0.16)';ctx.beginPath();ctx.arc(e.x,e.y,shell,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle=`rgba(250,204,21,${0.25+0.2*pulse})`;ctx.lineWidth=(7+3*pulse)/z;ctx.beginPath();ctx.arc(e.x,e.y,shell,0,Math.PI*2);ctx.stroke();
+      ctx.strokeStyle='#fef08a';ctx.lineWidth=2.5/z;ctx.beginPath();ctx.arc(e.x,e.y,shell,0,Math.PI*2);ctx.stroke();
+      ctx.restore();
     }
 
     // v0.6 follow-up: kill-reward orbs no longer get a cross-mark overlay — they're meant to
@@ -1042,15 +1045,19 @@ export class Game {
     if(e.morale?.size){ctx.beginPath();ctx.strokeStyle='#86efac';ctx.lineWidth=2/this.camera.zoom;ctx.arc(e.x,e.y,r+12,-Math.PI*.8,-Math.PI*.2);ctx.stroke();}
     if(e.command){ctx.save();ctx.strokeStyle='#ffffff';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([3/this.camera.zoom,6/this.camera.zoom]);ctx.beginPath();ctx.arc(e.x,e.y,r+16,0,Math.PI*2);ctx.stroke();ctx.restore();}
     // hp bar for AI / player
-    if ((e.behavior === 'ai' || e.behavior === 'player') && e.hp < e.maxHp) {
+    // Shield HP is a grey segment after the HP fill; the bar rescales when HP + shield exceeds max HP.
+    const shield=(e.behavior==='ai'||e.behavior==='player')?shieldAmount(e,this.gameTime):0;
+    if ((e.behavior === 'ai' || e.behavior === 'player') && (e.hp < e.maxHp || shield > 0)) {
       const barW = Math.max(24/this.camera.zoom,r*1.6);
       const barH = 5/this.camera.zoom;
       const bx = e.x - barW / 2;
       const by = e.y-r-9/this.camera.zoom;
+      const total = Math.max(e.maxHp, e.hp + shield), hpW = barW * Math.max(0, e.hp / total);
       ctx.fillStyle = 'rgba(0,0,0,0.5)';
       ctx.fillRect(bx, by, barW, barH);
       ctx.fillStyle = e.hp / e.maxHp > 0.3 ? '#4ade80' : '#f87171';
-      ctx.fillRect(bx, by, barW * Math.max(0, e.hp / e.maxHp), barH);
+      ctx.fillRect(bx, by, hpW, barH);
+      if (shield > 0) { ctx.fillStyle = '#cbd5e1'; ctx.fillRect(bx + hpW, by, barW * shield / total, barH); }
     }
     if(e.behavior==='ai'||e.behavior==='player'){
       const z=this.camera.zoom,chips=statusChips(e,this);

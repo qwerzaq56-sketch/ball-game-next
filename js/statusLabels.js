@@ -6,6 +6,11 @@ const secs = (v) => `${Math.max(1, Math.ceil(v))}s`;
 // Mock or minimal canvases may not measure text; fall back to an estimate so drawing never throws.
 export const textWidth = (ctx, text, font) => { const m = ctx.measureText?.(text); return Number.isFinite(m?.width) ? m.width : text.length * font * 0.62; };
 
+// Shield HP that still blocks damage (cyan/tree shield plus an active obsidian shield); HP bars draw it as a grey segment.
+export function shieldAmount(e, now) {
+  return Math.max(0, e.shieldHp ?? 0) + ((e.obsidianShieldUntil ?? 0) > now ? Math.max(0, e.obsidianShieldHp ?? 0) : 0);
+}
+
 // Status chips for one unit. Order is stable so rows do not jump between frames.
 export function statusChips(e, game) {
   const now = game.gameTime, out = [];

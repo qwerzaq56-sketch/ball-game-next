@@ -542,7 +542,7 @@ body.mobile-minimal #live-ranking:not(.minimal-open) .rank-dot{display:block!imp
   --b-fg:#f8fafc; --b-dim:#cbd5e1; --b-mute:#94a3b8;
   --b-shadow:0 1px 2px rgba(0,0,0,.75),0 0 8px rgba(0,0,0,.4);
   --b-scrim:rgba(9,13,22,.42); --b-chip:rgba(9,13,22,.7); --b-edge:rgba(255,255,255,.45);
-  --b-hp:#f87171; --b-sprint:#7dd3fc; --b-absorb:#86efac; --b-companion:#c4b5fd;
+  --b-hp:#f87171; --b-shield:#cbd5e1; --b-sprint:#7dd3fc; --b-absorb:#86efac; --b-companion:#c4b5fd;
   --b-font:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
   --b-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Consolas,monospace;
   --safe-t:env(safe-area-inset-top,0px); --safe-r:env(safe-area-inset-right,0px);
@@ -564,9 +564,12 @@ html, body { font-family:var(--b-font); }
 #hud-lives { margin-left:auto; display:flex; gap:4px; align-self:center; }
 #hud-lives i { width:8px; height:8px; border-radius:50%; background:var(--b-hp); }
 #hud-lives i.lost { background:none; box-shadow:inset 0 0 0 1.5px rgba(248,113,113,.55); }
-.hp-bar-outer { width:100%; height:5px; border-radius:3px; background:rgba(255,255,255,.22); overflow:hidden; }
-.hp-bar-fill { height:100%; width:100%; background:var(--b-hp); transition:width .1s linear; }
-.sprint-bar-outer { width:100%; height:3px; margin-top:-2px; border-radius:2px; background:rgba(255,255,255,.22); overflow:hidden; }
+.hp-bar-outer { width:100%; height:5px; border-radius:3px; background:rgba(255,255,255,.22); overflow:hidden; display:flex; }
+.hp-bar-fill { height:100%; width:100%; flex:none; background:var(--b-hp); transition:width .1s linear; }
+.hp-bar-shield { height:100%; width:0; flex:none; background:var(--b-shield); transition:width .1s linear; }
+#hp-shield-text { color:var(--b-shield); }
+.sprint-bar-outer { width:100%; height:5px; margin-top:-1px; border-radius:3px; background:rgba(255,255,255,.22); overflow:hidden; }
+#sprint-gauge[data-state="locked"] { background:rgba(255,255,255,.08); outline:1px dashed rgba(255,255,255,.18); outline-offset:-1px; }
 .sprint-bar-fill { height:100%; width:100%; background:var(--b-sprint); transition:width .1s linear; }
 #sprint-gauge[data-state="active"] .sprint-bar-fill { background:#e0f2fe; box-shadow:0 0 6px var(--b-sprint); }
 #sprint-gauge[data-state="exhausted"] .sprint-bar-fill { background:#64748b; }
@@ -630,7 +633,7 @@ body.mobile-minimal #live-ranking:not(.minimal-open) .rank-row { display:grid; g
 body.mobile-minimal #live-ranking:not(.minimal-open) .rank-row.is-player { color:#bae6fd; }
 body.mobile-minimal #live-ranking:not(.minimal-open) .rank-name { display:block; }
 body.mobile-minimal #live-ranking:not(.minimal-open) .rank-score { font-family:var(--b-mono); text-align:right; }
-body.mobile-minimal #live-ranking:not(.minimal-open) li:nth-child(n+6) { display:none; }
+body.mobile-minimal #live-ranking:not(.minimal-open) li:nth-child(n+11) { display:none; }
 
 /* ---- desktop ability rings (bottom-centre) ---- */
 #ability-bar { position:fixed; z-index:10; left:50%; bottom:calc(20px + var(--safe-b)); transform:translateX(-50%); display:flex; gap:18px; padding:10px 18px 8px; border-radius:16px; background:radial-gradient(ellipse at center,rgba(9,13,22,.38),rgba(9,13,22,0) 72%); pointer-events:none; color:var(--b-fg); text-shadow:var(--b-shadow); }

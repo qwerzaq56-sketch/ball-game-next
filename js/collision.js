@@ -18,7 +18,8 @@ export function circlesOverlap(a, b) {
 // Passive orb pickup: color-independent, instant.
 export function canEatOrb(eater, orb, balance) {
   if (!orb.alive || !eater.alive) return false;
-  if (orb.behavior !== 'orb'||orb.healFraction&&eater.hp>=eater.maxHp) return false;
+  // R-WORLD-010: a healing berry is eaten even at full HP (it heals nothing then) so it never looks uneaten.
+  if (orb.behavior !== 'orb') return false;
   const minDiff = balance.growth.minEatSizeDifference ?? 0;
   return orb.size < eater.size - minDiff;
 }

@@ -6,7 +6,7 @@ import {SkillTuningUI} from './skillTuningUI.js';
 import { ERA_PHASES } from './era.js';
 import { submitScore } from './storage.js';
 import { EcologyUI } from './ecologyUI.js';
-import { eraEventKind, eraEventText } from './statusLabels.js';
+import { eraEventKind, eraEventText, shieldAmount } from './statusLabels.js';
 import { COLOR_NAMES } from './tutorialCards.js';
 import {nextSkillGoal} from './progression.js';
 
@@ -18,6 +18,8 @@ export class UI {
     this.game = null; // set on the first update(dt, game) call — the checkbox handler below needs it
 
     this.hpFill = document.getElementById('hp-fill');
+    this.hpShield = document.getElementById('hp-shield');
+    this.hpShieldText = document.getElementById('hp-shield-text');
     this.hpNow = document.getElementById('hp-now');this.hpMax = document.getElementById('hp-max');
     this.growthText = document.getElementById('growth-text');
     this.sizeText = document.getElementById('size-text');
@@ -162,11 +164,11 @@ export class UI {
     const field=game.era.apocalypse;document.getElementById('era-text').textContent=game.era.status()+(field?field.active?' · 파멸 위험':' · 파멸 전조':'');
     this.updateEraBadge(game);
     this.autoCompanionButton.textContent=player.autoCompanionOffer?'자동 동행 ON':'자동 동행 OFF';this.autoCompanionButton.setAttribute('aria-pressed',String(!!player.autoCompanionOffer));
-    // R-CTRL-006: the sprint gauge sits right under the HP bar once sprint is unlocked.
-    const sprintCapacity=game.balance.sprint?.capacitySeconds??3,sprintGauge=document.getElementById('sprint-gauge');
-    sprintGauge.hidden=player.size<(game.balance.sprint?.unlockSize??150);
-    document.getElementById('sprint-fill').style.width=`${Math.round(100*Math.max(0,Math.min(1,(player.sprintGauge??sprintCapacity)/sprintCapacity)))}%`;
-    sprintGauge.dataset.state=player.sprinting?'active':player.sprintExhausted?'exhausted':'ready';
+    // R-CTRL-006: the sprint gauge always sits right under the HP bar; before sprint unlocks it shows an empty locked track.
+    const sprintCapacity=game.balance.sprint?.capacitySeconds??3,sprintGauge=document.getElementById('sprint-gauge'),sprintUnlock=game.balance.sprint?.unlockSize??150,sprintLocked=player.size<sprintUnlock;
+    sprintGauge.hidden=false;sprintGauge.title=sprintLocked?`달리기 게이지 · 크기 ${sprintUnlock}에서 해금`:'달리기 게이지';
+    document.getElementById('sprint-fill').style.width=sprintLocked?'0%':`${Math.round(100*Math.max(0,Math.min(1,(player.sprintGauge??sprintCapacity)/sprintCapacity)))}%`;
+    sprintGauge.dataset.state=sprintLocked?'locked':player.sprinting?'active':player.sprintExhausted?'exhausted':'ready';
     document.getElementById('play-time').textContent=`플레이 ${Math.floor(game.gameTime/60)}:${String(Math.floor(game.gameTime%60)).padStart(2,'0')}`;
     const invitation=document.getElementById('companion-invite'),wait=Math.ceil(Math.max(0,(player.inviteReadyAt??0)-game.gameTime));
     invitation.textContent=game.allyLinks.truceUntil>game.gameTime?`동행 · 축제 ${Math.ceil(game.allyLinks.truceUntil-game.gameTime)}s`:wait?`동행 제안 ${wait}s`:'동행 제안';invitation.disabled=game.paused||game.gameOver||wait>0||player.frozen>0||!!player.specialCast||player.attackState!=='READY'||player.dodgeState==='DODGING'||!!player.beingAbsorbedByRef;
@@ -177,9 +179,12 @@ export class UI {
     const leave=document.getElementById('companion-leave');leave.disabled=game.paused||!player.companionGroup;leave.hidden=!player.companionGroup;
     document.getElementById('ally-links-toggle').textContent=`연결선: ${game.showAllyLinks===false?'OFF':'ON'}`;
     document.getElementById('ally-links-toggle').setAttribute('aria-pressed',String(game.showAllyLinks!==false));
-    const hpRatio = Math.max(0, player.hp / player.maxHp);
-    this.hpFill.style.width = `${hpRatio * 100}%`;
+    // Shield HP is a grey segment inside the HP bar; the bar rescales when HP + shield exceeds max HP.
+    const shield = shieldAmount(player, game.gameTime), hpTotal = Math.max(player.maxHp, player.hp + shield);
+    this.hpFill.style.width = `${Math.max(0, player.hp / hpTotal) * 100}%`;
+    this.hpShield.style.width = `${shield / hpTotal * 100}%`;
     this.hpNow.textContent = Math.ceil(player.hp);this.hpMax.textContent = ` / ${Math.ceil(player.maxHp)}`;
+    this.hpShieldText.textContent = shield > 0 ? ` +${Math.ceil(shield)}` : '';
     this.updateIdentity(game);
     this.growthText.textContent = Math.floor(player.growth);
     this.sizeText.textContent = Math.floor(player.size);

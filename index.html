@@ -36,8 +36,8 @@
   <div id="hud">
     <div class="hud-block hud-vitals">
       <div class="vitals-id"><i id="hud-color"></i><strong id="hud-name">나</strong><span id="hud-sub"></span></div>
-      <div class="vitals-hp"><span id="hp-text"><span id="hp-now">100</span><span id="hp-max"> / 100</span></span><span id="hud-lives" role="img" aria-label="남은 목숨"></span></div>
-      <div class="hp-bar-outer"><div id="hp-fill" class="hp-bar-fill"></div></div>
+      <div class="vitals-hp"><span id="hp-text"><span id="hp-now">100</span><span id="hp-max"> / 100</span><span id="hp-shield-text" title="보호막"></span></span><span id="hud-lives" role="img" aria-label="남은 목숨"></span></div>
+      <div class="hp-bar-outer"><div id="hp-fill" class="hp-bar-fill"></div><div id="hp-shield" class="hp-bar-shield"></div></div>
       <div id="sprint-gauge" class="sprint-bar-outer" hidden title="달리기 게이지"><div id="sprint-fill" class="sprint-bar-fill"></div></div>
       <div id="charge-pips" aria-label="공격 충전"><span>공격</span><span id="attack-pips" class="pips locked">LOCKED</span></div>
       <div id="relic-text" hidden></div><div id="growth-goal-text"></div><div class="growth-goal-track"><div id="growth-goal-fill"></div></div>
@@ -155,7 +155,7 @@
     <div id="help-guide">
     <h3>전체 안내</h3>
     <p>먹이를 먹고 성장하세요. <strong>크기</strong>는 흡수·전투·최상위 직위를 결정하고, <strong>점수</strong>는 플레이 기록입니다. TOP 10에서 두 순위를 바꿔 볼 수 있습니다.</p>
-    <dl class="help-controls"><dt>WASD / 방향키</dt><dd>이동</dd><dt>마우스 / 좌클릭</dt><dd>조준 / 누르고 충전 후 떼면 공격</dd><dt>흡수 버튼 토글 / 우클릭 유지</dt><dd>동족 흡수 활성화 / 모바일 켜기·끄기</dd><dt>Space</dt><dd>짧게 떼면 회피 / 0.18초 이상 유지하면 달리기</dd><dt>E / R</dt><dd>크기 100부터 일반 E / 최상위 직위 보유 시 R</dd><dt>Q</dt><dd>동행 제안 (우정 축제에는 다른 색도 가능)</dd><dt>G</dt><dd>동행 이탈</dd><dt>U</dt><dd>최소 / 전체 UI 전환</dd><dt>P·ESC / H</dt><dd>일시정지 / 안내</dd></dl>
+    <dl class="help-controls"><dt>WASD / 방향키</dt><dd>이동</dd><dt>마우스 / 좌클릭</dt><dd>조준 / 누르고 충전 후 떼면 공격</dd><dt>흡수 버튼 토글 / 우클릭 유지</dt><dd>동족 흡수 활성화 / 모바일 켜기·끄기</dd><dt>Space</dt><dd>짧게 누르면 회피 / 꾹 누르면 달리기</dd><dt>E / R</dt><dd>크기 100부터 일반 E / 최상위 직위 보유 시 R</dd><dt>Q</dt><dd>동행 제안 (우정 축제에는 다른 색도 가능)</dd><dt>G</dt><dd>동행 이탈</dd><dt>U</dt><dd>최소 / 전체 UI 전환</dd><dt>P·ESC / H</dt><dd>일시정지 / 안내</dd></dl>
     <p>터치 화면의 왼쪽 절반에서 드래그하면 터치 위치에 이동 조이스틱이 나타납니다. 오른쪽 절반에서는 드래그로 공격을 조준하고 누른 동안 충전하며 손을 떼면 발사합니다. 두 손가락으로 이동과 공격을 동시에 할 수 있습니다. 이동 중에는 화면 양쪽 어디서나 두 번째 손가락으로 공격하며, 최초 터치 지점을 조준합니다. 회피 버튼은 큰 주 조작 버튼, 공격 버튼은 보조 표시로 사용할 수 있습니다. 기본 조준은 이동 방향을 따릅니다. 공격·회피 버튼을 드래그해 방향을 정하고 손을 떼면 실행하며, 회피 버튼을 짧게 터치하면 바라보는 방향으로 회피합니다. 버튼 위 숫자는 남은 충전/최대 충전, 아래 막대는 다음 충전 진행률입니다. 오른쪽에서 시작한 공격 조준과 왼쪽에서 시작한 이동은 화면 중앙을 넘어도 역할을 유지합니다. 취소된 터치는 실행하지 않습니다. 맵의 좌우·상하 끝은 서로 이어집니다. 가로 화면을 권장하며 폰 회전에 맞춰 배치가 자동 전환됩니다. Safari에서는 공유 → 홈 화면에 추가로 실행하면 브라우저 표시줄 없이 플레이할 수 있습니다. 흰색 화살표는 캐릭터 중심에서 조준 방향을 표시합니다. 상단 ‘전체 UI / 최소 UI’로 표시량을 바꿀 수 있습니다. E 버튼은 누르면 실행합니다. 동행 중에는 HUD의 ‘동행 이탈’ 버튼으로 나갑니다.</p>
     <h3>시기와 지역 탐험</h3>
     <p>영양기·경쟁기·전쟁기·쇠퇴기가 순환합니다. 전쟁기에는 전투 가능한 AI가 전선으로 이동하고, 쇠퇴기의 파멸 조우는 노란 전조 후 붉은 위험 범위가 됩니다. 미리 벗어나고 종료 후 보상을 찾아보세요.</p>
