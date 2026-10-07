@@ -13,12 +13,12 @@ const prepare=()=>page.evaluate(()=>{const g=window.__game,p=g.player;g.entities
 try{
  await page.goto(process.argv[2]??'http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();await prepare();await page.waitForTimeout(100);
  assert.equal(await page.locator('body').evaluate(e=>e.classList.contains('mobile-minimal')),true);
- assert.equal(await page.locator('#live-ranking').isVisible(),false);assert(await page.locator('#pause-btn').isVisible());
+ assert.equal(await page.locator('#live-ranking').evaluate(e=>getComputedStyle(e).pointerEvents),'none');/* compact overlay ranking */assert(await page.locator('#pause-btn').isVisible());
  const minimal=await page.locator('#hud').boundingBox();assert(minimal.height<100);
  await page.screenshot({path:`${prefix}-mobile-minimal.png`});
  await page.locator('#mobile-ui-toggle').click();assert(await page.locator('#live-ranking').isVisible());
  await page.locator('#mobile-ui-toggle').click();
- const stick=await center('#touch-stick'),attack=await center('#touch-attack');
+ const stick={x:90,y:500},attack=await center('#touch-attack');
  await touch('touchStart',[point(1,stick)]);await touch('touchMove',[point(1,{x:stick.x+30,y:stick.y})]);
  const x=await page.evaluate(()=>window.__game.player.x);
  await touch('touchStart',[point(1,{x:stick.x+30,y:stick.y}),point(2,attack)]);
@@ -35,7 +35,7 @@ try{
  await touch('touchEnd',[]);await page.waitForTimeout(60);assert.equal(await page.evaluate(()=>window.__game.player.dodgeStack),1);
  assert(Math.abs(Math.abs(await page.evaluate(()=>window.__game.player.dodgeDir))-Math.PI)<.02);
  await prepare();await page.waitForTimeout(100);
- await touch('touchStart',[point(4,{x:160,y:350})]);await touch('touchMove',[point(4,{x:230,y:350})]);await page.waitForTimeout(150);
+ await touch('touchStart',[point(4,{x:280,y:350})]);await touch('touchMove',[point(4,{x:350,y:350})]);/* right half: attack gesture (left half starts movement) */await page.waitForTimeout(150);
  assert.equal(await page.evaluate(()=>window.__game.player.attackStack),3);await touch('touchEnd',[]);await page.waitForTimeout(70);
  assert.equal(await page.evaluate(()=>window.__game.player.attackStack),2);assert(Math.abs(await page.evaluate(()=>window.__game.player.attackDir))<.02);
  await prepare();await page.waitForTimeout(100);
@@ -47,7 +47,7 @@ try{
  assert((await page.locator('#hud').boundingBox()).height<100);await page.screenshot({path:`${prefix}-mobile-landscape.png`});
  await prepare();await page.waitForTimeout(100);
  await page.evaluate(async()=>{const g=window.__game,{AIEntity}=await import('./js/ai.js'),p=g.player;const ally=new AIEntity({x:p.x-80,y:p.y,color:p.color,colorHex:p.colorHex,startSize:40,balance:g.balance});g.entities.push(ally);g.allyLinks.refresh();g.allyLinks.join(ally,p);g.allyLinks.timer=10000;});
- await touch('touchStart',[point(80,{x:360,y:180})]);await touch('touchMove',[point(80,{x:410,y:180})]);await touch('touchEnd',[]);await page.waitForTimeout(70);assert.equal(await page.evaluate(()=>window.__game.player.attackStack),2);
+ await touch('touchStart',[point(80,{x:520,y:180})]);await touch('touchMove',[point(80,{x:570,y:180})]);/* landscape right half: attack gesture while in a group (R-COMP-002) */await touch('touchEnd',[]);await page.waitForTimeout(70);assert.equal(await page.evaluate(()=>window.__game.player.attackStack),2);
  assert(await page.evaluate(()=>!!window.__game.player.companionGroup));
  await page.reload();await page.waitForFunction(()=>window.__game);assert.equal(await page.locator('body').evaluate(e=>e.classList.contains('mobile-minimal')),true);
  assert.deepEqual(errors,[]);const result={status:'PASS',genuineTouch:true,minimalUI:true,persisted:true,multitouchMovement:true,attackOnRelease:true,dodgeOnRelease:true,canvasAttackOnRelease:true,companionCanvasAttack:true,singleAttack:true,cancelPauseResizeNoFire:true,screenTapNoAttack:true,errors};writeFileSync(`${prefix}-mobile-release.json`,JSON.stringify(result,null,2));console.log(JSON.stringify(result));

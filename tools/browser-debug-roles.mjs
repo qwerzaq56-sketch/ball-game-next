@@ -7,7 +7,7 @@ page.on('pageerror',e=>errors.push(e.message));
 try {
  await page.goto(process.argv[2]??'http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();
  const texts=await page.evaluate(()=>{
-  const g=window.__game;g.paused=true;g.ui.preferences.names=false;
+  const g=window.__game;g.paused=true;g.showAILabels=true;g.ui.preferences.names=false;
   const ais=g.entities.filter(e=>e.behavior==='ai').slice(0,5);
   const roles=['prey','forager','predator','predator','predator'],relations=['challenger','subordinate','subordinate','challenger','independent'];
   ais.forEach((e,i)=>{e.role=roles[i];e.relationship=relations[i];e.x=g.player.x+(i%3-1)*180;e.y=g.player.y+(i<3?-130:130);e.size=60;e.apex=false;});g.entities=[g.player,...ais];

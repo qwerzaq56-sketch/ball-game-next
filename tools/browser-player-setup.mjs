@@ -25,6 +25,7 @@ try {
     const [a,b]=g.entities.filter(e=>e.behavior==='ai');g.entities=[g.player,a,b];
     g.player.score=2000;g.player.size=40;a.score=1000;a.size=80;b.score=10;b.size=160;
   });await page.waitForTimeout(350);
+  await page.locator('#ranking-mode-score').click();await page.waitForTimeout(350);
   assert.equal(await page.locator('.rank-row').first().locator('.rank-name').innerText(),'<img src=x>');
   assert.equal(await page.locator('#live-ranking img').count(),0);
   const scoreTop=await page.locator('.rank-row').first().getAttribute('data-id');

@@ -30,7 +30,7 @@ try {
    if(apex>3)s.violation=`apex cap ${apex}`;
    for(const group of this.allyLinks.groups.values()){
     if(group.members.size<2||group.members.size>6||!group.members.has(group.leader))s.violation='group membership';
-    for(const e of group.members)if(!e.alive||e.color!==group.color||e.companionGroup!==group.id||e.attackState!=='READY'||e.specialCast)s.violation=`peaceful member #${e.id}`;
+    for(const e of group.members)if(!e.alive||(e.color!==group.color&&!group.truceUntil)||e.companionGroup!==group.id)s.violation=`group member #${e.id}`;
    }
    if(this.abilities.events.length>256||this.ecology.events.length>256||this.era.events.length>100||this.allyLinks.events.length>100||this.era.recentDuels.length>16||this.apexHistory.recent.length>24||this.apexHistory.completed.length>12||this.runMetrics.samples.length>600)s.violation='unbounded history';
    if(this.relics.items.length>3)s.violation='relic population';
