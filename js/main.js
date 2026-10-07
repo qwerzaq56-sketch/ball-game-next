@@ -1,3 +1,4 @@
+import {TipsUI} from './tipsUI.js';
 import {DesignerReview} from './designerReview.js';
 import {loadObjectPreset} from './biomeObjectCatalog.js?effects-direction-02';
 import {installMovablePanels} from './movablePanels.js';
@@ -117,6 +118,7 @@ async function main() {
   window.__game = game; // debug inspection hook
   const playControls=new PlayControls(game,input);
   const tutorial=new TutorialUI(game,playControls);window.__tutorial=tutorial;
+  const tipsUI=new TipsUI(game);
   const touchControls=new TouchControls(game,input,canvas);
   const hudB=new HudB(game);
   ui.inspector = new AIInspector(game, canvas, ui);installMovablePanels(); // F2: read-only AI state window
@@ -193,6 +195,7 @@ async function main() {
     diagnosticsUI.update();
     playControls.update();
     tutorial.update(dt);
+    tipsUI.update(dt);
     touchControls.update();
     hudB.update();
 

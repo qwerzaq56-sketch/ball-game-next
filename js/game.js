@@ -87,7 +87,8 @@ export class Game {
     this.telemetry = [];
     this.player = new Player(this.balance, this.options.profile);
     this.player.onSkillUnlock = (type) => {
-      this.ui.showUnlock(type);
+      // R-CTRL-007: with situational tips on, the unlock tip (T02) replaces the old English banner.
+      if (!this.tips?.enabled) this.ui.showUnlock(type);
       this.audio.unlock();
     };
     this.entities = [this.player];
@@ -402,8 +403,10 @@ export class Game {
     if(auto&&auto.attack&&canStartAttack(p))p.autoChargeSeconds=(p.autoChargeSeconds??0)+dt;else p.autoChargeSeconds=0;
     const autoReleased=!!auto&&p.autoChargeSeconds>=(b.attack.manualChargeSeconds??.9)*autoLevel;
     if(auto)p.attackHoldProgress=Math.min(1,p.autoChargeSeconds/(b.attack.manualChargeSeconds??.9));
+    if(!auto&&releasedAttack!=null&&!p.attackUnlocked)this.tips?.notice('attack-locked');// R-CTRL-007 T01
     if ((auto?autoReleased:(releasedAttack!=null)) && p.attackUnlocked && canStartAttack(p)) {
       startAttack(p, !auto&&releasedAttack!=null?(typeof releasedAttack==='number'?releasedAttack:releasedAttack.angle??aimAngle):aimAngle, b,auto?autoLevel:typeof releasedAttack==='object'?releasedAttack.charge??0:0);
+      if(!auto&&p.currentAttackCharge<.7)this.tips?.notice('full-charge');// R-CTRL-007 T03
       p.autoChargeSeconds=0;this.audio.attackCharge();
     }
     const dodge=auto?auto.dodge:inp.consumeDodge();if(auto)auto.dodge=false;

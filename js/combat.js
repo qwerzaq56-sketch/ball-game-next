@@ -243,7 +243,13 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
 
   if(attacker&&options.kind!=='field'&&target.companionGroup){const group=game?.allyLinks?.groups.get(target.companionGroup);if(group){group.aggressor=attacker;group.aggressorUntil=game.gameTime+5;}}
   if (attacker && options.knockback!==false) applyKnockback(target, attacker, game);
-  if (target.beingAbsorbedByRef) cancelAbsorption(target); // a hit breaks an absorption connection
+  if (target.beingAbsorbedByRef) {
+    // R-CTRL-007 T06: tell the player when a hit breaks an absorption they are part of.
+    if (game?.player && (target === game.player || target.beingAbsorbedByRef === game.player)) game.tips?.notice('absorb-hit');
+    cancelAbsorption(target); // a hit breaks an absorption connection
+  }
+  // R-CTRL-007 T09: the first charge hit taken after dodge unlocks suggests the dodge.
+  if (game?.player === target && attacker && !options.kind && target.dodgeUnlocked) game.tips?.notice('dodge');
 
   if (game) {
     if(game.spawnHitImpact)game.spawnHitImpact(target,attacker,lost,{field:options.kind==='field'});else game.spawnHitParticles(target.x, target.y, target.colorHex);
