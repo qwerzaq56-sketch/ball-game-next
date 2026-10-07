@@ -24,12 +24,13 @@ try{
   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('ballgamenext_tutorial_v1')).firstRun),true);
   // help button: all three decks, own species first, guide text still there
   await page.locator('#help-btn').click();await page.waitForTimeout(100);
-  assert.equal(await page.locator('#play-help-title').innerText(),'도움말');assert(await page.locator('#help-guide').isVisible());
-  assert.equal((await card(page)).title,'공격');assert.equal(await page.locator('.tc-tab').count(),3);
+  assert.equal(await page.locator('#play-help-title').innerText(),'도움말');assert(!(await page.locator('#help-guide').isVisible()),'the guide is its own tab');
+  assert.equal((await card(page)).title,'공격');assert.deepEqual(await page.locator('.tc-tab').allInnerTexts(),['기본 조작','종족','지형·오브젝트','전체 안내']);
   await page.locator('.tc-tab[data-deck="species"]').click();const sp=await card(page);assert.equal(sp.title,'빨강 종족');assert.equal(sp.count,'1 / 5');
   await page.locator('.tc-tab[data-deck="terrain"]').click();const tr=await card(page),here=await page.evaluate(()=>{const g=window.__game;return 'terrain-'+g.biomes.regionAt(g.player).id;});assert.equal(tr.id,here,'terrain deck opens on the current region');assert.match(tr.count,/ \/ 6$/);assert.match(tr.text,/지형 오브젝트/);
   for(let i=0;i<6;i++)await page.keyboard.press('ArrowLeft');const terrainTitles=[];for(let i=0;i<6;i++){terrainTitles.push((await card(page)).title);await page.keyboard.press('ArrowRight');}
   assert.deepEqual([...terrainTitles].sort(),['숲','사막','설원','초원','호수','화산'].sort());
+  await page.locator('.tc-tab[data-deck="guide"]').click();assert(await page.locator('#help-guide').isVisible(),'guide tab shows the guide');assert(!(await page.locator('#tc-card').isVisible()),'guide tab hides the card');
   await page.locator('.tc-tab[data-deck="terrain"]').click();
   await page.screenshot({path:'reports/R-CTRL-005-help-terrain.png'});
   await page.keyboard.press('Escape');await page.waitForTimeout(100);assert.equal(await page.locator('#play-help').evaluate(d=>d.open),false);

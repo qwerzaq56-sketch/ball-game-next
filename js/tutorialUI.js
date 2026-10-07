@@ -26,6 +26,9 @@ export class TutorialUI {
       const b = el('button', 'tc-tab', d.name); b.type = 'button'; b.setAttribute('role', 'tab'); b.dataset.deck = d.id;
       b.addEventListener('click', () => this.showDeck(d.id)); this.tabs.append(b);
     }
+    // The long-form guide is its own last tab: 기본 조작 · 종족 · 지형·오브젝트 · 전체 안내.
+    const guide = el('button', 'tc-tab', '전체 안내'); guide.type = 'button'; guide.setAttribute('role', 'tab'); guide.dataset.deck = 'guide';
+    guide.addEventListener('click', () => this.showDeck('guide')); this.tabs.append(guide);
     document.getElementById('tc-prev').addEventListener('click', () => this.step(-1));
     document.getElementById('tc-next').addEventListener('click', () => { if (this.mode === 'tutorial' && this.index === this.cards.length - 1) this.help.close(); else this.step(1); });
     this.help.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') { e.preventDefault(); this.step(1); } if (e.key === 'ArrowLeft') { e.preventDefault(); this.step(-1); } });
@@ -52,6 +55,7 @@ export class TutorialUI {
     this.showDeck(deck, opts.cardId);
   }
   showDeck(id, cardId) {
+    if (id === 'guide') { this.deck = 'guide'; this.cards = []; this.index = 0; this.render(); return; }
     this.deck = id; this.cards = this.deckCards(id);
     let index = cardId ? this.cards.findIndex((c) => c.id === cardId) : -1;
     if (index < 0 && id === 'terrain' && this.game.biomes?.enabled) { const r = this.game.biomes.regionAt(this.game.player); index = this.cards.findIndex((c) => c.region === r?.id); }
@@ -60,6 +64,9 @@ export class TutorialUI {
   step(d) { if (!this.cards.length) return; this.index = Math.min(this.cards.length - 1, Math.max(0, this.index + d)); this.render(); }
   render() {
     for (const b of this.tabs.children) { const on = b.dataset.deck === this.deck; b.setAttribute('aria-selected', String(on)); b.classList.toggle('active', on); }
+    const guide = this.deck === 'guide';
+    document.getElementById('help-guide').hidden = !guide; document.getElementById('tc-card').hidden = guide; this.help.querySelector('.tc-nav').hidden = guide;
+    if (guide) return;
     const card = this.cards[this.index], box = document.getElementById('tc-card');
     box.replaceChildren(); if (!card) return;
     box.dataset.card = card.id; box.style.setProperty('--tc-accent', card.accent);
