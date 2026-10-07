@@ -61,7 +61,7 @@ export function skillLine(s) {
     case 'green-morale': return `주변 아군 공격 +${pct(s.buffDamage)}, ${num(s.buffDuration)}초.`;
     case 'red-embers': return `${num(s.fieldDuration)}초 동안 타는 불씨 장판을 깝니다.`;
     case 'red-vigor': return `${num(s.buffDuration)}초 동안 공격 +${pct(s.buffDamage)}, 이동 +${pct(s.buffSpeed - 1)}.`;
-    case 'red-muster': return `같은 색을 불러 모아 ${num(s.buffDuration)}초 동안 공격 +${pct(s.buffDamage)}, 이동 +${pct(s.buffSpeed - 1)}.`;
+    case 'red-muster': return `넓은 범위의 같은 색을 내 곁으로 순간이동시켜 ${num(s.buffDuration)}초 동안 공격 +${pct(s.buffDamage)}, 이동 +${pct(s.buffSpeed - 1)}. 불려온 아군은 ${num(s.absorbGuardSeconds)}초 동안 흡수되지 않습니다.`;
     case 'red-rally': return '조준한 적을 표적으로 찍고, 주변 같은 색 아군을 강화해 함께 공격하게 합니다.';
     case 'yellow-dust': return `선 자리에 ${num(s.buffDuration)}초 동안 먼지 장막을 깔고, 장막 안에서는 나와 같은 색 아군에게 오는 적 공격이 ${pct(s.missChance)} 빗나갑니다. 시전 직후 ${num(s.invulnerableSeconds)}초 무적.`;
     case 'yellow-storm': return '넓은 모래바람 장판으로 계속 피해를 줍니다.';

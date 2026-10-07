@@ -10,7 +10,7 @@ export const SKILL_CATALOG = {
  'blue-ripple':{color:'blue',slot:'E',name:'파도 밀치기',effect:'ripple',windup:.3,cooldown:8,radius:240,damage:.8,pushDuration:.15,pushSpeed:400},
  'green-invite':{color:'green',slot:'E',name:'동행 초대',effect:'invite',windup:.3,cooldown:9,radius:350,acceptChance:.7,buffDuration:30,buffDamage:.04,buffDefense:.05,buffStackCap:5,buffRegen:.008},
  'red-embers':{color:'red',slot:'E',name:'불씨 장판',effect:'embers',windup:.25,cooldown:9,radius:240,fieldDuration:5,tickInterval:.5,damage:.43},
- 'red-muster':{color:'red',slot:'R',name:'혈족 집결',effect:'muster',windup:.6,cooldown:16,gatherDuration:3,buffDuration:8,buffDamage:.3,buffSpeed:1.25},
+ 'red-muster':{color:'red',slot:'R',name:'혈족 집결',effect:'muster',windup:.6,cooldown:20,gatherDuration:0,buffDuration:8,buffDamage:.3,buffSpeed:1.25,summonRangeMultiplier:2.5,absorbGuardSeconds:3},
  'red-vigor':{color:'red',slot:'E',name:'사냥 박동',effect:'vigor',windup:.25,cooldown:9,radius:260,buffDuration:4,buffDamage:.15,buffSpeed:1.12},
  'yellow-dust':{color:'yellow',slot:'E',name:'먼지 장막',effect:'dust',windup:.3,cooldown:9,buffDuration:4,missChance:.15,visualRadiusMultiplier:3,invulnerableSeconds:.8},
  'cyan-freeze':{color:'cyan',slot:'R',name:'냉기 휘두르기',effect:'legacy',windup:.6,cooldown:10,radius:260,damage:.62,freezeSeconds:1},
@@ -29,7 +29,7 @@ export function scaledSkill(balance,e,slot){
  const cfg=selectedSkill(balance,e.color,slot);if(cfg.id==='blue-wave'&&e.apex){cfg.lanes=3;cfg.width=cfg.apexWidth;cfg.damage=cfg.apexDamage;}const scale=Math.max(.6,e.size/(balance.abilitySkills?.rangeReferenceSize??100));
  for(const key of ['blastRadius','radius','length','width','castRange','buffRadius','commandRadius'])if(Number.isFinite(cfg[key]))cfg[key]*=scale;
  if(cfg.effect==='embers')cfg.radius=Math.max(cfg.radius,e.size/2+100);
- if(cfg.effect==='muster')cfg.radius=apexTerritoryRadius(e,balance);
+ if(cfg.effect==='muster')cfg.radius=apexTerritoryRadius(e,balance)*(cfg.summonRangeMultiplier??1);// R-ABIL-009: teleport summon range
  if(e.color==='green'&&slot==='E')cfg.radius=Math.max(cfg.radius,balance.ai.detectionRange*.65+Math.max(0,e.size-40)*.65);
  return cfg;
 }

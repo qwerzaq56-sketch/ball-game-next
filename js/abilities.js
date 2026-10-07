@@ -1,5 +1,5 @@
 import {terrainDamageMultiplier} from './biomes.js';
-import {delta,angleTo} from './topology.js';
+import {delta,angleTo,wrap} from './topology.js';
 import { boundCenter } from './worldBounds.js';
 import { attackChargeDistanceForSize, attackDamageForSize, applyDamage, canStartAttack } from './combat.js?forest-composition-01';
 import { cancelAbsorption } from './absorption.js';
@@ -28,7 +28,7 @@ export function inWave(origin,target,dir,length=400,width=180){
 }
 function angleDelta(a,b){return Math.abs(Math.atan2(Math.sin(a-b),Math.cos(a-b)));}
 export class Abilities {
- constructor(game){this.enabled=game.options.abilitiesEnabled!==false;this.game=game;this.waves=[];this.vortices=[];this.fields=[];this.embers=[];this.frostMarks=[];this.frostFields=[];this.musters=[];this.events=[];this.castId=0;this.flashes=[];this.specialFires=0;this.rallies=[];this.metrics=new AbilityMetrics(game);}
+ constructor(game){this.enabled=game.options.abilitiesEnabled!==false;this.game=game;this.waves=[];this.vortices=[];this.fields=[];this.embers=[];this.frostMarks=[];this.frostFields=[];this.musters=[];this.teleports=[];this.guarded=new Set();this.events=[];this.castId=0;this.flashes=[];this.specialFires=0;this.rallies=[];this.metrics=new AbilityMetrics(game);}
  units(){return this.game.entities.filter(e=>e.alive&&e.behavior!=='orb');}
  log(type,e,extra={}){if(type==='special-fire')this.specialFires++;this.events.push({time:this.game.gameTime,type,id:e.id,...extra});if(!this.game.options.collect&&this.events.length>256)this.events.shift();}
  release(owner){
@@ -142,13 +142,24 @@ export class Abilities {
   }
  }
  muster(owner,cast){
-  const cfg=cast.skill,total=cfg.gatherDuration+cfg.buffDuration;
-  const recipients=this.units().filter(t=>!isHostile(owner,t)&&(t.color===owner.color||owner.companionGroup&&t.companionGroup===owner.companionGroup)&&dist(owner,t)<=cfg.radius);
+  // R-ABIL-009 (2026-10-08): AI allies in range teleport beside the caster, then everyone gets the buff and a short absorb guard.
+  const cfg=cast.skill,total=cfg.gatherDuration+cfg.buffDuration,units=this.units(),w=this.game.balance.world;
+  const recipients=units.filter(t=>!isHostile(owner,t)&&(t.color===owner.color||owner.companionGroup&&t.companionGroup===owner.companionGroup)&&dist(owner,t)<=cfg.radius);
   this.musters=this.musters.filter(r=>r.owner!==owner);this.rallies=this.rallies.filter(r=>r.owner!==owner);
   const r={owner,recipients:new Set(recipients),targets:new Set(),point:{x:owner.x,y:owner.y},gatherRemaining:cfg.gatherDuration,remaining:total,expires:this.game.gameTime+total,buffSpeed:cfg.buffSpeed,buffDamage:cfg.buffDamage,muster:true};
-  this.musters.push(r);this.rallies.push(r);
-  for(const e of recipients){e.rallyBuffs??=new Map();e.rallyBuffs.set(owner.id,r);this.metrics.count(owner,cast,'buffs');if(e!==owner&&e.behavior==='ai'){this.endCommand(e,'new-muster');e.command={owner,kind:'muster',rally:r,remaining:total};}}
-  this.log('muster',owner,{recipients:recipients.map(e=>e.id),gatherSeconds:cfg.gatherDuration,fightSeconds:cfg.buffDuration});
+  this.musters.push(r);this.rallies.push(r);let moved=0;
+  for(const e of recipients){
+   e.rallyBuffs??=new Map();e.rallyBuffs.set(owner.id,r);this.metrics.count(owner,cast,'buffs');
+   e.absorbGuardRemaining=Math.max(e.absorbGuardRemaining??0,cfg.absorbGuardSeconds??0);if(e.absorbGuardRemaining>0)this.guarded.add(e);
+   if(e===owner||e.behavior!=='ai')continue;
+   if(e.beingAbsorbedByRef)cancelAbsorption(e);for(const other of units)if(other.beingAbsorbedByRef===e)cancelAbsorption(other);
+   const angle=e.id*2.399963229728653,d=owner.size/2+e.size/2+40;let x=owner.x+Math.cos(angle)*d,y=owner.y+Math.sin(angle)*d;
+   if(w?.wrap){x=wrap(x,w.worldWidth);y=wrap(y,w.worldHeight);}
+   this.teleports.push({from:{x:e.x,y:e.y},to:{x,y},size:e.size,remaining:.6});e.x=x;e.y=y;e.trail=[];moved++;
+   this.endCommand(e,'new-muster');e.command={owner,kind:'muster',rally:r,remaining:total};
+  }
+  if(owner===this.game.player||recipients.includes(this.game.player))this.game.spawnFloatingText(this.game.player.x,this.game.player.y-this.game.player.size/2-20,`집결 · 공격 +${Math.round(cfg.buffDamage*100)}% 이동 +${Math.round((cfg.buffSpeed-1)*100)}%`,'#fca5a5');
+  this.log('muster',owner,{recipients:recipients.map(e=>e.id),teleported:moved,gatherSeconds:cfg.gatherDuration,fightSeconds:cfg.buffDuration,guardSeconds:cfg.absorbGuardSeconds});
  }
  observeMusterCombat(attacker,target,lost){
   if(!attacker||lost<=0)return;
@@ -156,6 +167,8 @@ export class Abilities {
  }
  updateMusters(dt){
   for(const r of this.musters){r.point={x:r.owner.x,y:r.owner.y};r.gatherRemaining=Math.max(0,r.gatherRemaining-dt);r.remaining-=dt;}
+  for(const e of this.guarded){e.absorbGuardRemaining=Math.max(0,(e.absorbGuardRemaining??0)-dt);if(e.absorbGuardRemaining<=0||!e.alive){e.absorbGuardRemaining=0;this.guarded.delete(e);}}
+  for(const t of this.teleports)t.remaining-=dt;this.teleports=this.teleports.filter(t=>t.remaining>0);
   this.musters=this.musters.filter(r=>r.remaining>0&&r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex);
   this.rallies=this.rallies.filter(r=>!r.muster||this.musters.includes(r));
  }
@@ -347,7 +360,13 @@ export class Abilities {
   }
   for(const unit of this.units()){const dust=(unit.dustUntil??0)>this.game.gameTime&&unit.dustZone,vigor=(unit.vigorUntil??0)>this.game.gameTime;
    if(dust){ctx.save();ctx.beginPath();ctx.arc(unit.dustZone.x,unit.dustZone.y,unit.dustZone.radius,0,Math.PI*2);ctx.strokeStyle='#fde68a';ctx.lineWidth=2/zoom;ctx.setLineDash([4/zoom,4/zoom]);ctx.stroke();ctx.restore();}
-   if(vigor){ctx.save();ctx.beginPath();ctx.arc(unit.x,unit.y,unit.size/2+12/zoom,0,Math.PI*2);ctx.strokeStyle='#fda4af';ctx.lineWidth=2/zoom;ctx.setLineDash([4/zoom,4/zoom]);ctx.stroke();ctx.restore();}}
+   if(vigor){ctx.save();ctx.beginPath();ctx.arc(unit.x,unit.y,unit.size/2+12/zoom,0,Math.PI*2);ctx.strokeStyle='#fda4af';ctx.lineWidth=2/zoom;ctx.setLineDash([4/zoom,4/zoom]);ctx.stroke();ctx.restore();}
+   // R-ABIL-009: muster buff (red dashed ring + numbers) and absorb guard (white ring) are readable on every recipient.
+   const rallyDamage=unit.rallyBuffs?.size?this.rallyPower(unit,'buffDamage',0):0;
+   if(rallyDamage>0){const speed=this.rallyPower(unit,'buffSpeed',1);ctx.save();ctx.beginPath();ctx.arc(unit.x,unit.y,unit.size/2+7/zoom,0,Math.PI*2);ctx.strokeStyle='#f87171';ctx.lineWidth=3/zoom;ctx.setLineDash([7/zoom,5/zoom]);ctx.stroke();
+    ctx.font=`bold ${11/zoom}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3/zoom;ctx.strokeStyle='#111827';const label=`공+${Math.round(rallyDamage*100)}% 속+${Math.round((speed-1)*100)}%`,ly=unit.y+unit.size/2+18/zoom;ctx.setLineDash([]);ctx.strokeText(label,unit.x,ly);ctx.fillStyle='#fecaca';ctx.fillText(label,unit.x,ly);ctx.restore();}
+   if((unit.absorbGuardRemaining??0)>0){ctx.save();ctx.beginPath();ctx.arc(unit.x,unit.y,unit.size/2+12/zoom,0,Math.PI*2);ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=2/zoom;ctx.stroke();ctx.restore();}}
+  for(const t of this.teleports){const k=t.remaining/.6;ctx.save();ctx.strokeStyle=`rgba(248,113,113,${k})`;ctx.lineWidth=3/zoom;for(const [p,grow] of [[t.from,1-k],[t.to,k]]){ctx.beginPath();ctx.arc(p.x,p.y,t.size/2*(.6+grow*.8)+6/zoom,0,Math.PI*2);ctx.stroke();}ctx.restore();}
   for(const f of this.embers){ctx.save();ctx.beginPath();ctx.arc(f.x,f.y,f.radius,0,Math.PI*2);ctx.fillStyle='rgba(239,68,68,.14)';ctx.fill();ctx.strokeStyle='#fb7185';ctx.lineWidth=2/zoom;ctx.stroke();ctx.font=`bold ${12/zoom}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#fecdd3';ctx.fillText(`불씨 ${Math.ceil(f.duration-f.time)}s`,f.x,f.y-f.radius-8/zoom);ctx.restore();}
   for(const r of this.musters){ctx.save();ctx.font=`bold ${12/zoom}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#fda4af';ctx.fillText(r.gatherRemaining>0?`집결 ${Math.ceil(r.gatherRemaining)}s`:`공동 사냥 ${Math.ceil(r.remaining)}s`,r.owner.x,r.owner.y-r.owner.size/2-90/zoom);ctx.restore();}
   for(const rally of this.rallies){
