@@ -1,7 +1,12 @@
 import {drawAbilityRaster} from './abilityRasterArt.js?effects-direction-02';
 
+// 2026-10-08 user: art textures were too faint (0.12-0.30) under the sharp coded range lines; raise them all.
+// Capped below the attack telegraph's solid fill so benefits stay softer than threats (planning 이펙트.md §2).
+export const ABILITY_TEXTURE_ALPHA_GAIN=1.8,ABILITY_TEXTURE_ALPHA_MAX=.5;
+
 // R-VIS-006: optional ornaments. Existing paths, timers and targets are authoritative.
-export function drawAbilityPresentation(ctx,abilities,zoom,shape,paint=drawAbilityRaster){
+export function drawAbilityPresentation(ctx,abilities,zoom,shape,rawPaint=drawAbilityRaster){
+ const paint=(c,id,o)=>rawPaint(c,id,{...o,alpha:Math.min(ABILITY_TEXTURE_ALPHA_MAX,(o.alpha??1)*ABILITY_TEXTURE_ALPHA_GAIN)});
  const game=abilities.game;
  if(game.abilityRasterEnabled===false||game.effectRasterEnabled===false||game.biomes?.terrainArt?.enabled===false)return;
  const now=game.gameTime;

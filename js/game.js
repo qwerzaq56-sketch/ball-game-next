@@ -38,6 +38,7 @@ import { startAbsorption, cancelAbsorption, updateAbsorptions, maintainDistanceF
 import { AudioManager } from './audio.js';
 import {statusChips,drawStatusChips,textWidth,shieldAmount,invulnerableShellLeft} from './statusLabels.js';
 import {pickRespawnPoint} from './respawn.js';
+import {ringRadius} from './bodyRings.js';
 
 const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '관계추종', companion:'대열 동행',war_move:'전선 이동', recover: '회복' };
 const AI_PERSONALITY_LABEL = { growth: '성장형', cautious: '회피형', opportunist: '기회형' };
@@ -942,7 +943,7 @@ export class Game {
     const r = (e.visualSize??e.size) / 2;
     if(e.frostbiteRemaining>0){const z=this.camera.zoom;ctx.save();ctx.strokeStyle='#a5f3fc';ctx.lineWidth=2/z;ctx.beginPath();ctx.arc(e.x,e.y,r+5/z,0,Math.PI*2);ctx.stroke();ctx.restore();}
     if(this.era.activeWar(e)){const z=this.camera.zoom;ctx.save();ctx.font=`bold ${13/z}px system-ui`;ctx.textAlign='center';ctx.strokeStyle='#0f172a';ctx.lineWidth=3/z;ctx.strokeText(`⚔ ${e.warTargets.size}`,e.x+r*.65,e.y-r*.65);ctx.fillStyle='#fb7185';ctx.fillText(`⚔ ${e.warTargets.size}`,e.x+r*.65,e.y-r*.65);ctx.restore();}
-    if(e.apex){const z=this.camera.zoom;ctx.save();ctx.strokeStyle='#facc15';ctx.lineWidth=3/z;ctx.beginPath();ctx.arc(e.x,e.y,r+9/z,0,Math.PI*2);ctx.stroke();
+    if(e.apex){const z=this.camera.zoom;ctx.save();ctx.strokeStyle='#facc15';ctx.lineWidth=3/z;ctx.beginPath();ctx.arc(e.x,e.y,ringRadius(r,'apex',z),0,Math.PI*2);ctx.stroke();
       for(let i=0;i<6;i++){const a=i*Math.PI/3+this.gameTime*.25,x=e.x+Math.cos(a)*(r+17/z),y=e.y+Math.sin(a)*(r+17/z);ctx.beginPath();ctx.moveTo(x,y-4/z);ctx.lineTo(x+3/z,y);ctx.lineTo(x,y+4/z);ctx.lineTo(x-3/z,y);ctx.closePath();ctx.fillStyle='#fde68a';ctx.fill();}
       ctx.font=`bold ${16/z}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3/z;ctx.strokeStyle='#0f172a';ctx.strokeText('♛',e.x,e.y-r-74/z);ctx.fillStyle='#facc15';ctx.fillText('♛',e.x,e.y-r-74/z);ctx.restore();}
 
@@ -1019,12 +1020,12 @@ export class Game {
     }
     // Canvas save/restore does not restore the current path. Stroke the body before
     // decorative helpers replace it with their marks, pulse circles or arrow triangles.
-    if((e.hitVisualUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+3/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle=e.hitVisualShield?'#a5f3fc':'#ffffff';ctx.globalAlpha=Math.min(1,(e.hitVisualUntil-this.gameTime)/.18);ctx.lineWidth=4/this.camera.zoom;ctx.stroke();ctx.restore();}
-    if((e.obsidianShieldHp??0)>0&&(e.obsidianShieldUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+13/this.camera.zoom,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,e.obsidianShieldHp/e.obsidianShieldMax));ctx.strokeStyle='#c4b5fd';ctx.lineWidth=5/this.camera.zoom;ctx.stroke();ctx.restore();}
-    if((e.companionCharmUntil??0)>this.gameTime){ctx.save();const shell=e.companionDecoration==='shell';ctx.strokeStyle=shell?'#fef3c7':'#f9a8d4';ctx.lineWidth=2/this.camera.zoom;for(let i=0;i<5;i++){const a=i*Math.PI*2/5,x=e.x+Math.cos(a)*(r+9/this.camera.zoom),y=e.y+Math.sin(a)*(r+9/this.camera.zoom);ctx.beginPath();if(shell){ctx.arc(x,y,6/this.camera.zoom,Math.PI,Math.PI*2);ctx.lineTo(x,y+3/this.camera.zoom);ctx.closePath();for(let j=-1;j<=1;j++){ctx.moveTo(x,y+3/this.camera.zoom);ctx.lineTo(x+j*4/this.camera.zoom,y-4/this.camera.zoom);}}else{for(let j=0;j<5;j++){const aa=j*Math.PI*2/5;ctx.moveTo(x+Math.cos(aa)*3/this.camera.zoom+2/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom);ctx.arc(x+Math.cos(aa)*3/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom,2/this.camera.zoom,0,Math.PI*2);}}ctx.stroke();}ctx.restore();}
+    if((e.hitVisualUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,ringRadius(r,'hit',this.camera.zoom),0,Math.PI*2);ctx.strokeStyle=e.hitVisualShield?'#a5f3fc':'#ffffff';ctx.globalAlpha=Math.min(1,(e.hitVisualUntil-this.gameTime)/.18);ctx.lineWidth=4/this.camera.zoom;ctx.stroke();ctx.restore();}
+    if((e.obsidianShieldHp??0)>0&&(e.obsidianShieldUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,ringRadius(r,'obsidian',this.camera.zoom),-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,e.obsidianShieldHp/e.obsidianShieldMax));ctx.strokeStyle='#c4b5fd';ctx.lineWidth=5/this.camera.zoom;ctx.stroke();ctx.restore();}
+    if((e.companionCharmUntil??0)>this.gameTime){ctx.save();const shell=e.companionDecoration==='shell';ctx.strokeStyle=shell?'#fef3c7':'#f9a8d4';ctx.lineWidth=2/this.camera.zoom;for(let i=0;i<5;i++){const a=i*Math.PI*2/5,x=e.x+Math.cos(a)*ringRadius(r,'charm',this.camera.zoom),y=e.y+Math.sin(a)*ringRadius(r,'charm',this.camera.zoom);ctx.beginPath();if(shell){ctx.arc(x,y,6/this.camera.zoom,Math.PI,Math.PI*2);ctx.lineTo(x,y+3/this.camera.zoom);ctx.closePath();for(let j=-1;j<=1;j++){ctx.moveTo(x,y+3/this.camera.zoom);ctx.lineTo(x+j*4/this.camera.zoom,y-4/this.camera.zoom);}}else{for(let j=0;j<5;j++){const aa=j*Math.PI*2/5;ctx.moveTo(x+Math.cos(aa)*3/this.camera.zoom+2/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom);ctx.arc(x+Math.cos(aa)*3/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom,2/this.camera.zoom,0,Math.PI*2);}}ctx.stroke();}ctx.restore();}
     drawActionArt(ctx,e,this,r,this.camera.zoom);
     drawShieldState(ctx,e,r,this.camera.zoom,{rich:this.effectRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false});
-    if(this.abilities.frostMarks.some(m=>m.target===e)){ctx.beginPath();ctx.arc(e.x,e.y,r+12/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle='#67e8f9';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([5/this.camera.zoom,4/this.camera.zoom]);ctx.stroke();ctx.setLineDash([]);}
+    if(this.abilities.frostMarks.some(m=>m.target===e)){ctx.beginPath();ctx.arc(e.x,e.y,ringRadius(r,'frostMark',this.camera.zoom),0,Math.PI*2);ctx.strokeStyle='#67e8f9';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([5/this.camera.zoom,4/this.camera.zoom]);ctx.stroke();ctx.setLineDash([]);}
     if((e.frostbiteRemaining??0)>0||(this.biomes.enabled&&this.biomes.regionAt(e)?.id==='lake')){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.fillStyle=(e.frostbiteRemaining??0)>0?'rgba(185,225,255,.42)':'rgba(25,110,230,.30)';ctx.fill();ctx.restore();}
     drawSpeciesMark(ctx,e,this.camera.zoom);
     if(this.effectRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false)drawGrowthRasterTexture(ctx,e,this.camera.zoom);
@@ -1036,7 +1037,7 @@ export class Game {
       ctx.beginPath();
       ctx.strokeStyle = this.withAlpha('#ffffff', 0.5 + Math.sin(absorbT * Math.PI * 6) * 0.2);
       ctx.lineWidth = 3 / this.camera.zoom;
-      ctx.arc(e.x, e.y, r + 8, -Math.PI / 2, -Math.PI / 2 + absorbT * Math.PI * 2);
+      ctx.arc(e.x, e.y, ringRadius(r, 'absorbProgress', this.camera.zoom), -Math.PI / 2, -Math.PI / 2 + absorbT * Math.PI * 2);
       ctx.stroke();
     }
 
@@ -1044,7 +1045,7 @@ export class Game {
     // Dodge i-frames get no shell (2026-10-08 user: dodge invulnerability is genre grammar, the shell is too much).
     const invulnerableLeft=invulnerableShellLeft(e);
     if (invulnerableLeft>.3 || (invulnerableLeft>0 && Math.floor(this.gameTime*10)%2===0)) {
-      const z=this.camera.zoom,pulse=.5+.5*Math.sin(this.gameTime*14),shell=r+6/z;
+      const z=this.camera.zoom,pulse=.5+.5*Math.sin(this.gameTime*14),shell=ringRadius(r,'goldShell',z);
       ctx.save();
       ctx.fillStyle='rgba(253,224,71,0.16)';ctx.beginPath();ctx.arc(e.x,e.y,shell,0,Math.PI*2);ctx.fill();
       ctx.strokeStyle=`rgba(250,204,21,${0.25+0.2*pulse})`;ctx.lineWidth=(7+3*pulse)/z;ctx.beginPath();ctx.arc(e.x,e.y,shell,0,Math.PI*2);ctx.stroke();
@@ -1055,9 +1056,9 @@ export class Game {
     // v0.6 follow-up: kill-reward orbs no longer get a cross-mark overlay — they're meant to
     // read as indistinguishable from a naturally-spawned field orb (see spawning.js#spawnDeathOrbs).
 
-    if(e.frozen>0){ctx.save();ctx.strokeStyle='#dffaff';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([4/this.camera.zoom,3/this.camera.zoom]);ctx.beginPath();ctx.arc(e.x,e.y,r+4,0,Math.PI*2);ctx.stroke();ctx.restore();}
-    if(e.morale?.size){ctx.beginPath();ctx.strokeStyle='#86efac';ctx.lineWidth=2/this.camera.zoom;ctx.arc(e.x,e.y,r+12,-Math.PI*.8,-Math.PI*.2);ctx.stroke();}
-    if(e.command){ctx.save();ctx.strokeStyle='#ffffff';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([3/this.camera.zoom,6/this.camera.zoom]);ctx.beginPath();ctx.arc(e.x,e.y,r+16,0,Math.PI*2);ctx.stroke();ctx.restore();}
+    if(e.frozen>0){ctx.save();ctx.strokeStyle='#dffaff';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([4/this.camera.zoom,3/this.camera.zoom]);ctx.beginPath();ctx.arc(e.x,e.y,ringRadius(r,'frozen',this.camera.zoom),0,Math.PI*2);ctx.stroke();ctx.restore();}
+    if(e.morale?.size){ctx.beginPath();ctx.strokeStyle='#86efac';ctx.lineWidth=2/this.camera.zoom;ctx.arc(e.x,e.y,ringRadius(r,'morale',this.camera.zoom),-Math.PI*.8,-Math.PI*.2);ctx.stroke();}
+    if(e.command){ctx.save();ctx.strokeStyle='#ffffff';ctx.lineWidth=2/this.camera.zoom;ctx.setLineDash([3/this.camera.zoom,6/this.camera.zoom]);ctx.beginPath();ctx.arc(e.x,e.y,ringRadius(r,'command',this.camera.zoom),0,Math.PI*2);ctx.stroke();ctx.restore();}
     // hp bar for AI / player
     // Shield HP is a grey segment after the HP fill; the bar rescales when HP + shield exceeds max HP.
     const shield=(e.behavior==='ai'||e.behavior==='player')?shieldAmount(e,this.gameTime):0;
@@ -1076,7 +1077,7 @@ export class Game {
     if(e.behavior==='ai'||e.behavior==='player'){
       const z=this.camera.zoom,chips=statusChips(e,this);
       // R-VIS-009: a summoned green companion cannot be absorbed yet; show it on the body as well as in the chip row.
-      if(chips.some(c=>c.kind==='absorb-lock')){ctx.save();ctx.strokeStyle='#4ade80';ctx.lineWidth=2/z;ctx.setLineDash([6/z,4/z]);ctx.beginPath();ctx.arc(e.x,e.y,r+7/z,0,Math.PI*2);ctx.stroke();ctx.restore();}
+      if(chips.some(c=>c.kind==='absorb-lock')){ctx.save();ctx.strokeStyle='#4ade80';ctx.lineWidth=2/z;ctx.setLineDash([6/z,4/z]);ctx.beginPath();ctx.arc(e.x,e.y,ringRadius(r,'absorbLock',z),0,Math.PI*2);ctx.stroke();ctx.restore();}
       drawStatusChips(ctx,e,r,z,chips);
     }
     // R-CTRL-006: E/R readiness is drawn last on a dark backing so status rings, apex marks and morale arcs never cover it.

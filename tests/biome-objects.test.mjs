@@ -46,3 +46,10 @@ test('approved larger oasis preserves variation, count and healing power while s
  }
  assert.deepEqual(objects,b.biomeObjects.objects.filter(o=>o.candidate==='desert-oasis'));
 });
+test('R-WORLD-016 volcano objects are never placed on the lava river (2026-10-08 user decision)',()=>{
+ for(const seed of [1,7,23,42,99]){
+  const g=createGame(seed);g.biomes.enabled=true;const preset=defaultObjectPreset();applyObjectPreset(g.balance,preset);g.biomeObjects.sync();
+  const volcano=g.biomeObjects.objects.filter(o=>o.config.region==='volcano');assert(volcano.length>0);
+  for(const o of volcano)assert.equal(g.biomes.lavaAt(o,o.config.radius),null,`${o.id} seed ${seed} overlaps the lava river`);
+ }
+});

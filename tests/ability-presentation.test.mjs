@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {drawAbilityPresentation} from '../js/abilityPresentation.js';
+import {drawAbilityPresentation,ABILITY_TEXTURE_ALPHA_GAIN,ABILITY_TEXTURE_ALPHA_MAX} from '../js/abilityPresentation.js';
 import {random,resetRandom} from '../js/random.js';
 const fixture=units=>({game:{gameTime:20,biomes:{terrainArt:{enabled:true}}},units:()=>units,flashes:[],embers:[],fields:[],vortices:[],musters:[],rallies:[],waves:[]});
 test('ability ornaments follow fired state, actual recipients and exact moving-front geometry',()=>{
@@ -20,4 +20,12 @@ test('ability ornaments follow fired state, actual recipients and exact moving-f
 test('non-damaging coordination texture stays at caster and never invents a hostile field',()=>{
  const a=fixture([]),calls=[];a.flashes=[{x:30,y:40,color:'green',size:100,remaining:.75,point:{x:400,y:400},skill:{effect:'invite',radius:500}}];
  drawAbilityPresentation({},a,1,()=>{},(c,id,p)=>calls.push({id,...p}));assert.equal(calls.length,1);assert.equal(calls[0].id,'green-call');assert.equal(calls[0].radius,74);assert.deepEqual([calls[0].x,calls[0].y],[30,40]);
+});
+test('ability art textures are raised by one gain and capped below threat fills (2026-10-08 user decision)',()=>{
+ const unit={x:0,y:0,size:100,shieldHp:40,shieldRemaining:5,shieldTextureKind:'frost'},a=fixture([unit]),calls=[];
+ a.waves=[{x:0,y:0,dir:0,time:.25,skill:{waveDuration:.5,length:440,width:160}}];
+ drawAbilityPresentation({save(){},restore(){},translate(){},rotate(){},rect(){}},a,1,()=>{},(c,id,p)=>calls.push({id,...p}));
+ assert.ok(Math.abs(calls.find(c=>c.id==='cyan-shield').alpha-.22*ABILITY_TEXTURE_ALPHA_GAIN)<1e-9);
+ assert.equal(calls.find(c=>c.id==='blue-wave').alpha,ABILITY_TEXTURE_ALPHA_MAX);
+ for(const c of calls)assert.ok(c.alpha<=ABILITY_TEXTURE_ALPHA_MAX);
 });
