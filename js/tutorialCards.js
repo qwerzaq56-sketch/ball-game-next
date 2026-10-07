@@ -63,7 +63,7 @@ export function skillLine(s) {
     case 'red-vigor': return `${num(s.buffDuration)}초 동안 공격 +${pct(s.buffDamage)}, 이동 +${pct(s.buffSpeed - 1)}.`;
     case 'red-muster': return `같은 색을 불러 모아 ${num(s.buffDuration)}초 동안 공격 +${pct(s.buffDamage)}, 이동 +${pct(s.buffSpeed - 1)}.`;
     case 'red-rally': return '조준한 적을 표적으로 찍고, 주변 같은 색 아군을 강화해 함께 공격하게 합니다.';
-    case 'yellow-dust': return `${num(s.buffDuration)}초 동안 적 공격이 ${pct(s.missChance)} 빗나가고, 시전 직후 ${num(s.invulnerableSeconds)}초 무적.`;
+    case 'yellow-dust': return `선 자리에 ${num(s.buffDuration)}초 동안 먼지 장막을 깔고, 장막 안에서는 적 공격이 ${pct(s.missChance)} 빗나갑니다. 시전 직후 ${num(s.invulnerableSeconds)}초 무적.`;
     case 'yellow-storm': return '넓은 모래바람 장판으로 계속 피해를 줍니다.';
     default: return s.name ?? '';
   }
