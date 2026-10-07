@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights,forestDensity,forestLayout,forestVegetationWeights,LAYER_CACHE} from '../js/terrainArt.js';
+import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights,forestDensity,forestLayout,forestVegetationWeights,LAYER_CACHE,SEAMED_GROUNDS,SEAM_OVERLAP} from '../js/terrainArt.js';
 import {resetRandom,random} from '../js/random.js';
 test('functional forest ground preserves gameplay, wraps with the floor and skips passive vegetation',()=>{
  const art=new TerrainArt(),previous=globalThis.document,draws=[];
@@ -170,4 +170,11 @@ test('forest vegetation variants blend continuously without consuming gameplay R
  resetRandom(31);const expected=random('world');resetRandom(31);const seen=new Set();
  for(let x=0;x<8000;x+=20){const w=forestVegetationWeights(x,500);assert(Math.abs(w.reduce((a,b)=>a+b,0)-1)<1e-12);assert(w.every(v=>v>=0&&v<=1));seen.add(w.indexOf(Math.max(...w)));for(let i=0;i<3;i++){assert(Math.abs(w[i]-forestVegetationWeights(x+8000,500)[i])<1e-10);assert(Math.abs(w[i]-forestVegetationWeights(x,8500)[i])<1e-10);}}
  assert.equal(seen.size,3);assert.equal(random('world'),expected);
+});
+
+test('R-VIS-006 pt1-01 the snow ground, whose image does not wrap, is crossfaded at its edges on load',()=>{
+  // Measured 2026-10-08: snow-ground-002 edge step ~65 vs ~10 for the other grounds; crossfaded it drops to ~3.5 (interior ~3).
+  assert.ok(SEAMED_GROUNDS.has('snow'));
+  for(const id of ['grassland','lake','volcano','desert'])assert.ok(!SEAMED_GROUNDS.has(id),id+' already wraps, keep its art untouched');
+  assert.ok(SEAM_OVERLAP>=60&&SEAM_OVERLAP<=200);
 });

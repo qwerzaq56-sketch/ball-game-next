@@ -8,6 +8,7 @@ const modulo=(x,n)=>(x%n+n)%n;
 // screen of tiles, so walking rebuilt blends every frame (25 ms spikes). They are now least-recently-used,
 // sized for about two screens, and blend masks are stored at half resolution (smooth gradients upscale cleanly).
 export const LAYER_CACHE=192;const MASK_CACHE=128,MASK_SIZE=100;
+export const SEAMED_GROUNDS=new Set(['snow']),SEAM_OVERLAP=120;
 function cacheGet(cache,key){const v=cache.get(key);if(v!==undefined){cache.delete(key);cache.set(key,v);}return v;}
 function cacheSet(cache,key,value,cap){if(cache.size>=cap)cache.delete(cache.keys().next().value);cache.set(key,value);}
 export function terrainBlendWeights(position){
@@ -122,7 +123,11 @@ export class TerrainArt {
    ].map(async([id,file])=>{
     try{
      const ground=new Image();ground.src=new URL('../assets/art-packs/'+file,import.meta.url).href;await ground.decode();
-     const c=document.createElement('canvas');c.width=c.height=800;c.getContext('2d').drawImage(ground,0,0,800,800);
+     let c;
+     // pt1-01: the snow image does not wrap (edge colour step ~65 vs ~10 for the other grounds), so its 800 px
+     // repeat showed as grid seams. Crossfade its edges like the forest ground; the source art is unchanged.
+     if(SEAMED_GROUNDS.has(id))c=periodicForestGround(ground,800,SEAM_OVERLAP);
+     else{c=document.createElement('canvas');c.width=c.height=800;c.getContext('2d').drawImage(ground,0,0,800,800);}
      this.tiles.set(biomeKey(id),[c,c,c]);this.rasterBiomes.add(id);
     }catch(error){this.rasterPackErrors.set(id,String(error));if(id==='grassland')this.grassPackError=String(error);}
    }));
