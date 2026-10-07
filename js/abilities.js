@@ -129,7 +129,7 @@ export class Abilities {
    }
    const group=this.game.allyLinks.groups.get(e.companionGroup),recipients=group?[...group.members]:[e];
    for(const t of recipients)if(t.alive&&!isHostile(e,t)){
-    t.inviteBuffs=(t.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime);t.inviteBuffs.push({expires:this.game.gameTime+(cfg.buffDuration??30),damage:cfg.buffDamage??.05,defense:cfg.buffDefense??.05});
+    t.inviteBuffs=(t.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime);t.inviteBuffs.push({expires:this.game.gameTime+(cfg.buffDuration??30),damage:cfg.buffDamage??.05,defense:cfg.buffDefense??.05,regen:cfg.buffRegen??0});
     t.inviteBuffs=t.inviteBuffs.slice(-Math.max(1,Math.floor(cfg.buffStackCap??5)));t.recruitedUntil=Math.max(t.recruitedUntil??0,this.game.gameTime+20);this.metrics.count(e,cast,'buffs');
    }
   }else if(cfg.effect==='embers'){this.embers=this.embers.filter(f=>f.owner!==e);this.embers.push({owner:e,x:e.x,y:e.y,_world:this.game.balance.world,time:0,tick:0,radius:cfg.radius,duration:cfg.fieldDuration,tickInterval:cfg.tickInterval,damage:cfg.damage,skillToken:this.metrics.token(e,cast)});
@@ -186,6 +186,8 @@ export class Abilities {
     else if(e._abilitiesReleased)e._abilitiesReleased=false;
     else if(!e.apex&&e._specialApex){this.loseApex(e);}
     e.inviteBuffs=(e.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime);
+    // R-ABIL-006: the invite buff regenerates HP regardless of the hit delay; stacks do not add up.
+    const regen=this.inviteRegen(e);if(regen>0&&e.alive&&e.hp<e.maxHp)e.hp=Math.min(e.maxHp,e.hp+e.maxHp*regen*dt);
     e.normalSkillCooldown=Math.max(0,(e.normalSkillCooldown??0)-dt);
     e.specialCooldown=Math.max(0,(e.specialCooldown??0)-dt);
     if(e.alive&&e.apex&&!e._specialApex){e.specialCooldown=Math.max(e.specialCooldown??0,5);e._specialApex=true;}e.commandLock=Math.max(0,(e.commandLock??0)-dt);
@@ -241,6 +243,7 @@ export class Abilities {
  rallyActive(e){return [...(e.rallyBuffs?.values()??[])].some(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex&&!isHostile(e,r.owner));}
  rallyPower(e,key,fallback){return Math.max(0,...[...(e.rallyBuffs?.values()??[])].filter(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex&&!isHostile(e,r.owner)).map(r=>r[key]??fallback));}
  speedMultiplier(e){return Math.max(1,(e.objectSpeedUntil??0)>this.game.gameTime?(e.objectSpeedMultiplier??1):1,this.rallyPower(e,'buffSpeed',1.25),(e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.speed??1.12):1);}
+ inviteRegen(e){return (e.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime).reduce((m,b)=>Math.max(m,b.regen??0),0);}
  invitePower(e,key){return (e.inviteBuffs??[]).filter(b=>b.expires>this.game.gameTime).reduce((sum,b)=>sum+(b[key]??0),0);}
  obsidianBonus(e){return (e.obsidianShieldHp??0)>0&&(e.obsidianShieldUntil??0)>this.game.gameTime?(e.obsidianPower??0):0;}
  defenseMultiplier(e){return 1+this.obsidianBonus(e)+this.invitePower(e,'defense')+(this.game.biomes?.defenseBonus(e)??0);}

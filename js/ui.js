@@ -163,7 +163,7 @@ export class UI {
     const neighbors=game.allyLinks.neighbors(player).length;
     const group=game.allyLinks.groups.get(player.companionGroup);
     const invite=game.abilities.invitePower(player,'damage'),defense=game.abilities.invitePower(player,'defense');
-    document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${group?` · ${group.members.size}명 대열 · ${({challenge:"도전형",opportunity:"기회형",avoidance:"회피형"})[game.allyLinks.personality(group)]}`:''}${invite?` · 동행 강화 ${player.inviteBuffs.length}중첩 · 공격 +${Math.round(invite*100)}% / 방어 +${Math.round(defense*100)}%`:''}`;
+    document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${group?` · ${group.members.size}명 대열 · ${({challenge:"도전형",opportunity:"기회형",avoidance:"회피형"})[game.allyLinks.personality(group)]}`:''}${invite?` · 동행 강화 ${player.inviteBuffs.length}중첩 · 공격 +${Math.round(invite*100)}% / 방어 +${Math.round(defense*100)}% / 재생 ${(game.abilities.inviteRegen(player)*100).toFixed(1)}%/s`:''}`;
     document.getElementById('companion-leave').disabled=game.paused||!player.companionGroup;
     document.getElementById('ally-links-toggle').textContent=`연결선: ${game.showAllyLinks===false?'OFF':'ON'}`;
     document.getElementById('ally-links-toggle').setAttribute('aria-pressed',String(game.showAllyLinks!==false));

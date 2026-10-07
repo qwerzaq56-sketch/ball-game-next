@@ -7,6 +7,11 @@ test('green E provides solo attack and real defense, stacks to cap, then expires
  const {g,p}=setup();for(let i=0;i<7;i++)invite(g,p);assert.equal(p.inviteBuffs.length,5);assert.equal(g.abilities.defenseMultiplier(p),1.25);assert.equal(g.abilities.damageMultiplier(p),1.2);
  const before=p.hp;applyDamage(p,500,g,null,g.balance,{knockback:false});assert.equal(before-p.hp,187.5);g.gameTime=31;g.abilities.update(0);assert.equal(g.abilities.defenseMultiplier(p),1);assert.equal(g.abilities.damageMultiplier(p),1);
 });
+test('R-ABIL-006 green E regenerates HP through the hit delay without stacking',()=>{
+ const {g,p}=setup();p.hp=1000;p.regenTimer=0;for(let i=0;i<3;i++)invite(g,p);assert.equal(p.inviteBuffs.length,3);assert.equal(g.abilities.inviteRegen(p),.008);
+ g.abilities.update(1);assert(Math.abs(p.hp-1040)<1e-6,`hp ${p.hp}`);g.abilities.update(1);assert(Math.abs(p.hp-1080)<1e-6);
+ g.gameTime=31;g.abilities.update(1);assert.equal(g.abilities.inviteRegen(p),0);assert(Math.abs(p.hp-1080)<1e-6);
+});
 test('R-ABIL-006 70 percent E acceptance ignores personality and buffs accepted and existing companions',()=>{
  const {g,p,unit}=setup(),ally=unit(100);p.apex=false;ally.companionAffinity='independent';resetRandom(884);let accepted=0;
  for(let i=0;i<300;i++){g.allyLinks.groups.clear();g.allyLinks.edges.clear();p.companionGroup=ally.companionGroup=null;p.inviteBuffs=ally.inviteBuffs=[];g.entities=[p,ally];invite(g,p);if(ally.companionGroup){accepted++;assert.equal(g.abilities.invitePower(ally,'damage'),.04);}}

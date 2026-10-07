@@ -8,7 +8,7 @@ export const SKILL_CATALOG = {
  'blue-wave':{color:'blue',slot:'E',name:'직선 파도',effect:'wave',windup:.3,cooldown:8,length:440,width:160,damage:.8,apexWidth:205,apexDamage:1.08,nearDamageMultiplier:1.5,pushDuration:.15,pushSpeed:400,waveDuration:.5},
  'blue-vortex':{color:'blue',slot:'R',name:'심해 흡인',effect:'vortex',windup:.6,cooldown:12,radius:360,fieldDuration:4,pullSpeed:240},
  'blue-ripple':{color:'blue',slot:'E',name:'파도 밀치기',effect:'ripple',windup:.3,cooldown:8,radius:240,damage:.8,pushDuration:.15,pushSpeed:400},
- 'green-invite':{color:'green',slot:'E',name:'동행 초대',effect:'invite',windup:.3,cooldown:9,radius:350,acceptChance:.7,buffDuration:30,buffDamage:.04,buffDefense:.05,buffStackCap:5},
+ 'green-invite':{color:'green',slot:'E',name:'동행 초대',effect:'invite',windup:.3,cooldown:9,radius:350,acceptChance:.7,buffDuration:30,buffDamage:.04,buffDefense:.05,buffStackCap:5,buffRegen:.008},
  'red-embers':{color:'red',slot:'E',name:'불씨 장판',effect:'embers',windup:.25,cooldown:9,radius:240,fieldDuration:5,tickInterval:.5,damage:.43},
  'red-muster':{color:'red',slot:'R',name:'혈족 집결',effect:'muster',windup:.6,cooldown:16,gatherDuration:3,buffDuration:8,buffDamage:.3,buffSpeed:1.25},
  'red-vigor':{color:'red',slot:'E',name:'사냥 박동',effect:'vigor',windup:.25,cooldown:9,radius:260,buffDuration:4,buffDamage:.15,buffSpeed:1.12},
