@@ -1,0 +1,293 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>오브젝트 검수대</title>
+<!-- Object review bench, stage 1 (planning 03_아트/32_오브젝트_검수대_기획서.md).
+     The real game runs in an off-screen iframe; each view pauses it, leaves only the player ball in the world, renders one
+     placed object at the camera zoom the game would use for that ball size, and copies the frame here with measurement
+     overlays. Read-only: nothing here changes game values (dragging handles and "apply on this device" are stage 2). -->
+<style>
+:root{--bg:#141c26;--panel:#1c2733;--line:#33414f;--ink:#e8edf2;--muted:#9aa8b6;--accent:#7dd3c0;--good:#4ade80;--warn:#fbbf24;--info:#60a5fa;--bad:#f87171;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,'Malgun Gothic',sans-serif}
+header{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;gap:4px 14px;align-items:baseline;flex-wrap:wrap}
+header h1{font-size:18px;margin:0}
+#status{color:var(--muted);font-size:13px}
+.wrap{display:grid;grid-template-columns:190px minmax(0,1fr);gap:16px;padding:16px}
+@media(max-width:820px){.wrap{grid-template-columns:minmax(0,1fr)}nav{display:flex;flex-wrap:wrap;gap:4px}nav .reg{width:100%}nav button{width:auto!important}}
+nav .reg{color:var(--muted);font-size:12px;margin:10px 0 3px}
+nav button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:6px;text-align:left;margin-bottom:3px}
+nav button[aria-current=true]{border-color:var(--accent);color:var(--accent)}
+nav .dot{width:10px;height:10px;border-radius:50%;flex:none;background:transparent;border:1px solid var(--line)}
+main{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0;align-content:start}
+h2{font-size:17px;margin:0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+h2 code{font-size:12.5px;color:var(--muted);font-weight:400}
+.refs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.refs figure{margin:0;flex:0 0 148px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px;cursor:pointer}
+.refs figure.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.refs figure.flat{cursor:default}
+.refs img{width:100%;height:108px;object-fit:contain;display:block;background:#0d131a;border-radius:4px}
+.refs figcaption{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.35}
+.refs figcaption b{color:var(--ink);font-weight:500}
+#stage{width:100%;max-width:960px;aspect-ratio:3/2;display:block;border-radius:8px;border:1px solid var(--line);touch-action:none;background:#0d131a}
+.ctl{display:grid;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;max-width:960px}
+.row{display:flex;gap:6px 10px;align-items:center;flex-wrap:wrap}
+.lab{color:var(--muted);font-size:12px;min-width:64px}
+button{font:inherit;color:var(--ink);background:#243241;border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+input[type=range]{width:200px;max-width:100%;accent-color:var(--accent)}
+input[type=number]{width:70px;font:inherit;color:var(--ink);background:#0d131a;border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+label.chk{display:inline-flex;gap:5px;align-items:center}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:6px;max-width:960px}
+.facts div{background:var(--panel);border-radius:6px;padding:6px 10px}
+.facts b{display:block;font-size:15px;font-variant-numeric:tabular-nums}
+.facts span{color:var(--muted);font-size:12px}
+.review{display:grid;gap:8px;background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:10px 12px;max-width:960px}
+.verdicts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px}
+.verdicts button{text-align:left;display:grid;padding:7px 10px}
+.verdicts button small{color:var(--muted);font-size:11.5px}
+.verdicts button[aria-pressed=true]{border-color:var(--v);box-shadow:inset 0 0 0 1px var(--v)}
+.verdicts button[aria-pressed=true] b{color:var(--v)}
+select,textarea{font:inherit;color:var(--ink);background:#0d131a;border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+textarea{width:100%;resize:vertical;min-height:52px}
+.note{color:var(--muted);font-size:12.5px;margin:0}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:7px 14px;border-radius:8px;font-size:13px}
+#game{position:fixed;left:-4000px;top:0;width:1280px;height:900px;border:0}
+[hidden]{display:none!important}
+</style>
+<header><h1>오브젝트 검수대</h1><span id="status">게임 불러오는 중…</span></header>
+<div class="wrap">
+  <nav id="list" aria-label="오브젝트 목록"></nav>
+  <main id="main" hidden>
+    <h2 id="title"></h2>
+    <div class="refs" id="refs" aria-label="레퍼런스"></div>
+    <canvas id="stage" width="960" height="640" aria-label="실측 무대"></canvas>
+    <div class="ctl">
+      <div class="row"><span class="lab">플레이어 지름</span><span id="sizeBtns" class="row"></span>
+        <input type="range" id="size" min="10" max="400" step="1" aria-label="플레이어 지름"><input type="number" id="sizeNum" min="10" max="400" aria-label="플레이어 지름 직접 입력"></div>
+      <div class="row"><span class="lab">배율</span><span id="zoomBtns" class="row"></span></div>
+      <div class="row" id="stateRow"><span class="lab">상태</span><span id="stateBtns" class="row"></span></div>
+      <div class="row"><span class="lab">배치</span><button type="button" id="instPrev">◀</button><span id="inst"></span><button type="button" id="instNext">▶</button>
+        <label class="chk"><input type="checkbox" id="ring" checked>효과 반경</label><label class="chk"><input type="checkbox" id="box" checked>몸체 상자</label></div>
+      <div class="row" id="ovRow"><span class="lab">원화 겹쳐 보기</span><span id="ovName" class="note"></span>
+        <span class="lab" style="min-width:0">투명도</span><input type="range" id="alpha" min="0" max="1" step=".05" aria-label="겹쳐 보기 투명도">
+        <span class="lab" style="min-width:0">크기</span><input type="range" id="oscale" min=".3" max="3" step=".01" aria-label="겹쳐 보기 크기"><span id="oscaleNum" class="note"></span>
+        <button type="button" id="ovReset">맞춤 초기화</button></div>
+      <p class="note">공을 끌어 옮길 수 있습니다. 겹쳐 보기를 켜면 공 밖을 끌어 원화 위치를 맞춥니다. 레퍼런스 줄의 그림을 누르면 무대에 겹칩니다(다시 누르면 끔).</p>
+    </div>
+    <div class="facts" id="facts"></div>
+    <section class="review" aria-label="판정과 메모">
+      <div class="row"><b>판정</b><span class="note">일반 검수 카드와 같은 4단입니다. 결과는 복사해 기획 지도 "요청 보관함"에 붙여 주세요.</span></div>
+      <div class="verdicts" id="verdicts"></div>
+      <div class="row"><span class="lab">생성본 의견</span><select id="pick" aria-label="생성본 의견"></select></div>
+      <textarea id="memo" placeholder="짧은 메모 (선택) — 예: 공 60 기준으로 몸체가 너무 작음, 반경은 적당" aria-label="메모"></textarea>
+      <div class="row"><button type="button" id="copyOne">이 오브젝트 결과 복사</button><button type="button" id="copyAll"></button><button type="button" id="clearAll"></button></div>
+    </section>
+  </main>
+</div>
+<div id="toast" hidden></div>
+<iframe id="game" src="../index.html" title="게임(화면 밖)" aria-hidden="true" tabindex="-1"></iframe>
+<script type="module">
+import {BIOME_OBJECTS,DEFAULT_OBJECT_IDS,OBJECT_REGIONS} from '../js/biomeObjectCatalog.js';
+import {LANDMARK_PRESENTATION} from '../js/landmarkArt.js';
+import {growthFromSize} from '../js/entity.js';
+
+const SC = '../assets/art-batches/scene-coherent-v1/', FR = '../assets/art-packs/forest-raster-v1/';
+// What the game actually draws when it differs from the scene-coherent batch asset (see js/landmarkArt.js).
+const ADOPTED = {'forest-berry-grove': FR + 'berry-002.png', 'forest-tree': FR + 'guardian-002-extracted.png', 'snow-flowers': SC + 'snow-flowers/overhead-states-002.png'};
+const EXTRA = {
+  'forest-tree': [['guardian-001', FR + 'guardian-001.png', true], ['고목 원본 크롭', FR + 'guardian-original-crop.png', true]],
+  'snow-flowers': [['준비 상태 시도 002', SC + 'snow-flowers/overhead-ready-attempt-002.png', true]],
+  'volcano-vent-cycle': [['쉼 상태 002', SC + 'volcano-vent-cycle/rest-002.png', true]],
+};
+const SHEET = new Set(['snow-flowers']); // two-state sheet: compare side by side, not as an overlay
+const VERDICTS = [
+  {k: 'ok', label: '좋음', sub: '원화·구현 모두 괜찮음', c: '--good'},
+  {k: 'impl', label: '구현 아쉬움', sub: '원화는 좋고 구현을 손볼 것', c: '--warn'},
+  {k: 'concept', label: '컨셉 어긋남', sub: '원화는 괜찮으나 컨셉에 맞게', c: '--info'},
+  {k: 'redo', label: '원화 재작성', sub: '원화 자체가 부적절', c: '--bad'},
+];
+const VBY = Object.fromEntries(VERDICTS.map(v => [v.k, v]));
+const SIZE_PRESETS = [[20, '시작 20'], [60, '중간 60'], [150, '최상위 150']];
+const $ = (s) => document.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (v === false || v == null) continue; if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (k === 'class') e.className = v; else if (k === 'style') e.style.cssText = v; else e.setAttribute(k, v === true ? '' : v); } for (const c of kids.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : String(c)); return e; };
+const toast = (t) => { const e = $('#toast'); e.textContent = t; e.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => e.hidden = true, 1800); };
+const copy = async (text) => { try { await navigator.clipboard.writeText(text); toast('복사했습니다'); } catch { const ta = h('textarea', {style: 'position:fixed;opacity:0'}); ta.value = text; document.body.append(ta); ta.select(); try { document.execCommand('copy'); toast('복사했습니다'); } catch { toast('복사하지 못했습니다'); } ta.remove(); } };
+
+let drafts = {}; try { drafts = JSON.parse(localStorage.getItem('object-bench-v1') || '{}') || {}; } catch {}
+const saveDrafts = () => { try { localStorage.setItem('object-bench-v1', JSON.stringify(drafts)); } catch {} };
+const S = {id: null, inst: 0, size: 60, zoom: 'game', state: 'ready', ring: true, box: true, ov: null, alpha: .5, oscale: 1, odx: 0, ody: 0, pdx: null, pdy: null};
+let G = null;
+
+const refsFor = (id) => {
+  const c = BIOME_OBJECTS[id], adopted = ADOPTED[id] || SC + id + '/asset.png';
+  return [
+    {k: 'gameplay', cap: '게임플레이 원화', note: OBJECT_REGIONS[c.region] + ' 지역 패널', src: `object-bench/gameplay-${c.region}.jpg`, flat: true},
+    {k: 'orig', cap: '오브젝트 원화 크롭', note: 'reference.png', src: SC + id + '/reference.png'},
+    {k: 'adopted', cap: '게임 사용 리소스', note: adopted.split('/').slice(-2).join('/'), src: adopted, flat: SHEET.has(id), gen: true},
+    ADOPTED[id] ? {k: 'batch', cap: '배치 생성본', note: 'scene-coherent-v1 asset.png', src: SC + id + '/asset.png', gen: true} : null,
+    ...(EXTRA[id] || []).map(([cap, src, gen], i) => ({k: 'x' + i, cap, note: src.split('/').pop(), src, gen})),
+  ].filter(Boolean);
+};
+const images = new Map();
+const img = (src) => { let i = images.get(src); if (!i) { i = new Image(); i.onload = () => draw(); i.src = src; images.set(src, i); } return i; };
+
+// ---- list
+function renderList() {
+  const nav = $('#list'); nav.replaceChildren();
+  for (const [rid, rname] of Object.entries(OBJECT_REGIONS)) {
+    const ids = DEFAULT_OBJECT_IDS.filter(id => BIOME_OBJECTS[id].region === rid);
+    if (!ids.length) continue;
+    nav.append(h('div', {class: 'reg'}, rname));
+    for (const id of ids) { const v = VBY[drafts[id]?.verdict];
+      nav.append(h('button', {type: 'button', 'aria-current': S.id === id ? 'true' : 'false', onclick: () => select(id)}, BIOME_OBJECTS[id].name.split(' · ')[0], h('span', {class: 'dot', style: v ? `background:var(${v.c});border-color:var(${v.c})` : '', title: v ? v.label : '미판정'}))); }
+  }
+}
+function select(id) {
+  Object.assign(S, {id, inst: 0, ov: null, oscale: 1, odx: 0, ody: 0, pdx: null, pdy: null, state: BIOME_OBJECTS[id].effect === 'vent' ? 'active' : 'ready'});
+  history.replaceState(null, '', '#' + id);
+  renderList(); renderPanel(); draw();
+}
+// ---- panel (everything except the canvas)
+function renderPanel() {
+  const id = S.id, c = BIOME_OBJECTS[id], refs = refsFor(id), d = drafts[id] || {};
+  $('#main').hidden = false;
+  $('#title').replaceChildren(c.name, h('code', {}, id), h('code', {}, OBJECT_REGIONS[c.region]));
+  $('#refs').replaceChildren(...refs.map(r => h('figure', {class: (r.flat ? 'flat' : '') + (S.ov === r.src ? ' on' : ''), title: r.flat ? '나란히 비교용' : '눌러서 무대에 겹쳐 보기', onclick: r.flat ? null : () => { S.ov = S.ov === r.src ? null : r.src; S.odx = S.ody = 0; S.oscale = 1; renderPanel(); draw(); }},
+    h('img', {src: r.src, alt: r.cap, loading: 'lazy'}), h('figcaption', {}, h('b', {}, r.cap), h('br'), r.note))));
+  $('#sizeBtns').replaceChildren(...SIZE_PRESETS.map(([v, l]) => h('button', {type: 'button', 'aria-pressed': S.size === v ? 'true' : 'false', onclick: () => setSize(v)}, l)));
+  $('#size').value = S.size; $('#sizeNum').value = S.size;
+  $('#zoomBtns').replaceChildren(...[['game', '게임 배율(지름 따라)'], ['1', '1'], ['0.5', '0.5']].map(([k, l]) => h('button', {type: 'button', 'aria-pressed': S.zoom === k ? 'true' : 'false', onclick: () => { S.zoom = k; renderPanel(); draw(); }}, l)));
+  const states = c.effect === 'vent' ? [['active', '분출'], ['warn', '분출 경고'], ['rest', '쉼']] : ['current', 'vortex'].includes(c.effect) ? [] : [['ready', '준비(상호작용 전)'], ['post', '사용 후']];
+  $('#stateRow').hidden = !states.length;
+  $('#stateBtns').replaceChildren(...states.map(([k, l]) => h('button', {type: 'button', 'aria-pressed': S.state === k ? 'true' : 'false', onclick: () => { S.state = k; renderPanel(); draw(); }}, l)));
+  const n = G ? G.biomeObjects.objects.filter(o => o.candidate === id).length : 0;
+  $('#inst').textContent = n ? `${S.inst + 1} / ${n}` : '배치 없음'; $('#instPrev').disabled = S.inst <= 0; $('#instNext').disabled = S.inst >= n - 1;
+  $('#ovRow').hidden = !S.ov; $('#ovName').textContent = S.ov ? S.ov.split('/').slice(-2).join('/') : '';
+  $('#alpha').value = S.alpha; $('#oscale').value = S.oscale; $('#oscaleNum').textContent = '×' + S.oscale.toFixed(2);
+  $('#verdicts').replaceChildren(...VERDICTS.map((v, i) => h('button', {type: 'button', style: `--v:var(${v.c})`, 'aria-pressed': d.verdict === v.k ? 'true' : 'false', onclick: () => { setDraft({verdict: d.verdict === v.k ? null : v.k}); renderPanel(); renderList(); }}, h('b', {}, `${i + 1} ${v.label}`), h('small', {}, v.sub))));
+  const gens = refs.filter(r => r.gen);
+  $('#pick').replaceChildren(h('option', {value: ''}, '의견 없음'), ...gens.map(r => h('option', {value: r.note, selected: d.pick === r.note}, `${r.cap} — ${r.note}`)));
+  if ($('#memo') !== document.activeElement) $('#memo').value = d.memo || '';
+  const marked = Object.keys(drafts).filter(k => drafts[k]?.verdict || drafts[k]?.memo);
+  $('#copyAll').textContent = `전체 결과 복사 (${marked.length})`; $('#copyAll').disabled = !marked.length;
+  $('#clearAll').textContent = S.clearArm ? '정말 비우기' : '전체 비우기'; $('#clearAll').disabled = !marked.length;
+}
+function setDraft(patch) {
+  const id = S.id, next = {...(drafts[id] || {}), ...patch};
+  if (!next.verdict && !(next.memo || '').trim() && !next.pick) delete drafts[id]; else drafts[id] = {...next, size: S.size};
+  saveDrafts();
+}
+function setSize(v) { S.size = Math.max(10, Math.min(400, Math.round(+v || 60))); renderPanel(); draw(); }
+
+// ---- stage
+const stage = $('#stage'), sx = stage.getContext('2d'), W = stage.width, H = stage.height;
+const current = () => { const list = G.biomeObjects.objects.filter(o => o.candidate === S.id); return list[Math.min(S.inst, list.length - 1)]; };
+const bodyOf = (o) => { const p = LANDMARK_PRESENTATION[o.candidate]; return p ? {w: p.width * (o.visualScale ?? 1), h: p.height * (o.visualScale ?? 1)} : null; };
+// Same rule as Game.updateCamera once settled, for this iframe's 1280×900 canvas.
+const gameZoom = (size) => { const c = G.balance.camera; return Math.min(c.baseZoom / Math.min(c.maxZoomOut, 1 + size * c.zoomOutPerSize), Math.min(G.canvas.width, G.canvas.height) * (c.maxBodyScreenFraction ?? .42) / Math.max(1, size)); };
+let view = null;
+function applyState(o) {
+  const c = o.config;
+  // Vents read (gameTime + phase) % cycle: pin a time inside the chosen part of the cycle.
+  if (c.effect === 'vent') G.gameTime = 1000 * c.cycleDuration - o.phase + ({active: 1, warn: c.cycleDuration - 1, rest: Math.min(c.activeDuration + 1, c.cycleDuration - 2.5)}[S.state] ?? 1);
+  else G.biomeObjects.cooldowns.set(o.id, S.state === 'post' ? G.gameTime + 60 : 0);
+}
+function draw() {
+  if (!G || !S.id) return;
+  const o = current(); if (!o) { sx.fillStyle = '#0d131a'; sx.fillRect(0, 0, W, H); return; }
+  const g = G, p = g.player, b = g.balance;
+  g.paused = true;
+  p.growth = growthFromSize(S.size, b.player.startingSize, b.growth.growthToSizeRatio ?? b.growth.ratio, b.growth); p.refreshFromGrowth(b); p.alive = true;
+  const body = bodyOf(o);
+  if (S.pdx == null) { const half = body ? body.w / 2 : Math.min(o.config.radius, 160) * .6; S.pdx = -(half + p.size / 2 + 30); S.pdy = 0; }
+  p.x = o.x + S.pdx; p.y = o.y + S.pdy; g.entities = [p];
+  applyState(o);
+  const zoom = S.zoom === 'game' ? gameZoom(p.size) : +S.zoom;
+  Object.assign(g.camera, {x: o.x, y: o.y, zoom}); g.render();
+  const gw = g.canvas.width, gh = g.canvas.height;
+  sx.fillStyle = '#0d131a'; sx.fillRect(0, 0, W, H);
+  sx.drawImage(g.canvas, (gw - W) / 2, (gh - H) / 2, W, H, 0, 0, W, H);
+  const toS = (wx, wy) => [W / 2 + (wx - o.x) * zoom, H / 2 + (wy - o.y) * zoom];
+  view = {o, zoom, toS};
+  const label = (text, x, y, color) => { sx.font = '600 13px system-ui,Malgun Gothic,sans-serif'; const w = sx.measureText(text).width + 10; sx.fillStyle = 'rgba(13,19,26,.82)'; sx.fillRect(x - w / 2, y - 10, w, 20); sx.fillStyle = color; sx.textAlign = 'center'; sx.textBaseline = 'middle'; sx.fillText(text, x, y); };
+  if (S.ov) { const im = img(S.ov); if (im.complete && im.naturalWidth) { const bw = (body ? body.w : o.config.radius * 2) * S.oscale * zoom, bh = bw * im.naturalHeight / im.naturalWidth, [cx, cy] = toS(o.x + S.odx, o.y + S.ody);
+    sx.save(); sx.globalAlpha = S.alpha; sx.drawImage(im, cx - bw / 2, cy - bh / 2, bw, bh); sx.restore(); } }
+  if (S.ring) { const r = o.config.radius * zoom; sx.save(); sx.setLineDash([8, 6]); sx.lineWidth = 2; sx.strokeStyle = '#fbbf24'; sx.beginPath(); sx.arc(W / 2, H / 2, r, 0, Math.PI * 2); sx.stroke(); sx.restore(); label(`효과 반경 ${Math.round(o.config.radius)}`, W / 2, H / 2 - r - 12, '#fbbf24'); }
+  if (S.box && body) { const bw = body.w * zoom, bh = body.h * zoom; sx.save(); sx.setLineDash([3, 4]); sx.lineWidth = 1.5; sx.strokeStyle = '#7dd3c0'; sx.strokeRect(W / 2 - bw / 2, H / 2 - bh / 2, bw, bh); sx.restore(); label(`몸체 ${Math.round(body.w)}×${Math.round(body.h)}`, W / 2, H / 2 + bh / 2 + 14, '#7dd3c0'); }
+  const [px, py] = toS(p.x, p.y); label(`공 지름 ${Math.round(p.size)}`, px, py + p.size / 2 * zoom + 14, '#e8edf2');
+  facts(o, body, zoom, p.size);
+}
+function facts(o, body, zoom, size) {
+  const c = o.config, items = [
+    [`${Math.round(c.radius)}`, '효과 반경(월드) · 지름 ' + Math.round(c.radius * 2)],
+    body ? [`${Math.round(body.w)} × ${Math.round(body.h)}`, `몸체(월드) · 배치 배율 ×${(o.visualScale ?? 1).toFixed(2)}`] : ['코드로 그림', '몸체 상자 없음(범위가 곧 몸체)'],
+    [`${Math.round(size)}`, '공 지름(월드)'],
+    body ? [`${(body.w / size).toFixed(2)}배`, '몸체 가로 ÷ 공 지름'] : null,
+    [`${(c.radius * 2 / size).toFixed(2)}배`, '영역 지름 ÷ 공 지름'],
+    [`${zoom.toFixed(2)}`, S.zoom === 'game' ? '게임 배율(이 지름일 때)' : '고정 배율'],
+    body ? [`${Math.round(body.w * zoom)} px`, '화면에서 몸체 가로'] : [`${Math.round(c.radius * 2 * zoom)} px`, '화면에서 영역 지름'],
+  ].filter(Boolean);
+  $('#facts').replaceChildren(...items.map(([v, l]) => h('div', {}, h('b', {}, v), h('span', {}, l))));
+}
+// Drag: the ball when grabbed, otherwise the overlay (when shown).
+let drag = null;
+const canvasPoint = (e) => { const r = stage.getBoundingClientRect(); return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; };
+stage.addEventListener('pointerdown', (e) => {
+  if (!view) return; const [x, y] = canvasPoint(e), p = G.player, [px, py] = view.toS(p.x, p.y);
+  if (Math.hypot(x - px, y - py) <= p.size / 2 * view.zoom + 10) drag = {k: 'ball', x, y, dx: S.pdx, dy: S.pdy};
+  else if (S.ov) drag = {k: 'ov', x, y, dx: S.odx, dy: S.ody};
+  if (drag) stage.setPointerCapture(e.pointerId);
+});
+stage.addEventListener('pointermove', (e) => {
+  if (!drag) { if (view) { const [x, y] = canvasPoint(e), p = G.player, [px, py] = view.toS(p.x, p.y); stage.style.cursor = Math.hypot(x - px, y - py) <= p.size / 2 * view.zoom + 10 ? 'grab' : S.ov ? 'move' : 'default'; } return; }
+  const [x, y] = canvasPoint(e), mx = (x - drag.x) / view.zoom, my = (y - drag.y) / view.zoom;
+  if (drag.k === 'ball') { S.pdx = drag.dx + mx; S.pdy = drag.dy + my; } else { S.odx = drag.dx + mx; S.ody = drag.dy + my; }
+  draw();
+});
+const endDrag = () => { drag = null; };
+stage.addEventListener('pointerup', endDrag); stage.addEventListener('pointercancel', endDrag);
+
+// ---- controls
+$('#size').addEventListener('input', (e) => { S.size = +e.target.value; $('#sizeNum').value = S.size; for (const b of $('#sizeBtns').children) b.setAttribute('aria-pressed', 'false'); draw(); });
+$('#size').addEventListener('change', () => renderPanel());
+$('#sizeNum').addEventListener('change', (e) => setSize(e.target.value));
+$('#instPrev').onclick = () => { S.inst--; S.pdx = null; renderPanel(); draw(); };
+$('#instNext').onclick = () => { S.inst++; S.pdx = null; renderPanel(); draw(); };
+$('#ring').onchange = (e) => { S.ring = e.target.checked; draw(); };
+$('#box').onchange = (e) => { S.box = e.target.checked; draw(); };
+$('#alpha').oninput = (e) => { S.alpha = +e.target.value; draw(); };
+$('#oscale').oninput = (e) => { S.oscale = +e.target.value; $('#oscaleNum').textContent = '×' + S.oscale.toFixed(2); draw(); };
+$('#ovReset').onclick = () => { S.oscale = 1; S.odx = S.ody = 0; renderPanel(); draw(); };
+$('#pick').onchange = (e) => { setDraft({pick: e.target.value || null}); renderPanel(); };
+$('#memo').oninput = (e) => { setDraft({memo: e.target.value}); renderList(); const marked = Object.keys(drafts).length; $('#copyAll').textContent = `전체 결과 복사 (${marked})`; $('#copyAll').disabled = !marked; };
+const line = (id) => { const d = drafts[id], c = BIOME_OBJECTS[id];
+  return `- ${id} ${c.name.split(' · ')[0]}: ${VBY[d.verdict]?.label || '메모'} · 공 지름 ${d.size ?? '-'} 기준${d.pick ? ' · 생성본 의견 ' + d.pick : ''}${(d.memo || '').trim() ? ' — ' + d.memo.trim() : ''}`; };
+const head = () => `[오브젝트 검수] ${new Date().toISOString().slice(0, 10)} · 검수대 1단계`;
+$('#copyOne').onclick = () => { if (!drafts[S.id]) setDraft({size: S.size, verdict: null, memo: ''}); drafts[S.id] ? copy(head() + '\n' + line(S.id)) : toast('판정이나 메모를 먼저 남겨 주세요'); };
+$('#copyAll').onclick = () => { const ids = DEFAULT_OBJECT_IDS.filter(id => drafts[id]); copy(head() + '\n' + ids.map(line).join('\n')); };
+$('#clearAll').onclick = () => { if (!S.clearArm) { S.clearArm = true; renderPanel(); return; } S.clearArm = false; drafts = {}; saveDrafts(); renderPanel(); renderList(); };
+document.addEventListener('keydown', (e) => {
+  if (!S.id || e.target.closest('textarea,input[type=number],select') || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (/^[1-4]$/.test(e.key)) { const v = VERDICTS[+e.key - 1].k; setDraft({verdict: drafts[S.id]?.verdict === v ? null : v}); renderPanel(); renderList(); }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); const i = DEFAULT_OBJECT_IDS.indexOf(S.id) + (e.key === 'ArrowDown' ? 1 : -1); if (DEFAULT_OBJECT_IDS[i]) select(DEFAULT_OBJECT_IDS[i]); }
+});
+
+// ---- boot: wait for the game in the iframe, its placed objects and terrain art
+renderList();
+(async () => {
+  const frame = $('#game'), sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  for (let i = 0; i < 300 && !G; i++) {
+    const g = frame.contentWindow?.__game;
+    if (g?.biomeObjects && g.biomes) { g.paused = true; g.biomeObjects.sync(); if (g.biomeObjects.objects.length && (g.biomes.terrainArt?.ready || i > 120)) G = g; }
+    if (!G) await sleep(100);
+  }
+  if (!G) { $('#status').textContent = '게임을 불러오지 못했습니다. 이 페이지는 게임과 같은 서버(tools/serve.py)에서 열어야 합니다.'; return; }
+  G.autoplay?.setEnabled?.(false); if (G.ui?.preferences) G.ui.preferences.names = false;
+  $('#status').textContent = `실제 게임 렌더러 · 시드 ${G.seed} · 무대는 게임 화면 1280×900 가운데 960×640 · 값을 바꾸지 않는 보기 전용(1단계)`;
+  const want = location.hash.slice(1);
+  select(DEFAULT_OBJECT_IDS.includes(want) ? want : DEFAULT_OBJECT_IDS[0]);
+  addEventListener('hashchange', () => { const id = location.hash.slice(1); if (DEFAULT_OBJECT_IDS.includes(id) && id !== S.id) select(id); });
+  // Landmark and environment images load lazily inside the game: redraw for a few seconds after each pick.
+  setInterval(() => { if (!drag && document.visibilityState === 'visible') draw(); }, 700);
+})();
+</script>
+</html>
