@@ -9,7 +9,7 @@ try {
  await page.goto(process.argv[2]??'http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();
  await page.keyboard.press('p');await page.waitForFunction(()=>window.__game.paused);
  let time=await page.evaluate(()=>window.__game.gameTime);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>window.__game.gameTime),time);assert(await page.locator('#pause-indicator').isVisible());
- await page.keyboard.press('h');assert(await page.locator('#play-help').isVisible());assert.match(await page.locator('#play-help').innerText(),/흡수·전투·최상위/);
+ await page.keyboard.press('h');assert(await page.locator('#play-help').isVisible());await page.locator('.tc-tab[data-deck="guide"]').click();assert.match(await page.locator('#play-help').innerText(),/흡수·전투·최상위/);
  await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>window.__game.paused),true);
  await page.locator('#pause-btn').click();await page.waitForFunction(()=>!window.__game.paused);await page.waitForTimeout(100);assert((await page.evaluate(()=>window.__game.gameTime))>time);
  await page.locator('#help-btn').click();time=await page.evaluate(()=>window.__game.gameTime);await page.waitForTimeout(250);assert.equal(await page.evaluate(()=>window.__game.gameTime),time);

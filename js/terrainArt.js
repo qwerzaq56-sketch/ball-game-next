@@ -4,6 +4,12 @@ export function forestGroundVariant(x,y){return ((Math.imul(Math.floor(x/800),73
 const biomeKey=id=>id==='grassland'?'grass':id;
 const modulo=(x,n)=>(x%n+n)%n;
 // A continuous partition of unity: shared edges meet at 1/2, corners at 1/4.
+// Performance (playtest 2026-10-08): the tile caches were first-in-first-out and barely larger than one
+// screen of tiles, so walking rebuilt blends every frame (25 ms spikes). They are now least-recently-used,
+// sized for about two screens, and blend masks are stored at half resolution (smooth gradients upscale cleanly).
+export const LAYER_CACHE=192;const MASK_CACHE=128,MASK_SIZE=100;
+function cacheGet(cache,key){const v=cache.get(key);if(v!==undefined){cache.delete(key);cache.set(key,v);}return v;}
+function cacheSet(cache,key,value,cap){if(cache.size>=cap)cache.delete(cache.keys().next().value);cache.set(key,value);}
 export function terrainBlendWeights(position){
  const smooth=t=>t*t*(3-2*t);
  const before=position<60?.5*(1-smooth(position/60)):0;
@@ -128,7 +134,7 @@ export class TerrainArt {
  const dense=this.tiles.get(biomeKey(id))?.[this.variant(id,x,y)];
  if(id!=='forest'||!this.forestFloor)return dense;
  const bx=Math.floor(modulo(x,8000)/800)*800,by=Math.floor(modulo(y,8000)/800)*800,key=`${bx}:${by}`;
- if(this.forestChunks.has(key))return this.forestChunks.get(key);
+ const hit=cacheGet(this.forestChunks,key);if(hit)return hit;
  const c=document.createElement('canvas');c.width=c.height=800;const ctx=c.getContext('2d');ctx.drawImage(this.forestFloor,0,0);
  const mask=document.createElement('canvas');mask.width=mask.height=80;const mc=mask.getContext('2d'),pixels=mc.createImageData(80,80),variantWeights=this.forestCanopy?new Float32Array(80*80*3):null;
  for(let py=0;py<80;py++)for(let px=0;px<80;px++){
@@ -152,20 +158,19 @@ export class TerrainArt {
   cmc.putImageData(cp,0,0);const foliage=document.createElement('canvas');foliage.width=foliage.height=800;const fc=foliage.getContext('2d');fc.drawImage(cm,0,0,800,800);fc.globalCompositeOperation='source-in';fc.drawImage(variants[v],0,0);cc.globalCompositeOperation='lighter';cc.drawImage(foliage,0,0);
  }
  ctx.drawImage(canopy,0,0);
- if(this.forestChunks.size>=24)this.forestChunks.delete(this.forestChunks.keys().next().value);this.forestChunks.set(key,c);return c;
+ cacheSet(this.forestChunks,key,c,24);return c;
  }
  layer(id,x,y,direction){
   const texture=this.texture(id,x,y),mask=this.masks.get(direction);if(!texture||!mask)return null;
   // Cache the actual neighbor crop, including its 800-world raster phase.
   const tx=modulo(x,texture.width||400),ty=modulo(y,texture.height||400);
   const key=`${id}:${id==='forest'&&this.forestFloor?Math.floor(modulo(x,8000)/800)+','+Math.floor(modulo(y,8000)/800):''}:${this.variant(id,x,y)}:${tx}:${ty}:${direction}`;
-  if(this.layers.has(key))return this.layers.get(key);
+  const hit=cacheGet(this.layers,key);if(hit)return hit;
   const c=document.createElement('canvas');c.width=c.height=200;const ctx=c.getContext('2d');
   // Meet at a shared 50/50 mixture instead of swapping both colors at the seam.
   ctx.globalAlpha=.5;ctx.drawImage(texture,tx,ty,200,200,0,0,200,200);ctx.globalAlpha=1;
   ctx.globalCompositeOperation='destination-in';ctx.drawImage(mask,0,0,200,200);
-  if(this.layers.size>=96)this.layers.delete(this.layers.keys().next().value);
-  this.layers.set(key,c);return c;
+  cacheSet(this.layers,key,c,LAYER_CACHE);return c;
  }
  drawForestDetails(ctx,x,y){
   // Full canopy tiles already contain complete crowns. Old standalone trees are
@@ -208,38 +213,36 @@ export class TerrainArt {
    return true;
   }
   const key='blend:'+ids.map(id=>{const t=this.texture(id,x,y);return `${id}:${id==='forest'&&this.forestFloor?Math.floor(modulo(x,8000)/800)+','+Math.floor(modulo(y,8000)/800):''}:${this.variant(id,x,y)}:${modulo(x,t?.width||400)}:${modulo(y,t?.height||400)}`;}).join(',');
-  let composed=this.layers.get(key);
+  let composed=cacheGet(this.layers,key);
   if(!composed){
    composed=document.createElement('canvas');composed.width=composed.height=200;
    const output=composed.getContext('2d');
    const topology=ids.join(',');
-   let masks=this.blendMasks.get(topology);
+   let masks=cacheGet(this.blendMasks,topology);
    if(!masks){
-    masks=new Map();const weights=Array.from({length:200},(_,p)=>terrainBlendWeights(p+.5));
+    masks=new Map();const weights=Array.from({length:MASK_SIZE},(_,p)=>terrainBlendWeights((p+.5)*200/MASK_SIZE));
     for(const id of new Set(ids)){
-     const mask=document.createElement('canvas');mask.width=mask.height=200;
-     const mc=mask.getContext('2d'),pixels=mc.createImageData(200,200);
-     for(let py=0;py<200;py++)for(let px=0;px<200;px++){
+     const mask=document.createElement('canvas');mask.width=mask.height=MASK_SIZE;
+     const mc=mask.getContext('2d'),pixels=mc.createImageData(MASK_SIZE,MASK_SIZE);
+     for(let py=0;py<MASK_SIZE;py++)for(let px=0;px<MASK_SIZE;px++){
       const wx=weights[px],wy=weights[py];let weight=0;
       for(let j=0;j<3;j++)for(let i=0;i<3;i++)if(ids[j*3+i]===id)weight+=wx[i]*wy[j];
-      const n=(py*200+px)*4;pixels.data[n]=pixels.data[n+1]=pixels.data[n+2]=255;pixels.data[n+3]=Math.round(weight*255);
+      const n=(py*MASK_SIZE+px)*4;pixels.data[n]=pixels.data[n+1]=pixels.data[n+2]=255;pixels.data[n+3]=Math.round(weight*255);
      }
      mc.putImageData(pixels,0,0);masks.set(id,mask);
     }
-    if(this.blendMasks.size>=32)this.blendMasks.delete(this.blendMasks.keys().next().value);
-    this.blendMasks.set(topology,masks);
+    cacheSet(this.blendMasks,topology,masks,MASK_CACHE);
    }
    for(const [id,alpha]of masks){
     const image=this.texture(id,x,y);if(!image)continue;
     const mask=document.createElement('canvas');mask.width=mask.height=200;
-    const mc=mask.getContext('2d');mc.drawImage(alpha,0,0);
+    const mc=mask.getContext('2d');mc.drawImage(alpha,0,0,200,200);
     mc.globalCompositeOperation='source-in';
     // Sample every biome at the destination world position, never the neighbor position.
     mc.drawImage(image,modulo(x,image.width||400),modulo(y,image.height||400),200,200,0,0,200,200);
     output.globalCompositeOperation='lighter';output.drawImage(mask,0,0);
    }
-   if(this.layers.size>=96)this.layers.delete(this.layers.keys().next().value);
-   this.layers.set(key,composed);
+   cacheSet(this.layers,key,composed,LAYER_CACHE);
   }
   ctx.drawImage(composed,x,y);
   if(region.id==='forest')this.drawForestDetails(ctx,x,y);

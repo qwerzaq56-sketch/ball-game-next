@@ -16,7 +16,7 @@ try{
  // spawnEncounter skips sample points on lava (remaining++/continue), so a region can get fewer than 8; assert the invariant, not an exact count.
  assert(encounter.actual<=encounter.expected&&encounter.perRegion.every(n=>n>=6&&n<=8),`encounter counts ${JSON.stringify(encounter)}`);assert.equal(encounter.onLava,0);
  await page.setViewportSize({width:390,height:844});await page.waitForTimeout(300);assert(await page.locator('#minimap-panel').isVisible());await page.screenshot({path:`${prefix}-mobile.png`});
- await page.keyboard.press('H');assert(await page.locator('#play-help').isVisible());assert((await page.locator('#play-help').innerText()).includes('지역 탐험'));await page.keyboard.press('Escape');
+ await page.keyboard.press('H');assert(await page.locator('#play-help').isVisible());await page.locator('.tc-tab[data-deck="guide"]').click();assert((await page.locator('#play-help').innerText()).includes('지역 탐험'));await page.keyboard.press('Escape');
  // R-ECO-010: a Life respawn lands off-centre, out of lava, with a 부활 무적 chip and a white ring
  await page.setViewportSize({width:1280,height:720});
  const respawn=await page.evaluate(()=>{const g=window.__game;g.paused=false;g.handlePlayerDefeat('DEFEATED');const p=g.player;return {x:p.x,y:p.y,inv:p.respawnInvulnerableRemaining,lava:!!g.biomes.lavaAt(p,p.size/2),centre:p.x===g.balance.world.worldWidth/2&&p.y===g.balance.world.worldHeight/2};});

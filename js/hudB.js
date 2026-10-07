@@ -53,7 +53,11 @@ export class HudB {
     this.more.setAttribute('aria-expanded', String(open));
   }
   update() {
-    if (!this.bar.getClientRects().length) return;// hidden on phones
+    // Hidden on phones. Reading layout right after this frame's DOM writes forces a synchronous layout, so check
+    // only four times a second (playtest 2026-10-08 performance pass).
+    const now = performance.now();
+    if (!(now - (this.visibleCheckedAt ?? -1e9) < 250)) { this.visibleCheckedAt = now; this.visible = this.bar.getClientRects().length > 0; }
+    if (!this.visible) return;
     for (const item of this.items) {
       const ring = abilityRing(this.game, item.ability);
       const color = item.ability.slot ? this.game.player.colorHex : item.ability.color;

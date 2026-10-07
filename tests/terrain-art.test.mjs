@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights,forestDensity,forestLayout,forestVegetationWeights} from '../js/terrainArt.js';
+import {TerrainArt,terrainVariant,forestDecoration,forestGroundVariant,terrainBlendWeights,forestDensity,forestLayout,forestVegetationWeights,LAYER_CACHE} from '../js/terrainArt.js';
 import {resetRandom,random} from '../js/random.js';
 test('functional forest ground preserves gameplay, wraps with the floor and skips passive vegetation',()=>{
  const art=new TerrainArt(),previous=globalThis.document,draws=[];
@@ -92,8 +92,9 @@ test('boundary cache distinguishes 800-world forest crops and remains bounded',(
   assert.notEqual(first,second);assert.deepEqual(crops,[[0,0],[400,0]]);
   assert.equal(art.layer('forest',0,0,'north'),first);assert.equal(crops.length,2);
   art.layer('forest',-200,-200,'north');assert.deepEqual(crops.at(-1),[600,600]);
-  for(let i=0;i<150;i++){art.masks.set('d'+i,{});art.layer('forest',0,0,'d'+i);}
-  assert.equal(art.layers.size,96);
+  // Least-recently-used: a crop that keeps being drawn survives a long walk past many others.
+  for(let i=0;i<LAYER_CACHE+60;i++){art.masks.set('d'+i,{});art.layer('forest',0,0,'d'+i);assert.equal(art.layer('forest',0,0,'north'),first);}
+  assert.equal(art.layers.size,LAYER_CACHE);assert.equal(crops.length,LAYER_CACHE+63);
  }finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous;}
 });
 test('regional raster failure leaves its SVG usable without blocking other region images',async()=>{

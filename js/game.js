@@ -44,6 +44,9 @@ const AI_PERSONALITY_LABEL = { growth: '성장형', cautious: '회피형', oppor
 
 const CELL_SIZE = 220;
 
+const GRID_OFFSET=1<<15,GRID_SPAN=1<<16;
+const gridKey=(cx,cy)=>(cx+GRID_OFFSET)*GRID_SPAN+cy+GRID_OFFSET;
+
 export class Game {
   constructor(balance, canvas, input, ui, options = {}) {
     this.options = options;
@@ -164,6 +167,8 @@ export class Game {
   }
 
   // ---------- spatial grid ----------
+  // Numeric cell keys (playtest 2026-10-08 performance pass): the grid is rebuilt twice a frame for ~1,600
+  // entities, and string keys allocated a new string per entity per rebuild.
 
   buildGrid() {
     // R-META-005: compute the shared maximum once per spatial rebuild.
@@ -175,7 +180,7 @@ export class Game {
       if(e.behavior!=='orb')this.maxUnitRadius=Math.max(this.maxUnitRadius,e.size/2);
       const cx = Math.floor(e.x / CELL_SIZE);
       const cy = Math.floor(e.y / CELL_SIZE);
-      const key = cx + ',' + cy;
+      const key = gridKey(cx, cy);
       let arr = this.grid.get(key);
       if (!arr) {
         arr = [];
@@ -198,13 +203,13 @@ export class Game {
     // Large actors can cover thousands of empty cells. Keep the legacy x/y cell order
     // while visiting occupied cells only, so target selection and RNG paths stay identical.
     if((maxCx-minCx+1)*(maxCy-minCy+1)>64){
-      if(!this.gridOrder)this.gridOrder=[...this.grid].map(([key,arr])=>{const [x,y]=key.split(',').map(Number);return {x,y,arr};}).sort((a,b)=>a.x-b.x||a.y-b.y);
+      if(!this.gridOrder)this.gridOrder=[...this.grid].map(([key,arr])=>({x:Math.floor(key/GRID_SPAN)-GRID_OFFSET,y:key%GRID_SPAN-GRID_OFFSET,arr})).sort((a,b)=>a.x-b.x||a.y-b.y);
       for(const cell of this.gridOrder)if(cell.x>=minCx&&cell.x<=maxCx&&cell.y>=minCy&&cell.y<=maxCy)for(const e of cell.arr)if(e!==entity)result.push(e);
       return result;
     }
     for (let cx = minCx; cx <= maxCx; cx++) {
       for (let cy = minCy; cy <= maxCy; cy++) {
-        const arr = this.grid.get(cx + ',' + cy);
+        const arr = this.grid.get(gridKey(cx, cy));
         if (!arr) continue;
         for (const e of arr) if (e !== entity) result.push(e);
       }
@@ -813,7 +818,7 @@ export class Game {
     this.renderCamera=null;
     ctx.restore();
     this.drawNames(ctx);
-    this.biomes.drawBlizzardOverlay(ctx);
+    this.biomes.drawBlizzardOverlay();
     if((this.playerHitUntil??0)>this.gameTime){ctx.save();ctx.globalAlpha=.4*Math.min(1,(this.playerHitUntil-this.gameTime)/.18);ctx.strokeStyle='#fb7185';ctx.lineWidth=6;ctx.strokeRect(3,3,this.canvas.width-6,this.canvas.height-6);ctx.restore();}
   }
 

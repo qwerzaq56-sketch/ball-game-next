@@ -776,3 +776,11 @@ body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !
   body:not(.mobile-minimal) #live-ranking, body.mobile-minimal #live-ranking.minimal-open { top:calc(124px + var(--safe-t)); max-height:30dvh; }
   #toggle-tray { right:calc(12px + var(--safe-r)); bottom:calc(150px + var(--safe-b)); }
 }
+
+/* Blizzard sight fog (snow): blur and darken outside the player's sight, composited by the browser. */
+#blizzard-fog { position:fixed; inset:0; pointer-events:none; --fx:50%; --fy:50%; --r40:120px; --r96:290px; --r160:480px; --r200:600px;
+  background:radial-gradient(circle at var(--fx) var(--fy), rgba(224,235,247,0) var(--r40), rgba(224,235,247,.18) var(--r96), rgba(148,169,190,.48) var(--r160), rgba(39,55,71,.88) var(--r200));
+  -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+  -webkit-mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent var(--r40), #000 var(--r96)); mask-image:radial-gradient(circle at var(--fx) var(--fy), transparent var(--r40), #000 var(--r96)); }
+/* No GPU (software renderer) or slow frames: keep the fog colors, drop the blur. */
+#blizzard-fog.lite { -webkit-backdrop-filter:none; backdrop-filter:none; -webkit-mask-image:none; mask-image:none; }

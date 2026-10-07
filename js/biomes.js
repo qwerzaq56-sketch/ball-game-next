@@ -98,16 +98,25 @@ export class Biomes {
  blizzard(){return this.enabled&&this.game.gameTime%24>=16&&this.regions.some(r=>r.id==='snow');}// R-WORLD-017: no snow this round, no blizzard
  playerSightRadius(){return this.regionAt(this.game.player)?.id==='snow'&&this.blizzard()?this.game.balance.ai.detectionRange*.65+Math.max(0,this.game.player.size-40)*.65:Infinity;}
  playerCanSee(e){return e===this.game.player||dist(this.game.player,e)-(e.size??0)/2<=this.playerSightRadius()*2;}
- drawBlizzardOverlay(ctx){
-  const radius=this.playerSightRadius();if(!Number.isFinite(radius))return;const g=this.game,p=g.worldToScreen(g.player.x,g.player.y),r=radius*g.camera.zoom;
-  // Quarter-resolution resampling softens the surroundings without a full-screen blur filter.
-  this.fogCanvas??=document.createElement('canvas');const layer=this.fogCanvas,scale=.25;
-  const width=Math.ceil(g.canvas.width*scale),height=Math.ceil(g.canvas.height*scale);
-  if(layer.width!==width||layer.height!==height){layer.width=width;layer.height=height;}
-  const c=layer.getContext('2d');c.clearRect(0,0,width,height);c.drawImage(g.canvas,0,0,width,height);
-  c.globalCompositeOperation='destination-in';const mask=c.createRadialGradient(p.x*scale,p.y*scale,r*.4*scale,p.x*scale,p.y*scale,r*2*scale);mask.addColorStop(0,'transparent');mask.addColorStop(.35,'white');mask.addColorStop(1,'white');c.fillStyle=mask;c.fillRect(0,0,width,height);c.globalCompositeOperation='source-over';
-  const fog=ctx.createRadialGradient(p.x,p.y,r*.4,p.x,p.y,r*2);fog.addColorStop(0,'rgba(224,235,247,0)');fog.addColorStop(.35,'rgba(224,235,247,.18)');fog.addColorStop(.75,'rgba(148,169,190,.48)');fog.addColorStop(1,'rgba(39,55,71,.88)');
-  ctx.save();ctx.imageSmoothingEnabled=true;ctx.drawImage(layer,0,0,g.canvas.width,g.canvas.height);ctx.fillStyle=fog;ctx.fillRect(0,0,g.canvas.width,g.canvas.height);ctx.restore();
+ drawBlizzardOverlay(){
+  // Performance (playtest 2026-10-08): the blur used to copy the whole canvas into a quarter-size layer every frame,
+  // about 8 ms per frame. The same look is now a CSS backdrop blur with a radial mask, composited by the browser.
+  const el=this.fogElement??=typeof document!=='undefined'?document.getElementById('blizzard-fog'):null;if(!el)return;
+  const radius=this.playerSightRadius();if(!Number.isFinite(radius)||this.game.gameOver){if(!el.hidden)el.hidden=true;return;}
+  const g=this.game,p=g.worldToScreen(g.player.x,g.player.y),k=(g.canvas.clientWidth||g.canvas.width)/g.canvas.width,r=radius*g.camera.zoom*k;
+  this.watchFogCost(el);
+  const key=`${Math.round(p.x*k)},${Math.round(p.y*k)},${Math.round(r)}`;if(el.hidden)el.hidden=false;if(key===this.fogKey)return;this.fogKey=key;
+  const s=el.style;s.setProperty('--fx',`${Math.round(p.x*k)}px`);s.setProperty('--fy',`${Math.round(p.y*k)}px`);
+  for(const [name,f] of [['--r40',.4],['--r96',.96],['--r160',1.6],['--r200',2]])s.setProperty(name,`${Math.round(r*f)}px`);
+ }
+ // The backdrop blur is cheap on a GPU and expensive without one: drop it on a software renderer, or after
+ // about two seconds of slow frames while the fog is showing. The fog colors stay either way.
+ watchFogCost(el){
+  if(el.classList.contains('lite'))return;
+  if(this.fogSoftware===undefined)this.fogSoftware=softwareRenderer();
+  const now=performance.now(),gap=this.fogLastFrame===undefined?16:now-this.fogLastFrame;this.fogLastFrame=now;
+  this.fogSlowFrames=gap>28&&gap<250?(this.fogSlowFrames??0)+1:Math.max(0,(this.fogSlowFrames??0)-1);
+  if(this.fogSoftware||this.fogSlowFrames>=90)el.classList.add('lite');
  }
  sensingRange(e,base=this.game.balance.ai.detectionRange){return this.regionAt(e)?.id==='snow'&&this.blizzard()?base*.65:base;}
  hazards(){return [...this.rivers,...this.sandstorms,...(this.game.era?.apocalypse?[this.game.era.apocalypse]:[])];}
@@ -207,4 +216,12 @@ export function roundTerrains(regions,config={},seed=0){
   keep=new Set(order.map(o=>o.r.id));
  }
  return [...pool.filter(r=>keep.has(r.id)),...base];
+}
+function softwareRenderer(){
+ try{
+  const gl=document.createElement('canvas').getContext('webgl');if(!gl)return true;
+  const info=gl.getExtension('WEBGL_debug_renderer_info'),name=String(gl.getParameter(info?info.UNMASKED_RENDERER_WEBGL:gl.RENDERER));
+  gl.getExtension('WEBGL_lose_context')?.loseContext();
+  return /swiftshader|llvmpipe|softpipe|software|basic render/i.test(name);
+ }catch{return false;}
 }
