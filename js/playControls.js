@@ -7,7 +7,8 @@ export class PlayControls {
     this.pauseIndicator=document.getElementById('pause-indicator');
     this.pauseReason='';this.lastHistory=game.apexHistory;this.resumePointers=new Set();
     const canvas=document.getElementById('game-canvas');
-    canvas.addEventListener('pointerdown',e=>{if(game.paused&&!this.blocked()&&!this.help.open&&(e.pointerType!=='mouse'||e.button===0)){this.resumePointers.add(e.pointerId);e.preventDefault();}});
+    // Shift+left click while the F2 inspector is open is an observation input (R-CTRL-003): it selects and never resumes.
+    canvas.addEventListener('pointerdown',e=>{if(game.paused&&!this.blocked()&&!this.help.open&&(e.pointerType!=='mouse'||e.button===0)&&!this.inspecting(e)){this.resumePointers.add(e.pointerId);e.preventDefault();}});
     window.addEventListener('pointerup',e=>{
       if(!this.resumePointers.delete(e.pointerId))return;
       if(!game.paused||this.blocked()||this.help.open)return;
@@ -28,6 +29,7 @@ export class PlayControls {
   }
   clearInput(){this.input.keys.clear();this.input.touchMove={x:0,y:0};this.input.mouseDown=false;this.input.absorbHeld=false;this.input.sprintHeld=false;this.input.attackChargeSeconds=0;this.input._dodgeQueued=false;this.input._dodgeAngle=null;this.input._attackQueued=null;this.input._specialQueued=false;this.input._ultimateQueued=false;}
   focusCanvas(){document.getElementById('game-canvas').focus({preventScroll:true});}
+  inspecting(e){return e.pointerType==='mouse'&&e.shiftKey&&e.button===0&&!!this.game.ui?.inspector?.visible;}
   blocked(){return !!document.querySelector('#designer-review[open]')||this.game.gameOver||document.getElementById('player-setup').open||document.getElementById('reset-confirm-overlay').style.display==='flex';}
   pause(reason='일시정지'){this.resumePointers.clear();this.lastHistory=this.game.apexHistory;this.game.paused=true;this.pauseReason=reason;this.clearInput();this.game.stopContinuousAudio();}
   backgroundPause(){
