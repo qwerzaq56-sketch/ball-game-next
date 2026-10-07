@@ -4,7 +4,12 @@ import {overlaps} from './presentation.js';
 export class Minimap {
   constructor(ui) {
     this.ui=ui;this.root=document.getElementById('minimap-panel');this.canvas=document.getElementById('minimap-canvas');this.ctx=this.canvas.getContext('2d');
+    // Portrait phones (R-CTRL-003): the map is a thumbnail under the HUD; a tap expands it over a backdrop that swallows game input.
+    this.expanded=false;this.phoneQuery=typeof matchMedia==='function'?matchMedia('(pointer:coarse) and (orientation:portrait)'):null;
+    this.backdrop=document.createElement('div');this.backdrop.id='minimap-backdrop';this.backdrop.hidden=true;document.body.append(this.backdrop);
+    this.backdrop.addEventListener('click',()=>this.expand(false));
     this.canvas.addEventListener('click',e=>{
+      if(this.root.classList.contains('thumb')){this.expand(true);return;}
       const game=ui.game;if(!game||!ui.inspector?.visible)return;
       const r=this.canvas.getBoundingClientRect(),w=game.balance.world;
       const x=(e.clientX-r.left)/r.width*w.worldWidth,y=(e.clientY-r.top)/r.height*w.worldHeight;
@@ -12,11 +17,21 @@ export class Minimap {
       if(candidates.length)ui.inspector.select(candidates[0].t.id);
     });
   }
+  phone(){return !!this.phoneQuery?.matches;}
+  expand(on){
+    if(this.expanded===on)return;
+    this.expanded=on;this.backdrop.hidden=!on;this.root.classList.toggle('expanded',on);this.root.classList.toggle('thumb',!on&&this.phone());
+    const res=on?320:160;this.canvas.width=this.canvas.height=res;
+  }
   layout() {
+    const phone=this.phone();if(this.expanded&&!phone)this.expand(false);
+    this.root.classList.toggle('thumb',phone&&!this.expanded);
+    if(this.expanded)return;// CSS centres the expanded map
     const w=window.innerWidth,h=window.innerHeight,r=this.root.getBoundingClientRect();
     const obstacles=['hud','minimal-tools','live-ranking','ecology-panel','touch-stick','touch-actions','player-info'].map(id=>document.getElementById(id)).filter(n=>n?.getClientRects().length).map(n=>n.getBoundingClientRect());
     const hud=document.getElementById('hud').getBoundingClientRect(),ranking=document.getElementById('live-ranking').getBoundingClientRect();
-    const positions=[[w-r.width-14,h-r.height-28],[14,h-r.height-28],[w-r.width-14,ranking.bottom+12],[14,hud.bottom+12],[(w-r.width)/2,h-r.height-16]];
+    const corners=[[w-r.width-14,h-r.height-28],[14,h-r.height-28],[w-r.width-14,ranking.bottom+12],[14,hud.bottom+12]];
+    const positions=[...(phone?corners.reverse():corners),[(w-r.width)/2,h-r.height-16]];// phone thumbnail prefers the slot under the HUD
     const fit=positions.find(([x,y])=>x>=8&&y>=8&&x+r.width<=w-8&&y+r.height<=h-8&&!obstacles.some(b=>overlaps({left:x-4,top:y-4,right:x+r.width+4,bottom:y+r.height+4},b)));
     const [x,y]=fit??[Math.max(8,(w-r.width)/2),Math.max(8,h-r.height-16)];
     this.root.style.left=`${x}px`;this.root.style.top=`${y}px`;this.root.style.right='auto';

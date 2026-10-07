@@ -63,7 +63,7 @@ export class EcologyUI {
     this.ranking.dataset.layout=this.preferences.rankingLayout;document.getElementById('ranking-layout').textContent={bar:'바',compact:'축약',full:'풀'}[this.preferences.rankingLayout];
     this.ranking.hidden = !this.preferences.ranking;
     this.ecology.hidden = !this.preferences.ecology;
-    this.minimap.root.hidden=!this.preferences.minimap;
+    this.minimap.root.hidden=!this.preferences.minimap;if(!this.preferences.minimap)this.minimap.expand(false);
     for (const mode of ['score','size']) document.getElementById(`ranking-mode-${mode}`).setAttribute('aria-pressed',String(this.preferences.rankingMode===mode));
     const labels = {names:'이름',ranking:'순위',ecology:'생태계',minimap:'지도'};
     for (const key of Object.keys(labels)) {

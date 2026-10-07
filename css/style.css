@@ -750,3 +750,19 @@ html{height:100%}body{height:100dvh;width:100%;overscroll-behavior:none}#game-ca
 
 /* User: species color stays visible even in the minimal ranking. */
 body.mobile-minimal #live-ranking:not(.minimal-open) .rank-dot{display:block!important;flex:none;width:8px;height:8px}
+
+/* R-CTRL-003 portrait phone: the ranking comes first, the minimap is a tappable thumbnail, the ecology panel stacks under the ranking. */
+#minimap-backdrop{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.45)}
+#minimap-panel.expanded{left:50%!important;top:50%!important;right:auto!important;transform:translate(-50%,-50%);width:min(336px,calc(100vw - 48px));padding:10px;z-index:61}
+#minimap-panel.expanded .minimap-key::after{content:' · 바깥을 탭하면 닫힘'}
+@media(pointer:coarse) and (orientation:portrait){
+  #minimap-panel.thumb{width:104px;padding:4px}
+  #minimap-panel.thumb .minimap-heading{display:none}
+  #minimap-panel.thumb .minimap-key{font-size:0;margin-top:2px;text-align:center}
+  #minimap-panel.thumb .minimap-key::after{content:'탭하면 확대';font-size:8px}
+  body.mobile-minimal #ecology-panel{top:238px;max-height:calc(100dvh - 512px)}
+  body.mobile-minimal:has(#ecology-panel:not([hidden])) #live-ranking.minimal-open{max-height:30dvh}
+  body.mobile-minimal:has(#live-ranking.minimal-open:not([hidden])) #ecology-panel{top:calc(96px + 30dvh);max-height:calc(100dvh - 370px - 30dvh)}
+  body.mobile-minimal:has(#live-ranking[hidden]) #ecology-panel{top:88px;max-height:calc(100dvh - 362px)}
+  body:not(.mobile-minimal) #ecology-panel{top:calc(64px + 36vh);bottom:auto;max-height:calc(100dvh - 245px - 36vh)}
+}
