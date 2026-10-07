@@ -69,7 +69,7 @@
       <button id="ally-links-toggle" class="hud-btn" type="button" aria-pressed="true">연결선: ON</button>
       <button id="companion-leave" class="hud-btn" type="button" disabled>동행 이탈 (G)</button>
       <button id="pause-btn" class="hud-btn" type="button" aria-pressed="false">일시정지 (P)</button>
-      <button id="help-btn" class="hud-btn" type="button" aria-haspopup="dialog" aria-controls="play-help">플레이 안내 (H)</button>
+      <button id="help-btn" class="hud-btn" type="button" aria-haspopup="dialog" aria-controls="play-help">도움말 (H)</button>
       <button id="reset-btn" class="hud-btn" type="button">전체 초기화</button>
     </div>
   </div>
@@ -77,7 +77,7 @@
   <!-- R-CTRL-006: era name and era events sit large at the top centre. -->
   <div id="era-status" role="status" aria-label="현재 시대"><span id="era-phase-name"></span><span id="era-countdown"></span><div class="era-progress"><div id="era-progress-fill"></div></div><div id="era-event" hidden></div></div>
   <aside id="starter-guide" hidden><span id="starter-guide-text"></span><button id="starter-guide-close" type="button" aria-label="시작 조작 안내 닫기">×</button></aside>
-  <nav id="minimal-tools"><button id="quick-sprint" type="button" hidden>달리기</button><button id="auto-companion" type="button" aria-pressed="false">자동 동행 OFF</button><span id="play-time">플레이 0:00</span><button id="quick-absorb" type="button" aria-pressed="false">흡수 OFF</button><button id="quick-map" type="button">지도</button><button id="quick-ecology" type="button">생태계</button><button id="quick-balance" type="button">분석</button><button id="quick-ranking" type="button">순위</button></nav>
+  <nav id="minimal-tools"><button id="quick-sprint" type="button" hidden>달리기</button><button id="auto-companion" type="button" aria-pressed="false">자동 동행 OFF</button><span id="play-time">플레이 0:00</span><button id="quick-absorb" type="button" aria-pressed="false">흡수 OFF</button><button id="quick-map" type="button">지도</button><button id="quick-ecology" type="button">생태계</button><button id="quick-balance" type="button">분석</button><button id="quick-ranking" type="button">순위</button><button id="quick-help" type="button" aria-haspopup="dialog" aria-controls="play-help">도움말</button></nav>
   <aside id="live-ranking" class="observer-panel" aria-label="실시간 순위">
     <div class="observer-heading"><strong>TOP 10</strong><button id="ranking-layout" type="button" title="순위 표시: 바 → 축약 → 전체" aria-label="순위 표시 크기 전환">풀</button><div class="ranking-modes" role="group" aria-label="순위 기준"><button id="ranking-mode-score" type="button" aria-pressed="true">점수</button><button id="ranking-mode-size" type="button" aria-pressed="false">크기</button></div></div>
     <ol id="live-ranking-list"></ol>
@@ -130,7 +130,14 @@
     <div id="touch-actions"><button id="touch-absorb" type="button" aria-pressed="false">흡수 OFF</button><button id="touch-ultimate" type="button" aria-label="최상위 R 스킬">R 스킬</button><button id="touch-special" type="button" aria-label="특수능력">E 스킬</button><button id="touch-dodge" type="button" aria-label="회피">회피</button><button id="touch-attack" type="button" aria-label="드래그 조준 후 손을 떼면 공격">조준<br>공격</button></div>
   </div>
   <dialog id="play-help" aria-labelledby="play-help-title">
-    <div class="help-heading"><h2 id="play-help-title">플레이 안내</h2><button id="help-close" class="hud-btn" type="button">닫기 · Esc</button></div>
+    <div class="help-heading"><h2 id="play-help-title">도움말</h2><button id="help-close" class="hud-btn" type="button">닫기 · Esc</button></div>
+    <section id="tutorial-cards" aria-label="튜토리얼 카드">
+      <div class="tc-tabs" role="tablist" aria-label="카드 묶음"></div>
+      <article id="tc-card" class="tc-card" aria-live="polite"></article>
+      <div class="tc-nav"><button id="tc-prev" class="hud-btn" type="button">이전</button><span id="tc-count"></span><button id="tc-next" class="hud-btn" type="button">다음</button></div>
+    </section>
+    <div id="help-guide">
+    <h3>전체 안내</h3>
     <p>먹이를 먹고 성장하세요. <strong>크기</strong>는 흡수·전투·최상위 직위를 결정하고, <strong>점수</strong>는 플레이 기록입니다. TOP 10에서 두 순위를 바꿔 볼 수 있습니다.</p>
     <dl class="help-controls"><dt>WASD / 방향키</dt><dd>이동</dd><dt>마우스 / 좌클릭</dt><dd>조준 / 누르고 충전 후 떼면 공격</dd><dt>흡수 버튼 토글 / 우클릭 유지</dt><dd>동족 흡수 활성화 / 모바일 켜기·끄기</dd><dt>Space</dt><dd>짧게 떼면 회피 / 0.18초 이상 유지하면 달리기</dd><dt>E / R</dt><dd>크기 100부터 일반 E / 최상위 직위 보유 시 R</dd><dt>Q</dt><dd>동행 제안 (우정 축제에는 다른 색도 가능)</dd><dt>G</dt><dd>동행 이탈</dd><dt>U</dt><dd>최소 / 전체 UI 전환</dd><dt>P·ESC / H</dt><dd>일시정지 / 안내</dd></dl>
     <p>터치 화면의 왼쪽 절반에서 드래그하면 터치 위치에 이동 조이스틱이 나타납니다. 오른쪽 절반에서는 드래그로 공격을 조준하고 누른 동안 충전하며 손을 떼면 발사합니다. 두 손가락으로 이동과 공격을 동시에 할 수 있습니다. 이동 중에는 화면 양쪽 어디서나 두 번째 손가락으로 공격하며, 최초 터치 지점을 조준합니다. 회피 버튼은 큰 주 조작 버튼, 공격 버튼은 보조 표시로 사용할 수 있습니다. 기본 조준은 이동 방향을 따릅니다. 공격·회피 버튼을 드래그해 방향을 정하고 손을 떼면 실행하며, 회피 버튼을 짧게 터치하면 바라보는 방향으로 회피합니다. 버튼 위 숫자는 남은 충전/최대 충전, 아래 막대는 다음 충전 진행률입니다. 오른쪽에서 시작한 공격 조준과 왼쪽에서 시작한 이동은 화면 중앙을 넘어도 역할을 유지합니다. 취소된 터치는 실행하지 않습니다. 맵의 좌우·상하 끝은 서로 이어집니다. 가로 화면을 권장하며 폰 회전에 맞춰 배치가 자동 전환됩니다. Safari에서는 공유 → 홈 화면에 추가로 실행하면 브라우저 표시줄 없이 플레이할 수 있습니다. 흰색 화살표는 캐릭터 중심에서 조준 방향을 표시합니다. 상단 ‘전체 UI / 최소 UI’로 표시량을 바꿀 수 있습니다. E 버튼은 누르면 실행합니다. 동행 중에는 HUD의 ‘동행 이탈’ 버튼으로 나갑니다.</p>
@@ -142,11 +149,13 @@
     <p>가까운 같은 색 공은 연결되고 이웃당 공격 +5%, 최대 +15%를 받습니다. 확률적으로 대열을 만들며, <strong>동행 중에도 외부 적을 공격하고 회피·특수능력을 사용합니다.</strong> 리더 성격에 3배 가중치를 주어 도전형·기회형·회피형 대열을 정합니다. 같은 색 아군은 공격하거나 흡수하지 않습니다. G로 이탈하면 자유 행동으로 돌아갑니다. 동행해도 외부 공격을 받을 수 있습니다. 동행 선호·중립·독립 선호 성향에 따라 가입과 이탈 빈도가 다릅니다. Q/동행 제안 버튼으로 직접 모집할 수 있고 우정 축제 동안에는 다른 색도 모집합니다. 혼색 동행자끼리는 싸우지 않지만 축제가 끝나면 다른 색 동행은 해제됩니다.</p>
     <h3>최상위 포식자 · 최대 3명</h3>
     <p>크기 100 이상인 크기 상위 3개체가 후보입니다. 직위는 일정 시간 확인 후 주어집니다. 점수가 높아도 크기가 작으면 직위를 받지 못합니다.</p>
-    <ul class="help-skills"><li><i style="background:#06b6d4"></i>하늘 · 냉기 휘두르기: 전방 적을 얼립니다.</li><li><i style="background:#3b82f6"></i>파랑 · 삼중 파도: 세 방향으로 파동을 보냅니다.</li><li><i style="background:#22c55e"></i>초록 · 사기 진작: 아군 공격을 강화합니다.</li><li><i style="background:#ef4444"></i>빨강 · 사냥 지휘: 조준 범위의 적을 마킹하고 주변 같은 색 아군의 이동속도·공격력을 높여 표적을 공격하게 합니다.</li><li><i style="background:#eab308"></i>노랑 · 모래바람: 넓은 장판에 지속 피해를 줍니다. 적의 모래바람은 빨리 벗어나세요.</li></ul>
+    <p>종족마다 E·R 스킬이 다릅니다. 위의 ‘종족’ 카드에서 내 종족과 상대 종족의 스킬과 강점을 볼 수 있습니다.</p>
     <p class="help-footnote">F1 설정 · F2 AI 인스펙터 · F3 역할과 상태 · F4 생태계 기록<br>안내를 닫으면 열기 전의 진행/정지 상태로 돌아갑니다. 창이나 탭을 떠나면 자동으로 멈추며, 돌아온 뒤 게임 화면을 터치하거나 계속하기를 눌러 재개합니다. 재개 터치는 공격하지 않습니다.</p>
     <p class="help-footnote">F1에서 기본 OFF인 자동 플레이 실험과 관찰 JSON 저장을 사용할 수 있습니다. 자동 플레이도 Life를 잃고 게임 종료 시 멈춥니다. 직접 조작하면 수동으로 돌아옵니다.</p>
     <p class="help-footnote">F5 또는 지도 버튼으로 월드 전체의 먹이·공·내 위치를 볼 수 있습니다. F2가 열린 상태에서 지도 위 AI를 클릭하면 정보를 표시합니다.</p>
+    </div>
   </dialog>
+  <aside id="terrain-hint" role="status" hidden><span id="terrain-hint-text"></span><button id="terrain-hint-open" type="button">카드 보기</button></aside>
 
   <div id="controls-hint">
     WASD 이동 · 좌클릭 충전·떼면 공격 · 흡수 버튼·우클릭 유지 · Space 짧게 회피/꾹 달리기 · E 성장 스킬 · R 최상위 스킬 · Q 동행 제안 · G 동행 이탈 · P 일시정지 · H 안내 · U 최소 UI · F1–F4 디버그

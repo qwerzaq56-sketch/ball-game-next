@@ -818,3 +818,38 @@ body.mobile-minimal #hud .sprint-bar-outer { height:4px; margin-top:3px; }
 .skill-cd i { grid-column:1 / -1; height:3px; border-radius:2px; background:rgba(255,255,255,.12); overflow:hidden; }
 .skill-cd em { display:block; height:100%; background:#fde68a; }
 .skill-cd[data-state="ready"] em { background:#86efac; }
+
+/* R-CTRL-005: tutorial cards in the help dialog, first-run mode and the first-visit terrain hint. */
+#tutorial-cards { display:grid; gap:10px; margin-top:14px; }
+.tc-tabs { display:flex; flex-wrap:wrap; gap:6px; }
+.tc-tab { border:1px solid #334155; border-radius:999px; padding:5px 12px; background:#172337; color:#cbd5e1; font:inherit; font-size:13px; cursor:pointer; }
+.tc-tab.active { border-color:#7dd3fc; background:#0c4a6e; color:#f0f9ff; font-weight:700; }
+#play-help.tutorial-mode .tc-tabs, #play-help.tutorial-mode #help-guide { display:none; }
+.tc-card { --tc-accent:#7dd3fc; min-height:190px; padding:14px 16px 12px; border:1px solid #334155; border-left:4px solid var(--tc-accent); border-radius:12px; background:#172337; }
+.tc-head { display:flex; align-items:center; gap:10px; }
+.tc-head h3 { margin:0 !important; color:#f8fafc !important; font-size:19px !important; }
+.tc-dot { width:18px; height:18px; flex:none; border-radius:50%; box-shadow:0 0 0 3px rgba(255,255,255,.08); }
+.tc-deck { margin-left:auto; color:#94a3b8; font-size:11px; letter-spacing:.04em; }
+.tc-keys { margin:10px 0 4px; padding:6px 10px; border-radius:8px; background:#0b1322; color:var(--tc-accent); font-weight:700; font-size:13px; }
+.tc-lines { margin:8px 0 0; padding-left:18px; display:grid; gap:4px; line-height:1.45; }
+.tc-skill { display:grid; grid-template-columns:auto auto 1fr; align-items:baseline; gap:2px 8px; margin-top:10px; padding:8px 10px; border-radius:8px; background:#0b1322; }
+.tc-skill b { color:var(--tc-accent); font-size:15px; }
+.tc-skill span { color:#94a3b8; font-size:11px; }
+.tc-skill p { grid-column:1 / -1; margin:0; color:#cbd5e1; font-size:13px; }
+.tc-ai { margin:10px 0 0; color:#94a3b8; font-size:12px; }
+.tc-card h4 { margin:12px 0 4px; color:#94a3b8; font-size:12px; letter-spacing:.04em; }
+.tc-objects { margin:0; padding:0; list-style:none; display:grid; gap:4px; font-size:13px; }
+.tc-objects strong { color:#bae6fd; }
+.tc-objects li.danger strong { color:#fca5a5; }
+.tc-nav { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+#tc-count { color:#94a3b8; font-size:12px; font-variant-numeric:tabular-nums; }
+.tc-nav button:disabled { opacity:.4; cursor:default; }
+#play-help.tutorial-mode #tc-next { border-color:#7dd3fc; color:#f0f9ff; }
+#terrain-hint { --tc-accent:#7dd3fc; position:fixed; left:50%; top:96px; transform:translateX(-50%); z-index:13; display:flex; align-items:center; gap:10px; max-width:min(460px,calc(100vw - 32px)); padding:8px 8px 8px 14px; border:1px solid var(--tc-accent); border-radius:12px; background:rgba(2,6,23,.82); color:#e2e8f0; font-size:13px; box-shadow:0 6px 18px rgba(0,0,0,.35); }
+#terrain-hint[hidden] { display:none; }
+#terrain-hint-open { flex:none; border:1px solid #475569; border-radius:8px; padding:5px 9px; background:#172337; color:#e2e8f0; font:inherit; font-size:12px; cursor:pointer; }
+@media (pointer:coarse) {
+  #terrain-hint { top:30%; max-width:min(320px,calc(100vw - 32px)); font-size:12px; }
+  #play-help.tutorial-mode { padding:16px; }
+  .tc-card { min-height:0; }
+}

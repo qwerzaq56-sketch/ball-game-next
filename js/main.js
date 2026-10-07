@@ -8,6 +8,7 @@ import { loadMuted, saveMuted } from './storage.js';
 import { AIInspector } from './aiInspector.js';
 import { PlayerSetup, loadPlayerProfile } from './playerProfile.js';
 import { PlayControls } from './playControls.js';
+import { TutorialUI } from './tutorialUI.js';
 import { TouchControls } from './touchControls.js';
 import {loadSavedSkillPreset} from './skillPreset.js';
 
@@ -112,6 +113,7 @@ async function main() {
   terrainButton.onclick=()=>{const art=game.biomes.terrainArt;art.setEnabled(!art.enabled);terrainButton.textContent=`지형 아트 ${art.enabled?'ON':'OFF'}`;terrainButton.setAttribute('aria-pressed',String(art.enabled));};ui.debugPanel.append(terrainButton);
   window.__game = game; // debug inspection hook
   const playControls=new PlayControls(game,input);
+  const tutorial=new TutorialUI(game,playControls);window.__tutorial=tutorial;
   const touchControls=new TouchControls(game,input,canvas);
   ui.inspector = new AIInspector(game, canvas, ui);installMovablePanels(); // F2: read-only AI state window
 
@@ -186,6 +188,7 @@ async function main() {
     ui.update(dt, game);
     diagnosticsUI.update();
     playControls.update();
+    tutorial.update(dt);
     touchControls.update();
 
     requestAnimationFrame(loop);

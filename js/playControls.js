@@ -39,7 +39,8 @@ export class PlayControls {
     if(!this.game.paused)this.pause('창 전환으로 일시정지');
   }
   togglePause(){if(this.blocked()||this.help.open)return;if(this.game.paused){this.game.paused=false;this.pauseReason='';this.clearInput();}else this.pause();this.focusCanvas();}
-  openHelp(){if(this.blocked()||this.help.open)return;this.helpWasPaused=this.game.paused;this.helpWasReason=this.pauseReason;this.pause();this.help.showModal();}
+  // R-CTRL-005: the tutorial cards render into the same dialog; opts pick the first-run deck or a card.
+  openHelp(opts={}){if(this.blocked()||this.help.open)return;this.helpWasPaused=this.game.paused;this.helpWasReason=this.pauseReason;this.pause();this.onOpenHelp?.(opts);this.help.showModal();}
   update(){
     if(this.lastHistory!==this.game.apexHistory){this.lastHistory=this.game.apexHistory;this.pauseReason='';}
     const blocked=this.blocked();
