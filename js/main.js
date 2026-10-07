@@ -3,6 +3,7 @@ import {DesignerReview} from './designerReview.js';
 import {loadObjectPreset} from './biomeObjectCatalog.js?effects-direction-02';
 import {installMovablePanels} from './movablePanels.js';
 import { DiagnosticsUI } from './diagnosticsUI.js';
+import { PerfMeter } from './perfMeter.js';
 import { Game } from './game.js?ai-refuge-01';
 import { UI } from './ui.js?effects-direction-02';
 import { loadMuted, saveMuted } from './storage.js';
@@ -107,7 +108,8 @@ async function main() {
     for(const e of activeGame.entities)if(e.alive&&e.behavior==='ai')e._recomputeStacks(balance);
   });
   const game = new Game(balance, canvas, input, ui, {profile:loadPlayerProfile(balance.colors)});
-  const diagnosticsUI=new DiagnosticsUI(game,ui,{requestSeedReset:seed=>requestReset(seed)});
+  const perfMeter=new PerfMeter();window.__perf=perfMeter;
+  const diagnosticsUI=new DiagnosticsUI(game,ui,{requestSeedReset:seed=>requestReset(seed),perfMeter});
   const playerSetup = new PlayerSetup(game, input);
   playerSetup.open();
   const designerReview=new DesignerReview(()=>game);window.__designerReview=designerReview;designerReview.start();
@@ -186,11 +188,15 @@ async function main() {
 
   let lastTime = performance.now();
   function loop(now) {
-    const dt = Math.min(0.05, (now - lastTime) / 1000);
+    const interval = now - lastTime;
+    const dt = Math.min(0.05, interval / 1000);
     lastTime = now;
 
+    const t0 = performance.now();
     game.update(dt);
+    const t1 = performance.now();
     game.render();
+    const t2 = performance.now();
     ui.update(dt, game);
     diagnosticsUI.update();
     playControls.update();
@@ -198,6 +204,7 @@ async function main() {
     tipsUI.update(dt);
     touchControls.update();
     hudB.update();
+    perfMeter.record({interval, update: t1 - t0, render: t2 - t1, ui: performance.now() - t2});
 
     requestAnimationFrame(loop);
   }

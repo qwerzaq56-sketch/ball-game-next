@@ -1,10 +1,11 @@
 import {attachBalanceFeedback} from './balanceFeedback.js';
 import {evaluationSummary} from './gameplayEvaluation.js';
 import { observationCSV } from './observationCSV.js';
+import { perfLine } from './perfMeter.js';
 export class DiagnosticsUI {
- constructor(game,ui,{requestSeedReset}={}){
-  this.game=game;this.ui=ui;this.last=0;this.root=document.createElement('section');this.root.className='debug-section';this.root.id='observation-tools';
-  this.root.innerHTML='<h3>자동 플레이 · 관찰</h3><label class="debug-row"><span>자동 플레이 (실험)</span><input id="autoplay-toggle" type="checkbox"></label><p id="autoplay-status" class="hint"></p><p class="hint">직접 이동/공격/터치하면 수동으로 돌아옵니다. Life와 피해는 일반 플레이 규칙을 따릅니다.</p><p id="run-metrics-summary"></p><p id="evaluation-summary" class="hint"></p><p id="opportunity-channels" class="hint"></p><canvas id="run-metrics-chart" width="280" height="90" aria-label="최근 플레이어와 가장 큰 AI의 크기 변화"></canvas><p class="hint">파랑: 내 크기 · 초록: 가장 큰 AI</p><button id="metrics-export" class="hud-btn" type="button">관찰 JSON 저장</button><p id="run-seed" class="hint"></p>';
+ constructor(game,ui,{requestSeedReset,perfMeter}={}){
+  this.game=game;this.ui=ui;this.last=0;this.perfMeter=perfMeter;this.root=document.createElement('section');this.root.className='debug-section';this.root.id='observation-tools';
+  this.root.innerHTML='<h3>자동 플레이 · 관찰</h3><p id="perf-summary" class="hint">성능 측정 중…</p><button id="perf-copy" class="hud-btn" type="button">성능 기록 복사</button><span id="perf-copy-status" class="hint" aria-live="polite"></span><label class="debug-row"><span>자동 플레이 (실험)</span><input id="autoplay-toggle" type="checkbox"></label><p id="autoplay-status" class="hint"></p><p class="hint">직접 이동/공격/터치하면 수동으로 돌아옵니다. Life와 피해는 일반 플레이 규칙을 따릅니다.</p><p id="run-metrics-summary"></p><p id="evaluation-summary" class="hint"></p><p id="opportunity-channels" class="hint"></p><canvas id="run-metrics-chart" width="280" height="90" aria-label="최근 플레이어와 가장 큰 AI의 크기 변화"></canvas><p class="hint">파랑: 내 크기 · 초록: 가장 큰 AI</p><button id="metrics-export" class="hud-btn" type="button">관찰 JSON 저장</button><p id="run-seed" class="hint"></p>';
   attachBalanceFeedback(game,this.root);
   const skillTable=document.createElement('details');skillTable.innerHTML='<summary>종족별 E/R 사용과 결과</summary><p class="hint">피해는 스킬의 직접 타격만 집계합니다. 버프를 받은 일반 공격은 포함하지 않습니다.</p><div id="skill-observation"></div>';this.root.append(skillTable);
   const phaseTable=document.createElement('div');phaseTable.id='phase-observation';this.root.insertBefore(phaseTable,this.root.querySelector('#metrics-export'));
@@ -20,10 +21,16 @@ export class DiagnosticsUI {
   ui.debugPanel.firstElementChild.insertBefore(this.root,ui.debugPanel.firstElementChild.children[1]);this.toggle=this.root.querySelector('#autoplay-toggle');this.toggle.addEventListener('change',()=>{game.autoplay.setEnabled(this.toggle.checked);game.canvas.focus?.();});
   this.root.querySelector('#metrics-export').addEventListener('click',()=>this.download(JSON.stringify(game.runMetrics.export(game),null,2),'json','application/json'));
   this.csvButton.addEventListener('click',()=>{if(game.runMetrics.samples.length)this.download(observationCSV(game),'csv','text/csv;charset=utf-8');});
+  // pt1-09: paste this JSON with a lag report (performance master doc, P-xx cards).
+  this.root.querySelector('#perf-copy').addEventListener('click',async()=>{
+   const status=this.root.querySelector('#perf-copy-status'),text=JSON.stringify({...this.perfMeter?.summary(game),userAgent:navigator.userAgent,viewport:[innerWidth,innerHeight]},null,1);
+   try{await navigator.clipboard.writeText(text);status.textContent=' 복사됨';}catch{status.textContent=' 복사 실패 — 콘솔에 출력';console.log(text);}
+  });
  }
  download(text,extension,type){const g=this.game,url=URL.createObjectURL(new Blob([text],{type}));const link=document.createElement('a');link.href=url;link.download=`ball-next-${g.seed}-${Math.floor(g.gameTime)}s.${extension}`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  update(){
   if(!this.ui.debugVisible)return;const now=performance.now();if(now-this.last<250)return;this.last=now;const g=this.game,m=g.runMetrics;
+  if(this.perfMeter)this.root.querySelector('#perf-summary').textContent=perfLine(this.perfMeter.summary(g));
   if(this.lastMetrics!==m){this.lastMetrics=m;this.seedInput.value=String(g.seed);this.root.querySelector('#seed-reset-hint').textContent='같은 시드로 시작 배치를 다시 살펴볼 수 있습니다.';}
   this.csvButton.disabled=!m.samples.length;
   this.toggle.checked=g.autoplay.enabled;this.root.querySelector('#autoplay-status').textContent=g.autoplay.enabled?`ON · ${g.gameOver?'게임 종료':g.paused?'일시정지':g.autoplay.reason}`:'OFF · 수동 플레이';
