@@ -36,6 +36,7 @@ import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
 import {apexTerritoryRadius} from './skillCatalog.js';
 import { startAbsorption, cancelAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
 import { AudioManager } from './audio.js';
+import {statusChips,drawStatusChips,textWidth} from './statusLabels.js';
 
 const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '관계추종', companion:'대열 동행',war_move:'전선 이동', recover: '회복' };
 const AI_PERSONALITY_LABEL = { growth: '성장형', cautious: '회피형', opportunist: '기회형' };
@@ -713,8 +714,8 @@ export class Game {
   }
 
   // v0.4 spec §35: short floating text popups ("+25 GROWTH", "KILL +1", etc).
-  spawnFloatingText(x, y, text, color) {
-    this.floatingTexts.push({ x, y, text, color, life: 1.1, maxLife: 1.1 });
+  spawnFloatingText(x, y, text, color, life = 1.1) {
+    this.floatingTexts.push({ x, y, text, color, life, maxLife: life });
   }
 
   updateFloatingTexts(dt) {
@@ -922,14 +923,7 @@ export class Game {
     // v0.4 spec §23: a short outward "grew bigger" pulse plays on a successful absorption.
 
     const r = (e.visualSize??e.size) / 2;
-    if(e.behavior!=='orb'&&this.abilities.unlocked(e,'E')){
-      ctx.save();ctx.font=`bold ${12/this.camera.zoom}px system-ui`;ctx.textAlign='center';ctx.lineWidth=3/this.camera.zoom;ctx.strokeStyle='#0f172a';
-      for(const [i,slot] of ['E','R'].entries())if(this.abilities.unlocked(e,slot)){
-        const ready=this.abilities.canCast(e,slot),label=e.specialCast?.slot===slot?`${slot} …`:this.abilities.cooldown(e,slot)>0?`${slot} ${Math.ceil(this.abilities.cooldown(e,slot))}`:ready?`${slot} ◆`:`${slot} ◇`;
-        const x=e.x+(e.apex?(i?1:-1)*32/this.camera.zoom:0),y=e.y-r-entityLabelRows(e,this.showAILabels,true).skill/this.camera.zoom;ctx.strokeText(label,x,y);ctx.fillStyle=ready?'#fff':'#94a3b8';ctx.fillText(label,x,y);
-      }ctx.restore();
-    }
-    if(e.frostbiteRemaining>0){const z=this.camera.zoom;ctx.save();ctx.strokeStyle='#a5f3fc';ctx.lineWidth=2/z;ctx.beginPath();ctx.arc(e.x,e.y,r+5/z,0,Math.PI*2);ctx.stroke();ctx.font=`bold ${12/z}px system-ui`;ctx.fillStyle='#cffafe';ctx.textAlign='center';ctx.fillText('❄ 동상',e.x,e.y+r+18/z);ctx.restore();}
+    if(e.frostbiteRemaining>0){const z=this.camera.zoom;ctx.save();ctx.strokeStyle='#a5f3fc';ctx.lineWidth=2/z;ctx.beginPath();ctx.arc(e.x,e.y,r+5/z,0,Math.PI*2);ctx.stroke();ctx.restore();}
     if(this.era.activeWar(e)){const z=this.camera.zoom;ctx.save();ctx.font=`bold ${13/z}px system-ui`;ctx.textAlign='center';ctx.strokeStyle='#0f172a';ctx.lineWidth=3/z;ctx.strokeText(`⚔ ${e.warTargets.size}`,e.x+r*.65,e.y-r*.65);ctx.fillStyle='#fb7185';ctx.fillText(`⚔ ${e.warTargets.size}`,e.x+r*.65,e.y-r*.65);ctx.restore();}
     if(e.apex){const z=this.camera.zoom;ctx.save();ctx.strokeStyle='#facc15';ctx.lineWidth=3/z;ctx.beginPath();ctx.arc(e.x,e.y,r+9/z,0,Math.PI*2);ctx.stroke();
       for(let i=0;i<6;i++){const a=i*Math.PI/3+this.gameTime*.25,x=e.x+Math.cos(a)*(r+17/z),y=e.y+Math.sin(a)*(r+17/z);ctx.beginPath();ctx.moveTo(x,y-4/z);ctx.lineTo(x+3/z,y);ctx.lineTo(x,y+4/z);ctx.lineTo(x-3/z,y);ctx.closePath();ctx.fillStyle='#fde68a';ctx.fill();}
@@ -1009,7 +1003,6 @@ export class Game {
     // decorative helpers replace it with their marks, pulse circles or arrow triangles.
     if((e.hitVisualUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+3/this.camera.zoom,0,Math.PI*2);ctx.strokeStyle=e.hitVisualShield?'#a5f3fc':'#ffffff';ctx.globalAlpha=Math.min(1,(e.hitVisualUntil-this.gameTime)/.18);ctx.lineWidth=4/this.camera.zoom;ctx.stroke();ctx.restore();}
     if((e.obsidianShieldHp??0)>0&&(e.obsidianShieldUntil??0)>this.gameTime){ctx.save();ctx.beginPath();ctx.arc(e.x,e.y,r+13/this.camera.zoom,-Math.PI/2,-Math.PI/2+Math.PI*2*Math.min(1,e.obsidianShieldHp/e.obsidianShieldMax));ctx.strokeStyle='#c4b5fd';ctx.lineWidth=5/this.camera.zoom;ctx.stroke();ctx.restore();}
-    if((e.windStoneStacks??0)>0||(e.obsidianStacks??0)>0){ctx.save();ctx.fillStyle='#c4b5fd';ctx.font=`bold ${11/this.camera.zoom}px system-ui`;ctx.textAlign='center';ctx.fillText(`바람 ${e.windStoneStacks??0} · 흑요석 ${e.obsidianStacks??0}`,e.x,e.y+r+16/this.camera.zoom);ctx.restore();}
     if((e.companionCharmUntil??0)>this.gameTime){ctx.save();const shell=e.companionDecoration==='shell';ctx.strokeStyle=shell?'#fef3c7':'#f9a8d4';ctx.lineWidth=2/this.camera.zoom;for(let i=0;i<5;i++){const a=i*Math.PI*2/5,x=e.x+Math.cos(a)*(r+9/this.camera.zoom),y=e.y+Math.sin(a)*(r+9/this.camera.zoom);ctx.beginPath();if(shell){ctx.arc(x,y,6/this.camera.zoom,Math.PI,Math.PI*2);ctx.lineTo(x,y+3/this.camera.zoom);ctx.closePath();for(let j=-1;j<=1;j++){ctx.moveTo(x,y+3/this.camera.zoom);ctx.lineTo(x+j*4/this.camera.zoom,y-4/this.camera.zoom);}}else{for(let j=0;j<5;j++){const aa=j*Math.PI*2/5;ctx.moveTo(x+Math.cos(aa)*3/this.camera.zoom+2/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom);ctx.arc(x+Math.cos(aa)*3/this.camera.zoom,y+Math.sin(aa)*3/this.camera.zoom,2/this.camera.zoom,0,Math.PI*2);}}ctx.stroke();}ctx.restore();}
     drawActionArt(ctx,e,this,r,this.camera.zoom);
     drawShieldState(ctx,e,r,this.camera.zoom,{rich:this.effectRasterEnabled!==false&&this.biomes.terrainArt.enabled!==false});
@@ -1053,6 +1046,21 @@ export class Game {
       ctx.fillRect(bx, by, barW, barH);
       ctx.fillStyle = e.hp / e.maxHp > 0.3 ? '#4ade80' : '#f87171';
       ctx.fillRect(bx, by, barW * Math.max(0, e.hp / e.maxHp), barH);
+    }
+    if(e.behavior==='ai'||e.behavior==='player'){
+      const z=this.camera.zoom,chips=statusChips(e,this);
+      // R-VIS-009: a summoned green companion cannot be absorbed yet; show it on the body as well as in the chip row.
+      if(chips.some(c=>c.kind==='absorb-lock')){ctx.save();ctx.strokeStyle='#4ade80';ctx.lineWidth=2/z;ctx.setLineDash([6/z,4/z]);ctx.beginPath();ctx.arc(e.x,e.y,r+7/z,0,Math.PI*2);ctx.stroke();ctx.restore();}
+      drawStatusChips(ctx,e,r,z,chips);
+    }
+    // R-CTRL-006: E/R readiness is drawn last on a dark backing so status rings, apex marks and morale arcs never cover it.
+    if(e.behavior!=='orb'&&this.abilities.unlocked(e,'E')){
+      const z=this.camera.zoom;ctx.save();ctx.font=`bold ${12/z}px system-ui`;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+      for(const [i,slot] of ['E','R'].entries())if(this.abilities.unlocked(e,slot)){
+        const ready=this.abilities.canCast(e,slot),label=e.specialCast?.slot===slot?`${slot} …`:this.abilities.cooldown(e,slot)>0?`${slot} ${Math.ceil(this.abilities.cooldown(e,slot))}`:ready?`${slot} ◆`:`${slot} ◇`;
+        const x=e.x+(e.apex?(i?1:-1)*32/z:0),y=e.y-r-entityLabelRows(e,this.showAILabels,true).skill/z,w=textWidth(ctx,label,12/z)+8/z;
+        ctx.fillStyle='rgba(15,23,42,.82)';ctx.fillRect(x-w/2,y-11/z,w,14/z);ctx.lineWidth=3/z;ctx.strokeStyle='#0f172a';ctx.strokeText(label,x,y);ctx.fillStyle=ready?'#fff':'#cbd5e1';ctx.fillText(label,x,y);
+      }ctx.restore();
     }
   }
 

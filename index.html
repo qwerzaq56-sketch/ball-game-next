@@ -33,6 +33,7 @@
   <div id="hud">
     <div class="hud-block">
       <div class="hp-bar-outer"><div id="hp-fill" class="hp-bar-fill"></div></div>
+      <div id="sprint-gauge" class="sprint-bar-outer" hidden title="달리기 게이지"><div id="sprint-fill" class="sprint-bar-fill"></div></div>
       <div id="hp-text" class="hp-text">100 / 100</div>
     </div>
     <div class="hud-block stats">
@@ -55,9 +56,9 @@
         <span class="ability-label">DODGE</span>
         <span id="dodge-pips" class="pips locked">LOCKED</span>
       </div>
+      <div id="skill-cooldowns" hidden></div>
       <div id="relic-text" hidden></div><div id="growth-goal-text"></div><div class="growth-goal-track"><div id="growth-goal-fill"></div></div>
     </div>
-    <div class="hud-block" id="era-status" aria-label="현재 시대"><span id="era-phase-name"></span><span id="era-countdown"></span><div class="era-progress"><div id="era-progress-fill"></div></div></div>
     <div class="hud-block hud-controls">
       <button id="companion-invite" class="hud-btn" type="button">동행 제안 (Q)</button>
       <button id="mute-btn" class="hud-btn" type="button">SOUND: ON</button>
@@ -73,6 +74,8 @@
     </div>
   </div>
 
+  <!-- R-CTRL-006: era name and era events sit large at the top centre. -->
+  <div id="era-status" role="status" aria-label="현재 시대"><span id="era-phase-name"></span><span id="era-countdown"></span><div class="era-progress"><div id="era-progress-fill"></div></div><div id="era-event" hidden></div></div>
   <aside id="starter-guide" hidden><span id="starter-guide-text"></span><button id="starter-guide-close" type="button" aria-label="시작 조작 안내 닫기">×</button></aside>
   <nav id="minimal-tools"><button id="quick-sprint" type="button" hidden>달리기</button><button id="auto-companion" type="button" aria-pressed="false">자동 동행 OFF</button><span id="play-time">플레이 0:00</span><button id="quick-absorb" type="button" aria-pressed="false">흡수 OFF</button><button id="quick-map" type="button">지도</button><button id="quick-ecology" type="button">생태계</button><button id="quick-balance" type="button">분석</button><button id="quick-ranking" type="button">순위</button></nav>
   <aside id="live-ranking" class="observer-panel" aria-label="실시간 순위">

@@ -619,7 +619,6 @@ html, body {
   body.mobile-minimal #live-ranking:not(.minimal-open),
   body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !important; }
 
-body.mobile-minimal #hud > #era-status {display:flex;}
 
 /* Mobile minimal mode preserves health, lives, pause and playable touch controls. */
 #mobile-ui-toggle { display:block; }
@@ -678,7 +677,6 @@ body.mobile-minimal #hud > #era-status {display:flex;}
 #era-progress-fill { height:100%; background:var(--era-color); }
 #era-status[data-transition="true"] { box-shadow:0 0 12px color-mix(in srgb,var(--era-color) 40%,transparent); }
 @media (pointer:coarse) {
-  body.mobile-minimal #hud > #era-status { display:flex; flex-shrink:0; padding:4px 7px; }
   #era-phase-name { font-size:11px; }
 }
 
@@ -766,3 +764,57 @@ body.mobile-minimal #live-ranking:not(.minimal-open) .rank-dot{display:block!imp
   body.mobile-minimal:has(#live-ranking[hidden]) #ecology-panel{top:88px;max-height:calc(100dvh - 362px)}
   body:not(.mobile-minimal) #ecology-panel{top:calc(64px + 36vh);bottom:auto;max-height:calc(100dvh - 245px - 36vh)}
 }
+
+/* R-CTRL-006: era name and era events large at the top centre; sprint gauge under HP; E/R cooldowns in the HUD. */
+#era-status { position:fixed; top:max(10px,env(safe-area-inset-top)); left:50%; transform:translateX(-50%); z-index:12; pointer-events:none; justify-content:center; text-align:center; gap:2px 12px; min-width:200px; max-width:min(440px,calc(100vw - 600px)); padding:7px 18px 8px; border-radius:12px; background:rgba(2,6,23,.66); backdrop-filter:blur(2px); color:#e2e8f0; }
+#era-status #era-phase-name { font-size:22px; letter-spacing:.04em; }
+#era-status #era-countdown { margin-left:0; font-size:13px; }
+#era-status .era-progress { height:3px; margin-top:3px; }
+#era-event { flex-basis:100%; font-size:14px; font-weight:700; color:var(--era-color); margin-top:2px; }
+#era-status[data-event="doom"] #era-event { color:#f87171; }
+#era-status[data-event="doom-warning"] #era-event { color:#fbbf24; }
+#era-status[data-event="war"] #era-event, #era-status[data-event="war-phase"] #era-event { color:#fb7185; }
+#era-status[data-event="doom"], #era-status[data-event="war"] { border-color:#f87171; box-shadow:0 0 16px rgba(248,113,113,.45); }
+#era-status[data-transition="true"] #era-phase-name { text-shadow:0 0 14px var(--era-color); }
+@media (max-width:1040px) and (pointer:fine) { #era-status { max-width:calc(100vw - 560px); min-width:150px; padding:5px 12px 6px; } #era-status #era-phase-name { font-size:17px; } #era-event { font-size:12px; } }
+@media (pointer:coarse) {
+  #era-status { min-width:0; width:max-content; max-width:calc(100vw - 250px); padding:4px 10px 5px; border-radius:10px; }
+  #era-status #era-phase-name { font-size:15px; }
+  #era-status #era-countdown { font-size:11px; }
+  #era-event { font-size:11px; }
+}
+#era-event { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* Phones: never cover the HUD row, pause, the UI toggle or the ranking. */
+@media (pointer:coarse) and (orientation:portrait) {
+  /* minimal: the row under the HUD, between the minimap thumbnail and the compact ranking */
+  body.mobile-minimal #era-status { top:calc(max(8px,env(safe-area-inset-top)) + 41px); max-width:calc(100vw - 260px); padding:2px 8px 3px; line-height:1.2; }
+  #era-status #era-phase-name { font-size:13px; }
+  #era-status .era-progress { display:none; }
+  #era-event { font-size:10px; margin-top:0; }
+  /* full UI: right of the HUD column, left of the UI toggle */
+  body:not(.mobile-minimal) #era-status { left:calc(100vw - 220px); transform:none; max-width:136px; }
+}
+@media (pointer:coarse) and (orientation:landscape) {
+  /* full UI: the strip between the HUD and the UI toggle, above the open ranking (about 46px tall) */
+  body:not(.mobile-minimal) #era-status { left:calc(100vw - 278px); transform:none; max-width:190px; padding:3px 9px 4px; line-height:1.2; }
+  body:not(.mobile-minimal) #era-status .era-progress { display:none; }
+  body:not(.mobile-minimal) #era-event { margin-top:0; }
+}
+
+.sprint-bar-outer { width:220px; height:6px; margin-top:4px; background:rgba(255,255,255,.12); border-radius:4px; overflow:hidden; }
+.sprint-bar-fill { height:100%; width:100%; background:linear-gradient(90deg,#0ea5e9,#7dd3fc); transition:width .1s linear; }
+#sprint-gauge[data-state="active"] .sprint-bar-fill { background:linear-gradient(90deg,#38bdf8,#e0f2fe); box-shadow:0 0 6px #7dd3fc; }
+#sprint-gauge[data-state="exhausted"] .sprint-bar-fill { background:#64748b; }
+@media (max-width:700px), (pointer:coarse) and (max-height:500px) { #hud .sprint-bar-outer { width:100%; } }
+body.mobile-minimal #hud .sprint-bar-outer { width:100%; }
+body.mobile-minimal #hud .sprint-bar-outer { height:4px; margin-top:3px; }
+
+#skill-cooldowns { display:grid; gap:4px; margin-top:6px; }
+.skill-cd { display:grid; grid-template-columns:16px 1fr auto; align-items:center; gap:2px 6px; font-size:11px; }
+.skill-cd b { color:#fde68a; }
+.skill-cd .skill-cd-name { color:#cbd5e1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
+.skill-cd .skill-cd-time { font:11px ui-monospace,monospace; color:#e2e8f0; }
+.skill-cd[data-state="ready"] .skill-cd-time { color:#86efac; }
+.skill-cd i { grid-column:1 / -1; height:3px; border-radius:2px; background:rgba(255,255,255,.12); overflow:hidden; }
+.skill-cd em { display:block; height:100%; background:#fde68a; }
+.skill-cd[data-state="ready"] em { background:#86efac; }

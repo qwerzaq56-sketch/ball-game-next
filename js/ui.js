@@ -8,6 +8,18 @@ import { submitScore } from './storage.js';
 import { EcologyUI } from './ecologyUI.js';
 import {nextSkillGoal} from './progression.js';
 
+// R-CTRL-006: the top-centre era banner names the current era event in words.
+function eraEventKind(game,changedAt){const era=game.era,field=era.apocalypse;if(field)return field.active?'doom':'doom-warning';if(era.activeWar(game.player))return 'war';if(game.gameTime-changedAt<4)return 'transition';if(era.phase.id==='war')return 'war-phase';return '';}
+function eraEventText(game,changedAt){
+  const era=game.era,field=era.apocalypse,kind=eraEventKind(game,changedAt);
+  if(kind==='doom')return '파멸 진행 · 붉은 원 안 피해';
+  if(kind==='doom-warning')return `파멸 전조 · ${Math.max(0,Math.ceil(field.activeAt-game.gameTime))}초 뒤 피해`;
+  if(kind==='war')return `전쟁 · 상대 ${game.player.warTargets.size}명`;
+  if(kind==='transition')return `${era.phase.name} 시작`;
+  if(kind==='war-phase')return '전쟁기 · 최상위 간 전쟁';
+  return '';
+}
+
 export class UI {
   constructor(balance, onBalanceChange) {
     this.balance = balance;
@@ -137,6 +149,21 @@ export class UI {
     const next=ERA_PHASES[(index+1)%ERA_PHASES.length].name;
     badge.title=era.enabled?`${era.cycle+1}번째 주기 · 다음 ${next} · 전환까지 ${time}`:'시대 시스템 OFF';
     badge.setAttribute('aria-label',era.enabled?`${era.phase.name}, ${time} 후 ${next}`:'시대 시스템 OFF');
+    const event=document.getElementById('era-event'),text=era.enabled?eraEventText(game,this.eraChangedAt):'';
+    event.hidden=!text;event.textContent=text;badge.dataset.event=text?eraEventKind(game,this.eraChangedAt):'';
+  }
+
+  // R-CTRL-006: E/R cooldowns also live in the HUD, away from the on-body status rings.
+  updateSkillCooldowns(game){
+    const player=game.player,box=document.getElementById('skill-cooldowns'),slots=['E','R'].filter(slot=>game.abilities.unlocked(player,slot));
+    box.hidden=!slots.length;if(!slots.length){box.textContent='';return;}
+    const key=slots.join('');if(box.dataset.slots!==key){box.dataset.slots=key;box.textContent='';for(const slot of slots){const row=document.createElement('div');row.className='skill-cd';row.dataset.slot=slot;row.innerHTML='<b></b><span class="skill-cd-name"></span><span class="skill-cd-time"></span><i><em></em></i>';box.append(row);}}
+    for(const row of box.children){
+      const slot=row.dataset.slot,skill=game.abilities.skill(player,slot),left=game.abilities.cooldown(player,slot),total=Math.max(.001,skill?.cooldown??left),casting=player.specialCast?.slot===slot,ready=game.abilities.canCast(player,slot);
+      row.querySelector('b').textContent=slot;row.querySelector('.skill-cd-name').textContent=skill?.name??'';
+      row.querySelector('.skill-cd-time').textContent=casting?'시전 중':left>0?`${Math.ceil(left)}s`:ready?'준비':'대기';
+      row.querySelector('em').style.width=`${Math.round(100*(left>0?1-Math.min(1,left/total):1))}%`;row.dataset.state=casting?'casting':left>0?'cooldown':ready?'ready':'blocked';
+    }
   }
 
   update(dt, game) {
@@ -157,6 +184,12 @@ export class UI {
     this.sprintButton.textContent=`${game.player.sprinting?'달리는 중':'달리기'} ${Math.round(100*(game.player.sprintGauge??(game.balance.sprint?.capacitySeconds??3))/(game.balance.sprint?.capacitySeconds??3))}%`;
     this.sprintButton.style.background=`linear-gradient(90deg,rgba(56,189,248,.3) ${Math.round(100*(game.player.sprintGauge??3)/(game.balance.sprint?.capacitySeconds??3))}%,rgba(15,23,42,.85) 0)`;
     this.sprintButton.title='누르고 유지하면 달리기 · Space';
+    // R-CTRL-006: the sprint gauge sits right under the HP bar once sprint is unlocked.
+    const sprintCapacity=game.balance.sprint?.capacitySeconds??3,sprintGauge=document.getElementById('sprint-gauge');
+    sprintGauge.hidden=player.size<(game.balance.sprint?.unlockSize??150);
+    document.getElementById('sprint-fill').style.width=`${Math.round(100*Math.max(0,Math.min(1,(player.sprintGauge??sprintCapacity)/sprintCapacity)))}%`;
+    sprintGauge.dataset.state=player.sprinting?'active':player.sprintExhausted?'exhausted':'ready';
+    this.updateSkillCooldowns(game);
     document.getElementById('play-time').textContent=`플레이 ${Math.floor(game.gameTime/60)}:${String(Math.floor(game.gameTime%60)).padStart(2,'0')}`;
     const invitation=document.getElementById('companion-invite'),wait=Math.ceil(Math.max(0,(player.inviteReadyAt??0)-game.gameTime));
     invitation.textContent=game.allyLinks.truceUntil>game.gameTime?`동행 Q · 축제 ${Math.ceil(game.allyLinks.truceUntil-game.gameTime)}s`:wait?`동행 제안 ${wait}s`:'동행 제안 (Q)';invitation.disabled=game.paused||game.gameOver||wait>0||player.frozen>0||!!player.specialCast||player.attackState!=='READY'||player.dodgeState==='DODGING'||!!player.beingAbsorbedByRef;

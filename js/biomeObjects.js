@@ -2,6 +2,7 @@ import {drawObjectArt} from './actionArt.js?forest-composition-01';
 import {drawEnvironmentalArt} from './environmentArt.js?forest-composition-01';
 import {BIOME_OBJECTS,objectPreset} from './biomeObjectCatalog.js?forest-composition-01';
 import {dist} from './collision.js';import {spawnOrb} from './spawning.js';import {applyDamage} from './combat.js?forest-composition-01';import {delta,wrap,near} from './topology.js';import {terrainDamageMultiplier} from './biomes.js?forest-composition-01';
+import {objectEffectText} from './statusLabels.js';
 export function objectRole(c){return ['vent','vortex'].includes(c.effect)?'danger':c.effect==='current'?'movement':'benefit';}
 export class BiomeObjects{
  constructor(game){this.game=game;this.objects=[];this.cooldowns=new Map();this.signature='';this.events=[];}
@@ -35,10 +36,11 @@ export class BiomeObjects{
    if(c.effect==='shield'){e.shieldHp=Math.max(e.shieldHp??0,e.maxHp*c.power);e.shieldRemaining=Math.max(e.shieldRemaining??0,c.duration);e.shieldTextureKind='leaf';}
    if(c.effect==='speed'){e.objectSpeedUntil=now+c.duration;e.objectSpeedMultiplier=1+c.power;if(c.hpCost)applyDamage(e,e.maxHp*c.hpCost,g,null,g.balance,{kind:'field',ignoreDefense:true,knockback:false});}
    if(c.effect==='charm'){e.companionCharmUntil=now+c.duration;e.companionCharmPower=c.power;e.companionDecoration=o.candidate==='lake-garland'?'shell':'flower';}
-   if(c.effect==='wind-stack'){e.windStoneStacks=(e.windStoneStacks??0)+1;if(e.windStoneStacks>=c.stacksRequired){e.windStoneStacks=0;e.objectSpeedUntil=now+c.duration;e.objectSpeedMultiplier=1+c.power;}g.spawnFloatingText(e.x,e.y,`바람 ${e.windStoneStacks}/${c.stacksRequired}`,'#7dd3fc');}
-   if(c.effect==='obsidian'){e.obsidianStacks=(e.obsidianStacks??0)+1;if(e.obsidianStacks>=c.stacksRequired){e.obsidianStacks=0;e.obsidianShieldHp=e.obsidianShieldMax=e.maxHp*c.shieldFraction;e.obsidianShieldUntil=now+c.duration;e.obsidianPower=c.power;}g.spawnFloatingText(e.x,e.y,`흑요석 ${e.obsidianStacks}/${c.stacksRequired}`,'#c4b5fd');}
+   if(c.effect==='wind-stack'){e.windStoneStacks=(e.windStoneStacks??0)+1;if(e.windStoneStacks>=c.stacksRequired){e.windStoneStacks=0;e.objectSpeedUntil=now+c.duration;e.objectSpeedMultiplier=1+c.power;}if(e!==g.player)g.spawnFloatingText(e.x,e.y,`바람 ${e.windStoneStacks}/${c.stacksRequired}`,'#7dd3fc');}
+   if(c.effect==='obsidian'){e.obsidianStacks=(e.obsidianStacks??0)+1;if(e.obsidianStacks>=c.stacksRequired){e.obsidianStacks=0;e.obsidianShieldHp=e.obsidianShieldMax=e.maxHp*c.shieldFraction;e.obsidianShieldUntil=now+c.duration;e.obsidianPower=c.power;}if(e!==g.player)g.spawnFloatingText(e.x,e.y,`흑요석 ${e.obsidianStacks}/${c.stacksRequired}`,'#c4b5fd');}
    if(c.effect==='frost'){e.objectFrostUntil=now+c.duration;e.objectFrostResistance=c.power;}
-   g.spawnFloatingText(o.x,o.y,c.name,'#bae6fd');this.events.push({time:now,id:o.id,actor:e.id,effect:c.effect});if(this.events.length>200)this.events.shift();
+   // R-VIS-009: the player reads what changed and for how long; AI keeps the short object name.
+   if(e===g.player)g.spawnFloatingText(e.x,e.y-e.size/2-24,objectEffectText(c,e),'#bae6fd',2.4);else g.spawnFloatingText(o.x,o.y,c.name,'#bae6fd');this.events.push({time:now,id:o.id,actor:e.id,effect:c.effect});if(this.events.length>200)this.events.shift();
   }
  }
  draw(ctx,zoom){if(!this.game.biomes.enabled)return;this.sync();const camera=this.game.renderCamera??this.game.camera,visible=this.objects.filter(o=>{const extent=o.reach??o.config.radius;return Math.abs(o.x-camera.x)<=this.game.canvas.width/2/zoom+extent&&Math.abs(o.y-camera.y)<=this.game.canvas.height/2/zoom+extent;});for(const o of visible)this.game.biomes.terrainArt?.drawObjectGround?.(ctx,o);for(const o of visible){const c=o.config;const role=objectRole(c),active=c.effect==='vent'?this.activeVent(o):true,ready=(this.cooldowns.get(o.id)??0)<=this.game.gameTime;ctx.save();ctx.globalAlpha=['current','vortex','vent'].includes(c.effect)?.8:['forest-tree','forest-berry-grove','snow-flowers','snow-shelter','desert-oasis'].includes(o.candidate)?.85:ready?.85:.35;ctx.strokeStyle=role==='danger'?(c.effect==='vortex'?'#89bbc9aa':active?'#dba06eaa':'#817c7b77'):role==='movement'?'#86bbc7':'#a1bba0';ctx.fillStyle=role==='danger'?(c.effect==='vortex'?'#184c6810':active?'#934e2710':'#45424a08'):'#294c3420';ctx.lineWidth=1.2/zoom;
