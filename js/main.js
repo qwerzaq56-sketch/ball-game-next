@@ -10,6 +10,7 @@ import { PlayerSetup, loadPlayerProfile } from './playerProfile.js';
 import { PlayControls } from './playControls.js';
 import { TutorialUI } from './tutorialUI.js';
 import { TouchControls } from './touchControls.js';
+import { HudB } from './hudB.js';
 import {loadSavedSkillPreset} from './skillPreset.js';
 
 class InputState {
@@ -115,6 +116,7 @@ async function main() {
   const playControls=new PlayControls(game,input);
   const tutorial=new TutorialUI(game,playControls);window.__tutorial=tutorial;
   const touchControls=new TouchControls(game,input,canvas);
+  const hudB=new HudB(game);
   ui.inspector = new AIInspector(game, canvas, ui);installMovablePanels(); // F2: read-only AI state window
 
   // v0.6 follow-up: the ally-absorption toggle used to be a right-click gesture on the canvas,
@@ -190,6 +192,7 @@ async function main() {
     playControls.update();
     tutorial.update(dt);
     touchControls.update();
+    hudB.update();
 
     requestAnimationFrame(loop);
   }

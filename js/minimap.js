@@ -28,9 +28,10 @@ export class Minimap {
     this.root.classList.toggle('thumb',phone&&!this.expanded);
     if(this.expanded)return;// CSS centres the expanded map
     const w=window.innerWidth,h=window.innerHeight,r=this.root.getBoundingClientRect();
-    const obstacles=['hud','minimal-tools','live-ranking','ecology-panel','touch-stick','touch-actions','player-info'].map(id=>document.getElementById(id)).filter(n=>n?.getClientRects().length).map(n=>n.getBoundingClientRect());
+    const obstacles=['hud','hud-top','toggle-tray','ability-bar','era-status','live-ranking','ecology-panel','touch-stick','touch-dodge','touch-special','touch-ultimate','quick-sprint','player-info'].map(id=>document.getElementById(id)).filter(n=>n?.getClientRects().length).map(n=>n.getBoundingClientRect());
     const hud=document.getElementById('hud').getBoundingClientRect(),ranking=document.getElementById('live-ranking').getBoundingClientRect();
-    const corners=[[w-r.width-14,h-r.height-28],[14,h-r.height-28],[w-r.width-14,ranking.bottom+12],[14,hud.bottom+12]];
+    const era=document.getElementById('era-status').getBoundingClientRect(),under=Math.max(hud.bottom,era.bottom)+12;// phone thumbnail sits under the HUD and the era banner
+    const corners=[[w-r.width-14,h-r.height-28],[14,h-r.height-28],[w-r.width-14,ranking.bottom+12],[14,under]];
     const positions=[...(phone?corners.reverse():corners),[(w-r.width)/2,h-r.height-16]];// phone thumbnail prefers the slot under the HUD
     const fit=positions.find(([x,y])=>x>=8&&y>=8&&x+r.width<=w-8&&y+r.height<=h-8&&!obstacles.some(b=>overlaps({left:x-4,top:y-4,right:x+r.width+4,bottom:y+r.height+4},b)));
     const [x,y]=fit??[Math.max(8,(w-r.width)/2),Math.max(8,h-r.height-16)];

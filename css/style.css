@@ -50,119 +50,6 @@ html, body {
   z-index: 100;
 }
 
-#hud {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.hud-block {
-  background: rgba(0, 0, 0, 0.45);
-  border-radius: 8px;
-  padding: 8px 12px;
-  backdrop-filter: blur(2px);
-}
-
-.hp-bar-outer {
-  width: 220px;
-  height: 16px;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.hp-bar-fill {
-  height: 100%;
-  width: 100%;
-  background: linear-gradient(90deg, #ef4444, #f87171);
-  transition: width 0.1s linear;
-}
-
-.hp-text {
-  font-size: 12px;
-  margin-top: 4px;
-  opacity: 0.85;
-}
-
-.stats {
-  display: flex;
-  gap: 16px;
-  font-size: 14px;
-}
-
-.abilities {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-#growth-goal-text { color:#94a3b8; font-size:10px; line-height:1.4; max-width:220px; }
-.growth-goal-track { height:3px; border-radius:2px; overflow:hidden; background:rgba(148,163,184,.15); }
-#growth-goal-fill { height:100%; width:0; background:#7dd3fc; transition:width .15s linear; }
-
-.ability {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.ability-label {
-  font-size: 12px;
-  letter-spacing: 0.05em;
-  opacity: 0.8;
-  width: 60px;
-}
-
-/* v0.5: attack/dodge are stack-based — pips instead of a LOCKED/READY badge + cooldown bar */
-.pips {
-  display: flex;
-  gap: 4px;
-  font-size: 18px;
-  line-height: 1;
-}
-
-.pips.locked {
-  font-weight: bold;
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #9ca3af;
-}
-
-.pip {
-  color: rgba(255, 255, 255, 0.2);
-  transition: color 0.15s ease, transform 0.15s ease;
-}
-
-.pip.filled {
-  color: #4ade80;
-  text-shadow: 0 0 6px rgba(74, 222, 128, 0.7);
-}
-
-/* v0.6: ally-absorption toggle indicator (right-click on canvas) */
-.ally-on {
-  color: #4ade80;
-  font-weight: 600;
-}
-
-.ally-off {
-  color: #9ca3af;
-  font-weight: 600;
-}
-
-/* v0.6: mute + full-reset buttons sit inside #hud, which has pointer-events:none, so each
-   control needs it turned back on individually to stay clickable. */
-.hud-controls {
-  display: flex;
-  gap: 8px;
-  pointer-events: auto;
-}
-
 .hud-btn {
   font-family: inherit;
   font-size: 12px;
@@ -452,7 +339,7 @@ html, body {
 
 /* Optional observation panels. They never block the centre of the playfield. */
 [hidden] { display: none !important; }
-.hud-controls { flex-wrap: wrap; max-width: 240px; }
+
 .observer-panel {
   position: fixed; right: 14px; z-index: 12; width: 252px;
   background: rgba(12, 18, 28, .88); border: 1px solid rgba(148, 163, 184, .2);
@@ -504,28 +391,17 @@ html, body {
 @media (max-height: 720px) and (min-width: 701px) {
   #ecology-panel { right: 282px; max-height: 55vh; }
 }
+
 @media (max-width: 700px) {
   .observer-panel { width: 210px; right: 8px; padding: 9px; font-size: 11px; }
   #live-ranking { top: 8px; max-height: 30vh; overflow-y: auto; }
   #ecology-panel { bottom: 42px; max-height: 40vh; }
-  #hud { top: 8px; left: 8px; max-width: calc(100vw - 235px); gap: 5px; }
-  #hud .hud-block { padding: 6px; }
-  .hud-controls { max-width: 150px; }
-  .hud-btn { font-size: 10px; padding: 5px; }
-  #controls-hint { max-width: calc(100vw - 16px); font-size: 10px; }
   #ai-inspector { right: 8px !important; width: calc(100vw - 16px); }
 }
 @media (max-width: 700px) {
-  #hud { width: calc(100vw - 235px); }
-  #hud .hp-bar-outer { width: 100%; }
-  #hud .stats { flex-wrap: wrap; gap: 4px 8px; font-size: 11px; }
-  #hud .stats > div { white-space: nowrap; }
-  #hud .ability { gap: 4px; }
-  #hud .ability-label { width: 50px; font-size: 10px; }
   #live-ranking { max-height: none; overflow: visible; }
   #live-ranking-list { max-height: 23vh; overflow-y: auto; }
   #ecology-panel { bottom: 78px; }
-  #controls-hint { bottom: 25px; width: calc(100vw - 16px); }
 }
 
 #player-setup {
@@ -566,37 +442,6 @@ html, body {
 @media (max-width: 700px) { #live-ranking { max-height: 36vh; } }
 @media (min-width: 701px) { #ecology-panel { right: 282px; } }
 
-#touch-controls { display:none; }
-@media (pointer:coarse) {
-  #touch-controls { display:block; position:fixed; inset:0; pointer-events:none; z-index:18; }
-  #touch-stick { position:absolute; bottom:max(20px,env(safe-area-inset-bottom)); left:16px; width:104px; height:104px; border:1px solid rgba(148,163,184,.45); background:rgba(15,23,42,.6); border-radius:50%; pointer-events:auto; touch-action:none; }
-  #touch-knob { position:absolute; left:32px; top:32px; width:40px; height:40px; border-radius:50%; background:rgba(125,211,252,.5); border:1px solid #7dd3fc; pointer-events:none; }
-  .touch-label { position:absolute; bottom:8px; width:100%; text-align:center; font-size:10px; color:#cbd5e1; pointer-events:none; }
-  #touch-actions { position:absolute; right:14px; bottom:max(20px,env(safe-area-inset-bottom)); display:grid; grid-template-columns:52px 66px; gap:8px; pointer-events:auto; }
-  #touch-actions button { border:1px solid #64748b; color:#e2e8f0; background:rgba(15,23,42,.85); border-radius:50%; font:600 11px system-ui; white-space:pre-line; touch-action:none; min-height:48px; padding:5px; }
-  #touch-actions button:disabled { opacity:.4; }
-  #touch-attack { grid-column:2; grid-row:1 / span 2; min-height:80px !important; }
-  #controls-hint { display:none; }
-  #ecology-panel { bottom:140px; }
-  #build-id { bottom:2px; }
-  #player-info { bottom:136px !important; left:14px !important; max-width:calc(100vw - 28px); pointer-events:none; }
-}
-@media (pointer:coarse) and (max-height:500px) {
-  #hud { display:grid; grid-template-columns:1fr 1fr; width:calc(100vw - 294px); max-width:none; top:8px; left:8px; gap:4px; }
-  #hud .hud-block { padding:5px 7px; }
-  #hud .hp-bar-outer { width:100%; height:12px; }
-  #hud .stats { flex-wrap:wrap; gap:3px 8px; font-size:11px; }
-  #hud .ability { gap:4px; }
-  #hud .ability-label { font-size:10px; width:48px; }
-  #hud .hud-controls { max-width:none; max-height:88px; overflow-y:auto; gap:4px; }
-  #hud .hud-btn { font-size:10px; padding:5px; }
-  #pause-btn { order:-2; }
-  #help-btn, #companion-leave { order:-1; }
-  #ally-link-status { max-width:none; font-size:10px; }
-  #live-ranking-list { max-height:27vh; overflow-y:auto; }
-  #ecology-panel { bottom:136px; right:14px; max-height:40vh; }
-}
-
 #ecology-era, #ecology-duels { color:#cbd5e1; font-size:11px; line-height:1.5; margin:0 0 8px; }
 
 #relic-text { color:#fde68a; font-size:11px; line-height:1.5; max-width:220px; }
@@ -604,147 +449,30 @@ html, body {
 #run-metrics-chart { display:block; width:100%; height:90px; }
 #run-metrics-summary { font-size:11px; line-height:1.5; color:#cbd5e1; }
 
-/* Shared compact HUD for desktop and touch. U toggles on desktop. */
-#mobile-ui-toggle { display:block;position:fixed;right:12px;top:8px;z-index:25;padding:8px 12px; }
-  body.mobile-minimal #hud { display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; width:calc(100vw - 110px); max-width:300px; gap:4px; }
-  body.mobile-minimal #hud > .hud-block { display:none; }
-  body.mobile-minimal #hud > .hud-block:first-child { display:block; width:105px; padding:4px; }
-  body.mobile-minimal #hud .hp-bar-outer { width:100%; height:8px; }
-  body.mobile-minimal #hud .hp-text { font-size:10px; }
-  body.mobile-minimal #hud > .hud-block:nth-child(3) { display:block; padding:4px; font-size:11px; }
-  body.mobile-minimal #hud > .hud-block:nth-child(3) > div:nth-child(2) { display:none; }
-  body.mobile-minimal #hud > .hud-controls { display:block; padding:0; max-height:none; }
-  body.mobile-minimal .hud-controls > button { display:none; }
-  body.mobile-minimal .hud-controls > #pause-btn { display:block; min-height:36px; }
-  body.mobile-minimal #live-ranking:not(.minimal-open),
-  body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !important; }
-
-
-/* Mobile minimal mode preserves health, lives, pause and playable touch controls. */
-#mobile-ui-toggle { display:block; }
-@media (pointer:coarse) {
-  #mobile-ui-toggle { display:block; position:fixed; right:max(8px,env(safe-area-inset-right)); top:max(8px,env(safe-area-inset-top)); z-index:25; min-height:40px; padding:8px 12px; }
-  body.mobile-minimal #hud { display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; width:calc(100vw - 110px); max-width:300px; gap:4px; }
-  body.mobile-minimal #hud > .hud-block { display:none; }
-  body.mobile-minimal #hud > .hud-block:first-child { display:block; width:105px; padding:4px; }
-  body.mobile-minimal #hud .hp-bar-outer { width:100%; height:8px; }
-  body.mobile-minimal #hud .hp-text { font-size:10px; }
-  body.mobile-minimal #hud > .hud-block:nth-child(3) { display:block; padding:4px; font-size:11px; }
-  body.mobile-minimal #hud > .hud-block:nth-child(3) > div:nth-child(2) { display:none; }
-  body.mobile-minimal #hud > .hud-controls { display:block; padding:0; max-height:none; }
-  body.mobile-minimal .hud-controls > button { display:none; }
-  body.mobile-minimal .hud-controls > #pause-btn { display:block; min-height:36px; }
-  body.mobile-minimal #live-ranking:not(.minimal-open),
-  body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !important; }
-  body:not(.mobile-minimal) #live-ranking { top:56px; }
-}
-
-
 #game-canvas { height:100dvh; }
-#mobile-orientation-hint { display:none; }
-@media (pointer:coarse) and (orientation:portrait) {
-  body.mobile-minimal #mobile-orientation-hint { display:block; position:fixed; left:50%; bottom:142px; transform:translateX(-50%); width:max-content; max-width:calc(100vw - 24px); color:#94a3b8; font-size:10px; pointer-events:none; }
-}
-@media (pointer:coarse) and (orientation:landscape) {
-  #touch-stick { left:max(24px,env(safe-area-inset-left)); bottom:max(20px,env(safe-area-inset-bottom)); width:112px; height:112px; }
-  #touch-knob { left:36px; top:36px; }
-  #touch-actions { right:max(24px,env(safe-area-inset-right)); bottom:max(20px,env(safe-area-inset-bottom)); grid-template-columns:56px 76px; gap:10px; }
-  #touch-actions button { min-height:52px; font-size:12px; }
-  #touch-attack { min-height:94px !important; }
-  #hud { top:max(8px,env(safe-area-inset-top)); left:max(12px,env(safe-area-inset-left)); }
-  body.mobile-minimal #hud { flex-wrap:nowrap; width:auto; max-width:calc(100vw - 126px); }
-  body:not(.mobile-minimal) #hud { max-height:calc(100dvh - 156px); overflow-y:auto; }
-  body:not(.mobile-minimal) #live-ranking { max-height:calc(100dvh - 198px); overflow-y:auto; }
-  #mobile-ui-toggle { right:max(12px,env(safe-area-inset-right)); }
-}
-@media (pointer:coarse) {
-  #touch-actions button { position:relative; transition:border-color .12s,background-color .12s; }
-  #touch-actions button[data-charges]:not([data-charges=""])::after { content:attr(data-charges); position:absolute; top:5px; left:0; width:100%; font-size:9px; font-weight:400; color:#cbd5e1; }
-  #touch-actions button[data-charges]:not([data-charges=""])::before { content:''; position:absolute; left:23%; right:23%; bottom:9px; height:2px; border-radius:2px; background:linear-gradient(to right,#fff var(--recharge,0%),rgba(255,255,255,.15) var(--recharge,0%)); }
-  #touch-actions button.aiming { border-color:#fff; background-color:rgba(255,255,255,.12); }
-  #touch-actions button[data-state="ready"] { border-color:rgba(255,255,255,.65); }
-  #touch-actions button[data-state="cooldown"] { opacity:.65; }
-}
 
-#era-status { --era-color:#86efac; display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px; min-width:118px; border:1px solid var(--era-color); padding:6px 9px; }
-#era-status[data-phase="competition"] { --era-color:#fbbf24; }
-#era-status[data-phase="war"] { --era-color:#fb7185; }
-#era-status[data-phase="decline"] { --era-color:#c4b5fd; }
-#era-status[data-phase="off"] { --era-color:#94a3b8; }
-#era-phase-name { font-size:12px; font-weight:700; color:var(--era-color); }
-#era-countdown { margin-left:auto; font:11px ui-monospace,monospace; color:#e2e8f0; }
-.era-progress { flex-basis:100%; height:2px; border-radius:2px; overflow:hidden; background:rgba(255,255,255,.12); }
-#era-progress-fill { height:100%; background:var(--era-color); }
-#era-status[data-transition="true"] { box-shadow:0 0 12px color-mix(in srgb,var(--era-color) 40%,transparent); }
-@media (pointer:coarse) {
-  #era-phase-name { font-size:11px; }
-}
-
-@media (pointer:fine) { body:not(.mobile-minimal) #live-ranking {top:54px;} }
-
-body.mobile-minimal .hud-controls > #companion-invite {display:block;font-size:10px;min-height:26px;padding:3px 6px;}
-/* Keep invitation outside the compact HUD's row flow. */
-body.mobile-minimal .hud-controls > #companion-invite {position:fixed;right:max(8px,env(safe-area-inset-right));top:calc(max(8px,env(safe-area-inset-top)) + 44px);max-width:110px;pointer-events:auto;}
-body.mobile-minimal #hud > .hud-controls {backdrop-filter:none;-webkit-backdrop-filter:none;}
-
-#minimal-tools{position:fixed;left:12px;bottom:12px;z-index:8;display:flex;gap:5px;align-items:center;background:#101b2ce8;border:1px solid #334155;border-radius:10px;padding:5px;color:#cbd5e1;font:11px system-ui}
-#minimal-tools button,#ranking-layout{background:#1e293b;color:#cbd5e1;border:1px solid #475569;border-radius:6px;padding:5px;cursor:pointer}
-body:not(.mobile-minimal) #minimal-tools{bottom:42px}
 #live-ranking[data-layout="bar"] ol,#live-ranking[data-layout="bar"] .ranking-modes{display:none}
 #live-ranking[data-layout="bar"]{width:200px}
 #live-ranking[data-layout="compact"]{width:200px}
 #live-ranking[data-layout="compact"] .rank-name{display:none}
 #live-ranking[data-layout="compact"] .rank-secondary{display:none}
 #live-ranking[data-layout="compact"] .rank-row{padding:2px 4px;min-height:20px}
-@media(pointer:coarse){#minimal-tools{left:50%;transform:translateX(-50%);bottom:6px;max-width:90vw;white-space:nowrap}#ecology-panel,#debug-panel,#ai-inspector{max-height:65dvh;overflow:auto}}
 
-@media(pointer:coarse) and (orientation:portrait){#minimal-tools{bottom:154px}}
-body.mobile-minimal #ecology-panel,body.mobile-minimal #live-ranking.minimal-open{top:88px;max-height:calc(100dvh - 138px);overflow:auto}
+@media(pointer:coarse){#ecology-panel,#debug-panel,#ai-inspector{max-height:65dvh;overflow:auto}}
+
 body.mobile-minimal #debug-panel{z-index:20}
-
-/* Four actions occupy the existing two-row mobile footprint. */
-@media (pointer:coarse) {
- #touch-actions { grid-template-columns:52px 52px 66px; }
- #touch-ultimate { grid-column:2;grid-row:1; }
- #touch-special { grid-column:1;grid-row:1; }
- #touch-dodge { grid-column:1 / span 2;grid-row:2;min-height:48px!important;border-radius:28px!important; }
- #touch-attack { grid-column:3;grid-row:1 / span 2; }
-}
 
 /* Keep the ranking layout switch small, including coarse-pointer global button rules. */
 #ranking-layout{font-size:10px;padding:2px 5px;min-width:26px!important;min-height:24px!important;line-height:1.1;margin:0;flex:0 0 auto}
 .rank-apex{color:#facc15;font-size:12px;flex:0 0 12px;text-shadow:0 0 5px #facc1588}
-#touch-absorb{position:absolute;left:-64px;bottom:0;width:56px;font-size:11px!important;min-height:32px!important;border-radius:14px!important}
-#touch-absorb[aria-pressed="true"]{border-color:#86efac;background:#14532d}
-
-#quick-absorb[aria-pressed='true']{border-color:#86efac;background:#14532d;color:#fff}
-@media(pointer:coarse){#quick-absorb{display:none}}
-
-/* Minimal ranking keeps ten plain text rows without a panel or click obstruction. */
-body.mobile-minimal #live-ranking:not(.minimal-open){display:block!important;top:84px;right:12px;width:145px;max-height:none!important;overflow:visible!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0;pointer-events:none;font-size:10px;text-shadow:0 1px 3px #000,0 0 3px #000}
-body.mobile-minimal #live-ranking:not(.minimal-open) .observer-heading,body.mobile-minimal #live-ranking:not(.minimal-open) #my-rank,body.mobile-minimal #live-ranking:not(.minimal-open) .rank-secondary{display:none!important}
-body.mobile-minimal #live-ranking:not(.minimal-open) ol{display:block!important;margin:0;padding:0;list-style:none}
-body.mobile-minimal #live-ranking:not(.minimal-open) .rank-row{display:grid;grid-template-columns:12px 8px 12px minmax(0,1fr) 36px;gap:2px;min-height:0!important;height:14px!important;padding:0!important;margin:0!important;background:transparent!important;border:0!important;color:#e2e8f0;opacity:.86;font-size:10px;line-height:14px}
-body.mobile-minimal #live-ranking:not(.minimal-open) .rank-name{display:block!important}
-body.mobile-minimal #live-ranking[hidden]{display:none!important}
-#starter-guide{position:fixed;left:50%;transform:translateX(-50%);bottom:60px;z-index:9;max-width:420px;color:#e2e8f0;font:11px/1.5 system-ui;text-align:center;text-shadow:0 1px 3px #000;pointer-events:none}
-#starter-guide[hidden]{display:none}
-#starter-guide-close{pointer-events:auto;border:0;background:transparent;color:#cbd5e1;font-size:16px;margin-left:6px;cursor:pointer}
-@media(pointer:coarse){body.mobile-minimal #live-ranking:not(.minimal-open){width:120px;top:84px;right:max(10px,env(safe-area-inset-right))}#starter-guide{bottom:100px;max-width:45vw;font-size:10px}}
-
-#quick-sprint{touch-action:none;user-select:none}#quick-sprint[hidden]{display:none}
-
-@media(pointer:coarse){#touch-stick{display:none}#touch-stick.floating-active{display:block;pointer-events:none}}
-@media(pointer:coarse) and (orientation:landscape){#minimal-tools{left:max(12px,env(safe-area-inset-left));transform:none}}
 
 html{height:100%}body{height:100dvh;width:100%;overscroll-behavior:none}#game-canvas{position:fixed;inset:0;width:100%;height:100%}
-@media(pointer:coarse){#touch-stick{width:144px;height:144px}#touch-knob{width:64px;height:64px;left:40px;top:40px}.panel-moved{max-width:calc(100vw - 8px)}}
-#ecology-panel .observer-heading,#live-ranking .observer-heading,#minimap-panel .minimap-heading,#debug-panel h2,#ai-inspector .ai-head,#play-help .help-heading,#minimal-tools{touch-action:none;cursor:grab}
-.panel-moved .observer-heading,.panel-moved .ai-head{cursor:grabbing}
-@media(pointer:coarse){#minimal-tools{flex-wrap:wrap}}
-#auto-companion[aria-pressed='true']{border-color:#86efac;color:#86efac}
 
-@media(pointer:coarse){#touch-actions{grid-template-columns:52px 52px 100px}#touch-dodge{grid-column:2 / span 2;grid-row:2;min-height:84px!important;border-radius:42px!important;font-size:14px}#touch-attack{grid-column:3;grid-row:1;min-height:48px!important;border-radius:24px;opacity:.7}}
+@media(pointer:coarse){.panel-moved{max-width:calc(100vw - 8px)}}
+
+#ecology-panel .observer-heading,#live-ranking .observer-heading,#minimap-panel .minimap-heading,#debug-panel h2,#ai-inspector .ai-head,#play-help .help-heading{touch-action:none;cursor:grab}
+
+.panel-moved .observer-heading,.panel-moved .ai-head{cursor:grabbing}
 
 /* User: species color stays visible even in the minimal ranking. */
 body.mobile-minimal #live-ranking:not(.minimal-open) .rank-dot{display:block!important;flex:none;width:8px;height:8px}
@@ -758,66 +486,13 @@ body.mobile-minimal #live-ranking:not(.minimal-open) .rank-dot{display:block!imp
   #minimap-panel.thumb .minimap-heading{display:none}
   #minimap-panel.thumb .minimap-key{font-size:0;margin-top:2px;text-align:center}
   #minimap-panel.thumb .minimap-key::after{content:'탭하면 확대';font-size:8px}
-  body.mobile-minimal #ecology-panel{top:238px;max-height:calc(100dvh - 512px)}
+  /* R-VIS-010: the ranking starts at 176px under the toggle tray; the dodge arc keeps the bottom ~230px */
+  body.mobile-minimal #ecology-panel{top:238px;max-height:calc(100dvh - 468px)}
   body.mobile-minimal:has(#ecology-panel:not([hidden])) #live-ranking.minimal-open{max-height:30dvh}
-  body.mobile-minimal:has(#live-ranking.minimal-open:not([hidden])) #ecology-panel{top:calc(96px + 30dvh);max-height:calc(100dvh - 370px - 30dvh)}
-  body.mobile-minimal:has(#live-ranking[hidden]) #ecology-panel{top:88px;max-height:calc(100dvh - 362px)}
-  body:not(.mobile-minimal) #ecology-panel{top:calc(64px + 36vh);bottom:auto;max-height:calc(100dvh - 245px - 36vh)}
+  body.mobile-minimal:has(#live-ranking.minimal-open:not([hidden])) #ecology-panel{top:calc(184px + 30dvh);max-height:calc(100dvh - 414px - 30dvh)}
+  body.mobile-minimal:has(#live-ranking[hidden]) #ecology-panel{top:176px;max-height:calc(100dvh - 406px)}
+  body:not(.mobile-minimal) #ecology-panel{top:calc(184px + 30dvh);bottom:auto;max-height:calc(100dvh - 414px - 30dvh)}
 }
-
-/* R-CTRL-006: era name and era events large at the top centre; sprint gauge under HP; E/R cooldowns in the HUD. */
-#era-status { position:fixed; top:max(10px,env(safe-area-inset-top)); left:50%; transform:translateX(-50%); z-index:12; pointer-events:none; justify-content:center; text-align:center; gap:2px 12px; min-width:200px; max-width:min(440px,calc(100vw - 600px)); padding:7px 18px 8px; border-radius:12px; background:rgba(2,6,23,.66); backdrop-filter:blur(2px); color:#e2e8f0; }
-#era-status #era-phase-name { font-size:22px; letter-spacing:.04em; }
-#era-status #era-countdown { margin-left:0; font-size:13px; }
-#era-status .era-progress { height:3px; margin-top:3px; }
-#era-event { flex-basis:100%; font-size:14px; font-weight:700; color:var(--era-color); margin-top:2px; }
-#era-status[data-event="doom"] #era-event { color:#f87171; }
-#era-status[data-event="doom-warning"] #era-event { color:#fbbf24; }
-#era-status[data-event="war"] #era-event, #era-status[data-event="war-phase"] #era-event { color:#fb7185; }
-#era-status[data-event="doom"], #era-status[data-event="war"] { border-color:#f87171; box-shadow:0 0 16px rgba(248,113,113,.45); }
-#era-status[data-transition="true"] #era-phase-name { text-shadow:0 0 14px var(--era-color); }
-@media (max-width:1040px) and (pointer:fine) { #era-status { max-width:calc(100vw - 560px); min-width:150px; padding:5px 12px 6px; } #era-status #era-phase-name { font-size:17px; } #era-event { font-size:12px; } }
-@media (pointer:coarse) {
-  #era-status { min-width:0; width:max-content; max-width:calc(100vw - 250px); padding:4px 10px 5px; border-radius:10px; }
-  #era-status #era-phase-name { font-size:15px; }
-  #era-status #era-countdown { font-size:11px; }
-  #era-event { font-size:11px; }
-}
-#era-event { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-/* Phones: never cover the HUD row, pause, the UI toggle or the ranking. */
-@media (pointer:coarse) and (orientation:portrait) {
-  /* minimal: the row under the HUD, between the minimap thumbnail and the compact ranking */
-  body.mobile-minimal #era-status { top:calc(max(8px,env(safe-area-inset-top)) + 41px); max-width:calc(100vw - 260px); padding:2px 8px 3px; line-height:1.2; }
-  #era-status #era-phase-name { font-size:13px; }
-  #era-status .era-progress { display:none; }
-  #era-event { font-size:10px; margin-top:0; }
-  /* full UI: right of the HUD column, left of the UI toggle */
-  body:not(.mobile-minimal) #era-status { left:calc(100vw - 220px); transform:none; max-width:136px; }
-}
-@media (pointer:coarse) and (orientation:landscape) {
-  /* full UI: the strip between the HUD and the UI toggle, above the open ranking (about 46px tall) */
-  body:not(.mobile-minimal) #era-status { left:calc(100vw - 278px); transform:none; max-width:190px; padding:3px 9px 4px; line-height:1.2; }
-  body:not(.mobile-minimal) #era-status .era-progress { display:none; }
-  body:not(.mobile-minimal) #era-event { margin-top:0; }
-}
-
-.sprint-bar-outer { width:220px; height:6px; margin-top:4px; background:rgba(255,255,255,.12); border-radius:4px; overflow:hidden; }
-.sprint-bar-fill { height:100%; width:100%; background:linear-gradient(90deg,#0ea5e9,#7dd3fc); transition:width .1s linear; }
-#sprint-gauge[data-state="active"] .sprint-bar-fill { background:linear-gradient(90deg,#38bdf8,#e0f2fe); box-shadow:0 0 6px #7dd3fc; }
-#sprint-gauge[data-state="exhausted"] .sprint-bar-fill { background:#64748b; }
-@media (max-width:700px), (pointer:coarse) and (max-height:500px) { #hud .sprint-bar-outer { width:100%; } }
-body.mobile-minimal #hud .sprint-bar-outer { width:100%; }
-body.mobile-minimal #hud .sprint-bar-outer { height:4px; margin-top:3px; }
-
-#skill-cooldowns { display:grid; gap:4px; margin-top:6px; }
-.skill-cd { display:grid; grid-template-columns:16px 1fr auto; align-items:center; gap:2px 6px; font-size:11px; }
-.skill-cd b { color:#fde68a; }
-.skill-cd .skill-cd-name { color:#cbd5e1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:150px; }
-.skill-cd .skill-cd-time { font:11px ui-monospace,monospace; color:#e2e8f0; }
-.skill-cd[data-state="ready"] .skill-cd-time { color:#86efac; }
-.skill-cd i { grid-column:1 / -1; height:3px; border-radius:2px; background:rgba(255,255,255,.12); overflow:hidden; }
-.skill-cd em { display:block; height:100%; background:#fde68a; }
-.skill-cd[data-state="ready"] em { background:#86efac; }
 
 /* R-CTRL-005: tutorial cards in the help dialog, first-run mode and the first-visit terrain hint. */
 #tutorial-cards { display:grid; gap:10px; margin-top:14px; }
@@ -852,4 +527,251 @@ body.mobile-minimal #hud .sprint-bar-outer { height:4px; margin-top:3px; }
   #terrain-hint { top:30%; max-width:min(320px,calc(100vw - 32px)); font-size:12px; }
   #play-help.tutorial-mode { padding:16px; }
   .tc-card { min-height:0; }
+}
+/* ==========================================================================
+   R-VIS-010 · B quiet HUD
+   No panels during play: thin lines and shadowed text on the screen edges.
+   Desktop: vitals top-left, era top-centre, rank + pause/help/menu top-right,
+   ability rings bottom-centre, toggle tray bottom-right.
+   Phones: the top band holds vitals, era, buttons and the toggle tray (touches
+   starting there never move or aim); left-half drag moves, right-half drag aims
+   and release attacks; dodge is the big button at the right-thumb rest with
+   E, sprint and R on its arc.
+   ========================================================================== */
+:root {
+  --b-fg:#f8fafc; --b-dim:#cbd5e1; --b-mute:#94a3b8;
+  --b-shadow:0 1px 2px rgba(0,0,0,.75),0 0 8px rgba(0,0,0,.4);
+  --b-scrim:rgba(9,13,22,.42); --b-chip:rgba(9,13,22,.7); --b-edge:rgba(255,255,255,.45);
+  --b-hp:#f87171; --b-sprint:#7dd3fc; --b-absorb:#86efac; --b-companion:#c4b5fd;
+  --b-font:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+  --b-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Consolas,monospace;
+  --safe-t:env(safe-area-inset-top,0px); --safe-r:env(safe-area-inset-right,0px);
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-l:env(safe-area-inset-left,0px);
+}
+html, body { font-family:var(--b-font); }
+.sr-only { position:absolute !important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+/* ---- vitals (top-left) ---- */
+#hud { position:fixed; z-index:10; top:calc(20px + var(--safe-t)); left:calc(24px + var(--safe-l)); width:272px; display:flex; flex-direction:column; gap:8px; pointer-events:none; color:var(--b-fg); text-shadow:var(--b-shadow); }
+.hud-vitals { display:flex; flex-direction:column; gap:6px; }
+.vitals-id { display:flex; align-items:center; gap:8px; font-size:14px; }
+#hud-color { width:10px; height:10px; border-radius:50%; flex:none; box-shadow:0 0 0 1px rgba(0,0,0,.35); }
+#hud-name { font-weight:700; max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#hud-sub { font-size:12px; color:var(--b-dim); white-space:nowrap; }
+.vitals-hp { display:flex; align-items:baseline; gap:8px; }
+#hp-text { font-family:var(--b-mono); font-variant-numeric:tabular-nums; font-size:26px; font-weight:600; line-height:1; }
+#hp-max { font-size:13px; font-weight:500; color:var(--b-dim); }
+#hud-lives { margin-left:auto; display:flex; gap:4px; align-self:center; }
+#hud-lives i { width:8px; height:8px; border-radius:50%; background:var(--b-hp); }
+#hud-lives i.lost { background:none; box-shadow:inset 0 0 0 1.5px rgba(248,113,113,.55); }
+.hp-bar-outer { width:100%; height:5px; border-radius:3px; background:rgba(255,255,255,.22); overflow:hidden; }
+.hp-bar-fill { height:100%; width:100%; background:var(--b-hp); transition:width .1s linear; }
+.sprint-bar-outer { width:100%; height:3px; margin-top:-2px; border-radius:2px; background:rgba(255,255,255,.22); overflow:hidden; }
+.sprint-bar-fill { height:100%; width:100%; background:var(--b-sprint); transition:width .1s linear; }
+#sprint-gauge[data-state="active"] .sprint-bar-fill { background:#e0f2fe; box-shadow:0 0 6px var(--b-sprint); }
+#sprint-gauge[data-state="exhausted"] .sprint-bar-fill { background:#64748b; }
+#charge-pips { display:none; }
+.pips { display:inline-flex; gap:3px; }
+.pips.locked { font-size:10px; color:var(--b-mute); }
+.pip { font-size:0; width:7px; height:7px; border-radius:50%; box-shadow:inset 0 0 0 1.5px #fecaca; }
+.pip.filled { background:#fecaca; }
+#growth-goal-text { font-size:11px; line-height:1.4; color:var(--b-dim); }
+.growth-goal-track { height:2px; border-radius:1px; overflow:hidden; background:rgba(255,255,255,.18); }
+#growth-goal-fill { height:100%; width:0; background:var(--b-sprint); transition:width .15s linear; }
+#relic-text { font-size:11px; line-height:1.4; color:#fde68a; }
+.hud-detail { display:none !important; }
+body:not(.mobile-minimal) .hud-detail { display:flex !important; }
+.stats { gap:12px; font-size:12px; color:var(--b-dim); }
+.stats span { font-family:var(--b-mono); color:var(--b-fg); }
+body:not(.mobile-minimal) #ally-link-status { display:block !important; font-size:12px; line-height:1.5; color:var(--b-companion); }
+
+/* ---- era banner (top-centre) ---- */
+#era-status { --era-color:#86efac; position:fixed; z-index:12; top:calc(18px + var(--safe-t)); left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:6px; max-width:min(440px,calc(100vw - 680px)); min-width:220px; pointer-events:none; color:var(--b-fg); text-shadow:var(--b-shadow); text-align:center; }
+#era-status[data-phase="competition"] { --era-color:#fcd34d; }
+#era-status[data-phase="war"] { --era-color:#fda4af; }
+#era-status[data-phase="decline"] { --era-color:#e9d5ff; }
+#era-status[data-phase="off"] { --era-color:#94a3b8; }
+.era-line { display:flex; align-items:baseline; gap:14px; }
+#era-phase-name { font-size:24px; font-weight:500; letter-spacing:.32em; margin-right:-.32em; color:var(--era-color); }
+#era-countdown { font:500 16px var(--b-mono); font-variant-numeric:tabular-nums; color:#e2e8f0; }
+.era-progress { width:220px; max-width:100%; height:2px; border-radius:1px; overflow:hidden; background:rgba(255,255,255,.22); }
+#era-progress-fill { height:100%; background:var(--era-color); }
+#era-status[data-transition="true"] #era-phase-name { text-shadow:var(--b-shadow),0 0 14px var(--era-color); }
+#era-event { display:flex; align-items:center; justify-content:center; gap:8px; max-width:100%; font-size:14px; font-weight:500; color:var(--era-color); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#era-event[hidden] { display:none; }
+#era-event::before { content:''; flex:none; width:8px; height:8px; border-radius:50%; background:currentColor; box-shadow:0 0 0 4px color-mix(in srgb,currentColor 25%,transparent); }
+#era-status[data-event="doom-warning"] #era-event { color:#fcd34d; }
+#era-status[data-event="doom"] #era-event { color:#fca5a5; }
+#era-status[data-event="war"] #era-event, #era-status[data-event="war-phase"] #era-event { color:#fda4af; }
+@media (max-width:1040px) and (not (pointer:coarse)) { #era-status { max-width:calc(100vw - 600px); min-width:160px; } #era-phase-name { font-size:19px; } #era-event { font-size:12px; } }
+
+/* ---- top-right: rank, pause, help, menu ---- */
+#hud-top { position:fixed; z-index:25; top:calc(12px + var(--safe-t)); right:calc(16px + var(--safe-r)); display:flex; align-items:center; gap:2px; }
+.icon-btn { width:44px; height:44px; display:grid; place-items:center; padding:0; border:0; border-radius:10px; background:none; color:var(--b-fg); cursor:pointer; filter:drop-shadow(0 1px 2px rgba(0,0,0,.75)); }
+.icon-btn:hover { background:rgba(255,255,255,.1); }
+.icon-btn:focus-visible, .tray-btn:focus-visible, #quick-ranking:focus-visible, .menu-grid button:focus-visible { outline:2px solid #e0f2fe; outline-offset:2px; }
+.icon-btn:disabled { opacity:.4; cursor:default; }
+#pause-btn .i-play, #pause-btn[aria-pressed="true"] .i-pause { display:none; }
+#pause-btn[aria-pressed="true"] .i-play { display:block; }
+#quick-ranking { height:44px; display:flex; align-items:baseline; gap:3px; padding:0 8px; border:0; border-radius:10px; background:none; color:var(--b-fg); text-shadow:var(--b-shadow); font-family:var(--b-mono); font-variant-numeric:tabular-nums; cursor:pointer; }
+#quick-ranking:hover { background:rgba(255,255,255,.1); }
+#rank-now { font-size:28px; font-weight:600; line-height:1; }
+#rank-total { font-size:13px; color:var(--b-dim); }
+
+/* ---- ranking: quiet rows under the rank number; the panel in detail mode or when opened ---- */
+#live-ranking { font-family:var(--b-font); }
+.observer-panel { background:rgba(9,13,22,.8); border:0; box-shadow:0 0 0 1px rgba(255,255,255,.1),0 8px 24px rgba(0,0,0,.25); }
+body:not(.mobile-minimal) #live-ranking, body.mobile-minimal #live-ranking.minimal-open { top:calc(64px + var(--safe-t)); right:calc(16px + var(--safe-r)); max-height:calc(100dvh - 180px); overflow:auto; }
+body.mobile-minimal #live-ranking:not(.minimal-open) { display:block; position:fixed; top:calc(64px + var(--safe-t)); right:calc(24px + var(--safe-r)); width:200px; max-height:none; overflow:visible; background:none; border:0; box-shadow:none; padding:0; pointer-events:none; font-size:12px; text-shadow:var(--b-shadow); }
+body.mobile-minimal #live-ranking[hidden] { display:none !important; }
+body.mobile-minimal #live-ranking:not(.minimal-open) .observer-heading, body.mobile-minimal #live-ranking:not(.minimal-open) #my-rank, body.mobile-minimal #live-ranking:not(.minimal-open) .rank-secondary { display:none; }
+body.mobile-minimal #live-ranking:not(.minimal-open) ol { display:block; margin:0; padding:0; list-style:none; }
+body.mobile-minimal #live-ranking:not(.minimal-open) .rank-row { display:grid; grid-template-columns:18px 8px 12px minmax(0,1fr) 44px; gap:4px; height:18px; padding:0; background:none; border:0; color:#e2e8f0; font-size:12px; line-height:18px; }
+body.mobile-minimal #live-ranking:not(.minimal-open) .rank-row.is-player { color:#bae6fd; }
+body.mobile-minimal #live-ranking:not(.minimal-open) .rank-name { display:block; }
+body.mobile-minimal #live-ranking:not(.minimal-open) .rank-score { font-family:var(--b-mono); text-align:right; }
+body.mobile-minimal #live-ranking:not(.minimal-open) li:nth-child(n+6) { display:none; }
+
+/* ---- desktop ability rings (bottom-centre) ---- */
+#ability-bar { position:fixed; z-index:10; left:50%; bottom:calc(20px + var(--safe-b)); transform:translateX(-50%); display:flex; gap:18px; padding:10px 18px 8px; border-radius:16px; background:radial-gradient(ellipse at center,rgba(9,13,22,.38),rgba(9,13,22,0) 72%); pointer-events:none; color:var(--b-fg); text-shadow:var(--b-shadow); }
+.ab { display:flex; flex-direction:column; align-items:center; gap:3px; width:64px; }
+.ab-ring { --p:100; --ab-color:#e0f2fe; position:relative; width:52px; height:52px; display:grid; place-items:center; border-radius:50%; background:rgba(9,13,22,.55); }
+.ab-ring::before { content:''; position:absolute; inset:0; border-radius:50%; background:conic-gradient(var(--ab-color) calc(var(--p) * 1%),rgba(255,255,255,.18) 0); -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 3px)); mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 3px)); }
+.ab-label { position:relative; font-size:18px; font-weight:700; font-family:var(--b-mono); }
+.ab-dots { display:flex; gap:3px; min-height:6px; }
+.ab-dots i { width:6px; height:6px; border-radius:50%; box-shadow:inset 0 0 0 1.5px var(--b-dim); }
+.ab-dots i.on { background:var(--b-fg); box-shadow:none; }
+.ab-name { max-width:76px; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#e2e8f0; }
+.ab-key { font:500 10px var(--b-mono); color:var(--b-mute); }
+.ab[data-state="locked"] { opacity:.45; }
+.ab[data-state="cooldown"] .ab-label, .ab[data-state="busy"] .ab-label, .ab[data-state="frozen"] .ab-label { opacity:.6; }
+.ab[data-state="casting"] .ab-ring { box-shadow:0 0 12px var(--ab-color); }
+
+/* ---- toggle tray: absorb first, three inline, the rest behind ⋯ ---- */
+#toggle-tray { position:fixed; z-index:14; right:calc(24px + var(--safe-r)); bottom:calc(24px + var(--safe-b)); display:flex; align-items:center; gap:6px; }
+.tray-btn { height:44px; padding:0 14px; border:0; border-radius:22px; background:var(--b-scrim); box-shadow:inset 0 0 0 2px var(--b-edge); color:var(--b-fg); font:700 13px var(--b-font); text-shadow:var(--b-shadow); white-space:nowrap; cursor:pointer; touch-action:manipulation; }
+.tray-btn:hover:not(:disabled) { background:rgba(9,13,22,.6); }
+.tray-btn:disabled { opacity:.45; cursor:default; }
+#quick-absorb[aria-pressed="true"] { box-shadow:inset 0 0 0 2px var(--b-absorb); color:#bbf7d0; }
+#companion-invite, #companion-leave { box-shadow:inset 0 0 0 2px rgba(196,181,253,.8); color:#ddd6fe; }
+#auto-companion[aria-pressed="true"] { box-shadow:inset 0 0 0 2px var(--b-absorb); color:#bbf7d0; }
+#tray-more { width:44px; padding:0; font-size:18px; line-height:1; }
+#tray-more[aria-expanded="true"] { background:rgba(9,13,22,.7); }
+#tray-overflow { position:absolute; right:0; bottom:calc(100% + 8px); display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
+#tray-overflow[hidden] { display:none; }
+
+/* ---- menu (pauses like help) ---- */
+#hud-menu { width:min(380px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); overflow:auto; padding:18px; border:0; border-radius:16px; background:rgba(9,13,22,.94); color:var(--b-fg); font-family:var(--b-font); box-shadow:0 0 0 1px rgba(255,255,255,.12),0 24px 60px rgba(0,0,0,.5); }
+#hud-menu::backdrop { background:rgba(2,6,15,.55); }
+.menu-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.menu-head h2 { margin:0; font-size:18px; font-weight:700; }
+#play-time { margin-left:auto; font:500 12px var(--b-mono); color:var(--b-mute); }
+#menu-close { font-size:22px; filter:none; }
+.menu-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.menu-grid + .menu-grid { margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,.1); }
+.menu-grid button { min-height:44px; padding:0 12px; border:0; border-radius:10px; background:rgba(255,255,255,.06); box-shadow:inset 0 0 0 1px rgba(255,255,255,.14); color:var(--b-fg); font:500 13px var(--b-font); text-align:left; cursor:pointer; }
+.menu-grid button:hover { background:rgba(255,255,255,.12); }
+.menu-grid button[aria-pressed="true"] { box-shadow:inset 0 0 0 1.5px #7dd3fc; color:#e0f2fe; }
+#reset-btn { color:#fca5a5; }
+
+/* ---- other overlays in the B voice ---- */
+#controls-hint { display:none; }
+#build-id { color:rgba(255,255,255,.4); }
+body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !important; }
+#pause-indicator { background:rgba(9,13,22,.88); border:0; box-shadow:0 0 0 1px rgba(255,255,255,.14); font-family:var(--b-font); }
+#unlock-banner, #defeat-banner { font-family:var(--b-font); letter-spacing:.12em; }
+#starter-guide { position:fixed; z-index:9; left:50%; bottom:calc(142px + var(--safe-b)); transform:translateX(-50%); max-width:460px; color:#e2e8f0; font:12px/1.5 var(--b-font); text-align:center; text-shadow:var(--b-shadow); pointer-events:none; }
+#starter-guide-close { pointer-events:auto; border:0; background:transparent; color:var(--b-dim); font-size:16px; margin-left:6px; cursor:pointer; }
+#terrain-hint { font-family:var(--b-font); background:rgba(9,13,22,.84); }
+#minimap-panel { background:rgba(9,13,22,.8); }
+
+/* ---- touch: no attack button; dodge at the right-thumb rest ---- */
+#touch-controls { display:none; }
+@media (pointer:coarse) {
+  #touch-controls { display:block; position:fixed; inset:0; z-index:18; pointer-events:none; }
+  #touch-stick { position:absolute; display:none; width:144px; height:144px; border-radius:50%; box-shadow:inset 0 0 0 2px rgba(255,255,255,.3); pointer-events:none; touch-action:none; }
+  #touch-stick.floating-active { display:block; }
+  #touch-knob { position:absolute; left:40px; top:40px; width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,.45); pointer-events:none; }
+  .touch-label { display:none; }
+  #touch-actions button { position:fixed; display:grid; place-items:center; padding:0; border:0; border-radius:50%; background:var(--b-scrim); box-shadow:inset 0 0 0 2px var(--b-edge); color:var(--b-fg); font:700 12px/1.15 var(--b-font); text-shadow:var(--b-shadow); white-space:pre-line; text-align:center; pointer-events:auto; touch-action:none; user-select:none; }
+  #touch-actions button[hidden] { display:none; }
+  #touch-actions button::before { content:''; position:absolute; inset:0; border-radius:50%; background:conic-gradient(var(--ring,#e0f2fe) var(--recharge,0%),transparent 0); -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3.5px)); mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3.5px)); pointer-events:none; }
+  #touch-actions button[data-charges]:not([data-charges=""])::after { content:attr(data-charges); position:absolute; left:0; right:0; bottom:16%; font:500 11px var(--b-mono); color:#e0f2fe; }
+  #touch-actions button[data-state="locked"] { opacity:.45; }
+  #touch-actions button[data-state="cooldown"], #touch-actions button[data-state="busy"], #touch-actions button[data-state="frozen"] { opacity:.75; }
+  #touch-actions button.aiming { box-shadow:inset 0 0 0 3px #fff; }
+  #touch-dodge { --ring:#e0f2fe; width:104px; height:104px; font-size:20px; background:rgba(37,99,235,.34); box-shadow:inset 0 0 0 3px #93c5fd,0 4px 14px rgba(0,0,0,.35); }
+  #touch-dodge[data-state="locked"] { font-size:12px; }
+  #touch-special { width:60px; height:60px; font-size:15px; }
+  #touch-ultimate { --ring:#facc15; width:54px; height:54px; font-size:15px; }
+  #quick-sprint { --ring:var(--b-sprint); width:54px; height:54px; font-size:11px; }
+  #touch-special[data-state="locked"], #touch-ultimate[data-state="locked"] { font-size:10px; }
+
+  #ability-bar, #help-btn { display:none; }
+  #hud { top:calc(14px + var(--safe-t)); left:calc(16px + var(--safe-l)); width:168px; gap:5px; }
+  .hud-vitals { gap:5px; }
+  .vitals-id { display:none; }
+  #hp-text { font-size:22px; }
+  #hp-max { font-size:11px; }
+  #hud-lives i { width:7px; height:7px; }
+  /* attack charges: a status chip under E, not a button */
+  #charge-pips { display:flex; position:fixed; z-index:18; width:64px; justify-content:center; align-items:center; gap:5px; font-size:11px; color:#fecaca; }
+  body.mobile-minimal #growth-goal-text, body.mobile-minimal .growth-goal-track { display:none; }
+  #hud-top { top:calc(6px + var(--safe-t)); right:calc(8px + var(--safe-r)); }
+  #rank-now { font-size:24px; }
+  #rank-total { font-size:12px; }
+  #toggle-tray { bottom:auto; right:calc(12px + var(--safe-r)); }
+  #tray-overflow { top:calc(100% + 8px); bottom:auto; }
+  .tray-btn { padding:0 12px; }
+  #starter-guide { max-width:min(320px,calc(100vw - 32px)); font-size:11px; }
+  body.mobile-minimal #live-ranking:not(.minimal-open) { width:150px; right:calc(12px + var(--safe-r)); font-size:11px; }
+  body.mobile-minimal #live-ranking:not(.minimal-open) .rank-row { grid-template-columns:14px 8px 10px minmax(0,1fr) 34px; gap:3px; height:16px; font-size:11px; line-height:16px; }
+  body.mobile-minimal #live-ranking:not(.minimal-open) li:nth-child(n+4) { display:none; }
+}
+@media (pointer:coarse) and (orientation:portrait) {
+  #era-status { top:calc(66px + var(--safe-t)); max-width:calc(100vw - 32px); min-width:0; gap:4px; }
+  #era-phase-name { font-size:18px; letter-spacing:.3em; margin-right:-.3em; }
+  #era-countdown { font-size:13px; }
+  .era-progress { display:none; }
+  #era-event { font-size:13px; }
+  #toggle-tray { top:calc(124px + var(--safe-t)); }
+  /* detail mode: the taller vitals column takes the left side, so the era moves right under the rank */
+  body:not(.mobile-minimal) #era-status { left:auto; right:calc(14px + var(--safe-r)); transform:none; align-items:flex-end; max-width:calc(100vw - 210px); text-align:right; }
+  body.mobile-minimal #live-ranking:not(.minimal-open) { top:calc(176px + var(--safe-t)); }
+  body:not(.mobile-minimal) #live-ranking, body.mobile-minimal #live-ranking.minimal-open { top:calc(176px + var(--safe-t)); max-height:30dvh; }
+  #starter-guide { top:calc(250px + var(--safe-t)); bottom:auto; }
+  #touch-dodge { right:calc(20px + var(--safe-r)); bottom:calc(38px + var(--safe-b)); }
+  #touch-special { right:calc(146px + var(--safe-r)); bottom:calc(76px + var(--safe-b)); }
+  #touch-ultimate { right:calc(53px + var(--safe-r)); bottom:calc(161px + var(--safe-b)); }
+  #quick-sprint { right:calc(123px + var(--safe-r)); bottom:calc(141px + var(--safe-b)); }
+  #charge-pips { right:calc(144px + var(--safe-r)); bottom:calc(48px + var(--safe-b)); }
+}
+@media (pointer:coarse) and (orientation:landscape) {
+  #hud { top:calc(10px + var(--safe-t)); }
+  #hud-top { top:calc(4px + var(--safe-t)); }
+  #era-status { top:calc(10px + var(--safe-t)); max-width:calc(100vw - 460px); min-width:0; gap:3px; }
+  #era-phase-name { font-size:16px; letter-spacing:.3em; margin-right:-.3em; }
+  #era-countdown { font-size:13px; }
+  .era-progress { display:none; }
+  #era-event { font-size:12px; }
+  #toggle-tray { top:calc(52px + var(--safe-t)); }
+  body.mobile-minimal #live-ranking:not(.minimal-open) { top:calc(104px + var(--safe-t)); }
+  body:not(.mobile-minimal) #live-ranking, body.mobile-minimal #live-ranking.minimal-open { top:calc(104px + var(--safe-t)); max-height:calc(100dvh - 250px); }
+  #starter-guide { bottom:calc(12px + var(--safe-b)); max-width:40vw; }
+  #touch-dodge { right:calc(26px + var(--safe-r)); bottom:calc(26px + var(--safe-b)); width:100px; height:100px; }
+  #touch-special { right:calc(145px + var(--safe-r)); bottom:calc(35px + var(--safe-b)); width:58px; height:58px; }
+  #touch-ultimate { right:calc(75px + var(--safe-r)); bottom:calc(146px + var(--safe-b)); width:52px; height:52px; }
+  #quick-sprint { right:calc(135px + var(--safe-r)); bottom:calc(109px + var(--safe-b)); width:52px; height:52px; }
+  #charge-pips { right:calc(142px + var(--safe-r)); bottom:calc(14px + var(--safe-b)); }
+}
+/* narrow desktop windows borrow the phone-portrait stacking: era on a second row, ranking and tray clear of it */
+@media (max-width:700px) and (not (pointer:coarse)) {
+  #hud { left:calc(16px + var(--safe-l)); width:168px; }
+  #era-status { top:calc(66px + var(--safe-t)); max-width:calc(100vw - 32px); min-width:0; }
+  body:not(.mobile-minimal) #era-status { left:auto; right:calc(14px + var(--safe-r)); transform:none; align-items:flex-end; max-width:calc(100vw - 210px); text-align:right; }
+  #era-phase-name { font-size:18px; }
+  .era-progress { display:none; }
+  body.mobile-minimal #live-ranking:not(.minimal-open) { top:calc(124px + var(--safe-t)); right:calc(12px + var(--safe-r)); width:150px; }
+  body:not(.mobile-minimal) #live-ranking, body.mobile-minimal #live-ranking.minimal-open { top:calc(124px + var(--safe-t)); max-height:30dvh; }
+  #toggle-tray { right:calc(12px + var(--safe-r)); bottom:calc(150px + var(--safe-b)); }
 }

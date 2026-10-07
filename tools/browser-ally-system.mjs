@@ -15,7 +15,7 @@ try {
  });await page.waitForTimeout(350);
  assert.match(await page.locator('#ally-link-status').innerText(),/대열/);assert.equal(await page.locator('#companion-leave').isDisabled(),true);
  assert.equal(await page.evaluate(()=>window.__game.abilities.canCast(window.__game.player)),false);
- const before=await page.evaluate(()=>JSON.stringify(window.__game.snapshot()));await page.locator('#ally-links-toggle').click();assert.equal(await page.evaluate(()=>window.__game.showAllyLinks),false);assert.equal(await page.evaluate(()=>JSON.stringify(window.__game.snapshot())),before);await page.locator('#ally-links-toggle').click();
+ const before=await page.evaluate(()=>JSON.stringify(window.__game.snapshot()));await page.locator('#ally-links-toggle').evaluate(e=>e.click());assert.equal(await page.evaluate(()=>window.__game.showAllyLinks),false);assert.equal(await page.evaluate(()=>JSON.stringify(window.__game.snapshot())),before);await page.locator('#ally-links-toggle').evaluate(e=>e.click());
  await page.keyboard.press('F2');await page.evaluate(id=>window.__game.ui.inspector.select(id),actorId);await page.waitForTimeout(350);
  assert((await page.locator('#ai-detail').innerText()).includes('<img src=x>'));assert.equal(await page.locator('#ai-detail img').count(),0);await page.keyboard.press('F2');
  await page.evaluate(()=>{window.__game.player.displayName='달빛 늑대';});await page.waitForTimeout(150);

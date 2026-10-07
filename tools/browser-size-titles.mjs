@@ -12,7 +12,7 @@ try {
   g.ecology=new g.ecology.constructor();g.ecology.update(g,0);g.apexHistory.observe(g.entities,0,g.gameTime);
   return {holders:ais.filter(e=>e.apex).map(e=>e.id),expected:ais.slice(0,g.balance.ecology.maxApex??3).map(e=>e.id),playerApex:g.player.apex,playerId:g.player.id,largest:ais[0].id};
  });assert.deepEqual(ids.holders,ids.expected);assert.equal(ids.playerApex,false);
- await page.locator('#ranking-mode-score').click();await page.waitForTimeout(350);assert.equal(Number(await page.locator('.rank-row').first().getAttribute('data-id')),ids.playerId);
+ await page.locator('#quick-ranking').click();/* R-VIS-010: open the full ranking */await page.locator('#ranking-mode-score').click();await page.waitForTimeout(350);assert.equal(Number(await page.locator('.rank-row').first().getAttribute('data-id')),ids.playerId);
  assert(!(await page.locator('.rank-row').first().innerText()).includes('★'));
  await page.locator('#ranking-mode-size').click();await page.waitForTimeout(350);
  assert.equal(Number(await page.locator('.rank-row').first().getAttribute('data-id')),ids.largest);

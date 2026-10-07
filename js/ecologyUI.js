@@ -85,15 +85,25 @@ export class EcologyUI {
     if (fresh) {this.lastHistory=game.apexHistory;this.eventSignature='';}
     if (fresh || resized || now-this.lastUpdate>=250) {
       this.lastUpdate=now;
+      this.renderRankBadge(game);
       if (this.preferences.ranking) this.renderRanking(game);
       if (this.preferences.ecology) this.renderEcology(game);
       if (this.preferences.minimap) this.minimap.render(game);
       // In screen pixels: name labels reserve occupied panels, including existing debug UI.
-      this.ui.overlayRects = ['hud','minimal-tools','live-ranking','ecology-panel','debug-panel','ai-inspector','controls-hint','build-id','touch-stick','touch-actions','minimap-panel']
+      this.ui.overlayRects = ['hud','hud-top','toggle-tray','ability-bar','era-status','live-ranking','ecology-panel','debug-panel','ai-inspector','controls-hint','build-id','touch-stick','touch-dodge','touch-special','touch-ultimate','quick-sprint','minimap-panel']
         .map(id=>document.getElementById(id)).filter(n=>n && n.getClientRects().length)
         .map(n=>n.getBoundingClientRect()).filter(r=>r.width && r.height)
         .map(r=>({left:r.left-4,top:r.top-4,right:r.right+4,bottom:r.bottom+4}));
     }
+  }
+  // R-VIS-010: the rank number in the top-right corner, in the ranking's current order (score or size).
+  renderRankBadge(game) {
+    const bySize=this.preferences.rankingMode==='size';
+    const all = bySize ? sizeRanking(game.entities,game.ecology.sizeOrder) : scoreRanking(game.entities,game.ecology.scoreOrder);
+    const rank = all.findIndex(e=>e===game.player)+1, badge=document.getElementById('quick-ranking');
+    document.getElementById('rank-now').textContent = rank ? rank : '–';
+    document.getElementById('rank-total').textContent = rank ? `/${all.length}` : '';
+    badge.setAttribute('aria-label', rank ? `${bySize?'크기':'점수'} 순위 ${rank} / ${all.length}, 순위 목록 펼치기` : '순위 목록 펼치기');
   }
   renderRanking(game) {
     const bySize=this.preferences.rankingMode==='size';

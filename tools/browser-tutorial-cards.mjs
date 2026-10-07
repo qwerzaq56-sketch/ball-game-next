@@ -54,8 +54,8 @@ try{
   const next=await page.locator('#tc-next').boundingBox();assert(next.y+next.height<=viewport.height,`${name} next button reachable`);
   await page.screenshot({path:`reports/R-CTRL-005-${name}.png`});
   await page.locator('#help-close').click();await page.waitForTimeout(150);assert.equal(await page.evaluate(()=>window.__game.paused),false,'skip resumes play');
-  assert(await page.evaluate(()=>document.body.classList.contains('mobile-minimal')));await page.locator('#quick-help').click();await page.waitForTimeout(100);
-  assert(await page.locator('#play-help').evaluate(d=>d.open&&!d.classList.contains('tutorial-mode')),`${name} minimal UI help button reopens the cards`);const qb=await page.locator('#quick-help').boundingBox();assert(qb.x>=0&&qb.x+qb.width<=viewport.width);await page.locator('#help-close').click();await page.waitForTimeout(150);
+  assert(await page.evaluate(()=>document.body.classList.contains('mobile-minimal')));await page.locator('#menu-btn').click();await page.locator('#quick-help').click();await page.waitForTimeout(100);
+  assert(await page.locator('#play-help').evaluate(d=>d.open&&!d.classList.contains('tutorial-mode')),`${name} minimal UI help button reopens the cards`);const qb=await page.locator('#menu-btn').boundingBox();assert(qb.x>=0&&qb.x+qb.width<=viewport.width);await page.locator('#help-close').click();await page.waitForTimeout(150);
   result[name]=true;await context.close();
  }
  // automation without ?tutorial keeps a clear screen for the other checks

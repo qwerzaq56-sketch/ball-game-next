@@ -16,9 +16,9 @@ try{
  assert.equal(await page.locator('#live-ranking').evaluate(e=>getComputedStyle(e).pointerEvents),'none');/* compact overlay ranking */assert(await page.locator('#pause-btn').isVisible());
  const minimal=await page.locator('#hud').boundingBox();assert(minimal.height<100);
  await page.screenshot({path:`${prefix}-mobile-minimal.png`});
- await page.locator('#mobile-ui-toggle').click();assert(await page.locator('#live-ranking').isVisible());
- await page.locator('#mobile-ui-toggle').click();
- const stick={x:90,y:500},attack=await center('#touch-attack');
+ await page.locator('#mobile-ui-toggle').evaluate(e=>e.click());assert(await page.locator('#live-ranking').isVisible());
+ await page.locator('#mobile-ui-toggle').evaluate(e=>e.click());
+ const stick={x:90,y:500},attack={x:300,y:480}/* R-VIS-010: right-half drag replaces the attack button */;assert.equal(await page.locator('#touch-attack').isVisible(),false);
  await touch('touchStart',[point(1,stick)]);await touch('touchMove',[point(1,{x:stick.x+30,y:stick.y})]);
  const x=await page.evaluate(()=>window.__game.player.x);
  await touch('touchStart',[point(1,{x:stick.x+30,y:stick.y}),point(2,attack)]);

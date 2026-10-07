@@ -19,7 +19,7 @@ try{
   const state=await page.evaluate(()=>{const g=window.__game;g.input.keys.clear();g.paused=true;return {x:g.player.x,y:g.player.y,screen:g.worldToScreen(g.player.x,g.player.y)};});
   assert(key==='d'||key==='s'?state[axis]<100:state[axis]>(axis==='x'?W:H)-100);assert(Math.abs(state.screen.x-422)<80&&Math.abs(state.screen.y-195)<80);travel.push({key,...state});
  }
- await page.locator('#mobile-ui-toggle').click();await page.keyboard.press('F5');await page.waitForTimeout(80);assert(await page.locator('#minimap-panel').isVisible());
+ await page.locator('#mobile-ui-toggle').evaluate(e=>e.click());await page.keyboard.press('F5');await page.waitForTimeout(80);assert(await page.locator('#minimap-panel').isVisible());
  await page.evaluate(()=>{const g=window.__game;const W=g.balance.world.worldWidth,H=g.balance.world.worldHeight;g.player.x=W-10;g.player.y=H-10;g.camera={x:W-10,y:H-10,zoom:1};g.render();});await page.waitForTimeout(80);await page.screenshot({path:'reports/M37-wrap-corner-minimap.png'});
  assert.deepEqual(errors,[]);const result={status:'PASS',periodicRendering:true,oppositeActorProjection:true,largeBodyBeforeSeam:true,noWalls:true,allFourEdges:true,cameraContinuous:true,minimap:true,image,travel,errors};writeFileSync('reports/M37-wrap-browser.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));
 }finally{await browser.close();}

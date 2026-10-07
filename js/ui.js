@@ -6,7 +6,8 @@ import {SkillTuningUI} from './skillTuningUI.js';
 import { ERA_PHASES } from './era.js';
 import { submitScore } from './storage.js';
 import { EcologyUI } from './ecologyUI.js';
-import { eraEventKind, eraEventText, skillCooldownRow } from './statusLabels.js';
+import { eraEventKind, eraEventText } from './statusLabels.js';
+import { COLOR_NAMES } from './tutorialCards.js';
 import {nextSkillGoal} from './progression.js';
 
 
@@ -17,7 +18,7 @@ export class UI {
     this.game = null; // set on the first update(dt, game) call — the checkbox handler below needs it
 
     this.hpFill = document.getElementById('hp-fill');
-    this.hpText = document.getElementById('hp-text');
+    this.hpNow = document.getElementById('hp-now');this.hpMax = document.getElementById('hp-max');
     this.growthText = document.getElementById('growth-text');
     this.sizeText = document.getElementById('size-text');
     this.killsText = document.getElementById('kills-text');
@@ -33,7 +34,6 @@ export class UI {
     this.absorbButton=document.getElementById('quick-absorb');this.absorbButton.addEventListener('click',()=>{if(this.game&&!this.game.paused&&!this.game.gameOver)this.game.input.absorbToggle=!this.game.input.absorbToggle;});
     this.allyAbsorbText = document.getElementById('ally-absorb-text');
     this.attackPips = document.getElementById('attack-pips');
-    this.dodgePips = document.getElementById('dodge-pips');
 
     this.unlockBanner = document.getElementById('unlock-banner');
     this.unlockTimer = 0;
@@ -107,9 +107,9 @@ export class UI {
 
   // v0.5 spec §23: HUD shows filled/empty pips (●/○) per stack instead of a LOCKED/READY label
   // + cooldown bar. LOCKED (maxStack 0) still reads as plain text.
-  renderPips(container, stack, maxStack) {
+  renderPips(container, stack, maxStack, lockedLabel = 'LOCKED') {
     if (maxStack <= 0) {
-      container.textContent = 'LOCKED';
+      container.textContent = lockedLabel;
       container.className = 'pips locked';
       return;
     }
@@ -143,17 +143,14 @@ export class UI {
     event.hidden=!text;event.textContent=text;badge.dataset.event=text?eraEventKind(game,this.eraChangedAt):'';
   }
 
-  // R-CTRL-006: E/R cooldowns also live in the HUD, away from the on-body status rings.
-  updateSkillCooldowns(game){
-    const player=game.player,box=document.getElementById('skill-cooldowns'),slots=['E','R'].filter(slot=>game.abilities.unlocked(player,slot));
-    box.hidden=!slots.length;if(!slots.length){box.textContent='';return;}
-    const key=slots.join('');if(box.dataset.slots!==key){box.dataset.slots=key;box.textContent='';for(const slot of slots){const row=document.createElement('div');row.className='skill-cd';row.dataset.slot=slot;row.innerHTML='<b></b><span class="skill-cd-name"></span><span class="skill-cd-time"></span><i><em></em></i>';box.append(row);}}
-    for(const row of box.children){
-      const slot=row.dataset.slot,info=skillCooldownRow(game,player,slot);
-      row.querySelector('b').textContent=slot;row.querySelector('.skill-cd-name').textContent=info.name;
-      row.querySelector('.skill-cd-time').textContent=info.text;
-      row.querySelector('em').style.width=`${info.progress}%`;row.dataset.state=info.state;
-    }
+  // R-VIS-010: name, species and size on one line; lives as dots beside the HP number.
+  updateIdentity(game){
+    const player=game.player;
+    document.getElementById('hud-name').textContent=player.displayName;
+    document.getElementById('hud-color').style.backgroundColor=player.colorHex;
+    document.getElementById('hud-sub').textContent=`${COLOR_NAMES[player.color]??player.color} · 크기 ${Math.floor(player.size)}`;
+    const lives=Math.max(0,game.lives),max=Math.max(lives,game.balance.lives?.maxLives??3),box=document.getElementById('hud-lives'),key=`${lives}/${max}`;
+    if(box.dataset.key!==key){box.dataset.key=key;box.replaceChildren(...Array.from({length:max},(_,i)=>{const dot=document.createElement('i');if(i>=lives)dot.className='lost';return dot;}));box.setAttribute('aria-label',`남은 목숨 ${lives} / ${max}`);}
   }
 
   update(dt, game) {
@@ -171,28 +168,30 @@ export class UI {
     this.updateEraBadge(game);
     this.autoCompanionButton.textContent=player.autoCompanionOffer?'자동 동행 ON':'자동 동행 OFF';this.autoCompanionButton.setAttribute('aria-pressed',String(!!player.autoCompanionOffer));
     this.sprintButton.hidden=game.player.size<(game.balance.sprint?.unlockSize??150);
-    this.sprintButton.textContent=`${game.player.sprinting?'달리는 중':'달리기'} ${Math.round(100*(game.player.sprintGauge??(game.balance.sprint?.capacitySeconds??3))/(game.balance.sprint?.capacitySeconds??3))}%`;
-    this.sprintButton.style.background=`linear-gradient(90deg,rgba(56,189,248,.3) ${Math.round(100*(game.player.sprintGauge??3)/(game.balance.sprint?.capacitySeconds??3))}%,rgba(15,23,42,.85) 0)`;
-    this.sprintButton.title='누르고 유지하면 달리기 · Space';
+    // R-VIS-010: the touch sprint button is a ring on the dodge arc; the ring is the gauge.
+    const gaugePercent=Math.round(100*Math.max(0,Math.min(1,(game.player.sprintGauge??(game.balance.sprint?.capacitySeconds??3))/(game.balance.sprint?.capacitySeconds??3))));
+    const sprintLabel=game.player.sprinting?'달리는 중':'달리기';if(this.sprintButton.textContent!==sprintLabel)this.sprintButton.textContent=sprintLabel;
+    this.sprintButton.style.setProperty('--recharge',`${gaugePercent}%`);this.sprintButton.dataset.state=game.player.sprintExhausted?'cooldown':'ready';
+    this.sprintButton.title='누르고 유지하면 달리기 · Space';this.sprintButton.setAttribute('aria-label',`달리기 게이지 ${gaugePercent}%, 누르고 유지`);
     // R-CTRL-006: the sprint gauge sits right under the HP bar once sprint is unlocked.
     const sprintCapacity=game.balance.sprint?.capacitySeconds??3,sprintGauge=document.getElementById('sprint-gauge');
     sprintGauge.hidden=player.size<(game.balance.sprint?.unlockSize??150);
     document.getElementById('sprint-fill').style.width=`${Math.round(100*Math.max(0,Math.min(1,(player.sprintGauge??sprintCapacity)/sprintCapacity)))}%`;
     sprintGauge.dataset.state=player.sprinting?'active':player.sprintExhausted?'exhausted':'ready';
-    this.updateSkillCooldowns(game);
     document.getElementById('play-time').textContent=`플레이 ${Math.floor(game.gameTime/60)}:${String(Math.floor(game.gameTime%60)).padStart(2,'0')}`;
     const invitation=document.getElementById('companion-invite'),wait=Math.ceil(Math.max(0,(player.inviteReadyAt??0)-game.gameTime));
-    invitation.textContent=game.allyLinks.truceUntil>game.gameTime?`동행 Q · 축제 ${Math.ceil(game.allyLinks.truceUntil-game.gameTime)}s`:wait?`동행 제안 ${wait}s`:'동행 제안 (Q)';invitation.disabled=game.paused||game.gameOver||wait>0||player.frozen>0||!!player.specialCast||player.attackState!=='READY'||player.dodgeState==='DODGING'||!!player.beingAbsorbedByRef;
+    invitation.textContent=game.allyLinks.truceUntil>game.gameTime?`동행 · 축제 ${Math.ceil(game.allyLinks.truceUntil-game.gameTime)}s`:wait?`동행 제안 ${wait}s`:'동행 제안';invitation.disabled=game.paused||game.gameOver||wait>0||player.frozen>0||!!player.specialCast||player.attackState!=='READY'||player.dodgeState==='DODGING'||!!player.beingAbsorbedByRef;
     const neighbors=game.allyLinks.neighbors(player).length;
     const group=game.allyLinks.groups.get(player.companionGroup);
     const invite=game.abilities.invitePower(player,'damage'),defense=game.abilities.invitePower(player,'defense');
     document.getElementById('ally-link-status').textContent=`아군 연결 ${neighbors} · 공격 +${Math.round(game.allyLinks.bonus(player)*100)}%${group?` · ${group.members.size}명 대열 · ${({challenge:"도전형",opportunity:"기회형",avoidance:"회피형"})[game.allyLinks.personality(group)]}`:''}${invite?` · 동행 강화 ${player.inviteBuffs.length}중첩 · 공격 +${Math.round(invite*100)}% / 방어 +${Math.round(defense*100)}% / 재생 ${(game.abilities.inviteRegen(player)*100).toFixed(1)}%/s`:''}`;
-    document.getElementById('companion-leave').disabled=game.paused||!player.companionGroup;
+    const leave=document.getElementById('companion-leave');leave.disabled=game.paused||!player.companionGroup;leave.hidden=!player.companionGroup;
     document.getElementById('ally-links-toggle').textContent=`연결선: ${game.showAllyLinks===false?'OFF':'ON'}`;
     document.getElementById('ally-links-toggle').setAttribute('aria-pressed',String(game.showAllyLinks!==false));
     const hpRatio = Math.max(0, player.hp / player.maxHp);
     this.hpFill.style.width = `${hpRatio * 100}%`;
-    this.hpText.textContent = `${Math.ceil(player.hp)} / ${Math.ceil(player.maxHp)}`;
+    this.hpNow.textContent = Math.ceil(player.hp);this.hpMax.textContent = ` / ${Math.ceil(player.maxHp)}`;
+    this.updateIdentity(game);
     this.growthText.textContent = Math.floor(player.growth);
     this.sizeText.textContent = Math.floor(player.size);
     this.killsText.textContent = player.kills;
@@ -211,8 +210,7 @@ export class UI {
     if(this.aiLabelCheckbox)this.aiLabelCheckbox.checked=game.showAILabels;
     if (this.allyAbsorbCheckbox) this.allyAbsorbCheckbox.checked = player.allyAbsorptionEnabled;
 
-    this.renderPips(this.attackPips, player.attackStack, player.attackMaxStack);
-    this.renderPips(this.dodgePips, player.dodgeStack, player.dodgeMaxStack);
+    this.renderPips(this.attackPips, player.attackStack, player.attackMaxStack, `크기 ${game.balance.skills.attackStackThresholds.find(t=>t.maxStack>0)?.size} 해금`);
     const goal=nextSkillGoal(player,game.balance);
     document.getElementById('growth-goal-text').textContent=goal.label;
     document.getElementById('growth-goal-fill').style.width=`${goal.fraction*100}%`;

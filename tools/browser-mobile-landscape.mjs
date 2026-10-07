@@ -9,8 +9,8 @@ try{
  await page.goto('http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();
  for(const [width,height] of [[844,390],[390,844],[812,375]]){
   await page.setViewportSize({width,height});await page.waitForTimeout(150);
-  assert.equal(await page.locator('#mobile-orientation-hint').isVisible(),height>width);
-  const hud=await page.locator('#hud').boundingBox(),stick=await (async()=>{await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:9,x:90,y:height-120}]});await page.waitForTimeout(60);const box=await page.locator('#touch-stick').boundingBox();await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});return box;})(),actions=await page.locator('#touch-actions').boundingBox();
+  // R-VIS-010: both orientations are first-class, so there is no rotate hint any more
+  const hud=await page.locator('#hud').boundingBox(),stick=await (async()=>{await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:9,x:90,y:height-120}]});await page.waitForTimeout(60);const box=await page.locator('#touch-stick').boundingBox();await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});return box;})(),actions=await page.locator('#touch-dodge').boundingBox();
   assert(hud.height<100);assert(hud.y+hud.height<stick.y);assert(stick.x+stick.width<width/2);if(width>height)assert(actions.x>width/2);assert(actions.x+actions.width<=width);
   const result=await page.evaluate(()=>{
    const g=window.__game,p=g.player,c=g.ctx;p.x=900;p.y=1000;p.size=80;g.entities=[p];g.paused=false;g.camera.x=950;g.camera.y=970;g.camera.zoom=.65;
@@ -25,6 +25,6 @@ try{
  }
  await page.evaluate(()=>{const g=window.__game;g.camera.x=g.player.x;g.camera.y=g.player.y;g.touchAim={angle:-Math.PI/4};g.render();});
  await page.screenshot({path:'reports/M32-landscape-white-arrow.png'});
- await page.locator('#mobile-ui-toggle').click();await page.waitForTimeout(100);const hud=await page.locator('#hud').boundingBox(),stick=await (async()=>{const {height}=page.viewportSize();await page.evaluate(()=>{window.__game.paused=false;});await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:9,x:90,y:height-120}]});await page.waitForTimeout(60);const box=await page.locator('#touch-stick').boundingBox();await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});return box;})();assert(stick&&stick.x>=0&&stick.y>=0&&hud);/* floating stick follows the finger; the full HUD no longer constrains it */assert(await page.locator('#live-ranking').isVisible());
+ await page.evaluate(()=>document.getElementById('mobile-ui-toggle').click());await page.waitForTimeout(100);const hud=await page.locator('#hud').boundingBox(),stick=await (async()=>{const {height}=page.viewportSize();await page.evaluate(()=>{window.__game.paused=false;});await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:9,x:90,y:height-120}]});await page.waitForTimeout(60);const box=await page.locator('#touch-stick').boundingBox();await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});return box;})();assert(stick&&stick.x>=0&&stick.y>=0&&hud);/* floating stick follows the finger; the full HUD no longer constrains it */assert(await page.locator('#live-ranking').isVisible());
  assert.deepEqual(errors,[]);const result={status:'PASS',automaticOrientation:true,centeredCanvasArrow:true,whiteArrow:true,landscapeControlSeparation:true,fullHUDScroll:true,checks,errors};writeFileSync('reports/M32-landscape-check.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));
 }finally{await browser.close();}

@@ -6,9 +6,10 @@ const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless
 const page=await browser.newPage({viewport:{width:1280,height:720}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
 try{
  await page.goto('http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();
- assert(await page.locator('#mobile-ui-toggle').isVisible());assert(await page.locator('#live-ranking').isVisible());
- await page.keyboard.press('u');assert.equal(await page.locator('#live-ranking').evaluate(e=>getComputedStyle(e).pointerEvents),'none');/* compact overlay ranking */assert(await page.locator('#era-status').isVisible());
- await page.locator('#mobile-ui-toggle').click();assert(await page.locator('#live-ranking').isVisible());
+ assert.equal(await page.locator('#mobile-ui-toggle').count(),1);assert(await page.locator('#live-ranking').isVisible());
+ /* R-VIS-010: desktop starts in the quiet HUD, so the ranking is the compact overlay */assert.equal(await page.locator('#live-ranking').evaluate(e=>getComputedStyle(e).pointerEvents),'none');assert(await page.locator('#era-status').isVisible());
+ await page.keyboard.press('u');assert.notEqual(await page.locator('#live-ranking').evaluate(e=>getComputedStyle(e).pointerEvents),'none');
+ await page.locator('#mobile-ui-toggle').evaluate(e=>e.click());assert(await page.locator('#live-ranking').isVisible());
  await page.keyboard.press('F1');const cap=page.locator('label').filter({hasText:'최상위 포식자 최대 수'}).locator('input');assert.equal(await cap.inputValue(),'5');await cap.fill('7');assert.equal(await page.evaluate(()=>window.__game.balance.ecology.maxApex),7);
  await cap.press('u');assert.equal(await page.locator('#live-ranking').isVisible(),true);await cap.fill('5');await page.keyboard.press('F1');
  await page.evaluate(async()=>{

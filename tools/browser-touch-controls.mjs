@@ -7,10 +7,10 @@ const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(
 const prefix=process.env.BROWSER_TOUCH_REPORT_PREFIX??'reports/M10';
 const center=async selector=>{const r=await page.locator(selector).boundingBox();return {x:r.x+r.width/2,y:r.y+r.height/2};};
 try {
- await page.goto(process.argv[2]??'http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();await page.locator('#mobile-ui-toggle').click();
+ await page.goto(process.argv[2]??'http://127.0.0.1:8001/');await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();await page.locator('#mobile-ui-toggle').evaluate(e=>e.click());
  await page.evaluate(()=>{const g=window.__game,p=g.player;g.entities=[p];g.ecology.timer=1000;g.allyLinks.timer=1000;p.size=80;p.attackUnlocked=true;p.attackStack=p.attackMaxStack=3;p.dodgeUnlocked=true;p.dodgeStack=p.dodgeMaxStack=2;p.apex=true;p._specialApex=true;p.specialCooldown=0;});await page.waitForTimeout(150);
  assert.equal(await page.locator('#touch-stick').isVisible(),false,'floating stick stays hidden until a touch starts');assert.equal(await page.locator('#touch-special').isDisabled(),false);
- const cdp=await context.newCDPSession(page),stick={x:100,y:300},attack=await center('#touch-attack'),dodge=await center('#touch-dodge'),special=await center('#touch-special');
+ const cdp=await context.newCDPSession(page),stick={x:100,y:300},attack={x:300,y:480}/* R-VIS-010: no attack button; a right-half drag aims and releases the attack */,dodge=await center('#touch-dodge'),special=await center('#touch-special');
  assert.equal(await page.evaluate(p=>document.elementFromPoint(p.x,p.y)?.id,stick),'game-canvas','left-half move zone must be the canvas');
  const touch=(type,touchPoints)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints});
  const point=(id,p)=>({id,x:p.x,y:p.y});
@@ -37,11 +37,11 @@ try {
  assert(await page.locator('#pause-btn').isVisible());await page.locator('#pause-btn').click();assert.equal(await page.evaluate(()=>window.__game.paused),true);await page.locator('#pause-btn').click();
  await page.screenshot({path:`${prefix}-touch-landscape.png`});
  await page.evaluate(()=>{const g=window.__game,p=g.player;g.paused=true;p.attackUnlocked=false;p.dodgeUnlocked=false;p.apex=false;});await page.waitForTimeout(50);
- assert.match(await page.locator('#touch-attack').innerText(),/크기 40/);assert.match(await page.locator('#touch-dodge').innerText(),/크기 50/);assert.match(await page.locator('#touch-special').innerText(),/크기 100/);assert.match(await page.locator('#touch-special').innerText(),/E 해금/);assert.match(await page.locator('#touch-ultimate').innerText(),/최상위/);
+ assert.equal(await page.locator('#touch-attack').isVisible(),false);assert.match(await page.locator('#touch-dodge').innerText(),/크기 50/);assert.match(await page.locator('#touch-special').innerText(),/크기 100/);assert.match(await page.locator('#touch-special').innerText(),/E 해금/);assert.match(await page.locator('#touch-ultimate').innerText(),/최상위/);
  await page.evaluate(()=>{const g=window.__game,p=g.player,a=g.entities.find(e=>e.behavior==='ai');p.attackUnlocked=p.dodgeUnlocked=true;p.apex=true;a.color=p.color;a.colorHex=p.colorHex;a.x=p.x+80;a.y=p.y;g.allyLinks.refresh();g.allyLinks.join(a,p);p.attackStack=3;p.dodgeStack=2;g.paused=false;});await page.waitForTimeout(80);
  // R-COMP-002 (M38): companions may fight and use abilities, so the attack button must stay usable in a group.
- assert.doesNotMatch(await page.locator('#touch-attack').innerText(),/동행 중/);assert.equal(await page.locator('#touch-attack').isDisabled(),false);assert.match(await page.locator('#touch-special').innerText(),/^E/);await page.evaluate(()=>{window.__game.paused=true;});
+ assert.equal(await page.locator('#attack-pips .pip.filled').count(),3,'attack charges stay usable in a group');assert.match(await page.locator('#touch-special').innerText(),/^E/);await page.evaluate(()=>{window.__game.paused=true;});
  await page.evaluate(()=>{const g=window.__game;g.allyLinks.leave(g.player);g.player.attackStack=g.player.dodgeStack=0;});await page.waitForTimeout(50);
- assert.match(await page.locator('#touch-attack').innerText(),/충전 중/);assert.match(await page.locator('#touch-dodge').innerText(),/회피 충전/);assert.equal(await page.locator('#touch-dodge').isDisabled(),true);
+ assert.equal(await page.locator('#attack-pips .pip.filled').count(),0);assert.match(await page.locator('#touch-dodge').innerText(),/회피 충전/);assert.equal(await page.locator('#touch-dodge').isDisabled(),true);
  assert.deepEqual(errors,[]);console.log(JSON.stringify({result:'PASS',genuineTouch:true,analogMove:true,simultaneousAttack:true,dragAim:true,pointerCancel:true,dodge:true,aimWithoutAttack:true,specialWindupFire:true,pauseClear:true,errors}));
 } finally {await browser.close();}

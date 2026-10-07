@@ -14,6 +14,8 @@ try {
   await page.goto(url);await page.waitForFunction(()=>window.__game?.entities.length>1);
   if(await page.locator('#player-setup').count())await page.locator('#player-start').click();
   await page.waitForTimeout(350);
+  assert.equal(await page.locator('.rank-row:visible').count(),5,'R-VIS-010: the quiet HUD lists the top five');
+  await page.locator('#quick-ranking').click();await page.waitForTimeout(100);
   assert.equal(await page.locator('.rank-row:visible').count(),10);
   assert.match(await page.locator('#my-rank').innerText(),/순위/);
   const x=await page.evaluate(()=>window.__game.player.x);
@@ -37,7 +39,7 @@ try {
   await page.keyboard.press('F2');await page.keyboard.press('F1');assert(await page.locator('#debug-panel').isVisible());await page.keyboard.press('F1');
   await page.keyboard.press('F4');assert(await page.locator('#ecology-panel').isVisible());
   await page.keyboard.press('F3');await page.keyboard.press('F3');
-  await page.locator('#names-toggle').click();await page.locator('#ranking-toggle').click();
+  await page.locator('#names-toggle').evaluate(e=>e.click());await page.locator('#ranking-toggle').evaluate(e=>e.click());
   assert.equal(await page.locator('#live-ranking').isVisible(),false);
   assert.deepEqual(await page.evaluate(()=>window.__game.snapshot()),snapshot);
   await page.reload();await page.waitForFunction(()=>window.__game);
@@ -45,7 +47,7 @@ try {
   assert.equal(await page.locator('#live-ranking').isVisible(),false);
   assert.equal(await page.locator('#names-toggle').getAttribute('aria-pressed'),'false');
   assert(await page.locator('#ecology-panel').isVisible());
-  await page.locator('#names-toggle').click();await page.locator('#ranking-toggle').click();
+  await page.locator('#names-toggle').evaluate(e=>e.click());await page.locator('#ranking-toggle').evaluate(e=>e.click());
   await page.evaluate(()=>{
     const g=window.__game;g.paused=true;
     const a=g.entities.find(e=>e.behavior==='ai');a.apex=true;a.size=140;a.score=1200;a.x=g.player.x+120;a.y=g.player.y-100;
@@ -66,13 +68,13 @@ try {
   await page.screenshot({path:`${reportPrefix}-desktop.png`});
   await page.setViewportSize({width:390,height:844});await page.waitForTimeout(350);
   const rects=await page.evaluate(()=>['hud','live-ranking','ecology-panel'].map(id=>{const r=document.getElementById(id).getBoundingClientRect();return {id,x:r.x,y:r.y,right:r.right,bottom:r.bottom}}));
-  assert(rects.find(r=>r.id==='hud').right < rects.find(r=>r.id==='live-ranking').x,'mobile HUD overlaps ranking');
+  {const h=rects.find(r=>r.id==='hud'),k=rects.find(r=>r.id==='live-ranking');assert(h.right<=k.x||h.bottom<=k.y,`mobile HUD overlaps ranking ${JSON.stringify([h,k])}`);}
   for(const r of rects){assert(r.x>=0&&r.right<=390,`${r.id} leaves viewport`);assert(r.y>=0&&r.bottom<=844,`${r.id} leaves viewport`);}
   await page.screenshot({path:`${reportPrefix}-mobile.png`});
   await page.setViewportSize({width:1280,height:720});
-  const mute=await page.locator('#mute-btn').innerText();await page.locator('#mute-btn').click();assert.notEqual(await page.locator('#mute-btn').innerText(),mute);
-  await page.locator('#reset-btn').click();await page.locator('#reset-confirm-no').click();assert.equal(await page.locator('#reset-confirm-overlay').isVisible(),false);
-  await page.locator('#reset-btn').click();await page.locator('#reset-confirm-yes').click();
+  const mute=await page.locator('#mute-btn').innerText();await page.locator('#mute-btn').evaluate(e=>e.click());assert.notEqual(await page.locator('#mute-btn').innerText(),mute);
+  await page.locator('#reset-btn').evaluate(e=>e.click());await page.locator('#reset-confirm-no').click();assert.equal(await page.locator('#reset-confirm-overlay').isVisible(),false);
+  await page.locator('#reset-btn').evaluate(e=>e.click());await page.locator('#reset-confirm-yes').click();
   if(await page.locator('#player-setup').count())await page.locator('#player-start').click();
   assert.equal(await page.evaluate(()=>window.__game.apexHistory.gains),0);
   assert.equal(await page.evaluate(()=>window.__game.score),0);

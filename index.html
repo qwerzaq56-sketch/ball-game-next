@@ -7,6 +7,8 @@
 <meta name="apple-mobile-web-app-title" content="Ball Game" />
 <meta name="theme-color" content="#11151c" />
 <title>Ball Game NEXT · 성장형 액션 프로토타입</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&amp;family=IBM+Plex+Mono:wght@500;600&amp;display=swap" />
 <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -30,54 +32,69 @@
 
   <div id="load-error"></div>
 
+  <!-- R-VIS-010 B quiet HUD: no panels, thin lines and shadowed text on the edges of the screen. -->
   <div id="hud">
-    <div class="hud-block">
+    <div class="hud-block hud-vitals">
+      <div class="vitals-id"><i id="hud-color"></i><strong id="hud-name">나</strong><span id="hud-sub"></span></div>
+      <div class="vitals-hp"><span id="hp-text"><span id="hp-now">100</span><span id="hp-max"> / 100</span></span><span id="hud-lives" role="img" aria-label="남은 목숨"></span></div>
       <div class="hp-bar-outer"><div id="hp-fill" class="hp-bar-fill"></div></div>
       <div id="sprint-gauge" class="sprint-bar-outer" hidden title="달리기 게이지"><div id="sprint-fill" class="sprint-bar-fill"></div></div>
-      <div id="hp-text" class="hp-text">100 / 100</div>
-    </div>
-    <div class="hud-block stats">
-      <div>Growth: <span id="growth-text">0</span></div>
-      <div>Size: <span id="size-text">20</span></div>
-      <div>Kills: <span id="kills-text">0</span></div>
-      <div>Score: <span id="score-text">0</span></div>
-    </div>
-    <div class="hud-block stats">
-      <div>LIFE/R: <span id="life-text">3</span></div>
-      <div>ALLY ABSORB: <span id="ally-absorb-text" class="ally-on">ON</span></div>
-    </div>
-    <div class="hud-block" id="ally-link-status">아군 연결 0 · 공격 +0%</div>
-    <div class="hud-block abilities">
-      <div class="ability">
-        <span class="ability-label">ATTACK</span>
-        <span id="attack-pips" class="pips locked">LOCKED</span>
-      </div>
-      <div class="ability">
-        <span class="ability-label">DODGE</span>
-        <span id="dodge-pips" class="pips locked">LOCKED</span>
-      </div>
-      <div id="skill-cooldowns" hidden></div>
+      <div id="charge-pips" aria-label="공격 충전"><span>공격</span><span id="attack-pips" class="pips locked">LOCKED</span></div>
       <div id="relic-text" hidden></div><div id="growth-goal-text"></div><div class="growth-goal-track"><div id="growth-goal-fill"></div></div>
     </div>
-    <div class="hud-block hud-controls">
-      <button id="companion-invite" class="hud-btn" type="button">동행 제안 (Q)</button>
-      <button id="mute-btn" class="hud-btn" type="button">SOUND: ON</button>
-      <button id="names-toggle" class="hud-btn" type="button" aria-pressed="true">이름: ON</button>
-      <button id="ranking-toggle" class="hud-btn" type="button" aria-pressed="true" aria-controls="live-ranking">순위: ON</button>
-      <button id="ecology-toggle" class="hud-btn" type="button" aria-pressed="false" aria-controls="ecology-panel">생태계: OFF</button>
-      <button id="minimap-toggle" class="hud-btn" type="button" aria-pressed="false" aria-controls="minimap-panel">지도: OFF</button>
-      <button id="ally-links-toggle" class="hud-btn" type="button" aria-pressed="true">연결선: ON</button>
-      <button id="companion-leave" class="hud-btn" type="button" disabled>동행 이탈 (G)</button>
-      <button id="pause-btn" class="hud-btn" type="button" aria-pressed="false">일시정지 (P)</button>
-      <button id="help-btn" class="hud-btn" type="button" aria-haspopup="dialog" aria-controls="play-help">도움말 (H)</button>
-      <button id="reset-btn" class="hud-btn" type="button">전체 초기화</button>
+    <div class="hud-block stats hud-detail">
+      <div>성장 <span id="growth-text">0</span></div>
+      <div>크기 <span id="size-text">20</span></div>
+      <div>처치 <span id="kills-text">0</span></div>
+      <div>점수 <span id="score-text">0</span></div>
     </div>
+    <div class="hud-block sr-only">
+      <div>남은 목숨 <span id="life-text">3</span></div>
+      <div>아군 흡수 <span id="ally-absorb-text" class="ally-on">ON</span></div>
+    </div>
+    <div class="hud-block hud-detail" id="ally-link-status">아군 연결 0 · 공격 +0%</div>
   </div>
 
+  <div id="hud-top">
+    <button id="quick-ranking" type="button" aria-controls="live-ranking" title="순위 목록 펼치기"><b id="rank-now">–</b><small id="rank-total"></small></button>
+    <button id="pause-btn" class="icon-btn" type="button" aria-pressed="false" aria-label="일시정지 (P)" title="일시정지 (P)"><svg class="i-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg><svg class="i-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg></button>
+    <button id="help-btn" class="icon-btn" type="button" aria-haspopup="dialog" aria-controls="play-help" aria-label="도움말 (H)" title="도움말 (H)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14"/><path d="M12 17.5v.01"/></svg></button>
+    <button id="menu-btn" class="icon-btn" type="button" aria-haspopup="dialog" aria-controls="hud-menu" aria-label="메뉴 (M)" title="메뉴 (M)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14"/><path d="M5 12h14"/><path d="M5 17h14"/></svg></button>
+  </div>
+
+  <!-- Toggles: absorb always first, at most three inline, the rest behind ⋯ (opening it never pauses). -->
+  <div id="toggle-tray" role="toolbar" aria-label="토글">
+    <button id="quick-absorb" class="tray-btn" type="button" aria-pressed="false" title="흡수 토글 · 우클릭 유지">흡수 OFF</button>
+    <button id="companion-invite" class="tray-btn" type="button" title="동행 제안 (Q)">동행 제안</button>
+    <button id="companion-leave" class="tray-btn" type="button" title="동행 이탈 (G)" disabled hidden>동행 이탈</button>
+    <button id="tray-more" class="tray-btn" type="button" aria-expanded="false" aria-controls="tray-overflow" aria-label="토글 더보기">⋯</button>
+    <div id="tray-overflow" hidden><button id="auto-companion" class="tray-btn" type="button" aria-pressed="false">자동 동행 OFF</button></div>
+  </div>
+
+  <div id="ability-bar" aria-label="능력"></div>
+
   <!-- R-CTRL-006: era name and era events sit large at the top centre. -->
-  <div id="era-status" role="status" aria-label="현재 시대"><span id="era-phase-name"></span><span id="era-countdown"></span><div class="era-progress"><div id="era-progress-fill"></div></div><div id="era-event" hidden></div></div>
+  <div id="era-status" role="status" aria-label="현재 시대"><div class="era-line"><span id="era-phase-name"></span><span id="era-countdown"></span></div><div class="era-progress"><div id="era-progress-fill"></div></div><div id="era-event" hidden></div></div>
   <aside id="starter-guide" hidden><span id="starter-guide-text"></span><button id="starter-guide-close" type="button" aria-label="시작 조작 안내 닫기">×</button></aside>
-  <nav id="minimal-tools"><button id="quick-sprint" type="button" hidden>달리기</button><button id="auto-companion" type="button" aria-pressed="false">자동 동행 OFF</button><span id="play-time">플레이 0:00</span><button id="quick-absorb" type="button" aria-pressed="false">흡수 OFF</button><button id="quick-map" type="button">지도</button><button id="quick-ecology" type="button">생태계</button><button id="quick-balance" type="button">분석</button><button id="quick-ranking" type="button">순위</button><button id="quick-help" type="button" aria-haspopup="dialog" aria-controls="play-help">도움말</button></nav>
+
+  <dialog id="hud-menu" aria-labelledby="hud-menu-title">
+    <div class="menu-head"><h2 id="hud-menu-title">메뉴</h2><span id="play-time">플레이 0:00</span><button id="menu-close" class="icon-btn" type="button" aria-label="메뉴 닫기">×</button></div>
+    <div class="menu-grid">
+      <button id="mobile-ui-toggle" type="button" aria-pressed="false">상세 정보: OFF</button>
+      <button id="ranking-toggle" type="button" aria-pressed="true" aria-controls="live-ranking">순위: ON</button>
+      <button id="minimap-toggle" type="button" aria-pressed="false" aria-controls="minimap-panel">지도: OFF</button>
+      <button id="ecology-toggle" type="button" aria-pressed="false" aria-controls="ecology-panel">생태계: OFF</button>
+      <button id="names-toggle" type="button" aria-pressed="true">이름: ON</button>
+      <button id="ally-links-toggle" type="button" aria-pressed="true">연결선: ON</button>
+      <button id="mute-btn" type="button">SOUND: ON</button>
+    </div>
+    <div class="menu-grid">
+      <button id="quick-help" type="button" data-menu-close aria-haspopup="dialog" aria-controls="play-help">도움말 · 카드</button>
+      <button id="quick-balance" type="button" data-menu-close>분석 (F1)</button>
+      <button id="reset-btn" type="button" data-menu-close>전체 초기화</button>
+    </div>
+    <span hidden><button id="quick-map" type="button">지도</button><button id="quick-ecology" type="button">생태계</button></span>
+  </dialog>
   <aside id="live-ranking" class="observer-panel" aria-label="실시간 순위">
     <div class="observer-heading"><strong>TOP 10</strong><button id="ranking-layout" type="button" title="순위 표시: 바 → 축약 → 전체" aria-label="순위 표시 크기 전환">풀</button><div class="ranking-modes" role="group" aria-label="순위 기준"><button id="ranking-mode-score" type="button" aria-pressed="true">점수</button><button id="ranking-mode-size" type="button" aria-pressed="false">크기</button></div></div>
     <ol id="live-ranking-list"></ol>
@@ -123,11 +140,10 @@
   <div id="debug-panel"></div>
 
   <div id="pause-indicator" hidden>일시정지 <span>화면 터치 · P · 계속하기 버튼</span></div>
-  <button id="mobile-ui-toggle" class="hud-btn" type="button" aria-pressed="true">전체 UI</button>
-  <div id="mobile-orientation-hint">가로로 돌리면 더 넓게 플레이할 수 있어요</div>
+  <!-- Phones: left-half drag moves, right-half drag aims and release attacks (no buttons); dodge is the big button at the right thumb with E, sprint and R on its arc. -->
   <div id="touch-controls" aria-label="터치 게임 조작">
     <div id="touch-stick" role="group" aria-label="이동 조이스틱"><span id="touch-knob"></span><span class="touch-label">이동</span></div>
-    <div id="touch-actions"><button id="touch-absorb" type="button" aria-pressed="false">흡수 OFF</button><button id="touch-ultimate" type="button" aria-label="최상위 R 스킬">R 스킬</button><button id="touch-special" type="button" aria-label="특수능력">E 스킬</button><button id="touch-dodge" type="button" aria-label="회피">회피</button><button id="touch-attack" type="button" aria-label="드래그 조준 후 손을 떼면 공격">조준<br>공격</button></div>
+    <div id="touch-actions"><button id="touch-ultimate" type="button" aria-label="최상위 R 스킬">R</button><button id="touch-special" type="button" aria-label="특수능력">E</button><button id="quick-sprint" type="button" hidden>달리기</button><button id="touch-dodge" type="button" aria-label="회피">회피</button><button id="touch-attack" type="button" aria-label="드래그 조준 후 손을 떼면 공격" hidden>공격</button></div>
   </div>
   <dialog id="play-help" aria-labelledby="play-help-title">
     <div class="help-heading"><h2 id="play-help-title">도움말</h2><button id="help-close" class="hud-btn" type="button">닫기 · Esc</button></div>

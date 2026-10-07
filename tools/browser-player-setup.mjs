@@ -16,7 +16,7 @@ try {
     await page.screenshot({path:'reports/M6-player-setup.png'});await page.locator('#player-start').click();
     const identity=await page.evaluate(()=>({color:window.__game.player.color,name:window.__game.player.displayName,paused:window.__game.paused}));
     assert.deepEqual(identity,{color,name:'달빛 늑대',paused:false});
-    await page.locator('#reset-btn').click();await page.locator('#reset-confirm-yes').click();assert(await page.locator('#player-setup').isVisible());
+    await page.locator('#reset-btn').evaluate(e=>e.click());await page.locator('#reset-confirm-yes').click();assert(await page.locator('#player-setup').isVisible());
     assert.equal(await page.locator('#player-name').inputValue(),'달빛 늑대');
   }
   await page.locator('#player-name').fill('<img src=x>');await page.locator('input[value="green"]').check();await page.locator('#player-start').click();
@@ -25,7 +25,7 @@ try {
     const [a,b]=g.entities.filter(e=>e.behavior==='ai');g.entities=[g.player,a,b];
     g.player.score=2000;g.player.size=40;a.score=1000;a.size=80;b.score=10;b.size=160;
   });await page.waitForTimeout(350);
-  await page.locator('#ranking-mode-score').click();await page.waitForTimeout(350);
+  await page.locator('#quick-ranking').click();/* R-VIS-010: the rank number opens the full ranking */await page.locator('#ranking-mode-score').click();await page.waitForTimeout(350);
   assert.equal(await page.locator('.rank-row').first().locator('.rank-name').innerText(),'<img src=x>');
   assert.equal(await page.locator('#live-ranking img').count(),0);
   const scoreTop=await page.locator('.rank-row').first().getAttribute('data-id');
@@ -40,7 +40,7 @@ try {
   assert.equal(await page.locator('#player-name').inputValue(),'<img src=x>');assert(await page.locator('input[value="green"]').isChecked());
   assert.equal(await page.locator('#ranking-mode-size').getAttribute('aria-pressed'),'true');
   await page.locator('#player-name').fill('');await page.locator('#player-start').click();assert.equal(await page.evaluate(()=>window.__game.player.displayName),'나');
-  await page.locator('#reset-btn').click();await page.locator('#reset-confirm-yes').click();
+  await page.locator('#reset-btn').evaluate(e=>e.click());await page.locator('#reset-confirm-yes').click();
   await page.setViewportSize({width:390,height:844});await page.waitForTimeout(100);
   const r=await page.locator('#player-setup').boundingBox();assert(r.x>=0&&r.x+r.width<=390&&r.y>=0&&r.y+r.height<=844);
   await page.screenshot({path:'reports/M6-player-setup-mobile.png'});

@@ -1,17 +1,18 @@
 import {touchActionFeedback} from './touchFeedback.js';
+import {skillCooldownRow} from './statusLabels.js';
 // Pointer Events allow independent movement and attack fingers; cancellation never sticks.
 export class TouchControls {
   constructor(game,input,canvas) {
     this.game=game;this.input=input;this.canvas=canvas;this.pointers=new Map();this.gestures=new Map();
     const toggle=document.getElementById('mobile-ui-toggle');
     const coarse=window.matchMedia('(pointer:coarse)').matches;input.touchMode=coarse;const key=coarse?'ball-mobile-minimal':'ball-desktop-minimal';
-    let minimal=coarse;try{const saved=localStorage.getItem(key);if(saved!==null)minimal=saved==='true';}catch{}
-    const apply=()=>{document.body.classList.toggle('mobile-minimal',minimal);toggle.textContent=minimal?'전체 UI':'최소 UI';toggle.setAttribute('aria-pressed',String(minimal));};
+    // R-VIS-010: the quiet HUD is the default everywhere; '상세 정보' in the menu (or U) adds stats and the ranking panel.
+    let minimal=true;try{const saved=localStorage.getItem(key);if(saved!==null)minimal=saved==='true';}catch{}
+    const apply=()=>{document.body.classList.toggle('mobile-minimal',minimal);toggle.textContent=`상세 정보: ${minimal?'OFF':'ON'}`;toggle.setAttribute('aria-pressed',String(!minimal));};
     const switchUI=()=>{minimal=!minimal;apply();try{localStorage.setItem(key,String(minimal));}catch{}};
     apply();toggle.addEventListener('click',switchUI);
     window.addEventListener('keydown',e=>{if(e.code==='KeyU'&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!['INPUT','TEXTAREA','SELECT'].includes(e.target?.tagName)&&!document.querySelector('dialog[open]')){e.preventDefault();switchUI();}});
     this.root=document.getElementById('touch-controls');
-    this.absorb=document.getElementById('touch-absorb');this.absorb.addEventListener('click',()=>{if(!this.blocked())input.absorbToggle=!input.absorbToggle;});
     this.stick=document.getElementById('touch-stick');this.knob=document.getElementById('touch-knob');
     this.attack=document.getElementById('touch-attack');this.dodge=document.getElementById('touch-dodge');this.special=document.getElementById('touch-special');this.ultimate=document.getElementById('touch-ultimate');
     this.stick.addEventListener('pointerdown',e=>{
@@ -35,6 +36,7 @@ export class TouchControls {
     canvas.addEventListener('pointermove',e=>{if(this.pointers.get(e.pointerId)==='move'){e.preventDefault();this.move(e);}});
     canvas.addEventListener('pointerdown',e=>{
       if(e.pointerType!=='touch'||this.blocked())return;
+      if(e.clientY<this.hudBand())return;// touches that start in the top HUD band never move or aim
       const rect=canvas.getBoundingClientRect();
       const moving=[...this.pointers.values()].includes('move')||Math.hypot(input.touchMove?.x??0,input.touchMove?.y??0)>0;
       if(e.clientX<rect.left+rect.width/2&&!moving){this.beginMove(e,canvas);return;}
@@ -50,6 +52,13 @@ export class TouchControls {
     this.lastHistory=game.apexHistory;this.wasPaused=game.paused;
   }
   blocked(){return this.game.paused||this.game.gameOver;}
+  // R-VIS-010: the band holds the vitals, era banner, top buttons, toggle tray and map thumbnail; its bottom edge plus 8px.
+  hudBand(){
+    let bottom=0;
+    for(const id of ['hud','hud-top','toggle-tray','era-status']){const node=document.getElementById(id);if(node?.getClientRects().length)bottom=Math.max(bottom,node.getBoundingClientRect().bottom);}
+    const map=document.getElementById('minimap-panel');if(map?.classList.contains('thumb')&&!map.hidden)bottom=Math.max(bottom,map.getBoundingClientRect().bottom);
+    return bottom?bottom+8:0;
+  }
   beginMove(e,capture){
     e.preventDefault();capture.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,'move');
     this.stick.classList.add('floating-active');
@@ -100,19 +109,21 @@ export class TouchControls {
     this.lastHistory=this.game.apexHistory;this.wasPaused=this.game.paused;
     const gesture=this.gestures.values().next().value;if(gesture&&!gesture.dragged&&!gesture.canvas)gesture.angle=this.game.player.facing;if(gesture)this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180,!!(gesture.dragged||gesture.canvas));
     const p=this.game.player,blocked=this.blocked();
-    this.absorb.disabled=blocked;this.absorb.textContent=this.input.absorbToggle?'흡수 ON':'흡수 OFF';this.absorb.setAttribute('aria-pressed',String(!!this.input.absorbToggle));
     for(const [button,kind]of [[this.attack,'attack'],[this.dodge,'dodge'],[this.special,'special'],[this.ultimate,'ultimate']]){
       const feedback=touchActionFeedback(this.game,kind);
       button.disabled=feedback.disabled;
-      if(button.textContent!==feedback.label)button.textContent=feedback.label;
+      const special=kind==='special'||kind==='ultimate',text=special&&feedback.state==='cooldown'?feedback.label.replace(' ','\n'):feedback.label;
+      if(button.textContent!==text)button.textContent=text;
       if(button.dataset.state!==feedback.state)button.dataset.state=feedback.state;
       if(button.dataset.charges!==feedback.charges)button.dataset.charges=feedback.charges;
-      const progress=String(Math.round(feedback.progress*100));
+      // E/R rings fill with the cooldown, attack/dodge rings with the next charge
+      const progress=String(special?(feedback.state==='locked'?0:skillCooldownRow(this.game,p,kind==='ultimate'?'R':'E').progress):Math.round(feedback.progress*100));
       if(button.dataset.progress!==progress){button.dataset.progress=progress;button.style.setProperty('--recharge',`${progress}%`);}
       button.classList.toggle('aiming',[...this.pointers.values()].includes(kind));
       const label=`${feedback.label.replace('\n',' ')}${feedback.charges?' · 충전 '+feedback.charges:''}${!feedback.disabled&&kind!=='special'?' · 드래그 후 손을 떼면 실행':''}`;
       if(button.getAttribute('aria-label')!==label)button.setAttribute('aria-label',label);
     }
+    this.special.style.setProperty('--ring',p.colorHex);
     this.stick.setAttribute('aria-disabled',String(blocked));
   }
 }
