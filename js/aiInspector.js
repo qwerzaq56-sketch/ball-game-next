@@ -163,7 +163,7 @@ export class AIInspector {
       ['공격/회피 스택', `${e.attackStack ?? 0}/${e.attackMaxStack ?? 0} · ${e.dodgeStack ?? 0}/${e.dodgeMaxStack ?? 0}`],
       ['위험감수 / 회복', `${e.riskTaking ? 'ON' : 'off'} / ${e.recovering ? 'ON' : 'off'}`],
       ['도전 대상 / 반격 대상', `${e.challengeTarget ? '#' + e.challengeTarget.id : '-'} / ${e.counterattacker ? '#' + e.counterattacker.id : '-'}`],
-      ['명령 / 능력쿨', `${e.command ? e.command.kind : '-'} / E ${(e.normalSkillCooldown??0).toFixed(1)}s / R ${(e.specialCooldown ?? 0).toFixed(1)}s`],
+      ['명령 / 스킬 쿨', `${e.command ? e.command.kind : '-'} / E ${(e.normalSkillCooldown??0).toFixed(1)}s / R ${(e.specialCooldown ?? 0).toFixed(1)}s`],
       ['상태변경 (10s)', `${t ? t.times.length : 0}회`],
       ['최근 전환', t && t.hist.length ? t.hist.slice(-4).join(' | ') : '-'],
     ];
