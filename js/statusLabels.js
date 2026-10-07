@@ -63,3 +63,34 @@ export function objectEffectText(c, e) {
     default: return c.name;
   }
 }
+
+// R-CTRL-006: the top-centre era banner names the current era event in words.
+export function eraEventKind(game, changedAt) {
+  const era = game.era, field = era.apocalypse;
+  if (field) return field.active ? 'doom' : 'doom-warning';
+  if (era.activeWar(game.player)) return 'war';
+  if (game.gameTime - changedAt < 4) return 'transition';
+  if (era.phase.id === 'war') return 'war-phase';
+  return '';
+}
+export function eraEventText(game, changedAt) {
+  const era = game.era, field = era.apocalypse, kind = eraEventKind(game, changedAt);
+  if (kind === 'doom') return '파멸 진행 · 붉은 원 안 피해';
+  if (kind === 'doom-warning') return `파멸 전조 · ${Math.max(0, Math.ceil(field.activeAt - game.gameTime))}초 뒤 피해`;
+  if (kind === 'war') return `전쟁 · 상대 ${game.player.warTargets.size}명`;
+  if (kind === 'transition') return `${era.phase.name} 시작`;
+  if (kind === 'war-phase') return '전쟁기 · 최상위 간 전쟁';
+  return '';
+}
+
+// R-CTRL-006: one HUD row per unlocked E/R skill, kept apart from the chips under the body.
+export function skillCooldownRow(game, e, slot) {
+  const skill = game.abilities.skill(e, slot), left = game.abilities.cooldown(e, slot), total = Math.max(.001, skill?.cooldown ?? left);
+  const casting = e.specialCast?.slot === slot, ready = game.abilities.canCast(e, slot);
+  return {
+    name: skill?.name ?? '',
+    text: casting ? '시전 중' : left > 0 ? `${Math.ceil(left)}s` : ready ? '준비' : '대기',
+    state: casting ? 'casting' : left > 0 ? 'cooldown' : ready ? 'ready' : 'blocked',
+    progress: Math.round(100 * (left > 0 ? 1 - Math.min(1, left / total) : 1)),
+  };
+}

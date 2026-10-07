@@ -72,3 +72,27 @@ test('the player gets the detailed popup while other units keep the short name',
   assert(g.floatingTexts.some((f) => f.text === '바람돌 · 이동 +25% · 4초' && f.life > 2), JSON.stringify(g.floatingTexts));
   assert.deepEqual(statusChips(p, g).map((c) => c.kind), ['speed']);
 });
+
+test('R-CTRL-006 era banner names the doom warning, doom, war and a new era in words', async () => {
+  const {eraEventKind, eraEventText} = await import('../js/statusLabels.js');
+  const g = createGame(7);
+  g.gameTime = 500; g.era.update(0);
+  assert.equal(eraEventKind(g, 0), 'doom-warning');
+  assert.match(eraEventText(g, 0), /^파멸 전조 · \d+초 뒤 피해$/);
+  g.gameTime = g.era.apocalypse.activeAt + .1; g.era.update(0);
+  assert.equal(eraEventText(g, 0), '파멸 진행 · 붉은 원 안 피해');
+  const era = (over) => ({apocalypse: null, activeWar: () => false, phase: {id: 'abundance', name: '영양기'}, ...over});
+  assert.equal(eraEventText({gameTime: 10, era: era(), player: {}}, 8), '영양기 시작');
+  assert.equal(eraEventText({gameTime: 20, era: era(), player: {}}, 8), '');
+  assert.equal(eraEventText({gameTime: 20, era: era({phase: {id: 'war', name: '전쟁기'}}), player: {}}, 8), '전쟁기 · 최상위 간 전쟁');
+  assert.equal(eraEventText({gameTime: 20, era: era({activeWar: () => true}), player: {warTargets: new Set([1, 2])}}, 8), '전쟁 · 상대 2명');
+});
+
+test('R-CTRL-006 HUD cooldown row shows seconds, ready and casting for E/R', async () => {
+  const {skillCooldownRow} = await import('../js/statusLabels.js');
+  const game = (left, can) => ({abilities: {skill: () => ({name: '직선 파도', cooldown: 10}), cooldown: () => left, canCast: () => can}});
+  assert.deepEqual(skillCooldownRow(game(7.2, false), {}, 'E'), {name: '직선 파도', text: '8s', state: 'cooldown', progress: 28});
+  assert.deepEqual(skillCooldownRow(game(0, true), {}, 'E'), {name: '직선 파도', text: '준비', state: 'ready', progress: 100});
+  assert.equal(skillCooldownRow(game(0, false), {}, 'R').state, 'blocked');
+  assert.equal(skillCooldownRow(game(9, false), {specialCast: {slot: 'R'}}, 'R').text, '시전 중');
+});

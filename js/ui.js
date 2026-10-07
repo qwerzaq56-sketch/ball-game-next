@@ -6,19 +6,9 @@ import {SkillTuningUI} from './skillTuningUI.js';
 import { ERA_PHASES } from './era.js';
 import { submitScore } from './storage.js';
 import { EcologyUI } from './ecologyUI.js';
+import { eraEventKind, eraEventText, skillCooldownRow } from './statusLabels.js';
 import {nextSkillGoal} from './progression.js';
 
-// R-CTRL-006: the top-centre era banner names the current era event in words.
-function eraEventKind(game,changedAt){const era=game.era,field=era.apocalypse;if(field)return field.active?'doom':'doom-warning';if(era.activeWar(game.player))return 'war';if(game.gameTime-changedAt<4)return 'transition';if(era.phase.id==='war')return 'war-phase';return '';}
-function eraEventText(game,changedAt){
-  const era=game.era,field=era.apocalypse,kind=eraEventKind(game,changedAt);
-  if(kind==='doom')return '파멸 진행 · 붉은 원 안 피해';
-  if(kind==='doom-warning')return `파멸 전조 · ${Math.max(0,Math.ceil(field.activeAt-game.gameTime))}초 뒤 피해`;
-  if(kind==='war')return `전쟁 · 상대 ${game.player.warTargets.size}명`;
-  if(kind==='transition')return `${era.phase.name} 시작`;
-  if(kind==='war-phase')return '전쟁기 · 최상위 간 전쟁';
-  return '';
-}
 
 export class UI {
   constructor(balance, onBalanceChange) {
@@ -159,10 +149,10 @@ export class UI {
     box.hidden=!slots.length;if(!slots.length){box.textContent='';return;}
     const key=slots.join('');if(box.dataset.slots!==key){box.dataset.slots=key;box.textContent='';for(const slot of slots){const row=document.createElement('div');row.className='skill-cd';row.dataset.slot=slot;row.innerHTML='<b></b><span class="skill-cd-name"></span><span class="skill-cd-time"></span><i><em></em></i>';box.append(row);}}
     for(const row of box.children){
-      const slot=row.dataset.slot,skill=game.abilities.skill(player,slot),left=game.abilities.cooldown(player,slot),total=Math.max(.001,skill?.cooldown??left),casting=player.specialCast?.slot===slot,ready=game.abilities.canCast(player,slot);
-      row.querySelector('b').textContent=slot;row.querySelector('.skill-cd-name').textContent=skill?.name??'';
-      row.querySelector('.skill-cd-time').textContent=casting?'시전 중':left>0?`${Math.ceil(left)}s`:ready?'준비':'대기';
-      row.querySelector('em').style.width=`${Math.round(100*(left>0?1-Math.min(1,left/total):1))}%`;row.dataset.state=casting?'casting':left>0?'cooldown':ready?'ready':'blocked';
+      const slot=row.dataset.slot,info=skillCooldownRow(game,player,slot);
+      row.querySelector('b').textContent=slot;row.querySelector('.skill-cd-name').textContent=info.name;
+      row.querySelector('.skill-cd-time').textContent=info.text;
+      row.querySelector('em').style.width=`${info.progress}%`;row.dataset.state=info.state;
     }
   }
 
