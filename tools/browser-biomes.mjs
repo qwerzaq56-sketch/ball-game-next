@@ -12,7 +12,9 @@ try{
   await page.waitForTimeout(250);assert((await page.locator('#region-text').innerText()).includes(name));await page.screenshot({path:`${prefix}-${id}.png`});
  }
  const lava=await page.evaluate(()=>{const g=window.__game;g.entities=[g.player];g.biomes.damageTimer=0;g.paused=false;const before=g.player.hp;for(let i=0;i<30;i++)g.update(1/60);g.paused=true;return {before,after:g.player.hp,lives:g.lives};});assert(lava.after<lava.before);assert.equal(lava.lives,3);
- const encounter=await page.evaluate(()=>{const g=window.__game;g.entities=[g.player];g.biomes.spawnEncounter();return {actual:g.entities.filter(e=>e.regionReward).length,expected:g.biomes.regions.length*8};});assert.equal(encounter.actual,encounter.expected);
+ const encounter=await page.evaluate(()=>{const g=window.__game;g.entities=[g.player];g.biomes.spawnEncounter();const orbs=g.entities.filter(e=>e.regionReward);return {actual:orbs.length,expected:g.biomes.regions.length*8,perRegion:g.biomes.regions.map(r=>orbs.filter(o=>o.regionReward===r.id).length),onLava:orbs.filter(o=>g.biomes.lavaAt(o,30)).length};});
+ // spawnEncounter skips sample points on lava (remaining++/continue), so a region can get fewer than 8; assert the invariant, not an exact count.
+ assert(encounter.actual<=encounter.expected&&encounter.perRegion.every(n=>n>=6&&n<=8),`encounter counts ${JSON.stringify(encounter)}`);assert.equal(encounter.onLava,0);
  await page.setViewportSize({width:390,height:844});await page.waitForTimeout(300);assert(await page.locator('#minimap-panel').isVisible());await page.screenshot({path:`${prefix}-mobile.png`});
  await page.keyboard.press('H');assert(await page.locator('#play-help').isVisible());assert((await page.locator('#play-help').innerText()).includes('지역 탐험'));await page.keyboard.press('Escape');assert.deepEqual(errors,[]);
  console.log(JSON.stringify({result:'PASS',regions:4,lava,encounter,minimap:true,mobile:true,errors}));

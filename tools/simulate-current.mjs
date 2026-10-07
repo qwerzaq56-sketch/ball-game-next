@@ -1,5 +1,8 @@
 import {readFileSync,writeFileSync} from 'node:fs';
 import {spawn} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {createGame} from './headless.mjs';
 import {BalanceMetrics} from '../js/balanceMetrics.js';
 const config=JSON.parse(readFileSync(new URL('../config/gameBalance.json',import.meta.url))),duration=Number(process.argv[2]??600),output=new URL('../reports/M57-current-balance.json',import.meta.url);
@@ -12,6 +15,6 @@ if(process.argv[3]==='--worker'){
  const runs=[]; // Always rerun: matching config alone cannot identify changed simulation code.
  const jobs=['blue','green'].flatMap(color=>[7,23,701].map(seed=>({color,seed}))).filter(j=>!runs.some(r=>r.variant===`M57-${j.color}`&&r.seed===j.seed));
  const save=()=>writeFileSync(output,JSON.stringify({format:'ball-next-balance-v1',policy:'M57 blue/green normal-life survival autoplay, all living AI; 30Hz, 5s observations; autoplay uses instant uncharged attacks, not human charge timing',requestedSeconds:duration,runs:runs.sort((a,b)=>a.variant.localeCompare(b.variant)||a.seed-b.seed)}));
- async function worker(){for(let j;(j=jobs.shift());){const file=`/tmp/M57-${j.color}-${j.seed}.json`;await new Promise((resolve,reject)=>{const child=spawn(process.execPath,[new URL(import.meta.url).pathname,String(duration),'--worker',j.color,String(j.seed),file],{stdio:['ignore','inherit','inherit']});child.on('error',reject);child.on('exit',code=>code===0?resolve():reject(Error(`worker exited ${code}`)));});const r=JSON.parse(readFileSync(file));runs.push(r);save();console.log(`DONE ${r.variant} seed ${r.seed}: ${r.seconds.toFixed(0)}s, size ${r.timeline.at(-1).playerSize.toFixed(1)}, defeats ${r.defeats}`);}}
+ async function worker(){for(let j;(j=jobs.shift());){const file=join(tmpdir(),`M57-${j.color}-${j.seed}.json`);await new Promise((resolve,reject)=>{const child=spawn(process.execPath,[fileURLToPath(import.meta.url),String(duration),'--worker',j.color,String(j.seed),file],{stdio:['ignore','inherit','inherit']});child.on('error',reject);child.on('exit',code=>code===0?resolve():reject(Error(`worker exited ${code}`)));});const r=JSON.parse(readFileSync(file));runs.push(r);save();console.log(`DONE ${r.variant} seed ${r.seed}: ${r.seconds.toFixed(0)}s, size ${r.timeline.at(-1).playerSize.toFixed(1)}, defeats ${r.defeats}`);}}
  await Promise.all([worker(),worker(),worker()]);save();
 }

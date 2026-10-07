@@ -1,8 +1,7 @@
 // Active-player simulation with continuous invariants, separate from passive ecology metrics.
 import assert from 'node:assert/strict';
 import {createGame} from './headless.mjs';
-import {canStartAttack} from '../js/combat.js';
-import {canAbsorb} from '../js/collision.js';
+import {canAbsorb,isHostile} from '../js/collision.js';
 
 const seed=Number(process.argv[2]??17),seconds=Number(process.argv[3]??900),fps=Number(process.argv[4]??60);
 assert(Number.isInteger(seed)&&seconds>0&&fps>=20);
@@ -18,12 +17,12 @@ for(let frame=0;frame<seconds*fps;frame++){
  g.gameOver=false;g.paused=false;g.lives=g.balance.lives.maxLives;
  g.update(dt);
  if(p.companionGroup)groupSeconds+=dt;
- const apex=g.entities.filter(e=>e.alive&&e.apex).length;maxApex=Math.max(maxApex,apex);assert(apex<=3,`apex cap at ${t}`);
+ const apex=g.entities.filter(e=>e.alive&&e.apex).length;maxApex=Math.max(maxApex,apex);assert(apex<=g.balance.ecology.maxApex,`apex cap at ${t}`);
  maxGroups=Math.max(maxGroups,g.allyLinks.groups.size);
  for(const group of g.allyLinks.groups.values()){
   assert(group.members.size>=2&&group.members.size<=6,`group count at ${t}`);
   assert(group.members.has(group.leader),'leader must be a member');
-  for(const e of group.members){assert(e.alive&&g.entities.includes(e)&&e.color===group.color&&e.companionGroup===group.id,'group membership must be current');assert(!canStartAttack(e)&&!g.abilities.canCast(e),'peaceful actions');assert(!g.entities.some(target=>target.beingAbsorbedByRef===e),'peaceful absorption');}
+  for(const e of group.members){assert(e.alive&&g.entities.includes(e)&&(e.color===group.color||!!group.truceUntil)&&e.companionGroup===group.id,'group membership must be current (mixed colors only under a truce, R-COMP-002)');for(const other of group.members)if(other!==e)assert(!isHostile(e,other),'group members are never hostile to each other (R-COMP-002)');assert(![...group.members].some(target=>target!==e&&target.beingAbsorbedByRef===e),'group members never absorb each other (R-COMP-002)');}
  }
  if(frame%fps===0){
   const sample=g.entities.filter(e=>e.alive&&e.behavior!=='orb');
