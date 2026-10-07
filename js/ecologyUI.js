@@ -37,7 +37,7 @@ export class EcologyUI {
         this.preferences.rankingMode=mode; savePresentationPreferences(this.preferences); this.apply(); this.lastUpdate=-Infinity;
       });
     }
-    for (const key of ['names','ranking','ecology','minimap']) {
+    for (const key of ['names','ranking','ecology','minimap','shake']) {
       document.getElementById(`${key}-toggle`).addEventListener('click', () => this.toggle(key));
     }
     document.getElementById('ally-links-toggle').addEventListener('click',()=>this.toggle('allyLinks'));
@@ -65,7 +65,7 @@ export class EcologyUI {
     this.ecology.hidden = !this.preferences.ecology;
     this.minimap.root.hidden=!this.preferences.minimap;if(!this.preferences.minimap)this.minimap.expand(false);
     for (const mode of ['score','size']) document.getElementById(`ranking-mode-${mode}`).setAttribute('aria-pressed',String(this.preferences.rankingMode===mode));
-    const labels = {names:'이름',ranking:'순위',ecology:'생태계',minimap:'지도'};
+    const labels = {names:'이름',ranking:'순위',ecology:'생태계',minimap:'지도',shake:'흔들림'};
     for (const key of Object.keys(labels)) {
       const button = document.getElementById(`${key}-toggle`);
       button.textContent = `${labels[key]}: ${this.preferences[key] ? 'ON' : 'OFF'}`;

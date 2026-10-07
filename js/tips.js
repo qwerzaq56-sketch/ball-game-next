@@ -11,7 +11,7 @@ const STORAGE_KEY = 'ballgamenext_tips_v1';
 const SLOT_KEYS = {E: {desktop: 'E 키', touch: 'E 버튼'}, R: {desktop: 'R 키', touch: 'R 버튼'}};
 
 const both = (text) => ({desktop: text, touch: text});
-// T01-T12 (T02 is the unlock family). Text is a title plus one or two short lines.
+// T01-T13 (T02 is the unlock family). Text is a title plus one or two short lines.
 export function tipText(id, game) {
   const b = game.balance, p = game.player, attackAt = b.skills.attackStackThresholds[0]?.size ?? 40;
   switch (id) {
@@ -29,6 +29,7 @@ export function tipText(id, game) {
     case 'bigger-threat': return {title: '큰 같은 색은 나를 흡수해요', text: both('나보다 큰 같은 색 공은 나를 흡수할 수 있어요. 동행 중인 공은 흡수하지 않으니, 동행이 아니면 거리를 두세요.')};
     case 'blizzard': return {title: '눈보라', text: both('시야가 좁아지고 모두의 감지 거리가 줄어듭니다. 숨거나 몰래 다가가기 좋아요.')};
     case 'vent': return {title: '분출구가 곧 터져요', text: both('노랗게 깜빡이는 분출구는 곧 분출합니다. 원 밖으로 피하세요.')};
+    case 'meteor': return {title: '운석이 떨어져요', text: both('커지는 그림자 밖으로 피하세요. 떨어진 뒤 불타는 운석구도 아프고, 식으면 테두리에 파편 먹이가 남습니다.')};
   }
   const skill = id.match(/^unlock-(E|R)-(\w+)$/);
   if (skill) {
@@ -69,6 +70,7 @@ export class Tips {
     for (const slot of ['E', 'R']) if (edge(slot + p.color, g.abilities.unlocked(p, slot))) this.notice(`unlock-${slot}-${p.color}`);
     if (!p.attackUnlocked && g.gameTime > TIP_LOCKED_HINT_SECONDS) this.notice('attack-locked');
     if (p.companionGroup) this.notice('companion-absorb');
+    if (g.era?.apocalypse && !g.era.apocalypse.active) this.notice('meteor');
     if (p.hp < p.maxHp * .5) this.notice('heal-sources');
     const regenDelay = b.healthRegen?.delay ?? 5;
     if (p.hp < p.maxHp && p.regenTimer >= regenDelay && p.regenTimer < regenDelay + 1) this.notice('regen');

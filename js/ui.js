@@ -161,7 +161,7 @@ export class UI {
     this.absorbButton.textContent=game.input.absorbToggle?'흡수 ON':'흡수 OFF';this.absorbButton.setAttribute('aria-pressed',String(!!game.input.absorbToggle));this.absorbButton.disabled=game.paused||game.gameOver;
     document.getElementById('player-identity').textContent = player.displayName;
     document.getElementById('region-text').textContent=game.biomes.status(player);
-    const field=game.era.apocalypse;document.getElementById('era-text').textContent=game.era.status()+(field?field.active?' · 파멸 위험':' · 파멸 전조':'');
+    const field=game.era.apocalypse;document.getElementById('era-text').textContent=game.era.status()+(field?field.active?' · 운석구 위험':' · 운석 낙하 전조':'');
     this.updateEraBadge(game);
     this.autoCompanionButton.textContent=player.autoCompanionOffer?'자동 동행 ON':'자동 동행 OFF';this.autoCompanionButton.setAttribute('aria-pressed',String(!!player.autoCompanionOffer));
     // R-CTRL-006: the sprint gauge always sits right under the HP bar; before sprint unlocks it shows an empty locked track.

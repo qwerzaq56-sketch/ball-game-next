@@ -78,11 +78,12 @@ test('R-CTRL-006 era banner names the doom warning, doom, war and a new era in w
   const g = createGame(7);
   g.gameTime = 500; g.era.update(0);
   assert.equal(eraEventKind(g, 0), 'doom-warning');
-  assert.match(eraEventText(g, 0), /^파멸 전조 · \d+초 뒤 피해$/);
+  assert.match(eraEventText(g, 0), /^운석 낙하 · \d+초 뒤 충돌$/);
   g.gameTime = g.era.apocalypse.activeAt + .1; g.era.update(0);
-  assert.equal(eraEventText(g, 0), '파멸 진행 · 붉은 원 안 피해');
+  assert.equal(eraEventText(g, 0), '운석구가 불타는 중 · 들어가면 피해');
   const era = (over) => ({apocalypse: null, activeWar: () => false, phase: {id: 'abundance', name: '영양기'}, ...over});
   assert.equal(eraEventText({gameTime: 10, era: era(), player: {}}, 8), '영양기 시작');
+  assert.equal(eraEventText({gameTime: 10, era: era({phase: {id: 'decline', name: '쇠퇴기', line: '세계가 식어 갑니다, 하늘을 보세요'}}), player: {}}, 8), '쇠퇴기 · 세계가 식어 갑니다, 하늘을 보세요');
   assert.equal(eraEventText({gameTime: 20, era: era(), player: {}}, 8), '');
   assert.equal(eraEventText({gameTime: 20, era: era({phase: {id: 'war', name: '전쟁기'}}), player: {}}, 8), '전쟁기 · 최상위 간 전쟁');
   assert.equal(eraEventText({gameTime: 20, era: era({activeWar: () => true}), player: {warTargets: new Set([1, 2])}}, 8), '전쟁 · 상대 2명');

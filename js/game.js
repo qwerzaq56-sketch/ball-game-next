@@ -80,7 +80,7 @@ export class Game {
     this.abilities = new Abilities(this);
     this.allyLinks = new AllyLinks(this);
     this.biomes = new Biomes(this);this.biomeObjects=new BiomeObjects(this);
-    this.era = new Era(this);
+    this.era = new Era(this);this.screenShake = null;
     this.relics = new Relics(this);
     this.autoplay = new Autoplay(this);
     this.runMetrics = new RunMetrics();
@@ -789,6 +789,9 @@ export class Game {
 
     ctx.save();
     ctx.translate(width / 2, height / 2);
+    // R-WORLD-013: meteor impact shake (off in the menu: 흔들림 OFF). Visual RNG only.
+    const shake=this.screenShake;
+    if(shake&&shake.until>this.gameTime&&!this.paused&&this.ui?.preferences?.shake!==false){const k=shake.power*(shake.until-this.gameTime)/shake.seconds*12;ctx.translate((random('visual')-.5)*2*k,(random('visual')-.5)*2*k);}
     ctx.scale(this.camera.zoom, this.camera.zoom);
     ctx.translate(-this.camera.x, -this.camera.y);
 
@@ -820,6 +823,7 @@ export class Game {
     }
     this.renderCamera=null;
     ctx.restore();
+    this.era.drawOffscreen(ctx);
     this.drawNames(ctx);
     this.biomes.drawBlizzardOverlay();
     if((this.playerHitUntil??0)>this.gameTime){ctx.save();ctx.globalAlpha=.4*Math.min(1,(this.playerHitUntil-this.gameTime)/.18);ctx.strokeStyle='#fb7185';ctx.lineWidth=6;ctx.strokeRect(3,3,this.canvas.width-6,this.canvas.height-6);ctx.restore();}
@@ -993,6 +997,7 @@ export class Game {
     }
 
     if(e.healFraction){ctx.save();ctx.strokeStyle='#ffffff';ctx.lineWidth=2/this.camera.zoom;ctx.beginPath();ctx.moveTo(e.x-5/this.camera.zoom,e.y);ctx.lineTo(e.x+5/this.camera.zoom,e.y);ctx.moveTo(e.x,e.y-5/this.camera.zoom);ctx.lineTo(e.x,e.y+5/this.camera.zoom);ctx.stroke();ctx.restore();}
+    if(e.regionReward==='apocalypse'&&e.behavior==='orb'){ctx.save();ctx.globalAlpha=.55+.25*Math.sin(this.gameTime*6+e.id);ctx.fillStyle='#fb923c';ctx.beginPath();ctx.arc(e.x,e.y,r+5/this.camera.zoom,0,Math.PI*2);ctx.fill();ctx.restore();}
     if(e.regionReward==='snow'&&e.behavior==='orb'){ctx.save();ctx.strokeStyle='#e0f2fe';ctx.lineWidth=1/this.camera.zoom;ctx.beginPath();for(let i=0;i<6;i++){const angle=i*Math.PI/3;ctx.moveTo(e.x,e.y);ctx.lineTo(e.x+Math.cos(angle)*(r+5),e.y+Math.sin(angle)*(r+5));}ctx.stroke();ctx.restore();}
     if(e.attackState==='CHARGING'){ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.strokeStyle='#ffffff';ctx.lineWidth=4/this.camera.zoom;ctx.stroke();}
     // R-VIS-001: matte combat units, keep passive food rendering unchanged.

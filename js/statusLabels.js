@@ -81,10 +81,10 @@ export function eraEventKind(game, changedAt) {
 }
 export function eraEventText(game, changedAt) {
   const era = game.era, field = era.apocalypse, kind = eraEventKind(game, changedAt);
-  if (kind === 'doom') return '파멸 진행 · 붉은 원 안 피해';
-  if (kind === 'doom-warning') return `파멸 전조 · ${Math.max(0, Math.ceil(field.activeAt - game.gameTime))}초 뒤 피해`;
+  if (kind === 'doom') return '운석구가 불타는 중 · 들어가면 피해';
+  if (kind === 'doom-warning') return `운석 낙하 · ${Math.max(0, Math.ceil(field.activeAt - game.gameTime))}초 뒤 충돌`;
   if (kind === 'war') return `전쟁 · 상대 ${game.player.warTargets.size}명`;
-  if (kind === 'transition') return `${era.phase.name} 시작`;
+  if (kind === 'transition') return era.phase.line ? `${era.phase.name} · ${era.phase.line}` : `${era.phase.name} 시작`;
   if (kind === 'war-phase') return '전쟁기 · 최상위 간 전쟁';
   return '';
 }

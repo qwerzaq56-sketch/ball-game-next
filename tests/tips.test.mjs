@@ -9,7 +9,7 @@ const run = (tips, seconds, blocked = false) => { for (let t = 0; t < seconds; t
 
 test('R-CTRL-007 every tip id has a title and desktop/touch text, unlock E/R per species', () => {
   const g = setup();
-  for (const id of ['attack-locked', 'unlock-attack', 'unlock-dodge', 'unlock-sprint', 'full-charge', 'same-color', 'companion-absorb', 'absorb-hit', 'heal-sources', 'regen', 'dodge', 'bigger-threat', 'blizzard', 'vent', 'unlock-E-red', 'unlock-R-cyan']) {
+  for (const id of ['attack-locked', 'unlock-attack', 'unlock-dodge', 'unlock-sprint', 'full-charge', 'same-color', 'companion-absorb', 'absorb-hit', 'heal-sources', 'regen', 'dodge', 'bigger-threat', 'blizzard', 'vent', 'meteor', 'unlock-E-red', 'unlock-R-cyan']) {
     const t = tipText(id, g);
     assert.ok(t?.title && t.text.desktop && t.text.touch, id);
   }
@@ -53,6 +53,14 @@ test('R-CTRL-007 state conditions: low HP, regen start, attack still locked afte
   tips.dismiss(); run(tips, TIP_GAP_SECONDS);
   p.attackUnlocked = false; g.gameTime = 25; p.hp = p.maxHp; tips.update(.1);
   assert.equal(tips.current.id, 'attack-locked');
+});
+
+test('R-CTRL-007 T13 the meteor tip shows while the meteor is still falling, not once the crater burns', () => {
+  const g = setup(), tips = g.tips; tips.seen.add('attack-locked');
+  g.gameTime = 480; g.era.update(0); tips.update(.1);
+  assert.equal(tips.current.id, 'meteor');
+  const late = setup(); late.tips.seen.add('attack-locked'); late.gameTime = 480; late.era.update(0); late.gameTime = late.era.apocalypse.activeAt; late.era.update(0); late.tips.update(.1);
+  assert.notEqual(late.tips.current?.id, 'meteor');
 });
 
 const noticed = (g, id) => g.tips.queue.some((q) => q.id === id) || g.tips.current?.id === id;

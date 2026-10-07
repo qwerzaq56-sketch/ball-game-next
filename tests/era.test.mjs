@@ -18,15 +18,25 @@ test('war travel uses a point and preserves prey, recovery, threat and companion
 test('war endpoints release immediately at phase end instead of holding stale travel',()=>{
  const {g,a}=fixture();phase(g,360);decideAI(a,g,g.balance);assert.equal(a.state,'war_move');a.decisionTimer=100;phase(g,480);updateAI(a,.01,g,g.balance);assert.notEqual(a.state,'war_move');
 });
-test('apocalypse warns without damage, avoids respawn centre and ticks after six seconds',()=>{
- const {g,a}=fixture();phase(g,480);const field=g.era.apocalypse;assert(field);assert(Math.hypot(field.x-g.player.x,field.y-g.player.y)>field.radius+100);
+test('R-WORLD-013 meteor warns six seconds without damage, avoids respawn centre, hits once (centre harder than rim), then the crater burns',()=>{
+ const {g,a}=fixture();phase(g,480);const field=g.era.apocalypse;assert(field);assert.equal(field.kind,'meteor');assert(Math.hypot(field.x-g.player.x,field.y-g.player.y)>field.radius+100);
  a.x=field.x;a.y=field.y;const hp=a.hp;decideAI(a,g,g.balance);assert.equal(a.environmentThreat,field);assert.equal(a.state,'flee');
- for(let i=0;i<12;i++){g.gameTime+=.5;g.era.update(.5);}assert.equal(field.active,true);assert.equal(a.hp,hp);
- g.gameTime+=.5;g.era.update(.5);assert(a.hp<hp);const after=a.hp;a.invincible=true;g.gameTime+=.5;g.era.update(.5);assert.equal(a.hp,after);
+ for(let i=0;i<11;i++){g.gameTime+=.5;g.era.update(.5);}assert.equal(field.active,false);assert.equal(a.hp,hp);
+ const rim=new AIEntity({x:field.x+field.impactRadius*.9,y:field.y,color:'green',colorHex:'#0f0',startSize:60,balance:g.balance});g.entities.push(rim);const rimHp=rim.hp;
+ g.gameTime+=.5;g.era.update(.5);assert(field.active&&field.impacted);assert.equal(field.radius,field.craterRadius);assert(field.craterRadius<field.impactRadius);
+ const centreLoss=(hp-a.hp)/a.maxHp,rimLoss=(rimHp-rim.hp)/rim.maxHp;assert(Math.abs(centreLoss-.3)<.02,`centre ${centreLoss}`);assert(Math.abs(rimLoss-.12)<.02,`rim ${rimLoss}`);
+ const afterImpact=a.hp,rimAfter=rim.hp;g.gameTime+=.5;g.era.update(.5);assert(Math.abs((afterImpact-a.hp)/a.maxHp-.08)<.02);assert.equal(rim.hp,rimAfter,'outside the crater after the hit');
+ const after=a.hp;a.invincible=true;g.gameTime+=.5;g.era.update(.5);assert.equal(a.hp,after);
 });
-test('apocalypse finishes once, creates capped perimeter rewards and returns next cycle',()=>{
+test('R-WORLD-013 meteor impact shakes the screen only when the player is near',()=>{
+ const {g}=fixture();g.entities=[g.player];phase(g,480);const field=g.era.apocalypse;g.player.x=field.x+field.impactRadius*2;g.player.y=field.y;
+ g.gameTime=486;g.era.update(.01);assert(g.screenShake&&g.screenShake.until>g.gameTime&&g.screenShake.power>=.35);
+ const far=fixture().g;far.entities=[far.player];phase(far,480);const f2=far.era.apocalypse;far.player.x=f2.x+f2.impactRadius*5;far.player.y=f2.y;far.gameTime=486;far.era.update(.01);assert.equal(far.screenShake,null);
+});
+test('apocalypse finishes once, creates capped rim shards, leaves a cooled crater mark for a minute and returns next cycle',()=>{
  const {g}=fixture();g.entities=[g.player];phase(g,480);const field=g.era.apocalypse;g.gameTime=494;g.era.update(14);assert.equal(g.era.apocalypse,null);assert.equal(g.era.completedApocalypses,1);
- const rewards=g.entities.filter(e=>e.regionReward==='apocalypse');assert.equal(rewards.length,12);for(const e of rewards)assert(Math.hypot(e.x-field.x,e.y-field.y)>field.radius);
+ const rewards=g.entities.filter(e=>e.regionReward==='apocalypse');assert.equal(rewards.length,12);for(const e of rewards)assert(Math.hypot(e.x-field.x,e.y-field.y)>field.craterRadius);
+ assert.equal(g.era.craters.length,1);g.gameTime=494+59;g.era.update(0);assert.equal(g.era.craters.length,1);g.gameTime=494+61;g.era.update(0);assert.equal(g.era.craters.length,0);g.gameTime=494;
  g.era.update(0);assert.equal(g.entities.filter(e=>e.regionReward==='apocalypse').length,12);
  phase(g,1020);assert(g.era.apocalypse);assert.notEqual(g.era.apocalypse.id,field.id);
 });
