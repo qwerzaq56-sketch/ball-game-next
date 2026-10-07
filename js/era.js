@@ -31,10 +31,11 @@ export class Era {
  }
  activeWar(e){return this.enabled&&this.phase.id==='war'&&!!e.warTargets?.size;}
  startWar(owner,target,reason='declaration'){
-  if(!this.enabled||this.phase.id!=='war'||owner===target||!owner.alive||!target.alive)return false;
+  // R-WORLD-012 (2026-10-08): same-color apexes never declare or retaliate war on each other.
+  if(!this.enabled||this.phase.id!=='war'||owner===target||!owner.alive||!target.alive||owner.color===target.color)return false;
   owner.warTargets??=new Set();if(owner.warTargets.has(target))return false;
   owner.warTargets.add(target);owner.warMode=true;owner.decisionTimer=0;
-  // A peace link cannot block a declared war, including same-color apex conflicts.
+  // A mixed-color peace link cannot block a declared war.
   if(owner.companionGroup&&owner.companionGroup===target.companionGroup)this.game.allyLinks.leave(owner,'war');
   this.game.abilities.endCommand(owner,'war');
   this.log({type:'war-start',owner:owner.id,target:target.id,reason});return true;
@@ -43,7 +44,7 @@ export class Era {
   if(this.phase.id!=='war'){if(this.warCycle!==-1)this.clearWars();return;}
   if(this.warCycle!==this.cycle){this.clearWars();this.warCycle=this.cycle;}
   const apex=this.game.entities.filter(e=>e.alive&&e.apex);
-  for(const e of apex){if(this.warRolls.has(e.id))continue;const rivals=apex.filter(t=>t!==e);if(!rivals.length)continue;
+  for(const e of apex){if(this.warRolls.has(e.id))continue;const rivals=apex.filter(t=>t!==e&&t.color!==e.color);if(!rivals.length)continue;
    this.warRolls.add(e.id);if(random('ai')<(this.game.balance.era.warEntryChance??.8))this.startWar(e,rivals[Math.floor(random('ai')*rivals.length)]);
   }
  }
