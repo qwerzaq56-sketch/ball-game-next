@@ -239,8 +239,10 @@ export class Abilities {
   this.fields=this.fields.filter(f=>f.time<(f.duration??5)-1e-8&&f.owner.alive&&f.owner.apex);
   this.metrics.reconcile();
  }
- inDust(target){return (target.dustUntil??0)>this.game.gameTime&&!!target.dustZone&&dist(target,target.dustZone)<=target.dustZone.radius;}
- miss(target){if(this.inDust(target))return random('ai')<(target.dustChance??.15);const fields=this.fields.filter(f=>f.owner===target&&dist(f,target)<=(f.radius??360));return fields.length>0&&random('ai')<Math.max(...fields.map(f=>f.missChance??.25));}
+ inDust(target,owner=target){return (owner.dustUntil??0)>this.game.gameTime&&!!owner.dustZone&&dist(target,owner.dustZone)<=owner.dustZone.radius;}
+ // R-ABIL-010 (2026-10-08): same-color allies standing in a yellow cloud get the miss chance too (best cloud wins).
+ dustChance(target){let best=0;for(const u of this.game.entities)if(u.alive&&u.color===target.color&&!isHostile(u,target)&&this.inDust(target,u))best=Math.max(best,u.dustChance??.15);return best;}
+ miss(target){const dust=this.dustChance(target);if(dust>0)return random('ai')<dust;const fields=this.fields.filter(f=>f.owner===target&&dist(f,target)<=(f.radius??360));return fields.length>0&&random('ai')<Math.max(...fields.map(f=>f.missChance??.25));}
  rallyActive(e){return [...(e.rallyBuffs?.values()??[])].some(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex&&!isHostile(e,r.owner));}
  rallyPower(e,key,fallback){return Math.max(0,...[...(e.rallyBuffs?.values()??[])].filter(r=>r.expires>this.game.gameTime&&r.owner.alive&&r.owner.apex&&!isHostile(e,r.owner)).map(r=>r[key]??fallback));}
  speedMultiplier(e){return Math.max(1,(e.objectSpeedUntil??0)>this.game.gameTime?(e.objectSpeedMultiplier??1):1,this.rallyPower(e,'buffSpeed',1.25),(e.vigorUntil??0)>this.game.gameTime?(e.vigorEffect?.speed??1.12):1);}

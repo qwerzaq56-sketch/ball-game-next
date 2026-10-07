@@ -12,7 +12,7 @@ export const SKILL_CATALOG = {
  'red-embers':{color:'red',slot:'E',name:'불씨 장판',effect:'embers',windup:.25,cooldown:9,radius:240,fieldDuration:5,tickInterval:.5,damage:.43},
  'red-muster':{color:'red',slot:'R',name:'혈족 집결',effect:'muster',windup:.6,cooldown:16,gatherDuration:3,buffDuration:8,buffDamage:.3,buffSpeed:1.25},
  'red-vigor':{color:'red',slot:'E',name:'사냥 박동',effect:'vigor',windup:.25,cooldown:9,radius:260,buffDuration:4,buffDamage:.15,buffSpeed:1.12},
- 'yellow-dust':{color:'yellow',slot:'E',name:'먼지 장막',effect:'dust',windup:.3,cooldown:9,buffDuration:15,missChance:.15,visualRadiusMultiplier:3,invulnerableSeconds:.8},
+ 'yellow-dust':{color:'yellow',slot:'E',name:'먼지 장막',effect:'dust',windup:.3,cooldown:9,buffDuration:4,missChance:.15,visualRadiusMultiplier:3,invulnerableSeconds:.8},
  'cyan-freeze':{color:'cyan',slot:'R',name:'냉기 휘두르기',effect:'legacy',windup:.6,cooldown:10,radius:260,damage:.62,freezeSeconds:1},
  'blue-trident':{color:'blue',slot:'R',name:'삼중 파도',effect:'legacy',windup:.6,cooldown:10,length:440,width:205,damage:1.08,pushDuration:.2,pushSpeed:600,waveDuration:.5,commandDuration:4,commandRadius:350},
  'green-summon':{color:'green',slot:'R',name:'숲의 부름',effect:'summon',windup:.5,cooldown:18,radius:350,summonCount:2,summonAbsorbDelay:30,summonSizeFraction:.16,summonSizeVariation:.2,summonSizeCapFraction:.2,summonAttackInheritance:.44,buffDuration:5,buffDamage:.15},
