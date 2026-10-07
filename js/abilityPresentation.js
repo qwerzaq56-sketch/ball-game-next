@@ -19,7 +19,7 @@ export function drawAbilityPresentation(ctx,abilities,zoom,shape,paint=drawAbili
  for(const unit of abilities.units()){
   if((unit.shieldHp??0)>0&&(unit.shieldRemaining??0)>0&&unit.shieldTextureKind==='frost')circle('cyan-shield',unit.x,unit.y,unit.size/2+10/zoom,.22);
   if(unit.inviteBuffs?.some(b=>b.expires>now))circle('green-call',unit.x,unit.y,unit.size/2+12/zoom,.12);
-  if((unit.dustUntil??0)>now)circle('yellow-dust',unit.x,unit.y,(unit.size/2+12/zoom)*(unit.dustVisualMultiplier??3),.17);
+  if((unit.dustUntil??0)>now&&unit.dustZone)circle('yellow-dust',unit.dustZone.x,unit.dustZone.y,unit.dustZone.radius,.17);// R-ABIL-010: placed cloud
  }
  for(const f of abilities.embers)circle('red-embers',f.x,f.y,f.radius,.20);
  for(const f of abilities.fields)circle('yellow-dust',f.x,f.y,f.radius??360,.18);
