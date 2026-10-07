@@ -291,6 +291,8 @@ export class UI {
       { label: 'Lives', key: 'lives', fields: [
         ['maxLives', 1],
       ] },
+      { label: '부활', key: 'respawn', fields: [['invulnerableSeconds', .5], ['threatRadius', 50], ['hazardMargin', 20]] },
+      { label: '한 판 지형 수 (다음 판부터)', key: 'biomes', fields: [['terrainsPerRound', 1]] },
       { label: 'Camera', key: 'camera', fields: [
         ['baseZoom', 0.05], ['zoomOutPerSize', 0.0005], ['maxZoomOut', 0.1],
       ] },

@@ -37,6 +37,7 @@ import {apexTerritoryRadius} from './skillCatalog.js';
 import { startAbsorption, cancelAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
 import { AudioManager } from './audio.js';
 import {statusChips,drawStatusChips,textWidth} from './statusLabels.js';
+import {pickRespawnPoint} from './respawn.js';
 
 const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '관계추종', companion:'대열 동행',war_move:'전선 이동', recover: '회복' };
 const AI_PERSONALITY_LABEL = { growth: '성장형', cautious: '회피형', opportunist: '기회형' };
@@ -345,6 +346,7 @@ export class Game {
     const releasedUltimate=inp._ultimateQueued;inp._ultimateQueued=false;
     const releasedAttack=inp._attackQueued;inp._attackQueued=null;
     const releasedDodgeAngle=inp._dodgeAngle;inp._dodgeAngle=null;
+    p.respawnInvulnerableRemaining=Math.max(0,(p.respawnInvulnerableRemaining??0)-dt);
     if(p.frozen>0){p.autoChargeSeconds=0;inp.attackChargeSeconds=0;p.attackHoldProgress=0;if(releasedDodgeAngle!=null)inp.consumeDodge();inp.consumeSpecial?.();return;}
     updateAttack(p, dt, b, this.hostileTargetsFor(p), this);
     updateDodge(p, dt, b);
@@ -612,10 +614,13 @@ export class Game {
     }
   }
 
+  // R-ECO-010: a random point clear of hazards and of units that could kill or absorb the player, then a short invulnerability.
   respawnPlayer() {
     const p = this.player;
-    p.x = this.balance.world.worldWidth / 2;
-    p.y = this.balance.world.worldHeight / 2;
+    const point = pickRespawnPoint(this);
+    p.x = point.x;
+    p.y = point.y;
+    p.respawnInvulnerableRemaining = this.balance.respawn?.invulnerableSeconds ?? 3;
     // Size/Growth/stacks are deliberately left untouched (spec §16: a Life-based respawn keeps
     // Size — only a death with zero Lives left resets anything, and that goes through reset()).
     p.hp = p.maxHp;
@@ -1022,7 +1027,7 @@ export class Game {
       ctx.stroke();
     }
 
-    if (e.invincible || e.dustInvulnerableRemaining>0) {
+    if (e.invincible || e.dustInvulnerableRemaining>0 || e.respawnInvulnerableRemaining>0) {
       ctx.beginPath();
       ctx.strokeStyle = 'rgba(255,255,255,0.9)';
       ctx.lineWidth = 2 / this.camera.zoom;

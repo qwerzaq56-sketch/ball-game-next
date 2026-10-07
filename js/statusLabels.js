@@ -16,6 +16,7 @@ export function statusChips(e, game) {
   if ((e.frostbiteRemaining ?? 0) > 0) add('❄ 동상', '#cffafe', 'frostbite');
   if (e.wavePush) add('밀림', '#93c5fd', 'push');
   if ((e.dustInvulnerableRemaining ?? 0) > 0) add(`무적 ${secs(e.dustInvulnerableRemaining)}`, '#fde68a', 'invulnerable');
+  if ((e.respawnInvulnerableRemaining ?? 0) > 0) add(`부활 무적 ${secs(e.respawnInvulnerableRemaining)}`, '#fde68a', 'respawn-invulnerable');
   if ((e.shieldHp ?? 0) > 0 && (e.shieldRemaining ?? 0) > 0) add(`보호막 ${Math.ceil(e.shieldHp)} · ${secs(e.shieldRemaining)}`, '#a5f3fc', 'shield');
   if ((e.obsidianShieldHp ?? 0) > 0 && (e.obsidianShieldUntil ?? 0) > now) add(`흑요석 막 ${secs(e.obsidianShieldUntil - now)}`, '#c4b5fd', 'obsidian-shield');
   if ((e.objectSpeedUntil ?? 0) > now) add(`가속 +${pct((e.objectSpeedMultiplier ?? 1) - 1)} ${secs(e.objectSpeedUntil - now)}`, '#7dd3fc', 'speed');

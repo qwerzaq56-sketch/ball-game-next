@@ -2,7 +2,7 @@
 let streams = new Map();
 export function resetRandom(seed) {
   streams = new Map();
-  for (const name of ['world', 'ai', 'physics', 'visual', 'names', 'affinity']) {
+  for (const name of ['world', 'ai', 'physics', 'visual', 'names', 'affinity', 'respawn']) {
     let state = seed >>> 0;
     for (const c of name) state = Math.imul(state ^ c.charCodeAt(0), 16777619) >>> 0;
     streams.set(name, state);

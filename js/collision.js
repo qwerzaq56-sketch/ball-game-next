@@ -30,6 +30,7 @@ export function canAbsorb(absorber, target) {
   if (target.behavior !== 'ai' && target.behavior !== 'player') return false;
   if (target.color !== absorber.color || absorber.warTargets?.has(target)||target.warTargets?.has(absorber)) return false;
   if (target.beingAbsorbedByRef) return false; // already locked by another absorber
+  if ((target.respawnInvulnerableRemaining ?? 0) > 0) return false; // R-ECO-010: respawn invulnerability also blocks absorption
   return target.size < absorber.size;
 }
 

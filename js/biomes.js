@@ -48,6 +48,7 @@ export class Biomes {
    {id:'grassland',name:'초원',x:w.worldWidth*.5,y:w.worldHeight*.5,radius:r,color:'#4a6834',reward:1.25},
    {id:'desert',name:'사막',x:w.worldWidth*.62,y:w.worldHeight*.5,radius:r,color:'#9a7541',reward:1.5}
   ]:[];
+  this.regions=roundTerrains(this.regions,game.balance.biomes??{},game.seed);
   for(const region of this.regions)Object.defineProperty(region,'_world',{value:w});
   this.phase=((game.seed>>>0)%997)/997*Math.PI*2;this.tile=200;this.tiles=[];this.cells=new Map();this.rivers=[];this.snowEvent=-1;
   for(let y=0;y<w.worldHeight;y+=this.tile)for(let x=0;x<w.worldWidth;x+=this.tile){
@@ -94,7 +95,7 @@ export class Biomes {
  }
  moveMultiplier(e){return this.enabled&&this.regionAt(e)?.id==='lake'?(e.color==='blue'?(this.game.balance.biomes.blueWaterMoveMultiplier??.9):(this.game.balance.biomes.waterMoveMultiplier??.65)):1;}
  frostResistance(e){const c=this.game.balance.biomes;return Math.min(.85,(this.game.biomeObjects?.inFrostShelter(e)?Math.max(0,...this.game.biomeObjects.objects.filter(o=>o.config.effect==='frost'&&dist(o,e)<=o.config.radius+e.size/2).map(o=>o.config.power)):0)+(e.color==='cyan'?(c.cyanFrostResistance??.65):0)+Math.min(c.frostSizeResistanceCap??.15,Math.max(0,e.size-40)*(c.frostSizeResistancePerSize??.00025)));}
- blizzard(){return this.enabled&&this.game.gameTime%24>=16;}
+ blizzard(){return this.enabled&&this.game.gameTime%24>=16&&this.regions.some(r=>r.id==='snow');}// R-WORLD-017: no snow this round, no blizzard
  playerSightRadius(){return this.regionAt(this.game.player)?.id==='snow'&&this.blizzard()?this.game.balance.ai.detectionRange*.65+Math.max(0,this.game.player.size-40)*.65:Infinity;}
  playerCanSee(e){return e===this.game.player||dist(this.game.player,e)-(e.size??0)/2<=this.playerSightRadius()*2;}
  drawBlizzardOverlay(ctx){
@@ -190,4 +191,20 @@ export class Biomes {
   for(const r of this.labels){ctx.fillStyle='#e2e8f0';ctx.font=`bold ${Math.min(20/zoom,60)}px system-ui`;ctx.textAlign='center';ctx.fillText(r.name+(r.id==='snow'&&this.blizzard()?' · 눈보라':''),r.x,r.y);}
   ctx.restore();
  }
+}
+// R-WORLD-017: each round shows only some terrains so one run does not pack every rule in. Grassland always stays and fills the
+// dropped regions. `terrainIds` forces a set (tests, ?terrains=lake,volcano); otherwise `terrainsPerRound` picks from the seed
+// without touching the shared random streams, so the same seed always gets the same terrains.
+export function roundTerrains(regions,config={},seed=0){
+ const pool=regions.filter(r=>r.id!=='grassland'),base=regions.filter(r=>r.id==='grassland');
+ let keep;
+ if(Array.isArray(config.terrainIds)&&config.terrainIds.length)keep=new Set(config.terrainIds);
+ else{
+  const count=Math.max(0,Math.min(pool.length,Math.round(config.terrainsPerRound??pool.length)));
+  if(count>=pool.length)return regions;
+  let state=(seed>>>0)^0x9e3779b9;const next=()=>{state=Math.imul(state^(state>>>15),2246822519)>>>0;state=Math.imul(state^(state>>>13),3266489917)>>>0;return ((state^=state>>>16)>>>0)/4294967296;};
+  const order=pool.map(r=>({r,k:next()})).sort((a,b)=>a.k-b.k).slice(0,count);
+  keep=new Set(order.map(o=>o.r.id));
+ }
+ return [...pool.filter(r=>keep.has(r.id)),...base];
 }

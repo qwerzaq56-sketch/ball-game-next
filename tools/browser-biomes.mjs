@@ -16,6 +16,20 @@ try{
  // spawnEncounter skips sample points on lava (remaining++/continue), so a region can get fewer than 8; assert the invariant, not an exact count.
  assert(encounter.actual<=encounter.expected&&encounter.perRegion.every(n=>n>=6&&n<=8),`encounter counts ${JSON.stringify(encounter)}`);assert.equal(encounter.onLava,0);
  await page.setViewportSize({width:390,height:844});await page.waitForTimeout(300);assert(await page.locator('#minimap-panel').isVisible());await page.screenshot({path:`${prefix}-mobile.png`});
- await page.keyboard.press('H');assert(await page.locator('#play-help').isVisible());assert((await page.locator('#play-help').innerText()).includes('지역 탐험'));await page.keyboard.press('Escape');assert.deepEqual(errors,[]);
- console.log(JSON.stringify({result:'PASS',regions:4,lava,encounter,minimap:true,mobile:true,errors}));
+ await page.keyboard.press('H');assert(await page.locator('#play-help').isVisible());assert((await page.locator('#play-help').innerText()).includes('지역 탐험'));await page.keyboard.press('Escape');
+ // R-ECO-010: a Life respawn lands off-centre, out of lava, with a 부활 무적 chip and a white ring
+ await page.setViewportSize({width:1280,height:720});
+ const respawn=await page.evaluate(()=>{const g=window.__game;g.paused=false;g.handlePlayerDefeat('DEFEATED');const p=g.player;return {x:p.x,y:p.y,inv:p.respawnInvulnerableRemaining,lava:!!g.biomes.lavaAt(p,p.size/2),centre:p.x===g.balance.world.worldWidth/2&&p.y===g.balance.world.worldHeight/2};});
+ await page.waitForTimeout(200);assert.equal(respawn.inv>0,true);assert.equal(respawn.lava,false);assert.equal(respawn.centre,false);
+ // R-WORLD-017: ?terrains forces or counts the round's terrains; a round without snow or desert runs blizzard/sandstorm timers without errors
+ const terrains={};
+ for(const [query,expect] of [['lake,volcano',['grassland','lake','volcano']],['2',null]]){
+  await page.goto(`http://127.0.0.1:8001/?terrains=${query}`);await page.waitForFunction(()=>window.__game);await page.locator('#player-start').click();
+  const ids=await page.evaluate(()=>{const g=window.__game;g.autoplay.setEnabled(true);for(let i=0;i<60*30;i++)g.update(1/60);return g.biomes.regions.map(r=>r.id).sort();});
+  await page.waitForTimeout(300);terrains[query]=ids;
+  if(expect)assert.deepEqual(ids,expect);else{assert.equal(ids.length,3);assert(ids.includes('grassland'));}
+ }
+ await page.screenshot({path:`${prefix}-two-terrains.png`});
+ assert.deepEqual(errors,[]);
+ console.log(JSON.stringify({result:'PASS',regions:4,lava,encounter,minimap:true,mobile:true,respawn,terrains,errors}));
 }finally{await browser.close();}

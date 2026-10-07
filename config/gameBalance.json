@@ -9,6 +9,7 @@
     "warFleeHpRatio": 0.1
   },
   "biomes": {
+    "terrainsPerRound": 5,
     "terrainDefenseScale": 200,
     "enabled": true,
     "redLavaResistancePerSize": 0.002,
@@ -254,6 +255,13 @@
   },
   "lives": {
     "maxLives": 3
+  },
+  "respawn": {
+    "invulnerableSeconds": 3,
+    "candidates": 48,
+    "hazardMargin": 160,
+    "threatRadius": 700,
+    "threatSizeRatio": 0.8
   },
   "camera": {
     "maxBodyScreenFraction": 0.42,

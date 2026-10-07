@@ -52,6 +52,8 @@ async function main() {
   let balance;
   try {
     balance = await loadBalance();
+    // R-WORLD-017: ?terrains=3 sets the terrain count for this page, ?terrains=lake,volcano forces the set (testing)
+    {const pick=new URLSearchParams(location.search).get('terrains');if(pick){balance.biomes??={};if(/^\d+$/.test(pick)){balance.biomes.terrainsPerRound=Number(pick);delete balance.biomes.terrainIds;}else balance.biomes.terrainIds=pick.split(',').map(s=>s.trim()).filter(Boolean);}}
     loadObjectPreset(balance);const presetError=loadSavedSkillPreset(balance);if(presetError)window.__skillPresetError=presetError;
   } catch (err) {
     document.getElementById('load-error').style.display = 'block';
