@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {createGame} from '../tools/headless.mjs';
 import {canEatOrb} from '../js/collision.js';
 import {spawnOrb} from '../js/spawning.js';
-import {shieldAmount} from '../js/statusLabels.js';
+import {shieldAmount, invulnerableShellLeft} from '../js/statusLabels.js';
 import {ventEruptsIn, VENT_WARNING_SECONDS} from '../js/biomeObjects.js';
 import {applyObjectPreset, defaultObjectPreset} from '../js/biomeObjectCatalog.js';
 
@@ -24,6 +24,12 @@ test('shield amount counts the skill/tree shield and only an active obsidian shi
   assert.equal(shieldAmount({shieldHp: 12, obsidianShieldHp: 30, obsidianShieldUntil: 5}, 4), 42);
   assert.equal(shieldAmount({shieldHp: 12, obsidianShieldHp: 30, obsidianShieldUntil: 5}, 6), 12);
   assert.equal(shieldAmount({}, 0), 0);
+});
+
+test('R-COMBAT-003 dodge i-frames draw no gold shell; yellow dust and respawn invulnerability do', () => {
+  assert.equal(invulnerableShellLeft({invincible: true}), 0);
+  assert.equal(invulnerableShellLeft({invincible: true, dustInvulnerableRemaining: .5}), .5);
+  assert.equal(invulnerableShellLeft({respawnInvulnerableRemaining: 2, dustInvulnerableRemaining: .5}), 2);
 });
 
 test('R-WORLD-010 a heat vent counts down to its next eruption', () => {

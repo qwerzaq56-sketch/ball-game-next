@@ -36,7 +36,7 @@ import { spawnOrb, spawnAI, spawnDeathOrbs } from './spawning.js';
 import {apexTerritoryRadius} from './skillCatalog.js';
 import { startAbsorption, cancelAbsorption, updateAbsorptions, maintainDistanceFor } from './absorption.js';
 import { AudioManager } from './audio.js';
-import {statusChips,drawStatusChips,textWidth,shieldAmount} from './statusLabels.js';
+import {statusChips,drawStatusChips,textWidth,shieldAmount,invulnerableShellLeft} from './statusLabels.js';
 import {pickRespawnPoint} from './respawn.js';
 
 const AI_STATE_LABEL = { search: '탐색', chase_eat: '먹이추격', chase_fight: '전투', flee: '도주', relationship: '관계추종', companion:'대열 동행',war_move:'전선 이동', recover: '회복' };
@@ -1041,8 +1041,9 @@ export class Game {
     }
 
     // Invulnerability (yellow dust, respawn) reads as a pulsing gold shell; it blinks in its last 0.3 s.
-    const invulnerableLeft=Math.max(e.dustInvulnerableRemaining??0,e.respawnInvulnerableRemaining??0);
-    if ((e.invincible || invulnerableLeft>0) && (e.invincible || invulnerableLeft>.3 || Math.floor(this.gameTime*10)%2===0)) {
+    // Dodge i-frames get no shell (2026-10-08 user: dodge invulnerability is genre grammar, the shell is too much).
+    const invulnerableLeft=invulnerableShellLeft(e);
+    if (invulnerableLeft>.3 || (invulnerableLeft>0 && Math.floor(this.gameTime*10)%2===0)) {
       const z=this.camera.zoom,pulse=.5+.5*Math.sin(this.gameTime*14),shell=r+6/z;
       ctx.save();
       ctx.fillStyle='rgba(253,224,71,0.16)';ctx.beginPath();ctx.arc(e.x,e.y,shell,0,Math.PI*2);ctx.fill();

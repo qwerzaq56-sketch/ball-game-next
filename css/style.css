@@ -749,6 +749,10 @@ body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !
   /* detail mode: the taller vitals column takes the left side, so the era moves right under the rank */
   body:not(.mobile-minimal) #era-status { left:auto; right:calc(14px + var(--safe-r)); transform:none; align-items:flex-end; max-width:calc(100vw - 210px); text-align:right; }
   body.mobile-minimal #live-ranking:not(.minimal-open) { top:calc(176px + var(--safe-t)); }
+  /* pt1-08: ten rows (176-336px); back to three while the start guide, a tip (both at 250px) or the ecology panel (238px) is up */
+  body.mobile-minimal #live-ranking:not(.minimal-open) li:nth-child(n+4) { display:grid; }
+  body.mobile-minimal #live-ranking:not(.minimal-open) li:nth-child(n+11) { display:none; }
+  body.mobile-minimal:is(:has(#starter-guide:not([hidden])), :has(#situational-tip:not([hidden])), :has(#ecology-panel:not([hidden]))) #live-ranking:not(.minimal-open) li:nth-child(n+4) { display:none; }
   body:not(.mobile-minimal) #live-ranking, body.mobile-minimal #live-ranking.minimal-open { top:calc(176px + var(--safe-t)); max-height:30dvh; }
   #starter-guide { top:calc(250px + var(--safe-t)); bottom:auto; }
   #touch-dodge { right:calc(20px + var(--safe-r)); bottom:calc(38px + var(--safe-b)); }
@@ -772,6 +776,11 @@ body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !
   #touch-special { right:calc(145px + var(--safe-r)); bottom:calc(35px + var(--safe-b)); width:58px; height:58px; }
   #touch-ultimate { right:calc(75px + var(--safe-r)); bottom:calc(146px + var(--safe-b)); width:52px; height:52px; }
   #charge-pips { right:calc(142px + var(--safe-r)); bottom:calc(14px + var(--safe-b)); }
+}
+/* pt1-08: on a landscape phone at least 400px tall, five rows (104-184px) stay clear of the R button (top = height - 198px); shorter screens keep three */
+@media (pointer:coarse) and (orientation:landscape) and (min-height:400px) {
+  body.mobile-minimal #live-ranking:not(.minimal-open) li:nth-child(n+4) { display:grid; }
+  body.mobile-minimal #live-ranking:not(.minimal-open) li:nth-child(n+6) { display:none; }
 }
 /* narrow desktop windows borrow the phone-portrait stacking: era on a second row, ranking and tray clear of it */
 @media (max-width:700px) and (not (pointer:coarse)) {

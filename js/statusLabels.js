@@ -11,6 +11,11 @@ export function shieldAmount(e, now) {
   return Math.max(0, e.shieldHp ?? 0) + ((e.obsidianShieldUntil ?? 0) > now ? Math.max(0, e.obsidianShieldHp ?? 0) : 0);
 }
 
+// Seconds of gold invulnerability shell left: yellow dust and respawn only. Dodge i-frames (e.invincible) get no shell (R-COMBAT-003).
+export function invulnerableShellLeft(e) {
+  return Math.max(e.dustInvulnerableRemaining ?? 0, e.respawnInvulnerableRemaining ?? 0, 0);
+}
+
 // Status chips for one unit. Order is stable so rows do not jump between frames.
 export function statusChips(e, game) {
   const now = game.gameTime, out = [];
