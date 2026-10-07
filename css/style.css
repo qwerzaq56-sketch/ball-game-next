@@ -536,7 +536,7 @@ body.mobile-minimal #live-ranking:not(.minimal-open) .rank-dot{display:block!imp
    Phones: the top band holds vitals, era, buttons and the toggle tray (touches
    starting there never move or aim); left-half drag moves, right-half drag aims
    and release attacks; dodge is the big button at the right-thumb rest with
-   E, sprint and R on its arc.
+   E and R on its arc; holding dodge sprints (the gauge sits under HP).
    ========================================================================== */
 :root {
   --b-fg:#f8fafc; --b-dim:#cbd5e1; --b-mute:#94a3b8;
@@ -704,7 +704,7 @@ body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !
   #touch-dodge[data-state="locked"] { font-size:12px; }
   #touch-special { width:60px; height:60px; font-size:15px; }
   #touch-ultimate { --ring:#facc15; width:54px; height:54px; font-size:15px; }
-  #quick-sprint { --ring:var(--b-sprint); width:54px; height:54px; font-size:11px; }
+  #touch-dodge.sprinting { box-shadow:inset 0 0 0 3px var(--b-sprint),0 0 16px var(--b-sprint); }
   #touch-special[data-state="locked"], #touch-ultimate[data-state="locked"] { font-size:10px; }
 
   #ability-bar, #help-btn { display:none; }
@@ -743,7 +743,6 @@ body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !
   #touch-dodge { right:calc(20px + var(--safe-r)); bottom:calc(38px + var(--safe-b)); }
   #touch-special { right:calc(146px + var(--safe-r)); bottom:calc(76px + var(--safe-b)); }
   #touch-ultimate { right:calc(53px + var(--safe-r)); bottom:calc(161px + var(--safe-b)); }
-  #quick-sprint { right:calc(123px + var(--safe-r)); bottom:calc(141px + var(--safe-b)); }
   #charge-pips { right:calc(144px + var(--safe-r)); bottom:calc(48px + var(--safe-b)); }
 }
 @media (pointer:coarse) and (orientation:landscape) {
@@ -761,7 +760,6 @@ body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !
   #touch-dodge { right:calc(26px + var(--safe-r)); bottom:calc(26px + var(--safe-b)); width:100px; height:100px; }
   #touch-special { right:calc(145px + var(--safe-r)); bottom:calc(35px + var(--safe-b)); width:58px; height:58px; }
   #touch-ultimate { right:calc(75px + var(--safe-r)); bottom:calc(146px + var(--safe-b)); width:52px; height:52px; }
-  #quick-sprint { right:calc(135px + var(--safe-r)); bottom:calc(109px + var(--safe-b)); width:52px; height:52px; }
   #charge-pips { right:calc(142px + var(--safe-r)); bottom:calc(14px + var(--safe-b)); }
 }
 /* narrow desktop windows borrow the phone-portrait stacking: era on a second row, ranking and tray clear of it */

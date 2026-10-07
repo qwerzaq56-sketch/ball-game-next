@@ -43,5 +43,15 @@ try {
  assert.equal(await page.locator('#attack-pips .pip.filled').count(),3,'attack charges stay usable in a group');assert.match(await page.locator('#touch-special').innerText(),/^E/);await page.evaluate(()=>{window.__game.paused=true;});
  await page.evaluate(()=>{const g=window.__game;g.allyLinks.leave(g.player);g.player.attackStack=g.player.dodgeStack=0;});await page.waitForTimeout(50);
  assert.equal(await page.locator('#attack-pips .pip.filled').count(),0);assert.match(await page.locator('#touch-dodge').innerText(),/회피 충전/);assert.equal(await page.locator('#touch-dodge').isDisabled(),true);
+ // R-COMBAT-003 / R-VIS-010: no sprint button; holding (run last, alone in the world, so nothing else can hit the player) the dodge button while moving sprints, and that release does not dodge.
+ assert.equal(await page.locator('#quick-sprint').count(),0,'no separate sprint button');
+ await page.evaluate(()=>{const g=window.__game,p=g.player;g.paused=false;g.biomes.enabled=false;g.entities=[p];p.addGrowth(4000,g.balance);p.hp=p.maxHp;p.frozen=0;p.attackState='READY';p.dodgeStack=p.dodgeMaxStack=2;p.dodgeState='READY';p.sprintGauge=3;p.sprintExhausted=false;});await page.waitForTimeout(80);
+ await touch('touchStart',[point(11,stick)]);await touch('touchMove',[point(11,{x:stick.x+35,y:stick.y})]);await touch('touchStart',[point(11,{x:stick.x+35,y:stick.y}),point(12,await center('#touch-dodge'))]);await page.waitForFunction(()=>window.__game.player.sprinting,null,{timeout:2000}).catch(()=>{});
+ assert.deepEqual(await page.evaluate(()=>{const g=window.__game;return {held:g.input.sprintHeld,sprinting:g.player.sprinting,aim:g.touchAim};}),{held:true,sprinting:true,aim:null},'holding dodge sprints without a dodge arrow');
+ assert.equal(await page.locator('#touch-dodge.sprinting').count(),1);
+ await touch('touchEnd',[]);await page.waitForTimeout(80);
+ assert.deepEqual(await page.evaluate(()=>{const p=window.__game.player;return {held:window.__game.input.sprintHeld,dodge:p.dodgeState,stack:p.dodgeStack};}),{held:false,dodge:'READY',stack:2},'releasing a sprint hold does not dodge');
+ await page.evaluate(()=>{window.__game.player.dodgeStack=0;});await page.waitForTimeout(80);
+ assert.equal(await page.locator('#touch-dodge').isDisabled(),false,'without dodge charges the button still sprints');
  assert.deepEqual(errors,[]);console.log(JSON.stringify({result:'PASS',genuineTouch:true,analogMove:true,simultaneousAttack:true,dragAim:true,pointerCancel:true,dodge:true,aimWithoutAttack:true,specialWindupFire:true,pauseClear:true,errors}));
 } finally {await browser.close();}

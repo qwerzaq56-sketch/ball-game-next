@@ -1,5 +1,6 @@
 import {touchActionFeedback} from './touchFeedback.js';
 import {skillCooldownRow} from './statusLabels.js';
+import {dodgeButtonSprints} from './sprint.js';
 // Pointer Events allow independent movement and attack fingers; cancellation never sticks.
 export class TouchControls {
   constructor(game,input,canvas) {
@@ -74,7 +75,7 @@ export class TouchControls {
     this.knob.style.transform=`translate(${this.input.touchMove.x*radius}px,${this.input.touchMove.y*radius}px)`;
   }
   aim(e){
-    const gesture=this.gestures.get(e.pointerId);if(!gesture)return;
+    const gesture=this.gestures.get(e.pointerId);if(!gesture||gesture.sprint)return;
     if(!gesture.dragged&&!gesture.canvas)gesture.angle=this.game.player.facing;
     const dx=e.clientX-gesture.x,dy=e.clientY-gesture.y;
     gesture.distance=Math.hypot(dx,dy);
@@ -93,8 +94,9 @@ export class TouchControls {
     if(gesture&&fire&&!this.blocked()){
       if(kind==='ultimate'&&!touchActionFeedback(this.game,kind).disabled)this.input._ultimateQueued={angle:gesture.angle,point:{...this.game.touchAim.point}};
       if(kind==='attack')this.input._attackQueued={angle:gesture.angle,charge:Math.min(1,(this.game.gameTime-gesture.started)/(this.game.balance.attack.manualChargeSeconds??1.5))};
-      if(kind==='dodge'){this.input._dodgeAngle=gesture.angle;this.input._dodgeQueued=true;}
+      if(kind==='dodge'&&!gesture.sprint){this.input._dodgeAngle=gesture.angle;this.input._dodgeQueued=true;}
     }
+    if(gesture?.sprint)this.input.sprintHeld=false;
     if(!this.gestures.size)this.game.touchAim=null;
     if(kind==='move'){this.input.touchMove={x:0,y:0};this.knob.style.transform='';this.moveOrigin=null;this.stick.classList.remove('floating-active');}
     if(kind==='attack'&&![...this.pointers.values()].includes('attack'))this.input.mouseDown=false;
@@ -107,11 +109,15 @@ export class TouchControls {
     const fresh=this.lastHistory!==this.game.apexHistory;
     if(fresh||(!this.wasPaused&&this.game.paused))this.clear();
     this.lastHistory=this.game.apexHistory;this.wasPaused=this.game.paused;
-    const gesture=this.gestures.values().next().value;if(gesture&&!gesture.dragged&&!gesture.canvas)gesture.angle=this.game.player.facing;if(gesture)this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180,!!(gesture.dragged||gesture.canvas));
+    const gesture=this.gestures.values().next().value;
+    // R-COMBAT-003 / R-VIS-010: holding the dodge button still turns it into the sprint key (no separate sprint button)
+    if(gesture?.kind==='dodge'&&!gesture.sprint&&!this.blocked()&&dodgeButtonSprints({heldSeconds:this.game.gameTime-gesture.started,dragged:gesture.dragged,sprintUnlocked:this.game.player.size>=(this.game.balance.sprint?.unlockSize??150)})){gesture.sprint=true;this.input.sprintHeld=true;this.game.touchAim=null;}
+    if(gesture&&!gesture.dragged&&!gesture.canvas)gesture.angle=this.game.player.facing;if(gesture&&!gesture.sprint)this.showAim(gesture.angle,gesture.kind,gesture.dragged?gesture.distance:180,!!(gesture.dragged||gesture.canvas));
     const p=this.game.player,blocked=this.blocked();
     for(const [button,kind]of [[this.attack,'attack'],[this.dodge,'dodge'],[this.special,'special'],[this.ultimate,'ultimate']]){
       const feedback=touchActionFeedback(this.game,kind);
-      button.disabled=feedback.disabled;
+      // once sprint unlocks the dodge button stays pressable without dodge charges, since holding it sprints
+      button.disabled=feedback.disabled&&!(kind==='dodge'&&p.sprintUnlocked&&!blocked&&!(p.frozen>0));
       const special=kind==='special'||kind==='ultimate',text=special&&feedback.state==='cooldown'?feedback.label.replace(' ','\n'):feedback.label;
       if(button.textContent!==text)button.textContent=text;
       if(button.dataset.state!==feedback.state)button.dataset.state=feedback.state;
@@ -120,7 +126,8 @@ export class TouchControls {
       const progress=String(special?(feedback.state==='locked'?0:skillCooldownRow(this.game,p,kind==='ultimate'?'R':'E').progress):Math.round(feedback.progress*100));
       if(button.dataset.progress!==progress){button.dataset.progress=progress;button.style.setProperty('--recharge',`${progress}%`);}
       button.classList.toggle('aiming',[...this.pointers.values()].includes(kind));
-      const label=`${feedback.label.replace('\n',' ')}${feedback.charges?' · 충전 '+feedback.charges:''}${!feedback.disabled&&kind!=='special'?' · 드래그 후 손을 떼면 실행':''}`;
+      if(kind==='dodge')button.classList.toggle('sprinting',!!p.sprinting&&[...this.gestures.values()].some(g=>g.sprint));
+      const label=`${feedback.label.replace('\n',' ')}${feedback.charges?' · 충전 '+feedback.charges:''}${!feedback.disabled&&kind!=='special'?' · 드래그 후 손을 떼면 실행':''}${kind==='dodge'&&p.sprintUnlocked?' · 누르고 있으면 달리기':''}`;
       if(button.getAttribute('aria-label')!==label)button.setAttribute('aria-label',label);
     }
     this.special.style.setProperty('--ring',p.colorHex);

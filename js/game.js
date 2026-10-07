@@ -2,7 +2,7 @@ import {drawActionArt} from './actionArt.js';
 import {chargedAttackDistance} from './combat.js?effects-direction-02';
 import {BiomeObjects} from './biomeObjects.js?ai-refuge-01';
 import {updateGrowthMotion} from './growthMotion.js';
-import {updateSprint} from './sprint.js';
+import {updateSprint,SPRINT_HOLD_SECONDS} from './sprint.js';
 import {delta,angleTo,near,wrap} from './topology.js';
 import {worldView,boxInView,segmentInView} from './renderVisibility.js';
 import { clampEntity } from './worldBounds.js';
@@ -369,7 +369,7 @@ export class Game {
 
     inp.spaceHeldSeconds=inp.keys.has(' ')?(inp.spaceHeldSeconds??0)+dt:0;
     const moving = dx !== 0 || dy !== 0;
-    const sprintMultiplier=updateSprint(p,dt,b,{held:!auto&&((inp.keys.has(' ')&&(inp.spaceHeldSeconds??0)>=.18)||inp.sprintHeld),moving});
+    const sprintMultiplier=updateSprint(p,dt,b,{held:!auto&&((inp.keys.has(' ')&&(inp.spaceHeldSeconds??0)>=SPRINT_HOLD_SECONDS)||inp.sprintHeld),moving});
     const moveSpeed=p.moveSpeed*this.abilities.speedMultiplier(p)*this.biomes.moveMultiplier(p)*sprintMultiplier;
     const moveAngle = moving ? Math.atan2(dy, dx) : p.facing;p.sprintDirection=moveAngle;
     const dragAngle=this.touchAim?.dragged?this.touchAim.angle:Number.isFinite(releasedAttack?.angle)?releasedAttack.angle:Number.isFinite(releasedDodgeAngle)?releasedDodgeAngle:null;

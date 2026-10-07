@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame} from '../tools/headless.mjs';
 import {abilityRing} from '../js/hudB.js';
+import {dodgeButtonSprints, SPRINT_HOLD_SECONDS} from '../js/sprint.js';
 
 const ATTACK = {kind: 'attack', name: '공격', key: '좌클릭'};
 const DODGE = {kind: 'dodge', name: '회피', key: 'Space'};
@@ -48,4 +49,12 @@ test('R-VIS-010 the E ring shows its cooldown seconds and fills as it recovers',
   assert.equal(cooling.state, 'cooldown');
   assert.match(cooling.sub, /^\d+s$/);
   assert(cooling.fill >= 0 && cooling.fill < 100);
+});
+
+test('R-VIS-010 the dodge button is the sprint key: a still hold past the Space threshold sprints, a drag or a locked sprint dodges', () => {
+  const held = SPRINT_HOLD_SECONDS + .01;
+  assert.equal(dodgeButtonSprints({heldSeconds: SPRINT_HOLD_SECONDS - .01, sprintUnlocked: true}), false, 'a short press dodges');
+  assert.equal(dodgeButtonSprints({heldSeconds: held, sprintUnlocked: true}), true, 'a still hold sprints');
+  assert.equal(dodgeButtonSprints({heldSeconds: held, dragged: true, sprintUnlocked: true}), false, 'a drag aims a dodge');
+  assert.equal(dodgeButtonSprints({heldSeconds: held, sprintUnlocked: false}), false, 'before sprint unlocks a long press still dodges');
 });

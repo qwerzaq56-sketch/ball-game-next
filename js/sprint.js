@@ -1,3 +1,8 @@
+// R-COMBAT-003: Space (and the touch dodge button) dodges on a short press and sprints once held this long.
+export const SPRINT_HOLD_SECONDS=.18;
+// The touch dodge button is Space: holding it still past the threshold sprints instead of dodging.
+// A drag aims a dodge and never sprints; before sprint unlocks a long press still dodges.
+export function dodgeButtonSprints({heldSeconds=0,dragged=false,sprintUnlocked=false}={}){return sprintUnlocked&&!dragged&&heldSeconds>=SPRINT_HOLD_SECONDS;}
 // Separate stamina avoids consuming a newly regenerated dodge charge.
 export function updateSprint(e,dt,balance,{held=false,moving=false}={}){
  const c=balance.sprint??{},capacity=c.capacitySeconds??3;

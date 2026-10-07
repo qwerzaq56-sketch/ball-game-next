@@ -25,11 +25,6 @@ export class UI {
     this.scoreText = document.getElementById('score-text');
     this.lifeText = document.getElementById('life-text');
     this.starterGuide=document.getElementById('starter-guide');this.guideDismissed=false;document.getElementById('starter-guide-close').addEventListener('click',()=>{this.guideDismissed=true;this.starterGuide.hidden=true;});
-    this.sprintButton=document.getElementById('quick-sprint');
-    this.sprintButton.addEventListener('pointerdown',e=>{if(this.game&&!this.game.paused&&!this.game.gameOver){e.preventDefault();this.sprintButton.setPointerCapture(e.pointerId);this.game.input.sprintHeld=true;this.game.autoplay.setEnabled(false);}});
-    const stopSprint=()=>{if(this.game)this.game.input.sprintHeld=false;};
-    for(const event of ['pointerup','pointercancel','lostpointercapture'])this.sprintButton.addEventListener(event,stopSprint);
-    window.addEventListener('blur',stopSprint);
     this.autoCompanionButton=document.getElementById('auto-companion');this.autoCompanionButton.addEventListener('click',()=>{if(this.game)this.game.allyLinks.setAutoOffer(!this.game.player.autoCompanionOffer);});
     this.absorbButton=document.getElementById('quick-absorb');this.absorbButton.addEventListener('click',()=>{if(this.game&&!this.game.paused&&!this.game.gameOver)this.game.input.absorbToggle=!this.game.input.absorbToggle;});
     this.allyAbsorbText = document.getElementById('ally-absorb-text');
@@ -167,12 +162,6 @@ export class UI {
     const field=game.era.apocalypse;document.getElementById('era-text').textContent=game.era.status()+(field?field.active?' · 파멸 위험':' · 파멸 전조':'');
     this.updateEraBadge(game);
     this.autoCompanionButton.textContent=player.autoCompanionOffer?'자동 동행 ON':'자동 동행 OFF';this.autoCompanionButton.setAttribute('aria-pressed',String(!!player.autoCompanionOffer));
-    this.sprintButton.hidden=game.player.size<(game.balance.sprint?.unlockSize??150);
-    // R-VIS-010: the touch sprint button is a ring on the dodge arc; the ring is the gauge.
-    const gaugePercent=Math.round(100*Math.max(0,Math.min(1,(game.player.sprintGauge??(game.balance.sprint?.capacitySeconds??3))/(game.balance.sprint?.capacitySeconds??3))));
-    const sprintLabel=game.player.sprinting?'달리는 중':'달리기';if(this.sprintButton.textContent!==sprintLabel)this.sprintButton.textContent=sprintLabel;
-    this.sprintButton.style.setProperty('--recharge',`${gaugePercent}%`);this.sprintButton.dataset.state=game.player.sprintExhausted?'cooldown':'ready';
-    this.sprintButton.title='누르고 유지하면 달리기 · Space';this.sprintButton.setAttribute('aria-label',`달리기 게이지 ${gaugePercent}%, 누르고 유지`);
     // R-CTRL-006: the sprint gauge sits right under the HP bar once sprint is unlocked.
     const sprintCapacity=game.balance.sprint?.capacitySeconds??3,sprintGauge=document.getElementById('sprint-gauge');
     sprintGauge.hidden=player.size<(game.balance.sprint?.unlockSize??150);
