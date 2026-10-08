@@ -180,7 +180,7 @@ export class Biomes {
  draw(ctx,zoom){
   if(!this.enabled)return;const camera=this.game.renderCamera??this.game.camera;
   const halfW=this.game.canvas.width/zoom/2,halfH=this.game.canvas.height/zoom/2,time=this.game.gameTime;
-  ctx.save();
+  ctx.save();this.terrainArt.seamPad=1/zoom; // one screen pixel of tile overlap (TS-004)
   for(const tile of this.tiles){
    if(tile.x+this.tile<camera.x-halfW||tile.x>camera.x+halfW||tile.y+this.tile<camera.y-halfH||tile.y>camera.y+halfH)continue;
    const r=tile.region,painted=this.terrainArt.drawTile(ctx,tile,this);

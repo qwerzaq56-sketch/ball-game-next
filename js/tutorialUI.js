@@ -4,7 +4,7 @@
 import {DECKS, basicCards, speciesCards, terrainCards, firstRunDeck, terrainHint} from './tutorialCards.js';
 
 export const TUTORIAL_KEY = 'ballgamenext_tutorial_v1';
-const HINT_SECONDS = 7;
+export const HINT_SECONDS = 5; // was 7 (TS-005: stayed up too long on phones)
 
 function loadSeen() {
   try { const v = JSON.parse(localStorage.getItem(TUTORIAL_KEY)); return {firstRun: !!v?.firstRun, regions: Array.isArray(v?.regions) ? v.regions : []}; }
@@ -34,6 +34,8 @@ export class TutorialUI {
     this.help.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') { e.preventDefault(); this.step(1); } if (e.key === 'ArrowLeft') { e.preventDefault(); this.step(-1); } });
     this.help.addEventListener('close', () => this.finish());
     document.getElementById('terrain-hint-open').addEventListener('click', () => { const id = this.hintCard; this.hideHint(); this.open({deck: 'terrain', cardId: id}); });
+    // TS-005: × or a tap anywhere else on the hint closes it (the card stays in help → 지형·오브젝트).
+    this.hint.addEventListener('click', (e) => { if (e.target.id !== 'terrain-hint-open') this.hideHint(); });
     document.getElementById('quick-help')?.addEventListener('click', () => this.open());
     playControls.onOpenHelp = (opts) => this.prepare(opts);
     document.getElementById('player-setup').addEventListener('close', () => { if (this.auto && !this.seen.firstRun) setTimeout(() => this.open({tutorial: true}), 0); });

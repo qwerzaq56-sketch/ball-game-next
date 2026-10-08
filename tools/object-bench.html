@@ -643,7 +643,10 @@ function runSim() {
   const g = G, bo = g.biomeObjects; bo.sync();
   const o = current(); if (!o) return;
   const p = g.player, c = o.config, T = S.simT, dt = 1 / 20, keep = {objects: bo.objects, time: g.gameTime};
-  setBall(p); resetBuffs(p); p.hp = p.maxHp * S.simHp / 100; p.x = o.x + S.pdx; p.y = o.y + S.pdy;
+  // TS-006: the stage only renders a paused game, so anything the test leaves behind (particles, floating text,
+  // status fields such as wet/frost/heal glow) never expires. Remember the ball's plain fields and put them back after.
+  setBall(p); const before = Object.fromEntries(Object.entries(p).filter(([, v]) => v === null || typeof v !== 'object'));
+  resetBuffs(p); p.hp = p.maxHp * S.simHp / 100; p.x = o.x + S.pdx; p.y = o.y + S.pdy;
   const start = {x: p.x, y: p.y}, startIn = inReach(o, p);
   g.entities = [p]; bo.objects = [o]; bo.cooldowns.delete(o.id); bo.events.length = 0;
   const t0 = g.gameTime = 1000 * (c.cycleDuration || 1) - (o.phase || 0);
@@ -668,9 +671,12 @@ function runSim() {
     }
   } finally {
     bo.objects = keep.objects; bo.signature = ''; g.gameTime = keep.time; g.entities = [p];
-    resetBuffs(p); p.hp = p.maxHp; p.alive = true;
+    out.end = {x: p.x, y: p.y};
+    for (const k of Object.keys(p)) if (!(k in before) && (p[k] === null || typeof p[k] !== 'object')) delete p[k];
+    Object.assign(p, before); resetBuffs(p); p.hp = p.maxHp; p.alive = true;
+    g.particles.length = 0; g.floatingTexts.length = 0; g.playerHitUntil = 0;
   }
-  out.start = start; out.end = {x: p.x, y: p.y};
+  out.start = start;
   sim = out; renderSim(o); draw();
 }
 function renderSim(o) {

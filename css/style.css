@@ -18,6 +18,9 @@
 .help-skills i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:7px; }
 .help-footnote { color:#94a3b8; font-size:11px; }
 
+/* R-CTRL-008: no double-tap page zoom on any element; explicit touch-action rules still win. */
+:where(*) { touch-action: manipulation; }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -692,6 +695,17 @@ body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !
 @keyframes tip-in { from { opacity:0; transform:translate(-50%,6px); } to { opacity:1; transform:translate(-50%,0); } }
 @media (pointer:coarse) and (orientation:portrait) { #situational-tip { top:calc(250px + var(--safe-t)); bottom:auto; font-size:12px; } }
 @media (pointer:coarse) and (orientation:landscape) { #situational-tip { bottom:calc(12px + var(--safe-b)); max-width:44vw; font-size:11.5px; } }
+/* TS-005: a visible × on both hints; on phones they are lighter, narrower and sit high instead of mid-screen. */
+.hint-x { flex:none; width:32px; height:32px; margin:-4px -4px -4px 0; border:0; border-radius:50%; background:transparent; color:#94a3b8; font:400 20px/1 var(--b-font); cursor:pointer; }
+@media (pointer:coarse) {
+  body #situational-tip, body #terrain-hint { background:rgba(9,13,22,.62); gap:8px; padding:6px 6px 6px 10px; font-size:11px; line-height:1.35; }
+  body #situational-tip strong { font-size:11.5px; }
+  body #situational-tip-off, body #terrain-hint-open { padding:3px 6px; font-size:10.5px; }
+}
+@media (pointer:coarse) and (orientation:portrait) {
+  /* width:max-content stops the centred box from shrinking to the space right of left:50% */
+  body #situational-tip, body #terrain-hint { top:calc(250px + var(--safe-t)); bottom:auto; width:max-content; max-width:min(300px,calc(100vw - 32px)); box-sizing:border-box; }
+}
 #starter-guide-close { pointer-events:auto; border:0; background:transparent; color:var(--b-dim); font-size:16px; margin-left:6px; cursor:pointer; }
 #terrain-hint { font-family:var(--b-font); background:rgba(9,13,22,.84); }
 #minimap-panel { background:rgba(9,13,22,.8); }
@@ -752,7 +766,7 @@ body.mobile-minimal #player-info, body.mobile-minimal #build-id { display:none !
   /* pt1-08: ten rows (176-336px); back to three while the start guide, a tip (both at 250px) or the ecology panel (238px) is up */
   body.mobile-minimal #live-ranking:not(.minimal-open) li:nth-child(n+4) { display:grid; }
   body.mobile-minimal #live-ranking:not(.minimal-open) li:nth-child(n+11) { display:none; }
-  body.mobile-minimal:is(:has(#starter-guide:not([hidden])), :has(#situational-tip:not([hidden])), :has(#ecology-panel:not([hidden]))) #live-ranking:not(.minimal-open) li:nth-child(n+4) { display:none; }
+  body.mobile-minimal:is(:has(#starter-guide:not([hidden])), :has(#situational-tip:not([hidden])), :has(#terrain-hint:not([hidden])), :has(#ecology-panel:not([hidden]))) #live-ranking:not(.minimal-open) li:nth-child(n+4) { display:none; }
   body:not(.mobile-minimal) #live-ranking, body.mobile-minimal #live-ranking.minimal-open { top:calc(176px + var(--safe-t)); max-height:30dvh; }
   #starter-guide { top:calc(250px + var(--safe-t)); bottom:auto; }
   #touch-dodge { right:calc(20px + var(--safe-r)); bottom:calc(38px + var(--safe-b)); }

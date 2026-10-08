@@ -6,7 +6,8 @@ import {selectedSkill} from './skillCatalog.js';
 import {ventEruptsIn, VENT_WARNING_SECONDS} from './biomeObjects.js';
 import {skillLine} from './tutorialCards.js';
 
-export const TIP_SHOW_SECONDS = 6, TIP_GAP_SECONDS = 4, TIP_LOCKED_HINT_SECONDS = 20, TIP_STALE_SECONDS = 3;
+export const TIP_SHOW_SECONDS = 5, // was 6 (TS-005)
+ TIP_GAP_SECONDS = 4, TIP_LOCKED_HINT_SECONDS = 20, TIP_STALE_SECONDS = 3;
 const STORAGE_KEY = 'ballgamenext_tips_v1';
 const SLOT_KEYS = {E: {desktop: 'E 키', touch: 'E 버튼'}, R: {desktop: 'R 키', touch: 'R 버튼'}};
 

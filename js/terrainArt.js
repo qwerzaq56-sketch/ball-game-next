@@ -211,7 +211,10 @@ export class TerrainArt {
  drawTile(ctx,tile,biomes){
   if(!this.enabled||!this.ready)return false;
   const {x,y,region}=tile,texture=this.texture(region.id,x,y);if(!texture)return false;
-  const sx=modulo(x,texture.width||400),sy=modulo(y,texture.height||400);ctx.drawImage(texture,sx,sy,200,200,x,y,200,200);
+  // R-VIS-006 / 트러블슈팅 TS-004: tile edges land between screen pixels at fractional zoom, and mobile GPUs
+  // blend that edge with the dark page behind. Each tile reaches one screen pixel into its right/bottom neighbor.
+  const pad=this.seamPad??0,size=200+pad;
+  const sx=modulo(x,texture.width||400),sy=modulo(y,texture.height||400);ctx.drawImage(texture,sx,sy,200,200,x,y,size,size);
   const world=biomes.game.balance.world,ids=[];
   for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
    const nx=modulo(x+dx*200,world.worldWidth),ny=modulo(y+dy*200,world.worldHeight);
@@ -253,7 +256,7 @@ export class TerrainArt {
    }
    cacheSet(this.layers,key,composed,LAYER_CACHE);
   }
-  ctx.drawImage(composed,x,y);
+  ctx.drawImage(composed,x,y,size,size);
   if(region.id==='forest')this.drawForestDetails(ctx,x,y);else this.drawDecals(ctx,region.id,x,y);
 
   return true;

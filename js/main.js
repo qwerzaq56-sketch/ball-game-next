@@ -14,6 +14,7 @@ import { TutorialUI } from './tutorialUI.js';
 import { TouchControls } from './touchControls.js';
 import { HudB } from './hudB.js';
 import {loadSavedSkillPreset} from './skillPreset.js';
+import {installPageZoomGuard} from './pageZoomGuard.js';
 
 class InputState {
   constructor() {
@@ -47,6 +48,7 @@ function resizeCanvas(canvas) {
 
 async function main() {
   const canvas = document.getElementById('game-canvas');
+  installPageZoomGuard();
   resizeCanvas(canvas);
   window.addEventListener('resize', () => resizeCanvas(canvas));
   window.visualViewport?.addEventListener('resize',()=>resizeCanvas(canvas));
