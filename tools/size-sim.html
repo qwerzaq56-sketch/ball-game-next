@@ -1,0 +1,371 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>크기별 효과 시뮬레이터</title>
+<!-- Size-effect simulator (planning 00_기준/master/능력치.md, 밸런싱.md; user request 2026-10-09
+     "사이즈에 따라 달라지는 효과는 시뮬레이션 돌려볼 수 있게 접근용 페이지").
+     Loads config/gameBalance.json and the game's own size functions (js/combat.js, js/entity.js, BIOME_OBJECTS), lets the
+     values be changed here only (nothing is written to the game), and compares "지금 설정" with "게임 기본" on:
+       ① efficiency curves over size 20–500 (fixed-amount effects such as regen and food growth shrink for big balls,
+          max-HP fraction effects such as heal berries stay the same %);
+       ② HP coming back after a hit;
+       ③ a simple duel model (attack interval + hit chance + regen, no positions) run many times with a fixed seed;
+       ④ a table at common sizes, copied as text for Claude together with the changed values.
+     Real-game measurements stay in tools/stats-by-size.mjs, heal-sources.mjs, apex-duel.mjs and autoplay-measure.mjs. -->
+<style>
+:root{--bg:#141c26;--panel:#1c2733;--line:#33414f;--ink:#e8edf2;--muted:#9aa8b6;--accent:#7dd3c0;--alt:#f9a8d4;--good:#4ade80;--warn:#fbbf24;--bad:#f87171;--deep:#0d131a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,'Malgun Gothic',sans-serif}
+header{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;gap:4px 14px;align-items:baseline;flex-wrap:wrap}
+header h1{font-size:18px;margin:0}
+#status{color:var(--muted);font-size:13px}
+.wrap{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;padding:16px;align-items:start}
+@media(max-width:860px){.wrap{grid-template-columns:minmax(0,1fr)}}
+aside{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:6px;position:sticky;top:8px;max-height:calc(100vh - 16px);overflow:auto}
+@media(max-width:860px){aside{position:static;max-height:none}}
+.grp{font-size:12px;color:var(--muted);margin-top:8px;letter-spacing:.04em}
+.knob{display:grid;grid-template-columns:minmax(0,1fr) 78px 22px;gap:6px;align-items:center}
+.knob label{font-size:13px}
+.knob small{display:block;color:var(--muted);font-size:11.5px}
+.knob.changed label{color:var(--warn)}
+.knob.changed small b{color:var(--ink)}
+input[type=number]{width:100%;background:var(--deep);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:3px 6px;font:inherit;font-variant-numeric:tabular-nums}
+button{background:var(--deep);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 10px;font:inherit;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.x{padding:0;width:22px;height:22px;line-height:1;color:var(--muted)}
+button.x:disabled{visibility:hidden}
+button.main{background:var(--accent);color:var(--deep);border-color:var(--accent);font-weight:600}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+main{display:grid;gap:16px;min-width:0}
+section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;min-width:0}
+h2{font-size:16px;margin:0}
+.note{color:var(--muted);font-size:13px;margin:0;max-width:72ch}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button[aria-pressed=true]{background:var(--accent);color:var(--deep);border-color:var(--accent)}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+.chart .axis{stroke:var(--line)}
+.chart .grid{stroke:var(--line);stroke-dasharray:2 4}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:5px}
+.probe{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.probe input{width:100%}
+.out{font-variant-numeric:tabular-nums}
+.out b{color:var(--accent)}
+.out .alt{color:var(--alt)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:13px;min-width:100%}
+th,td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:500}
+td small{color:var(--muted);display:block;font-size:11px}
+td.up{color:var(--good)}td.down{color:var(--bad)}
+.kinds td{white-space:normal;text-align:left}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.fields label{display:grid;gap:2px;font-size:12.5px;color:var(--muted)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.res>div{border:1px solid var(--line);border-radius:8px;padding:10px;display:grid;gap:4px}
+.res h3{margin:0;font-size:13px}
+.bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--deep)}
+.bar span{display:block;height:100%}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--accent);color:var(--deep);padding:6px 14px;border-radius:8px;font-weight:600}
+code{font-size:12.5px;color:var(--muted)}
+</style>
+<header><h1>크기별 효과 시뮬레이터</h1><span id="status">게임 설정 불러오는 중…</span></header>
+<div class="wrap">
+  <aside id="knobs" aria-label="설정"></aside>
+  <main>
+    <section>
+      <h2>① 크기에 따른 효율</h2>
+      <p class="note">값을 왼쪽에서 바꾸면 <b style="color:var(--accent)">지금 설정</b>이 바뀌고, 점선은 <b style="color:var(--alt)">게임 기본</b>입니다. 이 페이지에서 바꾼 값은 게임에 들어가지 않습니다.</p>
+      <div class="chips" id="metrics" role="group" aria-label="볼 효과"></div>
+      <p class="note" id="metricNote"></p>
+      <div class="chart" id="curveChart"></div>
+      <div class="probe"><span>크기</span><input type="range" id="probe" min="20" max="500" step="5" value="100" aria-label="크기 보기"><b id="probeVal" class="out"></b></div>
+      <div class="out" id="probeOut"></div>
+    </section>
+    <section>
+      <h2>효과 종류: 고정량과 비율</h2>
+      <p class="note">고정량 효과는 큰 공일수록 효율이 떨어지고, 최대 체력 비율 효과는 모든 크기에서 같은 %입니다.</p>
+      <div class="tbl"><table class="kinds" id="kinds"></table></div>
+    </section>
+    <section>
+      <h2>② 맞은 뒤 회복</h2>
+      <div class="fields"><label>크기<input type="number" id="rgSize" value="100" min="20" max="500" step="5"></label><label>맞은 뒤 체력 %<input type="number" id="rgStart" value="30" min="1" max="99" step="1"></label></div>
+      <div class="chart" id="regenChart"></div>
+      <div class="out" id="regenOut"></div>
+    </section>
+    <section>
+      <h2>③ 맞싸움 간이 시뮬레이션</h2>
+      <p class="note">자리·회피·스킬 없이, 정해진 간격으로 서로 풀차지를 날리고 명중률만큼 맞는다고 보고 여러 판을 돌립니다. 맞지 않는 동안에는 자연 회복이 찹니다. 같은 씨앗을 써서 다시 눌러도 결과가 같습니다. 실제 게임으로 잰 값은 <code>node tools/apex-duel.mjs</code>입니다.</p>
+      <div class="fields">
+        <label>A 크기 (플레이어)<input type="number" id="dA" value="100" min="20" max="500" step="5"></label>
+        <label>B 크기 (AI)<input type="number" id="dB" value="95" min="20" max="500" step="5"></label>
+        <label>명중률 %<input type="number" id="dHit" value="40" min="1" max="100" step="5"></label>
+        <label>공격 간격(초, 비우면 자동)<input type="number" id="dIv" min=".3" max="20" step=".1" placeholder="자동"></label>
+        <label>시간 제한(초)<input type="number" id="dLimit" value="120" min="10" max="600" step="10"></label>
+        <label>판 수<input type="number" id="dRuns" value="400" min="20" max="3000" step="20"></label>
+      </div>
+      <div class="row"><button class="main" id="dRun">돌리기</button><span class="note" id="dIvNote"></span></div>
+      <div class="res" id="dRes"></div>
+      <div class="chart" id="duelChart"></div>
+    </section>
+    <section>
+      <h2>④ 크기별 표</h2>
+      <p class="note">지금 설정 값이고, 게임 기본과 다르면 아래 작은 글씨로 기본값을 붙입니다.</p>
+      <div class="tbl"><table id="table"></table></div>
+      <div class="row"><button id="copy">결과 복사 (클로드에게 보내기)</button><span class="note">바꾼 값, 표, 마지막 맞싸움 결과를 글로 복사합니다.</span></div>
+    </section>
+  </main>
+</div>
+<div id="toast" hidden></div>
+<script type="module">
+import {attackDamageForSize, applyDefense, attackRangeForSize, attackChargeDurationForSize, dodgeDistanceForSize} from '../js/combat.js';
+import {playerMaxHp, aiMaxHp, growthFromSize, sizeFromGrowth, growthRewardFor} from '../js/entity.js';
+import {BIOME_OBJECTS} from '../js/biomeObjectCatalog.js';
+
+const $ = (s) => document.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (v !== null && v !== undefined && v !== false) e.setAttribute(k, v); } for (const c of kids.flat()) if (c !== null && c !== undefined && c !== false) e.append(c.nodeType ? c : String(c)); return e; };
+const SVG = 'http://www.w3.org/2000/svg', s = (tag, attrs = {}) => { const e = document.createElementNS(SVG, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); return e; };
+const STORE = 'ball-size-sim-v1', store = {get() { try { return JSON.parse(localStorage.getItem(STORE) || 'null'); } catch { return null; } }, set(v) { try { localStorage.setItem(STORE, JSON.stringify(v)); } catch { /* private window: values just are not kept */ } }};
+const BERRY = 'forest-berry-grove', OBS = 'volcano-obsidian-stack', VENT = 'volcano-vent-cycle';
+const SIZES = [20, 50, 100, 150, 200, 300, 400, 500];
+
+// Values that change how a size effect plays out. 'obj.<id>.<key>' reads BIOME_OBJECTS.
+const KNOBS = [
+  {g: '자연 회복', p: 'healthRegen.delay', label: '회복 시작', unit: '맞은 뒤 초', step: .5, min: 0, max: 60},
+  {g: '자연 회복', p: 'healthRegen.baseRate', label: '초당 기본 회복', unit: '체력/초', step: .5, min: 0, max: 100},
+  {g: '자연 회복', p: 'healthRegen.regenPerSize', label: '크기당 추가 회복', unit: '체력/초 × 크기', step: .01, min: 0, max: 2},
+  {g: '최대 체력', p: 'player.hpPerSize', label: '플레이어 크기당 체력', unit: '0 = 예전 성장 규칙', step: 1, min: 0, max: 50},
+  {g: '최대 체력', p: 'ai.hpPerSize', label: 'AI 크기당 체력', unit: '', step: 1, min: 1, max: 50},
+  {g: '공격·방어', p: 'combatScaling.baseAttackDamage', label: '기본 공격력', unit: '', step: 1, min: 0, max: 500},
+  {g: '공격·방어', p: 'combatScaling.attackDamagePerSize', label: '크기당 공격력', unit: '', step: .05, min: 0, max: 10},
+  {g: '공격·방어', p: 'combatScaling.defensePerSize', label: '크기당 방어', unit: '맞을 때 빼는 값', step: .05, min: 0, max: 10},
+  {g: '공격·방어', p: 'attack.baseDamageMultiplier', label: '공격 배율', unit: '', step: .05, min: .05, max: 5},
+  {g: '공격·방어', p: 'attack.attackCooldown', label: '공격 스택 충전', unit: '초', step: .1, min: .1, max: 20},
+  {g: '오브젝트', p: `obj.${BERRY}.healFraction`, label: '회복 열매', unit: '최대 체력 비율', step: .01, min: .01, max: .3},
+  {g: '오브젝트', p: `obj.${BERRY}.growth`, label: '덤불 열매 성장', unit: '열매 1개', step: 5, min: 1, max: 500},
+  {g: '오브젝트', p: `obj.${OBS}.shieldFraction`, label: '흑요석 보호막', unit: '최대 체력 비율', step: .01, min: .01, max: .5},
+  {g: '오브젝트', p: `obj.${VENT}.hpFraction`, label: '분출구 피해', unit: '최대 체력 비율/초', step: .005, min: .001, max: .1},
+  {g: '성장', p: 'growth.paceMultiplier', label: '성장 배율', unit: '먹이·사냥·흡수 공통', step: .05, min: .05, max: 5},
+];
+const getPath = (o, p) => p.split('.').reduce((a, k) => a?.[k], o);
+const setPath = (o, p, v) => { const ks = p.split('.'), last = ks.pop(); ks.reduce((a, k) => a[k] ??= {}, o)[last] = v; };
+const clone = (o) => JSON.parse(JSON.stringify(o));
+
+let BASE = null, CUR = null, vals = {}, metric = 'regenPct', lastDuel = null;
+const num = (v, d = 1) => { if (!Number.isFinite(v)) return '—'; const r = Math.round(v * 10 ** d) / 10 ** d; return r.toLocaleString('ko-KR', {maximumFractionDigits: d}); };
+
+function build(base, over) {
+  const b = clone(base);
+  for (const [p, v] of Object.entries(over)) setPath(b, p, v);
+  return b;
+}
+
+// Everything the page shows at one size, from the game's own functions.
+function model(b, size) {
+  const g = growthFromSize(size, b.player.startingSize, b.growth.growthToSizeRatio, b.growth);
+  const hpP = playerMaxHp(size, g, b), hpA = aiMaxHp(size, b), r = b.healthRegen;
+  const rate = r.baseRate + size * r.regenPerSize;
+  const raw = attackDamageForSize(size, b) * (b.attack.baseDamageMultiplier ?? 1) * (1 + (b.attack.maxChargeDamageBonus ?? 1));
+  const hit = applyDefense(raw, size, b), berry = b.obj[BERRY];
+  const sizeAfter = (growth) => sizeFromGrowth(g + growthRewardFor(growth, {size}, b), b.player.startingSize, b.growth.growthToSizeRatio, b.growth) - size;
+  const foodGrowth = Math.round(Math.round(5 + (b.world.maxOrbSize - b.world.minOrbSize)) * (b.spawning?.naturalFoodGrowthMultiplier ?? 1));
+  return {
+    size, hpP, hpA, rate, regenPct: rate / hpP * 100, fullFrom30: r.delay + .7 * hpP / Math.max(1e-9, rate),
+    berryHeal: berry.healFraction * hpP, berrySec: berry.healFraction * hpP / Math.max(1e-9, rate),
+    hit, hitPct: hit / hpP * 100, hits: Math.ceil(hpP / hit),
+    berryGrow: sizeAfter(berry.growth), food10: sizeAfter(foodGrowth * 10), foodGrowth,
+    range: attackRangeForSize(size, b), dodge: dodgeDistanceForSize(size, b), dash: attackChargeDurationForSize(size, b),
+  };
+}
+
+const METRICS = [
+  {k: 'regenPct', label: '자연 회복 %/초', unit: '%/초', d: 2, note: '초당 회복량은 기본값 + 크기 × 계수라서, 최대 체력이 큰 공일수록 채우는 비율이 낮습니다.'},
+  {k: 'fullFrom30', label: '30% → 가득', unit: '초', d: 0, note: '자연 회복만으로 체력 30%에서 가득 찰 때까지. 맞은 뒤 회복이 시작될 때까지 기다리는 시간을 포함합니다.'},
+  {k: 'berrySec', label: '회복 열매 = 자연 회복 몇 초', unit: '초', d: 0, note: '회복 열매는 최대 체력 비율이라 모든 크기에서 같은 %를 채웁니다. 자연 회복 시간으로 바꾸면 큰 공에게 더 값진 열매입니다.'},
+  {k: 'berryGrow', label: '덤불 열매 1개로 커지는 크기', unit: '', d: 2, note: '성장량은 고정이고 크기는 성장의 제곱근을 따라 늘어서, 큰 공일수록 덜 커집니다. 크기 400~500에서는 보상 자체도 절반까지 줄어듭니다.'},
+  {k: 'food10', label: '보통 먹이 10개로 커지는 크기', unit: '', d: 2, note: '들판 먹이 평균 성장으로 계산합니다. 덤불 열매와 같은 이유로 큰 공일수록 덜 커집니다.'},
+  {k: 'hitPct', label: '같은 크기 풀차지 1타', unit: '% 체력', d: 1, note: '같은 크기끼리 풀차지 한 번이 플레이어 최대 체력의 몇 %인지. 공격력과 방어가 둘 다 크기를 따라 자랍니다.'},
+  {k: 'hits', label: '같은 크기 처치 타수', unit: '타', d: 0, note: '같은 크기 상대를 풀차지로 몇 번 맞혀야 쓰러뜨리는지(회복 없이).'},
+  {k: 'hpP', label: '플레이어 최대 체력', unit: '', d: 0, note: ''},
+  {k: 'range', label: '공격 사거리', unit: '', d: 0, note: ''},
+  {k: 'dodge', label: '회피 거리', unit: '', d: 0, note: ''},
+  {k: 'dash', label: '돌진 시간', unit: '초', d: 2, note: '공격 돌진에 걸리는 시간. 큰 공일수록 길어서 피할 틈이 생깁니다.'},
+];
+
+// ---- chart
+function nice(max) { if (max <= 0) return 1; const e = 10 ** Math.floor(Math.log10(max)), f = max / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * e; }
+function ticks(min, max, n = 5) { const step = nice((max - min) / n), out = []; for (let v = Math.ceil(min / step) * step; v <= max + 1e-9; v += step) out.push(+v.toFixed(10)); return out; }
+function chart(el, series, {xMin, xMax, xLabel, yLabel, probe}) {
+  const W = 640, H = 250, L = 52, R = 12, T = 12, B = 34;
+  const ys = series.flatMap((x) => x.pts.map((p) => p[1])).filter(Number.isFinite);
+  let yMin = Math.min(0, ...ys), yMax = Math.max(...ys, 1e-9) * 1.08;
+  const yt = ticks(yMin, yMax); yMax = Math.max(yMax, yt.at(-1));
+  const X = (v) => L + (v - xMin) / (xMax - xMin) * (W - L - R), Y = (v) => T + (1 - (v - yMin) / (yMax - yMin)) * (H - T - B);
+  const svg = s('svg', {viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': yLabel});
+  for (const v of yt) { svg.append(s('line', {x1: L, x2: W - R, y1: Y(v), y2: Y(v), class: 'grid'})); const t = s('text', {x: L - 6, y: Y(v) + 4, 'text-anchor': 'end'}); t.textContent = num(v, 2); svg.append(t); }
+  for (const v of ticks(xMin, xMax, 8)) { const t = s('text', {x: X(v), y: H - B + 16, 'text-anchor': 'middle'}); t.textContent = v; svg.append(t); }
+  svg.append(s('line', {x1: L, x2: W - R, y1: Y(yMin), y2: Y(yMin), class: 'axis'}), s('line', {x1: L, x2: L, y1: T, y2: H - B, class: 'axis'}));
+  const xl = s('text', {x: W - R, y: H - 4, 'text-anchor': 'end'}); xl.textContent = xLabel; svg.append(xl);
+  const yl = s('text', {x: L + 4, y: T + 10}); yl.textContent = yLabel; svg.append(yl);
+  if (probe != null) svg.append(s('line', {x1: X(probe), x2: X(probe), y1: T, y2: H - B, stroke: 'var(--muted)', 'stroke-dasharray': '1 3'}));
+  for (const x of series) {
+    const d = x.pts.filter((p) => Number.isFinite(p[1])).map((p, i) => `${i ? 'L' : 'M'}${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join('');
+    svg.append(s('path', {d, fill: 'none', stroke: x.color, 'stroke-width': x.width ?? 2, 'stroke-dasharray': x.dash ?? 'none', 'stroke-linejoin': 'round'}));
+  }
+  el.replaceChildren(svg, h('div', {class: 'legend'}, series.filter((x) => x.label).map((x) => h('span', {}, h('i', {style: `border-top-color:${x.color};border-top-style:${x.dash ? 'dashed' : 'solid'}`}), x.label))));
+}
+
+// ---- knobs
+function buildKnobs() {
+  const out = []; let g = null;
+  for (const k of KNOBS) {
+    if (k.g !== g) { g = k.g; out.push(h('div', {class: 'grp'}, g)); }
+    const id = 'k-' + k.p.replace(/[^\w]/g, '_');
+    const input = h('input', {type: 'number', id, step: k.step, min: k.min, max: k.max, oninput: (e) => { const v = Number(e.target.value); if (!Number.isFinite(v) || e.target.value === '') return; setVal(k.p, Math.min(k.max, Math.max(k.min, v))); }});
+    out.push(h('div', {class: 'knob', 'data-p': k.p}, h('label', {for: id}, k.label, h('small', {}, k.unit)), input, h('button', {type: 'button', class: 'x', title: '기본값으로', 'aria-label': k.label + ' 기본값으로', onclick: () => { delete vals[k.p]; afterChange(true); }}, '↺')));
+  }
+  out.push(h('div', {class: 'row', style: 'margin-top:10px'}, h('button', {type: 'button', id: 'resetAll', onclick: () => { vals = {}; afterChange(true); }}, '모두 게임 기본값으로'), h('span', {class: 'note', id: 'changedN'})));
+  $('#knobs').replaceChildren(...out);
+}
+function setVal(p, v) { if (Math.abs(v - getPath(BASE, p)) < 1e-12) delete vals[p]; else vals[p] = v; afterChange(false); }
+function syncKnobs(force) {
+  for (const row of document.querySelectorAll('.knob')) {
+    const p = row.dataset.p, input = row.querySelector('input'), base = getPath(BASE, p), changed = p in vals;
+    if (force || input !== document.activeElement) input.value = changed ? vals[p] : base;
+    row.classList.toggle('changed', changed);
+    row.querySelector('button').disabled = !changed;
+    const small = row.querySelector('small'), unit = KNOBS.find((k) => k.p === p).unit;
+    small.replaceChildren(unit + (unit ? ' · ' : ''), '기본 ', h('b', {}, String(base)));
+  }
+  const n = Object.keys(vals).length;
+  $('#changedN').textContent = n ? `기본과 다른 값 ${n}개` : '모두 게임 기본값';
+}
+function afterChange(force) { CUR = build(BASE, vals); store.set({vals, metric}); syncKnobs(force); renderAll(); }
+
+// ---- sections
+function renderCurve() {
+  const m = METRICS.find((x) => x.k === metric), xs = []; for (let v = 20; v <= 500; v += 5) xs.push(v);
+  $('#metricNote').textContent = m.note;
+  const probe = Number($('#probe').value);
+  chart($('#curveChart'), [
+    {pts: xs.map((x) => [x, model(BASE, x)[m.k]]), color: 'var(--alt)', dash: '6 4', label: '게임 기본'},
+    {pts: xs.map((x) => [x, model(CUR, x)[m.k]]), color: 'var(--accent)', width: 2.5, label: '지금 설정'},
+  ], {xMin: 20, xMax: 500, xLabel: '크기', yLabel: m.label + (m.unit ? ` (${m.unit})` : ''), probe});
+  const a = model(CUR, probe)[m.k], b = model(BASE, probe)[m.k];
+  $('#probeVal').textContent = probe;
+  $('#probeOut').replaceChildren(`크기 ${probe}: ${m.label} `, h('b', {}, num(a, m.d) + (m.unit ? ' ' + m.unit : '')), ' · 게임 기본 ', h('span', {class: 'alt'}, num(b, m.d)));
+}
+function renderKinds() {
+  const b = CUR.obj, pct = (v) => num(v * 100, 1) + '%';
+  const rows = [
+    ['자연 회복', `초당 ${num(CUR.healthRegen.baseRate, 2)} + 크기 × ${num(CUR.healthRegen.regenPerSize, 3)}, 맞은 뒤 ${num(CUR.healthRegen.delay, 1)}초부터`, '고정량', '큰 공일수록 비율이 낮음'],
+    ['먹이·덤불 열매 성장', `덤불 열매 성장 ${b[BERRY].growth}, 보통 먹이 평균 ${model(CUR, 100).foodGrowth}`, '고정량', '큰 공일수록 덜 커짐(400~500은 보상도 줄어듦)'],
+    ['회복 열매', `최대 체력 ${pct(b[BERRY].healFraction)}`, '비율', '모든 크기 같음'],
+    ['흑요석 보호막', `최대 체력 ${pct(b[OBS].shieldFraction)}`, '비율', '모든 크기 같음'],
+    ['열기 분출구', `초당 최대 체력 ${pct(b[VENT].hpFraction)} (방어 무시)`, '비율', '모든 크기 같음'],
+    ['기본 공격', `공격력 ${CUR.combatScaling.baseAttackDamage} + 크기 × ${CUR.combatScaling.attackDamagePerSize}, 방어 크기 × ${CUR.combatScaling.defensePerSize}`, '크기 비례', '같은 크기끼리는 거의 같은 %(①의 1타 그래프)'],
+  ];
+  $('#kinds').replaceChildren(h('tr', {}, ['효과', '지금 값', '종류', '크기에 따라'].map((x) => h('th', {}, x))), ...rows.map((r) => h('tr', {}, r.map((x, i) => h('td', i === 2 ? {style: `color:var(${x === '고정량' ? '--warn' : x === '비율' ? '--good' : '--muted'})`} : {}, x)))));
+}
+function regenCurve(b, size, start) {
+  const m = model(b, size), out = [], end = Math.min(600, Math.max(30, Math.ceil(model(BASE, size).fullFrom30 * 1.15 / 10) * 10, Math.ceil(m.fullFrom30 * 1.15 / 10) * 10));
+  for (let t = 0; t <= end; t += end / 200) out.push([t, Math.min(100, t < b.healthRegen.delay ? start : start + m.rate * (t - b.healthRegen.delay) / m.hpP * 100)]);
+  return {out, end, full: b.healthRegen.delay + (100 - start) / 100 * m.hpP / m.rate, m};
+}
+function renderRegen() {
+  const size = Math.min(500, Math.max(20, Number($('#rgSize').value) || 100)), start = Math.min(99, Math.max(1, Number($('#rgStart').value) || 30));
+  const a = regenCurve(CUR, size, start), b = regenCurve(BASE, size, start), end = Math.max(a.end, b.end);
+  chart($('#regenChart'), [{pts: b.out, color: 'var(--alt)', dash: '6 4', label: '게임 기본'}, {pts: a.out, color: 'var(--accent)', width: 2.5, label: '지금 설정'}], {xMin: 0, xMax: end, xLabel: '맞은 뒤 초', yLabel: '체력 %'});
+  const berry = CUR.obj[BERRY].healFraction * 100;
+  $('#regenOut').replaceChildren(`크기 ${size}, 최대 체력 ${num(a.m.hpP, 0)}: 초당 ${num(a.m.rate, 1)} 회복, `, h('b', {}, `${num(a.full, 0)}초`), '에 가득', ' · 게임 기본 ', h('span', {class: 'alt'}, `${num(b.full, 0)}초`), ` · 회복 열매 1개(${num(berry, 0)}%)는 자연 회복 ${num(a.m.berrySec, 0)}초어치`);
+}
+
+// ---- duel (simple model)
+function rng(seed) { let t = seed >>> 0; return () => { t = (t + 0x6D2B79F5) >>> 0; let r = Math.imul(t ^ (t >>> 15), 1 | t); r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r; return ((r ^ (r >>> 14)) >>> 0) / 4294967296; }; }
+const autoInterval = (b) => (b.attack.attackCooldown ?? 1.5) + (b.attack.manualChargeSeconds ?? .9);
+function duel(b, sA, sB, hit, iv, limit, runs, keepTrace) {
+  const r = rng(20261009), dt = .1, side = (size, max, other) => ({size, max, dmg: applyDefense(attackDamageForSize(size, b) * (b.attack.baseDamageMultiplier ?? 1) * (1 + (b.attack.maxChargeDamageBonus ?? 1)), other, b), rate: b.healthRegen.baseRate + size * b.healthRegen.regenPerSize});
+  const A0 = side(sA, playerMaxHp(sA, growthFromSize(sA, b.player.startingSize, b.growth.growthToSizeRatio, b.growth), b), sB), B0 = side(sB, aiMaxHp(sB, b), sA);
+  const res = {a: 0, b: 0, both: 0, draw: 0, times: [], aLeft: 0, bLeft: 0, A0, B0, trace: null};
+  for (let n = 0; n < runs; n++) {
+    const A = {...A0, hp: A0.max, since: 1e9, next: r() * iv}, B = {...B0, hp: B0.max, since: 1e9, next: r() * iv}, tr = keepTrace && !n ? [[0, 100, 100]] : null;
+    let t = 0, end = null;
+    for (; t < limit; t += dt) {
+      for (const [me, foe] of [[A, B], [B, A]]) { me.next -= dt; if (me.next <= 0) { me.next += iv * (.8 + .4 * r()); if (r() < hit) { foe.hp -= me.dmg; foe.since = 0; } } }
+      for (const x of [A, B]) { x.since += dt; if (x.hp > 0 && x.since >= b.healthRegen.delay) x.hp = Math.min(x.max, x.hp + x.rate * dt); }
+      if (tr) tr.push([t + dt, Math.max(0, A.hp / A.max * 100), Math.max(0, B.hp / B.max * 100)]);
+      if (A.hp <= 0 || B.hp <= 0) { end = A.hp <= 0 && B.hp <= 0 ? 'both' : A.hp <= 0 ? 'b' : 'a'; break; }
+    }
+    if (end) { res[end]++; res.times.push(t + dt); } else { res.draw++; res.aLeft += A.hp / A.max; res.bLeft += B.hp / B.max; }
+    if (tr) res.trace = tr;
+  }
+  res.times.sort((x, y) => x - y); res.median = res.times.length ? res.times[Math.floor(res.times.length / 2)] : null;
+  const unfinished = Math.max(1, res.draw); res.aLeft /= unfinished; res.bLeft /= unfinished; res.runs = runs;
+  return res;
+}
+function runDuel() {
+  const v = (id, d, lo, hi) => Math.min(hi, Math.max(lo, Number($(id).value) || d));
+  const sA = v('#dA', 100, 20, 500), sB = v('#dB', 95, 20, 500), hit = v('#dHit', 40, 1, 100) / 100, limit = v('#dLimit', 120, 10, 600), runs = Math.round(v('#dRuns', 400, 20, 3000));
+  const ivIn = $('#dIv').value === '' ? null : v('#dIv', 2.4, .3, 20);
+  const ivC = ivIn ?? autoInterval(CUR), ivB = ivIn ?? autoInterval(BASE);
+  $('#dIvNote').textContent = ivIn ? `공격 간격 ${ivIn}초(직접 입력)` : `공격 간격 자동: 스택 충전 + 풀차지 ${num(ivC, 1)}초(±20%)`;
+  const cur = duel(CUR, sA, sB, hit, ivC, limit, runs, true), base = duel(BASE, sA, sB, hit, ivB, limit, runs, false);
+  lastDuel = {sA, sB, hit, iv: ivC, limit, runs, cur, base};
+  const card = (title, r, cls) => {
+    const p = (x) => num(x / r.runs * 100, 0) + '%';
+    return h('div', {}, h('h3', {class: cls}, title),
+      h('div', {class: 'bar', title: 'A 승 · 무승부 · B 승'}, h('span', {style: `width:${r.a / r.runs * 100}%;background:var(--accent)`}), h('span', {style: `width:${r.draw / r.runs * 100}%;background:var(--muted)`}), h('span', {style: `width:${r.b / r.runs * 100}%;background:var(--bad)`})),
+      h('div', {class: 'out'}, `A 승 `, h('b', {}, p(r.a)), ` · 시간 안에 안 끝남 ${p(r.draw)} · B 승 ${p(r.b)}`, r.both ? ` · 함께 쓰러짐 ${p(r.both)}` : ''),
+      h('div', {class: 'out note'}, r.median ? `끝난 판의 가운데 시간 ${num(r.median, 0)}초` : '끝난 판 없음', r.draw ? ` · 안 끝난 판의 평균 남은 체력 A ${num(r.aLeft * 100, 0)}% / B ${num(r.bLeft * 100, 0)}%` : ''),
+      h('div', {class: 'out note'}, `한 대 A→B ${num(r.A0.dmg, 0)} (${num(r.A0.dmg / r.B0.max * 100, 1)}%) · B→A ${num(r.B0.dmg, 0)} (${num(r.B0.dmg / r.A0.max * 100, 1)}%) · 회복 A ${num(r.A0.rate / r.A0.max * 100, 2)}%/초, B ${num(r.B0.rate / r.B0.max * 100, 2)}%/초`));
+  };
+  $('#dRes').replaceChildren(card('지금 설정', cur, ''), card('게임 기본', base, ''));
+  chart($('#duelChart'), [{pts: cur.trace.map((p) => [p[0], p[1]]), color: 'var(--accent)', width: 2, label: `지금 설정 첫 판: A (크기 ${sA}) 체력 %`}, {pts: cur.trace.map((p) => [p[0], p[2]]), color: 'var(--bad)', width: 2, label: `B (크기 ${sB}) 체력 %`}], {xMin: 0, xMax: Math.max(10, cur.trace.at(-1)[0]), xLabel: '초', yLabel: '체력 %'});
+}
+
+// ---- table + copy
+const COLS = [['hpP', '최대 체력', 0], ['rate', '회복/초', 1], ['regenPct', '회복 %/초', 2], ['fullFrom30', '30%→가득(초)', 0], ['berrySec', '회복 열매=회복 초', 0], ['berryGrow', '덤불 열매 1개→크기', 2], ['hitPct', '같은 크기 1타 %', 1], ['hits', '처치 타수', 0]];
+function renderTable() {
+  const rows = SIZES.map((size) => [model(CUR, size), model(BASE, size)]);
+  $('#table').replaceChildren(h('tr', {}, h('th', {}, '크기'), COLS.map((c) => h('th', {}, c[1]))),
+    ...rows.map(([a, b]) => h('tr', {}, h('td', {}, a.size), COLS.map(([k, , d]) => { const diff = Math.abs(a[k] - b[k]) > 1e-9; return h('td', {}, num(a[k], d), diff ? h('small', {}, '기본 ' + num(b[k], d)) : null); }))));
+}
+function copyText() {
+  const changes = Object.entries(vals).map(([p, v]) => `${p} ${getPath(BASE, p)} → ${v}`);
+  const L = [`[크기 시뮬레이터] ${new Date().toISOString().slice(0, 10)} · config/gameBalance.json 기준`, `바꾼 값: ${changes.length ? changes.join(', ') : '없음(게임 기본)'}`, '',
+    `| 크기 | ${COLS.map((c) => c[1]).join(' | ')} |`, `|${['---', ...COLS.map(() => '---')].join('|')}|`,
+    ...SIZES.map((size) => { const a = model(CUR, size); return `| ${size} | ${COLS.map(([k, , d]) => num(a[k], d)).join(' | ')} |`; })];
+  if (lastDuel) { const d = lastDuel, p = (r, x) => Math.round(r[x] / r.runs * 100) + '%'; L.push('', `맞싸움 간이 시뮬레이션: A ${d.sA} vs B ${d.sB}, 명중 ${Math.round(d.hit * 100)}%, 간격 ${num(d.iv, 1)}초, 제한 ${d.limit}초, ${d.runs}판`, `- 지금 설정: A 승 ${p(d.cur, 'a')} · 안 끝남 ${p(d.cur, 'draw')} · B 승 ${p(d.cur, 'b')}`, `- 게임 기본: A 승 ${p(d.base, 'a')} · 안 끝남 ${p(d.base, 'draw')} · B 승 ${p(d.base, 'b')}`); }
+  return L.join('\n');
+}
+async function copy() {
+  const text = copyText();
+  try { await navigator.clipboard.writeText(text); toast('복사했습니다'); }
+  catch { const ta = h('textarea', {style: 'position:fixed;left:-9999px'}); ta.value = text; document.body.append(ta); ta.select(); try { document.execCommand('copy'); toast('복사했습니다'); } catch { toast('복사하지 못했습니다'); } ta.remove(); }
+}
+function toast(t) { const e = $('#toast'); e.textContent = t; e.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { e.hidden = true; }, 1800); }
+
+function renderAll() { renderCurve(); renderKinds(); renderRegen(); renderTable(); if (lastDuel) runDuel(); }
+
+try {
+  const res = await fetch('../config/gameBalance.json', {cache: 'no-store'});
+  if (!res.ok) throw Error(res.status);
+  BASE = await res.json();
+  BASE.obj = {[BERRY]: {...BIOME_OBJECTS[BERRY]}, [OBS]: {...BIOME_OBJECTS[OBS]}, [VENT]: {...BIOME_OBJECTS[VENT]}};
+  const saved = store.get();
+  if (saved?.vals) for (const [p, v] of Object.entries(saved.vals)) if (KNOBS.some((k) => k.p === p) && Number.isFinite(v)) vals[p] = v;
+  if (METRICS.some((m) => m.k === saved?.metric)) metric = saved.metric;
+  const r = BASE.healthRegen;
+  $('#status').textContent = `게임 기본: 자연 회복 ${r.baseRate} + 크기 × ${r.regenPerSize}, 맞은 뒤 ${r.delay}초부터 · 체력 크기 × ${BASE.player.hpPerSize}`;
+  $('#metrics').replaceChildren(...METRICS.map((m) => h('button', {type: 'button', 'aria-pressed': String(m.k === metric), onclick: (e) => { metric = m.k; for (const b of $('#metrics').children) b.setAttribute('aria-pressed', String(b === e.currentTarget)); store.set({vals, metric}); renderCurve(); }}, m.label)));
+  buildKnobs();
+  $('#probe').addEventListener('input', renderCurve);
+  for (const id of ['#rgSize', '#rgStart']) $(id).addEventListener('input', renderRegen);
+  $('#dRun').addEventListener('click', runDuel);
+  $('#copy').addEventListener('click', copy);
+  afterChange(true);
+  runDuel();
+} catch (e) {
+  $('#status').textContent = '게임 설정을 읽지 못했습니다. 게임 폴더를 서버로 열어 주세요(python tools/serve.py 또는 GitHub Pages의 /tools/size-sim.html).';
+  console.error(e);
+}
+</script>
