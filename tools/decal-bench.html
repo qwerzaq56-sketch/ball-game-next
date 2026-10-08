@@ -1,0 +1,215 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>데칼 검수대</title>
+<!-- Decal review bench (planning 00_기준/master/데칼.md; user request 2026-10-08 "데칼 마스터 … 오브젝트 검수대의 구현 참고").
+     Same review flow as tools/object-bench.html, for small non-interactive ground decals (js/decalCatalog.js):
+       ① image — the region's concept panel (drag to choose the reference crop) next to every made decal at true size;
+          planned decals are listed so their need can be judged before they are made;
+       ② placement — chance per 200-unit tile, size range and tile inset, previewed live on the region's ground with a ball for scale,
+          with a decals on/off switch (the master's completion check compares with and without);
+       ③ request — "work from this reference" kinds + text, like the object bench's request box.
+     Results are copied as decal-review-v1 JSON lines for the planning map inbox; tools/decal-confirm.mjs writes placement values. -->
+<style>
+:root{--bg:#141c26;--panel:#1c2733;--line:#33414f;--ink:#e8edf2;--muted:#9aa8b6;--accent:#7dd3c0;--good:#4ade80;--warn:#fbbf24;--info:#60a5fa;--bad:#f87171;--deep:#0d131a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,'Malgun Gothic',sans-serif}
+header{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;gap:4px 14px;align-items:baseline;flex-wrap:wrap}
+header h1{font-size:18px;margin:0}
+#status{color:var(--muted);font-size:13px}
+.wrap{display:grid;grid-template-columns:190px minmax(0,1fr);gap:16px;padding:16px}
+@media(max-width:820px){.wrap{grid-template-columns:minmax(0,1fr)}nav{display:flex;flex-wrap:wrap;gap:4px}nav button{width:auto!important}}
+nav button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:6px;text-align:left;margin-bottom:3px}
+nav button[aria-current=true]{border-color:var(--accent);color:var(--accent)}
+nav small{color:var(--muted)}
+main{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0;align-content:start}
+main>*{max-width:960px}
+h2{font-size:17px;margin:0}
+#stage{width:100%;aspect-ratio:3/2;display:block;border-radius:8px;border:1px solid var(--line);background:var(--deep)}
+#panel{width:100%;display:block;border-radius:6px;background:var(--deep);cursor:crosshair;touch-action:none}
+.ctl{display:grid;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.row{display:flex;gap:6px 10px;align-items:center;flex-wrap:wrap}
+.lab{color:var(--muted);font-size:12px;min-width:64px}
+button{font:inherit;color:var(--ink);background:#243241;border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+button.primary{background:var(--accent);color:var(--deep);border-color:var(--accent);font-weight:600}
+input[type=range]{width:200px;max-width:100%;accent-color:var(--accent)}
+input[type=number]{width:76px;font:inherit;color:var(--ink);background:var(--deep);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+textarea{font:inherit;color:var(--ink);background:var(--deep);border:1px solid var(--line);border-radius:6px;padding:5px 8px;width:100%;resize:vertical;min-height:48px}
+.note{color:var(--muted);font-size:12.5px;margin:0}
+.adj{display:grid;grid-template-columns:120px minmax(120px,240px) 84px minmax(0,1fr);gap:8px;align-items:center}
+.adj.changed .lab{color:var(--accent)}
+@media(max-width:560px){.adj{grid-template-columns:96px minmax(0,1fr) 76px}.adj .note{grid-column:1/-1}}
+.decals{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.decal{background:var(--deep);border:1px solid var(--line);border-radius:8px;padding:8px;display:grid;gap:6px}
+.decal canvas{width:100%;height:96px;display:block;background:#0a0f15;border-radius:4px}
+.decal .vs{display:flex;gap:4px;flex-wrap:wrap}
+.decal .vs button{padding:2px 8px;font-size:12.5px}
+.pill{font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:0 7px;color:var(--muted)}
+.pill.made{color:var(--good);border-color:currentColor}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:7px 14px;border-radius:8px;font-size:13px;z-index:20}
+[hidden]{display:none!important}
+</style>
+<header><h1>데칼 검수대</h1><span id="status">불러오는 중…</span></header>
+<div class="wrap">
+  <nav id="list" aria-label="지역 목록"></nav>
+  <main>
+    <h2 id="title"></h2>
+    <canvas id="stage" width="960" height="640" aria-label="실측 무대"></canvas>
+    <div class="ctl">
+      <div class="row"><span class="lab">공 지름</span><span id="ballBtns" class="row"></span><span class="lab">배율</span><span id="zoomBtns" class="row"></span>
+        <label class="row" style="gap:5px"><input type="checkbox" id="decalsOn" checked>데칼 보이기</label><label class="row" style="gap:5px"><input type="checkbox" id="grid">200 칸 보기</label></div>
+      <p class="note" id="stageNote"></p>
+    </div>
+
+    <section class="ctl" aria-label="원화와 데칼">
+      <div class="row"><b>① 이미지</b><span class="note">원화 패널을 끌어서 기준 영역을 고르면, 그 부분을 기준으로 데칼을 만들거나 고쳐 달라고 요청할 수 있습니다.</span></div>
+      <canvas id="panel" width="960" height="420" aria-label="지역 원화 패널"></canvas>
+      <div class="row"><span class="note" id="cropNote"></span><button type="button" id="cropClear">기준 영역 지우기</button></div>
+      <div class="decals" id="decals"></div>
+    </section>
+
+    <section class="ctl" aria-label="배치 조정">
+      <div class="row"><b>② 배치</b><span class="note">200×200 칸마다 데칼 하나를 놓을 확률·크기·칸 안쪽 여백입니다. 바꾸면 무대에 바로 그립니다.</span></div>
+      <div id="layoutRows"></div>
+    </section>
+
+    <section class="ctl" aria-label="작업 요청">
+      <div class="row"><b>③ 작업 요청</b><span class="note">기준 영역과 함께 보냅니다(기준 영역이 없으면 지역 패널 전체).</span></div>
+      <div class="row" id="reqKinds"></div>
+      <textarea id="reqText" placeholder="예: 원화의 길 가장자리 자갈처럼 작은 돌 묶음 3종, 공 지름 60보다 작게"></textarea>
+      <div class="row"><span class="lab">지역 메모</span></div>
+      <textarea id="memo" placeholder="지역 전체에 대한 의견"></textarea>
+    </section>
+
+    <div class="row"><button type="button" id="reset">이 지역 초기화</button><button type="button" class="primary" id="copyOne">이 지역 결과 복사</button><button type="button" id="copyAll">모든 지역 결과 복사</button>
+      <span class="note">기획 지도 "요청 보관함"에 붙여 주세요. 배치 값은 클로드가 tools/decal-confirm.mjs로 게임에 넣습니다.</span></div>
+  </main>
+</div>
+<div id="toast" hidden></div>
+<script type="module">
+import {DECALS,DECAL_LAYOUT,DECAL_BOUNDS,DECAL_TILE,madeDecals,decalAt} from '../js/decalCatalog.js';
+import {OBJECT_REGIONS} from '../js/biomeObjectCatalog.js';
+
+const AP = '../assets/art-packs/';
+const GROUND = {forest: 'forest-raster-v1/floor-002.png', grassland: 'grass-raster-v1/ground-001.png', lake: 'regions-raster-v1/lake-ground-001.png',
+  snow: 'regions-raster-v1/snow-ground-002.png', volcano: 'regions-raster-v1/volcano-ground-001.png', desert: 'regions-raster-v1/desert-ground-001.png'};
+const REGIONS = Object.keys(DECAL_LAYOUT);
+const VERDICTS = [['good', '좋음', '#4ade80'], ['impl', '크기·배치 아쉬움', '#fbbf24'], ['resource', '그림 다시', '#f87171'], ['drop', '필요 없음', '#9aa8b6']];
+const PLANNED_VERDICTS = [['need', '만들기', '#60a5fa'], ['later', '나중에', '#9aa8b6'], ['drop', '필요 없음', '#9aa8b6']];
+const REQ_KINDS = [['resource', '데칼 새로 만들기'], ['redo', '있는 데칼 다시 그리기'], ['place', '배치를 원화에 맞추기']];
+const LAYOUT_ROWS = [['chance', '칸당 확률', 0, 1, .01, (v) => `${Math.round(v * 100)}% · 화면 한 칸(200×200)에 ${v >= .5 ? '거의 늘' : v >= .25 ? '서너 칸에 하나' : '드물게'}`],
+  ['min', '최소 크기', 6, 120, 1, (v) => `월드 ${v}`], ['max', '최대 크기', 6, 120, 1, (v) => `월드 ${v} (최소보다 커야 함)`], ['inset', '칸 안쪽 여백', 0, 90, 1, (v) => `칸 가장자리에서 ${v}`]];
+const KEY = 'decal-bench-v1', $ = (s) => document.querySelector(s);
+const h = (tag, attrs, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs || {})) { if (v == null || v === false) continue; if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (k === 'class') e.className = v; else e.setAttribute(k, v === true ? '' : v); } for (const c of kids.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : String(c)); return e; };
+const toast = (t) => { const el = $('#toast'); el.textContent = t; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 1800); };
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch {} };
+const D = load(), S = {region: REGIONS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'forest', ball: 60, zoom: .75, drag: null};
+const draft = (r = S.region) => (D[r] ||= {});
+const emptyDraft = (d) => !d.layout && !d.concept && !d.request && !d.memo && !Object.keys(d.decals || {}).length;
+const has = (r) => !!D[r] && !emptyDraft(D[r]);
+const setDraft = (patch, r = S.region) => { const d = Object.assign(draft(r), patch); for (const k of Object.keys(d)) if (d[k] == null || (typeof d[k] === 'object' && !Array.isArray(d[k]) && !Object.keys(d[k]).length)) delete d[k]; if (emptyDraft(d)) delete D[r]; save(); render(); };
+const baseLayout = (r) => { const l = DECAL_LAYOUT[r]; return {chance: l.chance, min: l.size[0], max: l.size[1], inset: l.inset}; };
+const layoutOf = (r = S.region) => ({...baseLayout(r), ...(draft(r).layout || {})});
+const asLayout = (l) => ({chance: l.chance, size: [l.min, Math.max(l.min + 1, l.max)], inset: l.inset});
+
+const images = new Map();
+const img = (src) => { let i = images.get(src); if (!i) { i = new Image(); i.src = src; images.set(src, i); i.decode().then(() => draw()).catch(() => {}); } return i.complete && i.naturalWidth ? i : null; };
+const panelSrc = (r) => `object-bench/gameplay-${r}.jpg`;
+
+function nav() {
+  $('#list').replaceChildren(...REGIONS.map(r => { const ids = Object.keys(DECALS).filter(id => DECALS[id].region === r), made = madeDecals(r).length, d = has(r);
+    return h('button', {type: 'button', 'aria-current': S.region === r, onclick: () => { S.region = r; location.hash = r; render(); }}, h('span', {}, OBJECT_REGIONS[r] || r), h('small', {}, `${made}/${ids.length}${d ? ' · 메모' : ''}`)); }));
+}
+function draw() {
+  const c = $('#stage'), x = c.getContext('2d'), z = S.zoom, W = c.width / z, H = c.height / z, cx = 4000, cy = 4000, left = cx - W / 2, top = cy - H / 2;
+  x.fillStyle = '#0d131a'; x.fillRect(0, 0, c.width, c.height);
+  const g = img(AP + GROUND[S.region]);
+  if (g) for (let ty = Math.floor(top / 800) * 800; ty < top + H; ty += 800) for (let tx = Math.floor(left / 800) * 800; tx < left + W; tx += 800) x.drawImage(g, (tx - left) * z, (ty - top) * z, 800 * z, 800 * z);
+  const layout = asLayout(layoutOf()), ids = madeDecals(S.region); let n = 0, tiles = 0;
+  for (let ty = Math.floor(top / DECAL_TILE) * DECAL_TILE; ty < top + H; ty += DECAL_TILE) for (let tx = Math.floor(left / DECAL_TILE) * DECAL_TILE; tx < left + W; tx += DECAL_TILE) {
+    tiles++;
+    if ($('#grid').checked) { x.strokeStyle = '#ffffff22'; x.strokeRect((tx - left) * z, (ty - top) * z, DECAL_TILE * z, DECAL_TILE * z); }
+    const d = $('#decalsOn').checked && decalAt(S.region, tx, ty, layout, ids), im = d && img(AP + DECALS[d.id].src);
+    if (im) { x.drawImage(im, (d.x - d.size / 2 - left) * z, (d.y - d.size / 2 - top) * z, d.size * z, d.size * z); n++; }
+  }
+  // Ball for scale at the centre (green player body).
+  x.beginPath(); x.arc(c.width / 2, c.height / 2, S.ball / 2 * z, 0, Math.PI * 2); x.fillStyle = '#4ade80'; x.fill(); x.lineWidth = 2; x.strokeStyle = '#14532d'; x.stroke();
+  $('#stageNote').textContent = ids.length ? `보이는 칸 ${tiles}개 중 데칼 ${n}개 · 월드 ${Math.round(W)}×${Math.round(H)} · 가운데 공 지름 ${S.ball}` : '이 지역은 만든 데칼이 아직 없습니다. 바닥만 보입니다(아래 ① 목록의 "만들기"로 제작 여부를 정하세요).';
+  drawPanel();
+}
+function drawPanel() {
+  const c = $('#panel'), x = c.getContext('2d'), im = img(panelSrc(S.region)); x.fillStyle = '#0a0f15'; x.fillRect(0, 0, c.width, c.height);
+  if (!im) return;
+  const k = Math.min(c.width / im.naturalWidth, c.height / im.naturalHeight), w = im.naturalWidth * k, hh = im.naturalHeight * k, ox = (c.width - w) / 2, oy = (c.height - hh) / 2;
+  S.panelMap = {k, ox, oy, nw: im.naturalWidth, nh: im.naturalHeight};
+  x.drawImage(im, ox, oy, w, hh);
+  const crop = S.drag?.crop || draft().concept?.crop;
+  if (crop) { x.fillStyle = '#0008'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, ...crop, ox + crop[0] * k, oy + crop[1] * k, crop[2] * k, crop[3] * k); x.strokeStyle = '#7dd3c0'; x.lineWidth = 2; x.strokeRect(ox + crop[0] * k, oy + crop[1] * k, crop[2] * k, crop[3] * k); }
+}
+const panelPoint = (e) => { const c = $('#panel'), r = c.getBoundingClientRect(), m = S.panelMap; const px = (e.clientX - r.left) * c.width / r.width, py = (e.clientY - r.top) * c.height / r.height;
+  return [Math.max(0, Math.min(m.nw, (px - m.ox) / m.k)), Math.max(0, Math.min(m.nh, (py - m.oy) / m.k))]; };
+$('#panel').addEventListener('pointerdown', (e) => { if (!S.panelMap) return; $('#panel').setPointerCapture(e.pointerId); S.drag = {a: panelPoint(e)}; });
+$('#panel').addEventListener('pointermove', (e) => { if (!S.drag) return; const [ax, ay] = S.drag.a, [bx, by] = panelPoint(e); S.drag.crop = [Math.min(ax, bx), Math.min(ay, by), Math.abs(bx - ax), Math.abs(by - ay)].map(Math.round); drawPanel(); });
+$('#panel').addEventListener('pointerup', () => { const crop = S.drag?.crop; S.drag = null; if (crop && crop[2] > 8 && crop[3] > 8) setDraft({concept: {src: panelSrc(S.region), crop}}); else drawPanel(); });
+$('#cropClear').addEventListener('click', () => setDraft({concept: null}));
+
+function decalCard(id) {
+  const dc = DECALS[id], made = !!dc.src, v = draft().decals?.[id] || {}, c = h('canvas', {width: 250, height: 96});
+  const im = made && img(AP + dc.src);
+  if (im) { const x = c.getContext('2d'), l = layoutOf(); x.fillStyle = '#0a0f15'; x.fillRect(0, 0, 250, 96);
+    // left: x4 detail; right: true sizes (min / max) next to a 20-diameter starting ball, all at the stage zoom.
+    x.drawImage(im, 8, 8, 80, 80); const z = S.zoom, y0 = 48;
+    for (const [i, s] of [l.min, l.max].entries()) x.drawImage(im, 110 + i * 46 - s * z / 2, y0 - s * z / 2, s * z, s * z);
+    x.beginPath(); x.arc(212, y0, 10 * z, 0, Math.PI * 2); x.fillStyle = '#4ade80'; x.fill(); x.fillStyle = '#9aa8b6'; x.font = '10px system-ui'; x.fillText('최소·최대 / 시작 공', 110, 90); }
+  const set = (patch) => { const cur = {...(draft().decals?.[id] || {}), ...patch}; for (const k of Object.keys(cur)) if (!cur[k]) delete cur[k]; const all = {...(draft().decals || {})}; if (Object.keys(cur).length) all[id] = cur; else delete all[id]; setDraft({decals: all}); };
+  const vs = (made ? VERDICTS : PLANNED_VERDICTS).map(([k, label, col]) => h('button', {type: 'button', 'aria-pressed': v.verdict === k, style: v.verdict === k ? `border-color:${col};color:${col}` : null, onclick: () => set({verdict: v.verdict === k ? null : k})}, label));
+  const memo = h('textarea', {placeholder: '메모', rows: 2}); memo.value = v.memo || ''; memo.addEventListener('change', () => set({memo: memo.value.trim() || null}));
+  return h('div', {class: 'decal'}, h('div', {class: 'row'}, h('b', {}, dc.name), h('code', {class: 'note'}, id), h('span', {class: 'pill' + (made ? ' made' : '')}, made ? '게임 사용' : '계획(미제작)')),
+    made ? c : h('p', {class: 'note'}, '아직 그림이 없습니다. 필요하면 "만들기"를 고르고, 위 원화에서 기준 영역을 잡아 ③ 작업 요청에 적어 주세요.'), h('div', {class: 'vs'}, vs), memo);
+}
+function layoutRows() {
+  const l = layoutOf(), base = baseLayout(S.region);
+  $('#layoutRows').replaceChildren(...LAYOUT_ROWS.map(([k, label, min, max, step, note]) => {
+    const r = h('input', {type: 'range', min, max, step, 'aria-label': label}), n = h('input', {type: 'number', min, max, step, 'aria-label': label + ' 직접 입력'}); r.value = n.value = l[k];
+    const put = (val) => { const v = Math.max(min, Math.min(max, Number(val))); if (!Number.isFinite(v)) return; const lay = {...(draft().layout || {})}; if (Math.abs(v - base[k]) < 1e-9) delete lay[k]; else lay[k] = v; setDraft({layout: lay}); };
+    r.addEventListener('input', () => { n.value = r.value; const lay = {...(draft().layout || {}), [k]: Number(r.value)}; draft().layout = lay; draw(); });
+    r.addEventListener('change', () => put(r.value)); n.addEventListener('change', () => put(n.value));
+    return h('div', {class: 'adj' + (draft().layout?.[k] != null ? ' changed' : '')}, h('span', {class: 'lab'}, label), r, n, h('span', {class: 'note'}, note(l[k]) + (draft().layout?.[k] != null ? ` (기본 ${k === 'chance' ? Math.round(base[k] * 100) + '%' : base[k]})` : '')));
+  }));
+}
+function requestBox() {
+  const q = draft().request || {kinds: []};
+  $('#reqKinds').replaceChildren(...REQ_KINDS.map(([k, label]) => h('button', {type: 'button', 'aria-pressed': q.kinds.includes(k), onclick: () => { const cur = draft().request || {kinds: []}, kinds = cur.kinds.includes(k) ? cur.kinds.filter(x => x !== k) : [...cur.kinds, k]; setDraft({request: kinds.length || cur.text ? {...cur, kinds} : null}); }}, label)));
+  $('#reqText').value = q.text || ''; $('#memo').value = draft().memo || '';
+}
+$('#reqText').addEventListener('change', () => { const cur = draft().request || {kinds: []}, text = $('#reqText').value.trim(); setDraft({request: text || cur.kinds.length ? {...cur, text: text || undefined} : null}); });
+$('#memo').addEventListener('change', () => setDraft({memo: $('#memo').value.trim() || null}));
+
+const KIND = Object.fromEntries(REQ_KINDS), VNAME = Object.fromEntries([...VERDICTS, ...PLANNED_VERDICTS].map(([k, l]) => [k, l]));
+function changes(r) { const base = baseLayout(r), l = draft(r).layout || {}; return Object.fromEntries(Object.keys(l).map(k => [k, [base[k], l[k]]])); }
+function reviewJson(r) { const d = draft(r);
+  return {format: 'decal-review-v1', region: r, layout: changes(r), decals: d.decals || {}, concept: d.concept || null, request: d.request ? {kinds: d.request.kinds || [], text: d.request.text || null} : null, memo: d.memo || null}; }
+function lines(r) { const d = draft(r), out = [`- ${OBJECT_REGIONS[r] || r} 데칼`], ch = changes(r);
+  if (Object.keys(ch).length) out.push('  · 배치: ' + Object.entries(ch).map(([k, [a, b]]) => `${LAYOUT_ROWS.find(x => x[0] === k)[1]} ${k === 'chance' ? Math.round(a * 100) + '%' : a}→${k === 'chance' ? Math.round(b * 100) + '%' : b}`).join(', '));
+  for (const [id, v] of Object.entries(d.decals || {})) out.push(`  · ${DECALS[id]?.name || id}(${id}): ${VNAME[v.verdict] || '판정 없음'}${v.memo ? ' — ' + v.memo : ''}`);
+  if (d.request) out.push(`  · 작업 요청(기준 원화 ${d.concept ? `gameplay-${r}.jpg 영역 ${d.concept.crop.join(',')}` : '지역 패널 전체'}): ${[...(d.request.kinds || []).map(k => KIND[k] || k), d.request.text].filter(Boolean).join(' — ')}`);
+  if (d.memo) out.push('  · 메모: ' + d.memo);
+  return out; }
+function copyText(regions) { const date = new Date(), day = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  return [`[데칼 검수] ${day} · 데칼 검수대(이미지 / 배치 / 작업 요청)`, ...regions.flatMap(lines), '', '```json', ...regions.map(r => JSON.stringify(reviewJson(r))), '```'].join('\n'); }
+async function copy(text) { try { await navigator.clipboard.writeText(text); toast('복사했습니다. 요청 보관함에 붙여 주세요'); } catch { const t = h('textarea'); t.value = text; document.body.append(t); t.select(); document.execCommand('copy'); t.remove(); toast('복사했습니다'); } }
+$('#copyOne').addEventListener('click', () => copy(copyText([S.region])));
+$('#copyAll').addEventListener('click', () => { const rs = REGIONS.filter(has); if (!rs.length) return toast('검수한 지역이 없습니다'); copy(copyText(rs)); });
+$('#reset').addEventListener('click', () => { delete D[S.region]; save(); render(); toast('이 지역 검수를 지웠습니다'); });
+for (const id of ['#decalsOn', '#grid']) $(id).addEventListener('change', draw);
+
+function render() {
+  nav(); $('#title').textContent = `${OBJECT_REGIONS[S.region] || S.region} · 데칼 ${madeDecals(S.region).length}/${Object.values(DECALS).filter(d => d.region === S.region).length}종`;
+  $('#ballBtns').replaceChildren(...[20, 60, 150, 300].map(b => h('button', {type: 'button', 'aria-pressed': S.ball === b, onclick: () => { S.ball = b; render(); }}, b)));
+  $('#zoomBtns').replaceChildren(...[[1.5, '×1.5'], [1, '×1'], [.75, '×0.75'], [.5, '×0.5'], [.3, '×0.3']].map(([z, l]) => h('button', {type: 'button', 'aria-pressed': S.zoom === z, onclick: () => { S.zoom = z; render(); }}, l)));
+  const c = draft().concept; $('#cropNote').textContent = c ? `기준 영역: gameplay-${S.region}.jpg (${c.crop.join(',')})` : '기준 영역 없음 — 원화를 끌어서 고르세요.';
+  $('#decals').replaceChildren(...Object.keys(DECALS).filter(id => DECALS[id].region === S.region).map(decalCard));
+  layoutRows(); requestBox(); draw();
+  $('#status').textContent = `만든 데칼 ${Object.values(DECALS).filter(d => d.src).length}종 · 계획 ${Object.values(DECALS).filter(d => !d.src).length}종 · 검수 중 ${REGIONS.filter(has).length}개 지역`;
+}
+render();
+</script>

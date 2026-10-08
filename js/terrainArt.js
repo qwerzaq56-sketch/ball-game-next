@@ -1,4 +1,5 @@
 // R-VIS-001: presentation-only SVG cache; no gameplay RNG, classification or physics.
+import {DECALS,decalAt} from './decalCatalog.js';
 export function terrainVariant(x,y){return ((Math.imul(Math.floor(x/400),73856093)^Math.imul(Math.floor(y/400),19349663))>>>0)%3;}
 export function forestGroundVariant(x,y){return ((Math.imul(Math.floor(x/800),73856093)^Math.imul(Math.floor(y/800),19349663))>>>0)%3;}
 const biomeKey=id=>id==='grassland'?'grass':id;
@@ -111,7 +112,8 @@ export class TerrainArt {
     try{const low=new Image();low.src=new URL('understory-003.png',pack).href;await low.decode();this.forestUnderstory=periodicForestGround(low,800,60,'saturate(0.90) contrast(0.90) brightness(0.96)');}catch(error){this.understoryPackError=String(error);}
     const edge=new Image();edge.src=new URL('edge-003.png',pack).href;await edge.decode();this.forestEdge=edge;
    }catch(error){this.canopyPackError=String(error);}
-   try{this.forestDecals=await Promise.all([1,2,3].map(async n=>{const i=new Image();i.src=new URL(`../assets/art-packs/forest-raster-v1/decal-${String(n).padStart(3,'0')}.svg`,import.meta.url).href;await i.decode();return i;}));}catch(error){this.decalPackError=String(error);}
+   // Decals come from js/decalCatalog.js (planning 데칼 마스터); each image may fail on its own.
+   this.decalImages=new Map();await Promise.all(Object.entries(DECALS).filter(([,d])=>d.src).map(async([id,d])=>{try{const i=new Image();i.src=new URL('../assets/art-packs/'+d.src,import.meta.url).href;await i.decode();this.decalImages.set(id,i);}catch(error){this.decalPackError=String(error);}}));
    // Each regional image is optional independently. Preserve loaded SVGs on failure.
    this.rasterPackErrors=new Map();
    await Promise.all([
@@ -182,8 +184,10 @@ export class TerrainArt {
   // fallback-only, avoiding a second, differently painted canopy on top.
   const d=forestDecoration(x,y);if(d&&!this.forestCanopy&&this.forestTrees&&[[-1,-1],[1,-1],[-1,1],[1,1]].every(([dx,dy])=>forestDensity(d.x+dx*d.size/2,d.y+dy*d.size/2)>.75))ctx.drawImage(this.forestTrees[d.variant],d.x-d.size/2,d.y-d.size/2,d.size,d.size);
   const edgeDensity=forestDensity(x+100,y+100);if(this.forestEdge&&edgeDensity>.35&&edgeDensity<.75){const e=this.forestEdge,s=110/Math.max(e.width,e.height),w=e.width*s,h=e.height*s;ctx.drawImage(e,x+100-w/2,y+100-h/2,w,h);}
-  const h=(Math.imul(x/200,73856093)^Math.imul(y/200,19349663))>>>0;
-  if(this.forestDecals&&h%3===0){const px=x+35+(h>>>8)%130,py=y+35+(h>>>16)%130,size=18+(h>>>24)%12;ctx.drawImage(this.forestDecals[(h>>>5)%3],px-size/2,py-size/2,size,size);}
+  this.drawDecals(ctx,'forest',x,y);
+ }
+ drawDecals(ctx,region,x,y){
+  const d=this.decalImages?.size?decalAt(region,x,y):null,image=d&&this.decalImages.get(d.id);if(image)ctx.drawImage(image,d.x-d.size/2,d.y-d.size/2,d.size,d.size);
  }
  // Quiet ground around functional vegetation separates it from passive canopy.
  // The feathered clearing is not a range indicator; callers draw the real radius.
@@ -214,7 +218,7 @@ export class TerrainArt {
    ids.push(biomes.regionAt({x:nx+100,y:ny+100})?.id||region.id);
   }
   if(ids.every(id=>id===region.id)){
-   if(region.id==='forest')this.drawForestDetails(ctx,x,y);
+   if(region.id==='forest')this.drawForestDetails(ctx,x,y);else this.drawDecals(ctx,region.id,x,y);
    return true;
   }
   const key='blend:'+ids.map(id=>{const t=this.texture(id,x,y);return `${id}:${id==='forest'&&this.forestFloor?Math.floor(modulo(x,8000)/800)+','+Math.floor(modulo(y,8000)/800):''}:${this.variant(id,x,y)}:${modulo(x,t?.width||400)}:${modulo(y,t?.height||400)}`;}).join(',');
@@ -250,7 +254,7 @@ export class TerrainArt {
    cacheSet(this.layers,key,composed,LAYER_CACHE);
   }
   ctx.drawImage(composed,x,y);
-  if(region.id==='forest')this.drawForestDetails(ctx,x,y);
+  if(region.id==='forest')this.drawForestDetails(ctx,x,y);else this.drawDecals(ctx,region.id,x,y);
 
   return true;
  }
