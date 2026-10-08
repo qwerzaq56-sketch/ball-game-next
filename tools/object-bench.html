@@ -1,8 +1,10 @@
 <!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>오브젝트 검수대</title>
-<!-- Object review bench, stage 1 (planning 03_아트/32_오브젝트_검수대_기획서.md).
+<!-- Object review bench, stages 1–2 (planning 03_아트/32_오브젝트_검수대_기획서.md).
      The real game runs in an off-screen iframe; each view pauses it, leaves only the player ball in the world, renders one
      placed object at the camera zoom the game would use for that ball size, and copies the frame here with measurement
-     overlays. Read-only: nothing here changes game values (dragging handles and "apply on this device" are stage 2). -->
+     overlays. Stage 2: effect radius, body scale, placed count (and current width/length) are edited as object preset v3
+     overrides — live in the iframe game, saved to this device's preset on "apply", and copied as an adjustment for Claude
+     to make permanent. -->
 <style>
 :root{--bg:#141c26;--panel:#1c2733;--line:#33414f;--ink:#e8edf2;--muted:#9aa8b6;--accent:#7dd3c0;--good:#4ade80;--warn:#fbbf24;--info:#60a5fa;--bad:#f87171;color-scheme:dark}
 *{box-sizing:border-box}
@@ -49,6 +51,17 @@ label.chk{display:inline-flex;gap:5px;align-items:center}
 select,textarea{font:inherit;color:var(--ink);background:#0d131a;border:1px solid var(--line);border-radius:6px;padding:5px 8px}
 textarea{width:100%;resize:vertical;min-height:52px}
 .note{color:var(--muted);font-size:12.5px;margin:0}
+#adjRows{display:grid;gap:6px}
+.adj{display:grid;grid-template-columns:86px minmax(120px,240px) 76px minmax(0,1fr);gap:8px;align-items:center}
+.adj .note{font-variant-numeric:tabular-nums}
+.adj.changed .lab{color:var(--accent)}
+@media(max-width:560px){.adj{grid-template-columns:76px minmax(0,1fr) 70px}.adj .note{grid-column:1/-1}}
+button.primary{background:var(--accent);color:#0d131a;border-color:var(--accent);font-weight:600}
+a.btnlink{color:var(--accent);font-size:13px}
+.maprow{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}
+#map{width:360px;max-width:100%;aspect-ratio:1;border-radius:6px;border:1px solid var(--line);background:#0d131a;cursor:pointer}
+#mapFacts{display:grid;gap:4px;min-width:0;flex:1 1 200px}
+#mapFacts b{color:var(--ink);font-variant-numeric:tabular-nums}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:7px 14px;border-radius:8px;font-size:13px}
 #game{position:fixed;left:-4000px;top:0;width:1280px;height:900px;border:0}
 [hidden]{display:none!important}
@@ -73,9 +86,20 @@ textarea{width:100%;resize:vertical;min-height:52px}
         <button type="button" id="ovReset">맞춤 초기화</button></div>
       <p class="note">공을 끌어 옮길 수 있습니다. 겹쳐 보기를 켜면 공 밖을 끌어 원화 위치를 맞춥니다. 레퍼런스 줄의 그림을 누르면 무대에 겹칩니다(다시 누르면 끔).</p>
     </div>
+    <section class="ctl" aria-label="조정">
+      <div class="row"><b>조정</b><span class="note" id="adjState"></span></div>
+      <div id="adjRows"></div>
+      <div class="row"><button type="button" id="adjReset">이 오브젝트 기본값</button><button type="button" class="primary" id="apply">이 기기에 미리 적용</button><button type="button" id="restore"></button><a class="btnlink" href="../index.html" target="_blank" rel="noopener">게임 열기 ↗</a></div>
+      <p class="note">무대의 노란 손잡이(효과 반경)와 초록 손잡이(몸체)를 끌어도 됩니다. 바꾼 값은 무대에 바로 보입니다. "미리 적용"을 누르면 이 브라우저의 게임 설정에 저장되어, 게임을 새로 열면 그 값으로 플레이할 수 있습니다. 모두에게 반영하려면 아래 결과 복사 → 요청 보관함으로 보내 주세요.</p>
+    </section>
+    <section class="ctl" aria-label="배치 미리보기">
+      <div class="row"><b>배치 미리보기</b><span class="note" id="mapInfo"></span></div>
+      <div class="maprow"><canvas id="map" width="360" height="360" aria-label="지역 배치 지도"></canvas><div class="note" id="mapFacts"></div></div>
+      <div class="row"><button type="button" id="reseed">배치 시드 바꾸기</button><span class="note">지형은 그대로 두고 오브젝트 위치만 다시 뽑습니다. 지도의 점을 누르면 그 배치로 무대를 옮깁니다.</span></div>
+    </section>
     <div class="facts" id="facts"></div>
     <section class="review" aria-label="판정과 메모">
-      <div class="row"><b>판정</b><span class="note">일반 검수 카드와 같은 4단입니다. 결과는 복사해 기획 지도 "요청 보관함"에 붙여 주세요.</span></div>
+      <div class="row"><b>판정</b><span class="note">일반 검수 카드와 같은 4단입니다. 결과 복사에는 위에서 바꾼 조정값도 함께 들어갑니다. 기획 지도 "요청 보관함"에 붙여 주세요.</span></div>
       <div class="verdicts" id="verdicts"></div>
       <div class="row"><span class="lab">생성본 의견</span><select id="pick" aria-label="생성본 의견"></select></div>
       <textarea id="memo" placeholder="짧은 메모 (선택) — 예: 공 60 기준으로 몸체가 너무 작음, 반경은 적당" aria-label="메모"></textarea>
@@ -86,7 +110,7 @@ textarea{width:100%;resize:vertical;min-height:52px}
 <div id="toast" hidden></div>
 <iframe id="game" src="../index.html" title="게임(화면 밖)" aria-hidden="true" tabindex="-1"></iframe>
 <script type="module">
-import {BIOME_OBJECTS,DEFAULT_OBJECT_IDS,OBJECT_REGIONS} from '../js/biomeObjectCatalog.js';
+import {BIOME_OBJECTS,DEFAULT_OBJECT_IDS,OBJECT_REGIONS,OBJECT_PRESET_KEY,PLACEMENT_BOUNDS,defaultObjectPreset,normalizeObjectPreset,applyObjectPreset,defaultPlacedCount} from '../js/biomeObjectCatalog.js';
 import {LANDMARK_PRESENTATION} from '../js/landmarkArt.js';
 import {growthFromSize} from '../js/entity.js';
 
@@ -117,6 +141,70 @@ const saveDrafts = () => { try { localStorage.setItem('object-bench-v1', JSON.st
 const S = {id: null, inst: 0, size: 60, zoom: 'game', state: 'ready', ring: true, box: true, ov: null, alpha: .5, oscale: 1, odx: 0, ody: 0, pdx: null, pdy: null};
 let G = null;
 
+// ---- stage 2: adjustments as object preset v3 overrides. `work` drives the iframe game live; `applied` is what this
+// device's game loads at startup (OBJECT_PRESET_KEY). The unsaved work copy survives a reload.
+const WORK_KEY = 'object-bench-work-v1';
+const clone = (p) => JSON.parse(JSON.stringify(p));
+const readPreset = (key) => { try { const raw = localStorage.getItem(key); return raw ? normalizeObjectPreset(JSON.parse(raw)) : null; } catch { return null; } };
+let work = defaultObjectPreset(), applied = defaultObjectPreset();
+const saveWork = () => { try { localStorage.setItem(WORK_KEY, JSON.stringify(work)); } catch {} };
+const NO_BODY_SCALE = ['lake-current', 'lake-vortex']; // drawn from the effect area itself
+const ADJ = [
+  {k: 'radius', label: '효과 반경', min: 20, max: 250, step: 1, when: (id) => id !== 'lake-current'},
+  {k: 'visualScale', label: '몸체 배율', min: PLACEMENT_BOUNDS.visualScale[0], max: PLACEMENT_BOUNDS.visualScale[1], step: .01, when: (id) => !NO_BODY_SCALE.includes(id)},
+  {k: 'placed', label: '배치 개수', min: PLACEMENT_BOUNDS.placed[0], max: PLACEMENT_BOUNDS.placed[1], step: 1},
+  {k: 'widthMin', label: '최소 폭', min: 40, max: 220, step: 1, when: (id) => id === 'lake-current'},
+  {k: 'widthMax', label: '최대 폭', min: 40, max: 250, step: 1, when: (id) => id === 'lake-current'},
+  {k: 'pathSteps', label: '한쪽 길이(칸)', min: 1, max: 6, step: 1, when: (id) => id === 'lake-current'},
+];
+const ADJ_BY = Object.fromEntries(ADJ.map(a => [a.k, a]));
+const fmtVal = (k, v) => k === 'visualScale' ? '×' + (+v).toFixed(2) : String(Math.round(v * 1000) / 1000);
+const defaultOf = (id, k) => k === 'visualScale' ? 1 : k === 'placed' ? defaultPlacedCount(id, work.countPerType) : BIOME_OBJECTS[id][k];
+const valIn = (p, id, k) => p.overrides[id]?.[k] ?? defaultOf(id, k);
+const eff = (id, k) => valIn(work, id, k);
+const changesOf = (id) => Object.entries(work.overrides[id] || {}).map(([k, v]) => [k, defaultOf(id, k), v]);
+const changeText = (id) => changesOf(id).map(([k, a, b]) => `${ADJ_BY[k]?.label || k} ${fmtVal(k, a)}→${fmtVal(k, b)}`).join(', ');
+function setWork(next) {
+  try { work = applyObjectPreset(G.balance, next); } catch (e) { toast(e.message); applyObjectPreset(G.balance, work); return false; }
+  saveWork(); syncAdj(); return true;
+}
+function setVal(id, k, v) {
+  const a = ADJ_BY[k]; v = Math.max(a.min, Math.min(a.max, +v)); if (!Number.isFinite(v)) return false;
+  v = a.step < 1 ? Math.round(v * 100) / 100 : Math.round(v);
+  const next = clone(work), o = next.overrides[id] = {...(next.overrides[id] || {})};
+  if (v === defaultOf(id, k)) delete o[k]; else o[k] = v;
+  if (!Object.keys(o).length) delete next.overrides[id];
+  return setWork(next);
+}
+function buildAdj() {
+  const id = S.id;
+  $('#adjRows').replaceChildren(...ADJ.filter(a => !a.when || a.when(id)).map(a => {
+    const range = h('input', {type: 'range', min: a.min, max: a.max, step: a.step, 'aria-label': a.label, 'data-k': a.k});
+    const num = h('input', {type: 'number', min: a.min, max: a.max, step: a.step, 'aria-label': a.label + ' 직접 입력', 'data-k': a.k});
+    range.addEventListener('input', () => { setVal(S.id, a.k, range.value); draw(); });
+    num.addEventListener('change', () => { setVal(S.id, a.k, num.value); syncAdj(); draw(); });
+    return h('div', {class: 'adj', 'data-k': a.k}, h('span', {class: 'lab'}, a.label), range, num, h('span', {class: 'note'}));
+  }));
+  syncAdj();
+}
+function syncAdj() {
+  if (!S.id) return;
+  for (const row of $('#adjRows').children) {
+    const k = row.dataset.k, v = eff(S.id, k), d = defaultOf(S.id, k), ap = valIn(applied, S.id, k), [range, num] = row.querySelectorAll('input');
+    range.value = v; if (num !== document.activeElement) num.value = v;
+    row.classList.toggle('changed', v !== d);
+    row.lastChild.textContent = `기본 ${fmtVal(k, d)} · 이 기기 적용 ${fmtVal(k, ap)}` + (k === 'radius' || k === 'visualScale' ? ' · 배치마다 ×0.8~1.2 변주' : '');
+  }
+  const dirty = JSON.stringify(work) !== JSON.stringify(applied), changed = Object.keys(work.overrides).length;
+  $('#adjState').textContent = (dirty ? '적용 안 된 변경 있음' : '이 기기 게임과 같음') + ` · 기본값과 다른 오브젝트 ${changed}개`;
+  $('#apply').disabled = !dirty;
+  $('#adjReset').disabled = !work.overrides[S.id];
+  const custom = JSON.stringify(applied) !== JSON.stringify(defaultObjectPreset());
+  $('#restore').textContent = S.restoreArm ? '정말 되돌리기(조정 모두 지움)' : custom ? '이 기기 설정 기본값으로' : changed ? '조정 모두 지우기' : '이 기기는 기본값';
+  $('#restore').disabled = !custom && !changed;
+  updateCopyAll();
+}
+
 const refsFor = (id) => {
   const c = BIOME_OBJECTS[id], adopted = ADOPTED[id] || SC + id + '/asset.png';
   return [
@@ -144,7 +232,8 @@ function renderList() {
 function select(id) {
   Object.assign(S, {id, inst: 0, ov: null, oscale: 1, odx: 0, ody: 0, pdx: null, pdy: null, state: BIOME_OBJECTS[id].effect === 'vent' ? 'active' : 'ready'});
   history.replaceState(null, '', '#' + id);
-  renderList(); renderPanel(); draw();
+  S.restoreArm = false; mapLayer = null;
+  renderList(); renderPanel(); buildAdj(); draw();
 }
 // ---- panel (everything except the canvas)
 function renderPanel() {
@@ -159,17 +248,20 @@ function renderPanel() {
   const states = c.effect === 'vent' ? [['active', '분출'], ['warn', '분출 경고'], ['rest', '쉼']] : ['current', 'vortex'].includes(c.effect) ? [] : [['ready', '준비(상호작용 전)'], ['post', '사용 후']];
   $('#stateRow').hidden = !states.length;
   $('#stateBtns').replaceChildren(...states.map(([k, l]) => h('button', {type: 'button', 'aria-pressed': S.state === k ? 'true' : 'false', onclick: () => { S.state = k; renderPanel(); draw(); }}, l)));
-  const n = G ? G.biomeObjects.objects.filter(o => o.candidate === id).length : 0;
-  $('#inst').textContent = n ? `${S.inst + 1} / ${n}` : '배치 없음'; $('#instPrev').disabled = S.inst <= 0; $('#instNext').disabled = S.inst >= n - 1;
   $('#ovRow').hidden = !S.ov; $('#ovName').textContent = S.ov ? S.ov.split('/').slice(-2).join('/') : '';
   $('#alpha').value = S.alpha; $('#oscale').value = S.oscale; $('#oscaleNum').textContent = '×' + S.oscale.toFixed(2);
   $('#verdicts').replaceChildren(...VERDICTS.map((v, i) => h('button', {type: 'button', style: `--v:var(${v.c})`, 'aria-pressed': d.verdict === v.k ? 'true' : 'false', onclick: () => { setDraft({verdict: d.verdict === v.k ? null : v.k}); renderPanel(); renderList(); }}, h('b', {}, `${i + 1} ${v.label}`), h('small', {}, v.sub))));
   const gens = refs.filter(r => r.gen);
   $('#pick').replaceChildren(h('option', {value: ''}, '의견 없음'), ...gens.map(r => h('option', {value: r.note, selected: d.pick === r.note}, `${r.cap} — ${r.note}`)));
   if ($('#memo') !== document.activeElement) $('#memo').value = d.memo || '';
-  const marked = Object.keys(drafts).filter(k => drafts[k]?.verdict || drafts[k]?.memo);
-  $('#copyAll').textContent = `전체 결과 복사 (${marked.length})`; $('#copyAll').disabled = !marked.length;
-  $('#clearAll').textContent = S.clearArm ? '정말 비우기' : '전체 비우기'; $('#clearAll').disabled = !marked.length;
+  updateCopyAll();
+}
+// Objects in a copy: anything judged, noted, picked or adjusted.
+const reportIds = () => DEFAULT_OBJECT_IDS.filter(id => drafts[id] || work.overrides[id]);
+function updateCopyAll() {
+  const n = reportIds().length, marked = Object.keys(drafts).length;
+  $('#copyAll').textContent = `전체 결과 복사 (${n})`; $('#copyAll').disabled = !n;
+  $('#clearAll').textContent = S.clearArm ? '정말 비우기' : '판정·메모 비우기'; $('#clearAll').disabled = !marked;
 }
 function setDraft(patch) {
   const id = S.id, next = {...(drafts[id] || {}), ...patch};
@@ -180,8 +272,14 @@ function setSize(v) { S.size = Math.max(10, Math.min(400, Math.round(+v || 60)))
 
 // ---- stage
 const stage = $('#stage'), sx = stage.getContext('2d'), W = stage.width, H = stage.height;
-const current = () => { const list = G.biomeObjects.objects.filter(o => o.candidate === S.id); return list[Math.min(S.inst, list.length - 1)]; };
-const bodyOf = (o) => { const p = LANDMARK_PRESENTATION[o.candidate]; return p ? {w: p.width * (o.visualScale ?? 1), h: p.height * (o.visualScale ?? 1)} : null; };
+const placedOf = (id) => G.biomeObjects.objects.filter(o => o.candidate === id);
+const current = () => { const list = placedOf(S.id); return list[Math.min(S.inst, list.length - 1)]; };
+// Landmarks: LANDMARK_PRESENTATION size × visualScale. The vent is drawn by environmentArt at min(radius, 70 × visualScale).
+const bodyOf = (o) => { const p = LANDMARK_PRESENTATION[o.candidate], vs = o.visualScale ?? 1;
+  if (p) return {w: p.width * vs, h: p.height * vs};
+  if (o.candidate === 'volcano-vent-cycle') { const r = Math.min(o.config.radius, 70 * vs); return {w: 2 * r, h: 2 * r, vent: true}; }
+  return null; };
+const showRing = (o) => S.ring && o.candidate !== 'lake-current';
 // Same rule as Game.updateCamera once settled, for this iframe's 1280×900 canvas.
 const gameZoom = (size) => { const c = G.balance.camera; return Math.min(c.baseZoom / Math.min(c.maxZoomOut, 1 + size * c.zoomOutPerSize), Math.min(G.canvas.width, G.canvas.height) * (c.maxBodyScreenFraction ?? .42) / Math.max(1, size)); };
 let view = null;
@@ -193,7 +291,10 @@ function applyState(o) {
 }
 function draw() {
   if (!G || !S.id) return;
-  const o = current(); if (!o) { sx.fillStyle = '#0d131a'; sx.fillRect(0, 0, W, H); return; }
+  G.biomeObjects.sync(); // re-places objects when the work preset (or seed) changed
+  const n = placedOf(S.id).length; S.inst = Math.max(0, Math.min(S.inst, n - 1));
+  $('#inst').textContent = n ? `${S.inst + 1} / ${n}` : '배치 없음'; $('#instPrev').disabled = S.inst <= 0; $('#instNext').disabled = S.inst >= n - 1;
+  const o = current(); if (!o) { sx.fillStyle = '#0d131a'; sx.fillRect(0, 0, W, H); view = null; drawMap(null); return; }
   const g = G, p = g.player, b = g.balance;
   g.paused = true;
   p.growth = growthFromSize(S.size, b.player.startingSize, b.growth.growthToSizeRatio ?? b.growth.ratio, b.growth); p.refreshFromGrowth(b); p.alive = true;
@@ -207,17 +308,27 @@ function draw() {
   sx.fillStyle = '#0d131a'; sx.fillRect(0, 0, W, H);
   sx.drawImage(g.canvas, (gw - W) / 2, (gh - H) / 2, W, H, 0, 0, W, H);
   const toS = (wx, wy) => [W / 2 + (wx - o.x) * zoom, H / 2 + (wy - o.y) * zoom];
-  view = {o, zoom, toS};
+  view = {o, zoom, toS, body, handles: {}};
   const label = (text, x, y, color) => { sx.font = '600 13px system-ui,Malgun Gothic,sans-serif'; const w = sx.measureText(text).width + 10; sx.fillStyle = 'rgba(13,19,26,.82)'; sx.fillRect(x - w / 2, y - 10, w, 20); sx.fillStyle = color; sx.textAlign = 'center'; sx.textBaseline = 'middle'; sx.fillText(text, x, y); };
   if (S.ov) { const im = img(S.ov); if (im.complete && im.naturalWidth) { const bw = (body ? body.w : o.config.radius * 2) * S.oscale * zoom, bh = bw * im.naturalHeight / im.naturalWidth, [cx, cy] = toS(o.x + S.odx, o.y + S.ody);
     sx.save(); sx.globalAlpha = S.alpha; sx.drawImage(im, cx - bw / 2, cy - bh / 2, bw, bh); sx.restore(); } }
-  if (S.ring) { const r = o.config.radius * zoom; sx.save(); sx.setLineDash([8, 6]); sx.lineWidth = 2; sx.strokeStyle = '#fbbf24'; sx.beginPath(); sx.arc(W / 2, H / 2, r, 0, Math.PI * 2); sx.stroke(); sx.restore(); label(`효과 반경 ${Math.round(o.config.radius)}`, W / 2, H / 2 - r - 12, '#fbbf24'); }
-  if (S.box && body) { const bw = body.w * zoom, bh = body.h * zoom; sx.save(); sx.setLineDash([3, 4]); sx.lineWidth = 1.5; sx.strokeStyle = '#7dd3c0'; sx.strokeRect(W / 2 - bw / 2, H / 2 - bh / 2, bw, bh); sx.restore(); label(`몸체 ${Math.round(body.w)}×${Math.round(body.h)}`, W / 2, H / 2 + bh / 2 + 14, '#7dd3c0'); }
+  const handle = (x, y, color) => { sx.save(); sx.setLineDash([]); sx.fillStyle = color; sx.strokeStyle = '#0d131a'; sx.lineWidth = 2.5; sx.beginPath(); sx.arc(x, y, 8, 0, Math.PI * 2); sx.fill(); sx.stroke(); sx.restore(); };
+  if (showRing(o)) { const r = o.config.radius * zoom; sx.save(); sx.setLineDash([8, 6]); sx.lineWidth = 2; sx.strokeStyle = '#fbbf24'; sx.beginPath(); sx.arc(W / 2, H / 2, r, 0, Math.PI * 2); sx.stroke(); sx.restore(); label(`효과 반경 ${Math.round(o.config.radius)}`, W / 2, H / 2 - r - 12, '#fbbf24');
+    const hx = W / 2 + r * Math.SQRT1_2, hy = H / 2 - r * Math.SQRT1_2; handle(hx, hy, '#fbbf24'); view.handles.radius = [hx, hy]; }
+  if (S.box && body) { const bw = body.w * zoom, bh = body.h * zoom; sx.save(); sx.setLineDash([3, 4]); sx.lineWidth = 1.5; sx.strokeStyle = '#7dd3c0'; sx.strokeRect(W / 2 - bw / 2, H / 2 - bh / 2, bw, bh); sx.restore(); label(`몸체 ${body.vent ? '약 ' : ''}${Math.round(body.w)}×${Math.round(body.h)}`, W / 2, H / 2 + bh / 2 + 14, '#7dd3c0');
+    if (!NO_BODY_SCALE.includes(o.candidate)) { const hx = W / 2 + bw / 2, hy = H / 2 + bh / 2; handle(hx, hy, '#7dd3c0'); view.handles.body = [hx, hy]; } }
   const [px, py] = toS(p.x, p.y); label(`공 지름 ${Math.round(p.size)}`, px, py + p.size / 2 * zoom + 14, '#e8edf2');
   facts(o, body, zoom, p.size);
+  drawMap(o, zoom);
 }
 function facts(o, body, zoom, size) {
-  const c = o.config, items = [
+  const c = o.config, cur = o.candidate === 'lake-current', items = cur ? [
+    [`${Math.round(o.width)}`, '물길 폭(월드) · 배치마다 다름'],
+    [`${Math.round((o.points.length - 1) * 200)}`, `물길 길이(월드) · ${o.points.length - 1}칸(호수 밖에서 끊김)`],
+    [`${Math.round(size)}`, '공 지름(월드)'],
+    [`${(o.width / size).toFixed(2)}배`, '물길 폭 ÷ 공 지름'],
+    [`${zoom.toFixed(2)}`, S.zoom === 'game' ? '게임 배율(이 지름일 때)' : '고정 배율'],
+  ] : [
     [`${Math.round(c.radius)}`, '효과 반경(월드) · 지름 ' + Math.round(c.radius * 2)],
     body ? [`${Math.round(body.w)} × ${Math.round(body.h)}`, `몸체(월드) · 배치 배율 ×${(o.visualScale ?? 1).toFixed(2)}`] : ['코드로 그림', '몸체 상자 없음(범위가 곧 몸체)'],
     [`${Math.round(size)}`, '공 지름(월드)'],
@@ -228,23 +339,88 @@ function facts(o, body, zoom, size) {
   ].filter(Boolean);
   $('#facts').replaceChildren(...items.map(([v, l]) => h('div', {}, h('b', {}, v), h('span', {}, l))));
 }
-// Drag: the ball when grabbed, otherwise the overlay (when shown).
+// Drag priority: radius/body handles, then the ball, then the overlay (when shown).
 let drag = null;
 const canvasPoint = (e) => { const r = stage.getBoundingClientRect(); return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; };
+const hitAt = (x, y) => {
+  const near = (pt) => pt && Math.hypot(x - pt[0], y - pt[1]) <= 14, p = G.player, [px, py] = view.toS(p.x, p.y);
+  return near(view.handles.radius) ? 'radius' : near(view.handles.body) ? 'body' : Math.hypot(x - px, y - py) <= p.size / 2 * view.zoom + 10 ? 'ball' : S.ov ? 'ov' : null;
+};
 stage.addEventListener('pointerdown', (e) => {
-  if (!view) return; const [x, y] = canvasPoint(e), p = G.player, [px, py] = view.toS(p.x, p.y);
-  if (Math.hypot(x - px, y - py) <= p.size / 2 * view.zoom + 10) drag = {k: 'ball', x, y, dx: S.pdx, dy: S.pdy};
-  else if (S.ov) drag = {k: 'ov', x, y, dx: S.odx, dy: S.ody};
+  if (!view) return; const [x, y] = canvasPoint(e), k = hitAt(x, y), o = view.o;
+  // Instances vary ×0.8–1.2: keep that ratio so the dragged ring/box follows the pointer.
+  if (k === 'radius') drag = {k, ratio: o.config.radius / eff(S.id, 'radius')};
+  else if (k === 'body') drag = {k, vs: eff(S.id, 'visualScale'), hw: view.body.w / 2 * view.zoom, hh: view.body.h / 2 * view.zoom};
+  else if (k === 'ball') drag = {k, x, y, dx: S.pdx, dy: S.pdy};
+  else if (k === 'ov') drag = {k, x, y, dx: S.odx, dy: S.ody};
   if (drag) stage.setPointerCapture(e.pointerId);
 });
 stage.addEventListener('pointermove', (e) => {
-  if (!drag) { if (view) { const [x, y] = canvasPoint(e), p = G.player, [px, py] = view.toS(p.x, p.y); stage.style.cursor = Math.hypot(x - px, y - py) <= p.size / 2 * view.zoom + 10 ? 'grab' : S.ov ? 'move' : 'default'; } return; }
-  const [x, y] = canvasPoint(e), mx = (x - drag.x) / view.zoom, my = (y - drag.y) / view.zoom;
-  if (drag.k === 'ball') { S.pdx = drag.dx + mx; S.pdy = drag.dy + my; } else { S.odx = drag.dx + mx; S.ody = drag.dy + my; }
+  if (!view) return; const [x, y] = canvasPoint(e);
+  if (!drag) { stage.style.cursor = {radius: 'nesw-resize', body: 'nwse-resize', ball: 'grab', ov: 'move'}[hitAt(x, y)] || 'default'; return; }
+  const mx = (x - drag.x) / view.zoom, my = (y - drag.y) / view.zoom;
+  if (drag.k === 'radius') setVal(S.id, 'radius', Math.hypot(x - W / 2, y - H / 2) / view.zoom / drag.ratio);
+  else if (drag.k === 'body') setVal(S.id, 'visualScale', drag.vs * Math.max(Math.abs(x - W / 2) / drag.hw, Math.abs(y - H / 2) / drag.hh));
+  else if (drag.k === 'ball') { S.pdx = drag.dx + mx; S.pdy = drag.dy + my; } else { S.odx = drag.dx + mx; S.ody = drag.dy + my; }
   draw();
 });
 const endDrag = () => { drag = null; };
 stage.addEventListener('pointerup', endDrag); stage.addEventListener('pointercancel', endDrag);
+
+// ---- placement map: the whole world (200-unit tiles), this object's region bright, its instances with their reach.
+const map = $('#map'), mc = map.getContext('2d'), MW = map.width;
+const REGION_COLORS = {grassland: '#6fae4f', forest: '#2f6b3a', lake: '#3f7fb8', snow: '#c9d6e2', desert: '#d8b46a', volcano: '#a2452f'};
+let mapLayer = null;
+function regionLayer(region) {
+  if (mapLayer?.region === region) return mapLayer;
+  const w = G.balance.world, k = MW / Math.max(w.worldWidth, w.worldHeight), c = document.createElement('canvas'); c.width = c.height = MW;
+  const x = c.getContext('2d'); x.fillStyle = '#0d131a'; x.fillRect(0, 0, MW, MW);
+  for (const t of G.biomes.tiles) { x.globalAlpha = t.region.id === region ? 1 : .22; x.fillStyle = REGION_COLORS[t.region.id] || '#556'; x.fillRect(t.x * k, t.y * k, Math.ceil(200 * k), Math.ceil(200 * k)); }
+  return mapLayer = {region, canvas: c, k};
+}
+const reachOf = (q) => q.candidate === 'lake-current' ? q.width / 2 : q.config.radius;
+function drawMap(o, zoom) {
+  const c = BIOME_OBJECTS[S.id], L = regionLayer(c.region), k = L.k, list = placedOf(S.id), w = G.balance.world;
+  mc.globalAlpha = 1; mc.drawImage(L.canvas, 0, 0);
+  for (const q of list) {
+    const x = q.x * k, y = q.y * k, r = Math.max(2.5, reachOf(q) * k), on = q === o;
+    if (q.points) { mc.save(); mc.strokeStyle = 'rgba(251,191,36,.55)'; mc.lineCap = 'round'; mc.lineWidth = Math.max(2, q.width * k); mc.beginPath(); q.points.forEach((p, i) => i ? mc.lineTo(p.x * k, p.y * k) : mc.moveTo(p.x * k, p.y * k)); mc.stroke(); mc.restore(); }
+    else { mc.fillStyle = 'rgba(251,191,36,.28)'; mc.strokeStyle = '#fbbf24'; mc.lineWidth = 1; mc.beginPath(); mc.arc(x, y, r, 0, Math.PI * 2); mc.fill(); mc.stroke(); }
+    mc.fillStyle = on ? '#fff' : '#0d131a'; mc.beginPath(); mc.arc(x, y, on ? 3.5 : 2.5, 0, Math.PI * 2); mc.fill();
+    if (on) { mc.strokeStyle = '#fff'; mc.lineWidth = 2; mc.beginPath(); mc.arc(x, y, r + 3, 0, Math.PI * 2); mc.stroke(); }
+  }
+  if (o && zoom) { mc.save(); mc.setLineDash([4, 3]); mc.strokeStyle = '#e8edf2'; mc.lineWidth = 1.2; mc.strokeRect((o.x - W / 2 / zoom) * k, (o.y - H / 2 / zoom) * k, W / zoom * k, H / zoom * k); mc.restore(); }
+  // Density at the game's own zoom for the chosen ball size, whatever zoom the stage shows.
+  const tiles = G.biomes.tiles.filter(t => t.region.id === c.region).length, gz = gameZoom(G.player.size), sw = G.canvas.width / gz, sh = G.canvas.height / gz;
+  const perScreen = tiles ? list.length * sw * sh / (tiles * 40000) : 0;
+  const wd = (a, b) => { const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y); return Math.hypot(Math.min(dx, w.worldWidth - dx), Math.min(dy, w.worldHeight - dy)); };
+  let overlap = 0, same = 0;
+  for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) { const d = wd(list[i], list[j]); if (d < 1) same++; else if (d < reachOf(list[i]) + reachOf(list[j])) overlap++; }
+  $('#mapInfo').textContent = `${OBJECT_REGIONS[c.region]} 지역 · 시드 ${G.seed} · 점선 사각형 = 지금 무대에 보이는 범위`;
+  $('#mapFacts').replaceChildren(
+    h('div', {}, '배치 ', h('b', {}, list.length), `개 (기본 ${defaultOf(S.id, 'placed')} · 이 기기 적용 ${valIn(applied, S.id, 'placed')})`),
+    h('div', {}, `${OBJECT_REGIONS[c.region]} 지역 `, h('b', {}, tiles), '칸 (한 칸 200×200)'),
+    h('div', {}, `공 지름 ${Math.round(G.player.size)}일 때 게임 한 화면(${Math.round(sw)}×${Math.round(sh)})에 평균 `, h('b', {}, perScreen.toFixed(2)), '개'),
+    h('div', {}, c.effect === 'current' ? '물길 폭 겹침 ' : '효과 범위 겹침 ', h('b', {}, overlap), '쌍', same ? ` · 같은 칸에 겹쳐 놓임 ${same}쌍` : ''),
+  );
+}
+map.addEventListener('click', (e) => {
+  if (!G || !S.id || !mapLayer) return; const r = map.getBoundingClientRect(), x = (e.clientX - r.left) * MW / r.width / mapLayer.k, y = (e.clientY - r.top) * MW / r.height / mapLayer.k;
+  let best = -1, bd = Infinity; placedOf(S.id).forEach((q, i) => { const d = Math.hypot(q.x - x, q.y - y); if (d < bd) { bd = d; best = i; } });
+  if (best >= 0) { S.inst = best; S.pdx = null; draw(); }
+});
+const setStatus = () => { $('#status').textContent = `실제 게임 렌더러 · 시드 ${G.seed} · 무대는 게임 화면 1280×900 가운데 960×640 · 조정은 이 화면의 게임에 바로 반영, "미리 적용"으로 이 기기에 저장(2단계)`; };
+$('#reseed').onclick = () => { G.seed = (Math.imul(G.seed, 1103515245) + 12345) >>> 0; G.biomeObjects.signature = ''; S.inst = 0; S.pdx = null; setStatus(); draw(); };
+$('#adjReset').onclick = () => { const next = clone(work); delete next.overrides[S.id]; setWork(next); draw(); };
+$('#apply').onclick = () => {
+  try { localStorage.setItem(OBJECT_PRESET_KEY, JSON.stringify(work)); applied = clone(work); toast('이 기기 게임 설정에 저장했습니다. 게임을 새로 열면 적용됩니다'); } catch { toast('저장하지 못했습니다'); }
+  syncAdj();
+};
+$('#restore').onclick = () => {
+  if (!S.restoreArm) { S.restoreArm = true; syncAdj(); return; }
+  S.restoreArm = false; try { localStorage.removeItem(OBJECT_PRESET_KEY); } catch {}
+  applied = defaultObjectPreset(); setWork(defaultObjectPreset()); draw(); toast('이 기기 설정을 기본값으로 되돌렸습니다');
+};
 
 // ---- controls
 $('#size').addEventListener('input', (e) => { S.size = +e.target.value; $('#sizeNum').value = S.size; for (const b of $('#sizeBtns').children) b.setAttribute('aria-pressed', 'false'); draw(); });
@@ -258,15 +434,19 @@ $('#alpha').oninput = (e) => { S.alpha = +e.target.value; draw(); };
 $('#oscale').oninput = (e) => { S.oscale = +e.target.value; $('#oscaleNum').textContent = '×' + S.oscale.toFixed(2); draw(); };
 $('#ovReset').onclick = () => { S.oscale = 1; S.odx = S.ody = 0; renderPanel(); draw(); };
 $('#pick').onchange = (e) => { setDraft({pick: e.target.value || null}); renderPanel(); };
-$('#memo').oninput = (e) => { setDraft({memo: e.target.value}); renderList(); const marked = Object.keys(drafts).length; $('#copyAll').textContent = `전체 결과 복사 (${marked})`; $('#copyAll').disabled = !marked; };
-const line = (id) => { const d = drafts[id], c = BIOME_OBJECTS[id];
-  return `- ${id} ${c.name.split(' · ')[0]}: ${VBY[d.verdict]?.label || '메모'} · 공 지름 ${d.size ?? '-'} 기준${d.pick ? ' · 생성본 의견 ' + d.pick : ''}${(d.memo || '').trim() ? ' — ' + d.memo.trim() : ''}`; };
-const head = () => `[오브젝트 검수] ${new Date().toISOString().slice(0, 10)} · 검수대 1단계`;
-$('#copyOne').onclick = () => { if (!drafts[S.id]) setDraft({size: S.size, verdict: null, memo: ''}); drafts[S.id] ? copy(head() + '\n' + line(S.id)) : toast('판정이나 메모를 먼저 남겨 주세요'); };
-$('#copyAll').onclick = () => { const ids = DEFAULT_OBJECT_IDS.filter(id => drafts[id]); copy(head() + '\n' + ids.map(line).join('\n')); };
+$('#memo').oninput = (e) => { setDraft({memo: e.target.value}); renderList(); updateCopyAll(); };
+// Readable lines for people, then one object-adjust-v1 JSON line per object for Claude to make the values permanent.
+const line = (id) => { const d = drafts[id] || {}, c = BIOME_OBJECTS[id], ch = changeText(id);
+  return `- ${id} ${c.name.split(' · ')[0]}: ${VBY[d.verdict]?.label || (ch ? '조정' : '메모')} · 공 지름 ${d.size ?? S.size} 기준${ch ? ' · 조정 ' + ch : ''}${d.pick ? ' · 생성본 의견 ' + d.pick : ''}${(d.memo || '').trim() ? ' — ' + d.memo.trim() : ''}`; };
+const adjustJson = (id) => { const d = drafts[id] || {};
+  return JSON.stringify({format: 'object-adjust-v1', id, changes: Object.fromEntries(changesOf(id).map(([k, a, b]) => [k, [a, b]])), playerSize: d.size ?? S.size, resource: d.pick || null, verdict: d.verdict || null, memo: (d.memo || '').trim() || null}); };
+const head = () => `[오브젝트 검수] ${new Date().toISOString().slice(0, 10)} · 검수대 2단계`;
+const report = (ids) => `${head()}\n${ids.map(line).join('\n')}\n\n\`\`\`json\n${ids.map(adjustJson).join('\n')}\n\`\`\``;
+$('#copyOne').onclick = () => { reportIds().includes(S.id) ? copy(report([S.id])) : toast('판정·메모·조정 중 하나를 먼저 남겨 주세요'); };
+$('#copyAll').onclick = () => { const ids = reportIds(); if (ids.length) copy(report(ids)); };
 $('#clearAll').onclick = () => { if (!S.clearArm) { S.clearArm = true; renderPanel(); return; } S.clearArm = false; drafts = {}; saveDrafts(); renderPanel(); renderList(); };
 document.addEventListener('keydown', (e) => {
-  if (!S.id || e.target.closest('textarea,input[type=number],select') || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!S.id || e.target.closest('textarea,input[type=number],input[type=range],select') || e.ctrlKey || e.metaKey || e.altKey) return;
   if (/^[1-4]$/.test(e.key)) { const v = VERDICTS[+e.key - 1].k; setDraft({verdict: drafts[S.id]?.verdict === v ? null : v}); renderPanel(); renderList(); }
   if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); const i = DEFAULT_OBJECT_IDS.indexOf(S.id) + (e.key === 'ArrowDown' ? 1 : -1); if (DEFAULT_OBJECT_IDS[i]) select(DEFAULT_OBJECT_IDS[i]); }
 });
@@ -282,7 +462,10 @@ renderList();
   }
   if (!G) { $('#status').textContent = '게임을 불러오지 못했습니다. 이 페이지는 게임과 같은 서버(tools/serve.py)에서 열어야 합니다.'; return; }
   G.autoplay?.setEnabled?.(false); if (G.ui?.preferences) G.ui.preferences.names = false;
-  $('#status').textContent = `실제 게임 렌더러 · 시드 ${G.seed} · 무대는 게임 화면 1280×900 가운데 960×640 · 값을 바꾸지 않는 보기 전용(1단계)`;
+  setStatus();
+  // The iframe game already loaded this device's preset; resume an unsaved work copy on top of it.
+  applied = readPreset(OBJECT_PRESET_KEY) ?? defaultObjectPreset(); work = clone(applied);
+  const saved = readPreset(WORK_KEY); if (!saved || !setWork(saved)) setWork(clone(applied));
   const want = location.hash.slice(1);
   select(DEFAULT_OBJECT_IDS.includes(want) ? want : DEFAULT_OBJECT_IDS[0]);
   addEventListener('hashchange', () => { const id = location.hash.slice(1); if (DEFAULT_OBJECT_IDS.includes(id) && id !== S.id) select(id); });

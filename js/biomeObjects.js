@@ -1,6 +1,6 @@
 import {drawObjectArt} from './actionArt.js?forest-composition-01';
 import {drawEnvironmentalArt} from './environmentArt.js?forest-composition-01';
-import {BIOME_OBJECTS,objectPreset,placedObjectConfig} from './biomeObjectCatalog.js?forest-composition-01';
+import {BIOME_OBJECTS,objectPreset,placedObjectConfig,defaultPlacedCount} from './biomeObjectCatalog.js?forest-composition-01';
 import {dist} from './collision.js';import {spawnOrb} from './spawning.js';import {applyDamage} from './combat.js?forest-composition-01';import {delta,wrap,near} from './topology.js';import {terrainDamageMultiplier} from './biomes.js?forest-composition-01';
 import {objectEffectText} from './statusLabels.js';
 // R-WORLD-010: a heat vent shows a solid pulsing red-orange zone while it erupts and a yellow countdown ring for 2 s before.
@@ -17,10 +17,10 @@ export class BiomeObjects{
   for(const id of preset.enabled){const cfg={...BIOME_OBJECTS[id],...preset.overrides[id]},regionTiles=this.game.biomes.tiles.filter(t=>t.region.id===cfg.region);if(!regionTiles.length)continue;
    // 2026-10-08 user: nothing is placed on the lava river (obsidian sat on it). Body reach = radius x max visual scale 1.2.
    const offLava=regionTiles.filter(t=>!this.game.biomes.lavaAt?.({x:t.x+100,y:t.y+100},(cfg.radius??0)*1.2)),tiles=offLava.length?offLava:regionTiles;let hash=(this.game.seed>>>0);for(const char of id)hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;
-   for(let i=0;i<(['lake-current','lake-vortex'].includes(id)?Math.max(1,Math.ceil(preset.countPerType/6)):id==='desert-oasis'?Math.max(1,Math.ceil(preset.countPerType/3)):preset.countPerType);i++){const t=tiles[(hash+i*137)%tiles.length],o={id:`${id}:${i}`,candidate:id,config:cfg,x:t.x+100,y:t.y+100,_world:this.game.balance.world,phase:i*2};
+   for(let i=0;i<(cfg.placed??defaultPlacedCount(id,preset.countPerType));i++){const t=tiles[(hash+i*137)%tiles.length],o={id:`${id}:${i}`,candidate:id,config:cfg,x:t.x+100,y:t.y+100,_world:this.game.balance.world,phase:i*2};
     if(cfg.effect==='current'){const a=((hash+i)%4)*Math.PI/2,w=this.game.balance.world;o.points=[{x:o.x,y:o.y}];for(const sign of [-1,1]){const side=[];for(let k=1;k<=cfg.pathSteps;k++){const p={x:wrap(o.x+Math.cos(a)*k*200*sign,w.worldWidth),y:wrap(o.y+Math.sin(a)*k*200*sign,w.worldHeight)};if(this.game.biomes.regionAt(p)?.id!=='lake')break;side.push(p);}o.points=sign<0?[...side.reverse(),...o.points]:[...o.points,...side];}if(o.points.length<2)o.points=[{x:o.x,y:o.y},{x:o.x+Math.cos(a)*60,y:o.y+Math.sin(a)*60}];o.width=Math.min(cfg.widthMax,Math.max(cfg.widthMin,cfg.widthMin+(hash+i*37)%(Math.max(1,cfg.widthMax-cfg.widthMin+1))));o.reach=cfg.pathSteps*200+o.width;}
     // User approved: oasis body and actual effect radius grow together; deterministic variation is unchanged.
-    const scale=(.8+((hash+i*73)%401)/1000)*(id==='desert-oasis'?1.4:1);o.visualScale=scale;o.config={...placedObjectConfig(id,cfg),radius:cfg.radius*scale*(id==='lake-vortex'?1.4:1)};if(id==='lake-current'){o.width*=1.4;o.reach=cfg.pathSteps*200+o.width;}this.objects.push(o);
+    const scale=(.8+((hash+i*73)%401)/1000)*(id==='desert-oasis'?1.4:1);o.visualScale=scale*(cfg.visualScale??1);o.config={...placedObjectConfig(id,cfg),radius:cfg.radius*scale*(id==='lake-vortex'?1.4:1)};if(id==='lake-current'){o.width*=1.4;o.reach=cfg.pathSteps*200+o.width;}this.objects.push(o);
    }
   }
  }
