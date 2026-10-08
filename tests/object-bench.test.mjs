@@ -44,11 +44,11 @@ test('preset v3 accepts visualScale and placed, rejects out-of-range values, and
     assert.throws(() => normalizeObjectPreset({...defaultObjectPreset(), overrides: {'forest-tree': bad}}), /잘못된 수치/);
 });
 
-test('placed sets the instance count; without it the shared count rule applies', () => {
+test('placed sets the instance count; without it the catalog or shared count rule applies', () => {
   const base = placedGame({}), set = placedGame({'forest-tree': {placed: 2}, 'lake-vortex': {placed: 4}});
   const n = (g, id) => g.biomeObjects.objects.filter((o) => o.candidate === id).length;
-  assert.equal(n(base, 'forest-tree'), defaultPlacedCount('forest-tree', 6));
-  assert.equal(n(base, 'lake-vortex'), defaultPlacedCount('lake-vortex', 6));
+  // Bench-confirmed counts live in the catalog (placed); objects without one use the shared rule.
+  for (const id of DEFAULT_OBJECT_IDS) assert.equal(n(base, id), BIOME_OBJECTS[id].placed ?? defaultPlacedCount(id, 6), id);
   assert.equal(n(set, 'forest-tree'), 2);
   assert.equal(n(set, 'lake-vortex'), 4);
   // Instances keep their place: the first two trees sit where they did before.
@@ -97,10 +97,12 @@ test('placement margins keep objects off region borders, lava and each other', (
 });
 
 test('vent and vortex bodies scale with visualScale and aspect, never with the effect radius', () => {
-  const base = placedGame({}), wide = placedGame({'volcano-vent-cycle': {radius: 240, visualScale: 2, aspect: 1.5}, 'lake-vortex': {radius: 40, visualScale: 3}});
+  const base = placedGame({}), wide = placedGame({'volcano-vent-cycle': {radius: 240, visualScale: 3, aspect: 1.5}, 'lake-vortex': {radius: 40, visualScale: 3}});
   const first = (g, id) => g.biomeObjects.objects.find((o) => o.candidate === id);
-  assert.ok(Math.abs(first(wide, 'volcano-vent-cycle').bodyRadius - first(base, 'volcano-vent-cycle').bodyRadius * 2) < 1e-9);
-  assert.ok(Math.abs(first(wide, 'lake-vortex').bodyRadius - first(base, 'lake-vortex').bodyRadius * 3) < 1e-9);
+  // An override replaces the catalog body scale, so the body grows by override ÷ catalog value.
+  const k = (id, v) => v / (BIOME_OBJECTS[id].visualScale ?? 1);
+  assert.ok(Math.abs(first(wide, 'volcano-vent-cycle').bodyRadius - first(base, 'volcano-vent-cycle').bodyRadius * k('volcano-vent-cycle', 3)) < 1e-9);
+  assert.ok(Math.abs(first(wide, 'lake-vortex').bodyRadius - first(base, 'lake-vortex').bodyRadius * k('lake-vortex', 3)) < 1e-9);
   assert.equal(first(wide, 'volcano-vent-cycle').aspect, 1.5);
   assert.equal(first(base, 'forest-tree').aspect, 1);
   assert.ok(first(wide, 'lake-vortex').config.radius < first(base, 'lake-vortex').config.radius, 'radius still shrinks the effect');
@@ -109,6 +111,6 @@ test('vent and vortex bodies scale with visualScale and aspect, never with the e
 test('visualScale grows the body only; the effect radius stays', () => {
   const base = placedGame({}), big = placedGame({'forest-tree': {visualScale: 1.5}});
   const first = (g) => g.biomeObjects.objects.find((o) => o.candidate === 'forest-tree');
-  assert.ok(Math.abs(first(big).visualScale - first(base).visualScale * 1.5) < 1e-9);
+  assert.ok(Math.abs(first(big).visualScale - first(base).visualScale * 1.5 / (BIOME_OBJECTS['forest-tree'].visualScale ?? 1)) < 1e-9);
   assert.equal(first(big).config.radius, first(base).config.radius);
 });

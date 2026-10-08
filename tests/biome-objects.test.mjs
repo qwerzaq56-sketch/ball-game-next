@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createGame} from '../tools/headless.mjs';
-import {BIOME_OBJECTS,DEFAULT_OBJECT_IDS,OBJECT_REGIONS,defaultObjectPreset,applyObjectPreset} from '../js/biomeObjectCatalog.js';
+import {BIOME_OBJECTS,DEFAULT_OBJECT_IDS,OBJECT_REGIONS,defaultObjectPreset,applyObjectPreset,defaultPlacedCount} from '../js/biomeObjectCatalog.js';
 import {LANDMARK_PRESENTATION} from '../js/landmarkArt.js';
 function setup(id){const g=createGame(7),p=g.player;g.entities=[p];g.biomes.enabled=true;const preset=defaultObjectPreset();preset.enabled=[id];preset.countPerType=1;applyObjectPreset(g.balance,preset);g.biomeObjects.sync();const o=g.biomeObjects.objects[0];p.x=o.x;p.y=o.y;p.hp=p.maxHp=1000;g.buildGrid();return {g,p,o};}
 test('R-VIS-003 recovery decoration requires successful benefit, not proximity',()=>{
@@ -15,15 +15,18 @@ test('R-VIS-003 recovery decoration requires successful benefit, not proximity',
  delete shelter.p.frostClearVisualUntil;shelter.g.biomes.update(.1);assert.equal(shelter.p.frostClearVisualUntil,undefined);
 });
 test('R-WORLD-016 scaled landmark ranges match presentation and continuous contact stops outside',()=>{
- for(const [id,profile]of Object.entries(LANDMARK_PRESENTATION)){
-  const {o}=setup(id);assert.equal(BIOME_OBJECTS[id].radius,profile.radius);
-  assert.equal(o.config.radius,profile.radius*o.visualScale);
+ // Bench-confirmed defaults (planning 03_아트/32 §8-4): the range comes from the catalog radius and the body from presentation × catalog
+ // visualScale; both share the same deterministic per-instance variation (×0.8–1.2, oasis ×1.4).
+ for(const id of Object.keys(LANDMARK_PRESENTATION)){
+  const {o}=setup(id),c=BIOME_OBJECTS[id],variation=o.visualScale/(c.visualScale??1);
+  assert.ok(Math.abs(o.config.radius-c.radius*variation)<1e-9,id);
+  assert.ok(variation>=.8-1e-9&&variation<=1.2*(id==='desert-oasis'?1.4:1)+1e-9,id);
  }
  const {g,p,o}=setup('desert-oasis');p.hp=500;
  p.x=o.x+o.config.radius+p.size/2-.1;g.buildGrid();g.biomeObjects.update(1);assert(p.hp>500);
  const healed=p.hp;p.x=o.x+o.config.radius+p.size/2+.1;g.buildGrid();g.biomeObjects.update(1);assert.equal(p.hp,healed);
 });
-test('each biome has two active candidates, with three in the lake placed in its own biome deterministically',()=>{for(const region of Object.keys(OBJECT_REGIONS))assert.equal(DEFAULT_OBJECT_IDS.map(id=>BIOME_OBJECTS[id]).filter(c=>c.region===region).length,region==='lake'?3:2);const a=createGame(7),b=createGame(7);a.biomeObjects.sync();b.biomeObjects.sync();assert.equal(a.biomeObjects.objects.length,64);assert.deepEqual(a.biomeObjects.objects,b.biomeObjects.objects);for(const o of a.biomeObjects.objects)assert.equal(a.biomes.regionAt(o).id,o.config.region);});
+test('each biome has two active candidates, with three in the lake placed in its own biome deterministically',()=>{for(const region of Object.keys(OBJECT_REGIONS))assert.equal(DEFAULT_OBJECT_IDS.map(id=>BIOME_OBJECTS[id]).filter(c=>c.region===region).length,region==='lake'?3:2);const a=createGame(7),b=createGame(7);a.biomeObjects.sync();b.biomeObjects.sync();assert.equal(a.biomeObjects.objects.length,DEFAULT_OBJECT_IDS.reduce((n,id)=>n+(BIOME_OBJECTS[id].placed??defaultPlacedCount(id,6)),0));assert.deepEqual(a.biomeObjects.objects,b.biomeObjects.objects);for(const o of a.biomeObjects.objects)assert.equal(a.biomes.regionAt(o).id,o.config.region);});
 test('invalid imports reject transactionally and settings are copied',()=>{const {g}=setup('grass-flowers'),p=defaultObjectPreset();p.overrides['grass-flowers']={growth:90};applyObjectPreset(g.balance,p);p.overrides['grass-flowers'].growth=1;assert.equal(g.balance.biomeObjects.overrides['grass-flowers'].growth,90);const before=JSON.stringify(g.balance.biomeObjects);for(const bad of [{...p,enabled:['missing']},{...p,countPerType:0},{...p,overrides:{'grass-flowers':{growth:NaN}}},{...p,overrides:JSON.parse('{"__proto__":{"power":0.1}}')}]){assert.throws(()=>applyObjectPreset(g.balance,bad));assert.equal(JSON.stringify(g.balance.biomeObjects),before);}});
 test('food objects respect global cooldown, disabled candidates and orb capacity',()=>{const {g,o}=setup('grass-flowers');g.biomeObjects.update();assert.equal(g.entities.length,4);assert.equal(g.entities[1].growthValue,45);g.biomeObjects.update();assert.equal(g.entities.length,4);const p=defaultObjectPreset();p.enabled=[];applyObjectPreset(g.balance,p);g.biomeObjects.update();assert.equal(g.biomeObjects.objects.length,0);p.enabled=['grass-flowers'];p.countPerType=1;applyObjectPreset(g.balance,p);g.biomeObjects.update();assert.equal(g.entities.length,4);g.gameTime=o.config.cooldown;g.balance.spawning.maxOrbCount=4;g.biomeObjects.update();assert.equal(g.entities.length,5);});
 test('objects require body contact and heal only wounded actors',()=>{const {g,p,o}=setup('lake-spring');g.biomeObjects.update();assert.equal(g.biomeObjects.events.length,0);p.hp=950;p.x=o.x+o.config.radius+p.size/2+1;g.buildGrid();g.biomeObjects.update();assert.equal(p.hp,950);p.x=o.x;g.buildGrid();g.biomeObjects.update();assert.equal(p.hp,1000);});
@@ -40,8 +43,9 @@ test('approved larger oasis preserves variation, count and healing power while s
  let hash=7;for(const char of 'desert-oasis')hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;
  for(const [i,o]of objects.entries()){
   const oldVariation=.8+((hash+i*73)%401)/1000;
-  assert.equal(o.visualScale,oldVariation*1.4);
-  assert.equal(o.config.radius,BIOME_OBJECTS['desert-oasis'].radius*o.visualScale);
+  // Body and range share the variation; the bench-confirmed body scale (catalog visualScale) applies to the body only.
+  assert.equal(o.visualScale,oldVariation*1.4*(BIOME_OBJECTS['desert-oasis'].visualScale??1));
+  assert.equal(o.config.radius,BIOME_OBJECTS['desert-oasis'].radius*(oldVariation*1.4));
   assert.equal(o.config.power,BIOME_OBJECTS['desert-oasis'].power*2);
  }
  assert.deepEqual(objects,b.biomeObjects.objects.filter(o=>o.candidate==='desert-oasis'));

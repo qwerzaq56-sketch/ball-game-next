@@ -14,6 +14,8 @@ export function objectRole(c){return ['vent','vortex'].includes(c.effect)?'dange
 // Placement candidates for one object config: region tiles clear of lava (default reach = radius x 1.2, the 2026-10-08
 // rule that keeps obsidian off the river) and, with edgeMargin, at least that far from any other region. Falls back
 // to lava-only, then to the whole region, so an object never disappears.
+// The swirl art's own radius (the catalog radius before the bench split body from effect); visualScale sizes it from here.
+export const VORTEX_BODY_RADIUS=180;
 export function placementTiles(game,cfg){
  const b=game.biomes,region=b.tiles.filter(t=>t.region.id===cfg.region),lava=cfg.lavaMargin??(cfg.radius??0)*1.2,edge=cfg.edgeMargin??0;
  const offLava=region.filter(t=>!b.lavaAt?.({x:t.x+100,y:t.y+100},lava));
@@ -35,11 +37,14 @@ export class BiomeObjects{
   for(const id of preset.enabled){const cfg={...BIOME_OBJECTS[id],...preset.overrides[id]},regionTiles=this.game.biomes.tiles.filter(t=>t.region.id===cfg.region);if(!regionTiles.length)continue;
    const {tiles}=placementTiles(this.game,cfg);let hash=(this.game.seed>>>0);for(const char of id)hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;
    for(let i=0;i<(cfg.placed??defaultPlacedCount(id,preset.countPerType));i++){const t=spacedTile(tiles,(hash+i*137)%tiles.length,this.objects,cfg.spacing,this.game.balance.world),o={id:`${id}:${i}`,candidate:id,config:cfg,x:t.x+100,y:t.y+100,_world:this.game.balance.world,phase:i*2};
-    if(cfg.effect==='current'){const a=((hash+i)%4)*Math.PI/2,w=this.game.balance.world;o.points=[{x:o.x,y:o.y}];for(const sign of [-1,1]){const side=[];for(let k=1;k<=cfg.pathSteps;k++){const p={x:wrap(o.x+Math.cos(a)*k*200*sign,w.worldWidth),y:wrap(o.y+Math.sin(a)*k*200*sign,w.worldHeight)};if(this.game.biomes.regionAt(p)?.id!=='lake')break;side.push(p);}o.points=sign<0?[...side.reverse(),...o.points]:[...o.points,...side];}if(o.points.length<2)o.points=[{x:o.x,y:o.y},{x:o.x+Math.cos(a)*60,y:o.y+Math.sin(a)*60}];o.width=Math.min(cfg.widthMax,Math.max(cfg.widthMin,cfg.widthMin+(hash+i*37)%(Math.max(1,cfg.widthMax-cfg.widthMin+1))));o.reach=cfg.pathSteps*200+o.width;}
+    if(cfg.effect==='current'){const w=this.game.balance.world;let a=0;o.points=[];
+     // The path stops where the lake ends. Try both axes from the seeded one and keep the longest (bench feedback: currents cut short at the shore).
+     for(let turn=0;turn<2&&o.points.length<cfg.pathSteps*2+1;turn++){const dir=((hash+i+turn)%4)*Math.PI/2;let pts=[{x:o.x,y:o.y}];for(const sign of [-1,1]){const side=[];for(let k=1;k<=cfg.pathSteps;k++){const p={x:wrap(o.x+Math.cos(dir)*k*200*sign,w.worldWidth),y:wrap(o.y+Math.sin(dir)*k*200*sign,w.worldHeight)};if(this.game.biomes.regionAt(p)?.id!=='lake')break;side.push(p);}pts=sign<0?[...side.reverse(),...pts]:[...pts,...side];}if(pts.length>o.points.length){o.points=pts;a=dir;}}
+     if(o.points.length<2)o.points=[{x:o.x,y:o.y},{x:o.x+Math.cos(a)*60,y:o.y+Math.sin(a)*60}];o.width=Math.min(cfg.widthMax,Math.max(cfg.widthMin,cfg.widthMin+(hash+i*37)%(Math.max(1,cfg.widthMax-cfg.widthMin+1))));o.reach=cfg.pathSteps*200+o.width;}
     // User approved: oasis body and actual effect radius grow together; deterministic variation is unchanged.
     const scale=(.8+((hash+i*73)%401)/1000)*(id==='desert-oasis'?1.4:1);o.visualScale=scale*(cfg.visualScale??1);o.aspect=cfg.aspect??1;
     // Bench (planning 32): environmental bodies scale on their own, never with an overridden effect radius.
-    if(cfg.effect==='vent')o.bodyRadius=70*o.visualScale;if(id==='lake-vortex')o.bodyRadius=BIOME_OBJECTS[id].radius*scale*1.4*(cfg.visualScale??1);o.config={...placedObjectConfig(id,cfg),radius:cfg.radius*scale*(id==='lake-vortex'?1.4:1)};if(id==='lake-current'){o.width*=1.4;o.reach=cfg.pathSteps*200+o.width;}this.objects.push(o);
+    if(cfg.effect==='vent')o.bodyRadius=70*o.visualScale;if(id==='lake-vortex')o.bodyRadius=VORTEX_BODY_RADIUS*scale*1.4*(cfg.visualScale??1);o.config={...placedObjectConfig(id,cfg),radius:cfg.radius*scale*(id==='lake-vortex'?1.4:1)};if(id==='lake-current'){o.width*=1.4;o.reach=cfg.pathSteps*200+o.width;}this.objects.push(o);
    }
   }
  }
