@@ -23,6 +23,11 @@ export function growthFromSize(size,base,ratio,settings={}) {
  return (lo+hi)/2;
 }
 
+// Max HP rules (R-GROWTH-002, planning 밸런싱 B-FIGHT-01). AI: size × ai.hpPerSize. Player: size ×
+// player.hpPerSize when that is above 0, otherwise the growth rule startingHp + growth × hpPerGrowth.
+export function aiMaxHp(size,balance){return size*(balance.ai?.hpPerSize??5);}
+export function playerMaxHp(size,growth,balance){const p=balance.player;return p.hpPerSize>0?size*p.hpPerSize:p.startingHp+growth*(p.hpPerGrowth??0);}
+
 // v0.5: generic threshold-list lookup shared by attack/dodge stack capacity. Thresholds are
 // [{size, maxStack}, ...] sorted ascending; returns the maxStack of the highest threshold met,
 // or 0 below the first one. Adding a Stage 3/4 later is just adding another entry — no code

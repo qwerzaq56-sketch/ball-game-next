@@ -7,7 +7,7 @@ import { assignPersonality } from './ecology.js';
 import { acceptsAbsorption, pruneEncounters, chooseGeneral } from './species.js';
 import { random } from './random.js';
 import {apexTerritoryRadius} from './skillCatalog.js';
-import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
+import { Entity, sizeFromGrowth, computeMaxStack, aiMaxHp } from './entity.js';
 import { canAbsorb, canEatOrb, isHostile, dist } from './collision.js';
 import { canStartAttack, startAttack, updateAttack, canStartDodge, startDodge, updateDodge, attackRangeForSize, attackDamageForSize, applyDefense } from './combat.js?forest-composition-01';
 
@@ -27,8 +27,8 @@ export class AIEntity extends Entity {
       colorHex,
       moveSpeed: balance.ai.movementSpeed * (0.8 + random('ai') * 0.4),
       behavior: 'ai',
-      hp: startSize * 5,
-      maxHp: startSize * 5,
+      hp: aiMaxHp(startSize, balance),
+      maxHp: aiMaxHp(startSize, balance),
     });
     this.baseSize = startSize;
     this.growth = 0;
@@ -45,7 +45,7 @@ export class AIEntity extends Entity {
     beginGrowthMotion(this);
     this.growth += amount;
     const newSize = sizeFromGrowth(this.growth, this.baseSize, balance.growth.growthToSizeRatio,balance.growth);
-    const newMaxHp = newSize * 5;
+    const newMaxHp = aiMaxHp(newSize, balance);
     this.hp = Math.min(this.hp + Math.max(0, newMaxHp - this.maxHp), newMaxHp);
     this.size = newSize;
     this.maxHp = newMaxHp;

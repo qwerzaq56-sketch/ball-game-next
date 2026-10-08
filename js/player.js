@@ -1,5 +1,5 @@
 import {beginGrowthMotion} from './growthMotion.js';
-import { Entity, sizeFromGrowth, computeMaxStack } from './entity.js';
+import { Entity, sizeFromGrowth, computeMaxStack, playerMaxHp } from './entity.js';
 import { normalizeProfile } from './playerProfile.js';
 
 export class Player extends Entity {
@@ -42,7 +42,7 @@ export class Player extends Entity {
     const g = balance.growth;
     const p = balance.player;
     this.size = sizeFromGrowth(this.growth, this.baseSize, g.growthToSizeRatio,g);
-    const newMaxHp = p.startingHp + this.growth * (p.hpPerGrowth ?? 0);
+    const newMaxHp = playerMaxHp(this.size, this.growth, balance);
     this.hp = Math.min(this.hp + Math.max(0, newMaxHp - this.maxHp), newMaxHp);
     this.maxHp = newMaxHp;
   }

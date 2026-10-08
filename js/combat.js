@@ -39,6 +39,14 @@ export function defenseForSize(size, balance) {
   return Math.max(0, c.baseDefense + size * c.defensePerSize);
 }
 
+// Size defense was tuned when max HP was size × 5. Damage given as a fraction of max HP scales its
+// defense by the HP rule's per-size factor ÷ 5, so the fraction lost stays the same (B-FIGHT-01).
+// The player's growth rule (player.hpPerSize 0) keeps the old scale 1.
+export function hpDefenseScale(target, balance) {
+  const perSize = target.behavior === 'player' ? (balance.player.hpPerSize > 0 ? balance.player.hpPerSize : 5) : (balance.ai?.hpPerSize ?? 5);
+  return perSize / 5;
+}
+
 export function applyDefense(rawDamage, targetSize, balance, multiplier=1) {
   const c = balance.combatScaling;
   return Math.max(c.minimumDamage, rawDamage - defenseForSize(targetSize, balance)*multiplier);
@@ -213,7 +221,7 @@ export function applyDamage(target, rawDamage, game, attacker, balance, options 
   if ((attacker && !isHostile(attacker,target)) || target.invincible || target.dustInvulnerableRemaining>0 || target.respawnInvulnerableRemaining>0 || !target.alive) return false;
   if(options.kind!=='field' && game?.abilities?.miss(target)){game.spawnFloatingText(target.x,target.y-target.size/2,"MISS","#eab308");return false;}
   const bal = balance || (game && game.balance);
-  const defended = bal && !options.ignoreDefense ? applyDefense(rawDamage, target.size, bal,game?.abilities?.defenseMultiplier(target)??1) : rawDamage;
+  const defended = bal && !options.ignoreDefense ? applyDefense(rawDamage, target.size, bal,(game?.abilities?.defenseMultiplier(target)??1)*(options.defenseScale??1)) : rawDamage;
   let dmg = Math.max(bal?.combatScaling?.minimumDamage??1,defended*Math.max(0,Math.min(1,options.postDefenseMultiplier??1)));
   let shield=Math.min(dmg,Math.max(0,target.shieldHp??0));target.shieldHp=Math.max(0,(target.shieldHp??0)-shield);dmg-=shield;
   if((target.obsidianShieldUntil??0)>(game?.gameTime??Infinity)){const blocked=Math.min(dmg,Math.max(0,target.obsidianShieldHp??0));target.obsidianShieldHp-=blocked;dmg-=blocked;shield+=blocked;}

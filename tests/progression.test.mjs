@@ -7,8 +7,8 @@ import {nextSkillGoal} from '../js/progression.js';
 
 test('initial growth immediately sets size, HP and skill capacity before the first pickup',()=>{
  const g=createGame(1);g.balance.player.startingGrowth=400;g.reset();const p=g.player;
- assert.equal(p.size,52);assert.equal(p.maxHp,260);assert.equal(p.hp,260);assert.equal(p.attackMaxStack,1);assert.equal(p.dodgeMaxStack,1);
- p.addGrowth(0,g.balance);assert.equal(p.size,52);assert.equal(p.hp,260);
+ assert.equal(p.size,52);assert.equal(p.maxHp,520);assert.equal(p.hp,520);assert.equal(p.attackMaxStack,1);assert.equal(p.dodgeMaxStack,1);
+ p.addGrowth(0,g.balance);assert.equal(p.size,52);assert.equal(p.hp,520);
 });
 test('capacity reductions clamp empty or partly spent player/AI stacks and increases award only new slots',()=>{
  const g=createGame(1),p=g.player,a=new AIEntity({x:1000,y:1000,startSize:120,color:'red',colorHex:'#f00',balance:g.balance});p.addGrowth(growthFromSize(120,p.baseSize,g.balance.growth.growthToSizeRatio,g.balance.growth),g.balance);

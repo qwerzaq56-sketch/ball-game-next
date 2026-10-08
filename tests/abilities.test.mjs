@@ -52,7 +52,7 @@ test('blue refused candidates cannot be centrally absorbed while commanded',()=>
 test('yellow field ticks quarter-second; exact lifetime and same-tick overlap uses maximum',()=>{
  const {g,p,t}=fixture('yellow');const q={...p,id:999};g.entities.push(q);
  g.abilities.fields=[{owner:p,x:t.x,y:t.y,time:0,tick:0},{owner:q,x:t.x,y:t.y,time:0,tick:0}];ticks(g,30);
- assert.equal(t.hp,620); // Two ticks of 200 raw × 1.05 ally bonus minus 20 defense; overlaps apply once.
+ assert.equal(t.hp,660); // Two ticks of 200 raw × 1.05 ally bonus minus 20 defense × 2 (HP rule size×10); overlaps apply once.
  ticks(g,270);assert.equal(g.abilities.fields.length,0);assert.equal(t.hp,0);
 });
 test('command reaccept lock, harvest no orb and red unseen destination completion',()=>{

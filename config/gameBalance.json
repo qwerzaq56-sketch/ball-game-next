@@ -41,7 +41,8 @@
     "startingGrowth": 0,
     "startingHp": 100,
     "moveSpeed": 250,
-    "hpPerGrowth": 0.4
+    "hpPerGrowth": 0.4,
+    "hpPerSize": 10
   },
   "growth": {
     "rewardReductionStart": 400,
@@ -180,6 +181,7 @@
     "regenPerSize": 0.05
   },
   "ai": {
+    "hpPerSize": 10,
     "movementSpeed": 130,
     "detectionRange": 320,
     "explorationEnabled": true,

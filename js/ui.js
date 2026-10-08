@@ -223,7 +223,7 @@ export class UI {
   buildDebugPanel() {
     const schema = [
       { label: 'Player', key: 'player', fields: [
-        ['startingSize', 1], ['startingGrowth', 1], ['startingHp', 1], ['moveSpeed', 1], ['hpPerGrowth', 0.01],
+        ['startingSize', 1], ['startingGrowth', 1], ['startingHp', 1], ['moveSpeed', 1], ['hpPerGrowth', 0.01], ['hpPerSize', 0.5],
       ] },
       { label: 'Growth', key: 'growth', fields: [
         ['growthToSizeRatio', 0.05], ['lateThreshold',5], ['lateTransition',5], ['lateMultiplier',.1], ['minEatSizeDifference', 1],
@@ -261,7 +261,7 @@ export class UI {
         ['baseDistance', 2], ['distanceGrowth', 0.02],
       ] },
       { label: 'AI', key: 'ai', fields: [
-        ['movementSpeed', 5], ['detectionRange', 10],
+        ['hpPerSize', 0.5], ['movementSpeed', 5], ['detectionRange', 10],
         ['aggression', 0.05], ['fleeThreshold', 0.05],
         ['absorptionDetectionRange', 10], ['absorptionPriorityRatio', 0.05], ['highPriorityAbsorptionRatio', 0.05],
         ['attackCooldown', 0.1], ['absorptionAttemptChance', 0.05], ['lowHealthAttackChance', 0.05],
