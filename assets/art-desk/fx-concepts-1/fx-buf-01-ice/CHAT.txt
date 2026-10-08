@@ -1,0 +1,17 @@
+[Ball Game art request · fx-concepts-1 / fx-buf-01-ice]
+얼음 보호막 원화 (FX-BUF-01) — 보호막 버프(수호 고목·모래 비석·흑요석) 원화 다시 그리기. 승인 뒤 정확 크롭 → 투명 리소스로 leaf-shield-002 교체 (RR-001)
+
+Attached references:
+- Image 1: scene base: keep this forest clearing, the guardian tree, the ball characters, their positions and the three panels (before / shield forming / shield held); replace ONLY the leaf shield effect
+
+Regenerate this ally-buff art-direction strip for a top-down 2D circle ecosystem survival game. Keep the scene of reference image 1 exactly: the forest clearing, the guardian tree, the flat-vector matte ground, the same ball characters at the same positions, and the same three panels in one row (1 before, 2 shield forming, 3 shield held); on this taller canvas each panel simply shows more of the same ground above and below. Replace ONLY the shield effect. Instead of mint leaves, the ball that touched the guardian tree is wrapped by an ICE-SHAPED protective shield: several pale sky-blue faceted ice plates hovering in a ring just outside the body, with small gaps between the plates, like light crystal armour that clearly floats off the body. Panel 2: the ice plates fly in from the tree side and lock into the ring. Panel 3: the ring holds steady and the ball's own colour stays fully visible inside it. Palette: pale sky blue (#7dd3fc) with white highlights. Calm and soft, lower intensity than attack warnings. Flat matte colour areas, top-left light, same rendering style as the reference.
+
+Output: opaque PNG, canvas 1536x1024 px. 1 image.
+Avoid: leaves or petals; green or mint glow (reads as healing); water ripples; an ice crust covering the ball surface (that is the frozen status); a solid opaque dome that hides the ball; text, labels, UI, HUD, numbers, arrows; glossy 3D or heavy gradients; checkerboard background
+Rules: Use the attached reference images by their stated role; the first reference is the shape/identity source, the gameplay scene is the final look. True transparency when alpha is required: never paint a checkerboard, white or coloured backdrop. One isolated subject, centred, small even margin; do not crop the subject at the canvas edge. Keep the reference proportions; do not stretch or squash. No UI, text, numbers, range rings, arrows, balls/characters, terrain or extra props unless the item asks for them. Keep the soft upper-left light of the gameplay look; do not mirror or rotate baked lighting. Muted palette, broad flat colour planes, subtle dark outlines; no glossy gradients, photoreal texture or noisy tiny detail.
+Acceptance:
+- 얼음 모양 보호막이 공을 감싸는 것이 한눈에 보임
+- 빙결(공 표면을 덮는 얼음 껍질)과 헷갈리지 않음: 몸 바깥에 떠 있는 조각 고리
+- 회복(초록·잎·물결)으로 읽히지 않음
+- 바탕 장면(숲, 수호 고목, 공 배치, 세 칸)은 참조와 같음
+- 공격 예고보다 부드러운 세기

@@ -1,0 +1,133 @@
+{
+  "format": "art-desk-v1",
+  "batch": "fx-concepts-1",
+  "title": "이펙트 원화 1차: 얼음 보호막 · 상태 8종",
+  "created": "2026-10-08T17:34:09+00:00",
+  "focus": null,
+  "items": [
+    {
+      "id": "fx-buf-01-ice",
+      "kind": "concept",
+      "title": "얼음 보호막 원화 (FX-BUF-01)",
+      "use": "보호막 버프(수호 고목·모래 비석·흑요석) 원화 다시 그리기. 승인 뒤 정확 크롭 → 투명 리소스로 leaf-shield-002 교체 (RR-001)",
+      "region": "forest",
+      "size": {
+        "px": [
+          1536,
+          1024
+        ]
+      },
+      "alpha": false,
+      "variants": 1,
+      "refs": [
+        {
+          "file": "assets/art-desk/fx-concepts-1/fx-buf-01-ice/ref-1.png",
+          "role": "scene base: keep this forest clearing, the guardian tree, the ball characters, their positions and the three panels (before / shield forming / shield held); replace ONLY the leaf shield effect",
+          "source": "planning/art-concepts/ally-buffs-001.png",
+          "sourceSha256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+          "crop": [
+            0,
+            0,
+            1536,
+            253
+          ],
+          "sha256": "ae17290622a191e77118aec7bbf0b7c83b2adf50a128743fce1aceb3c45afd53",
+          "size": [
+            1536,
+            253
+          ]
+        }
+      ],
+      "prompt": "Regenerate this ally-buff art-direction strip for a top-down 2D circle ecosystem survival game. Keep the scene of reference image 1 exactly: the forest clearing, the guardian tree, the flat-vector matte ground, the same ball characters at the same positions, and the same three panels in one row (1 before, 2 shield forming, 3 shield held); on this taller canvas each panel simply shows more of the same ground above and below. Replace ONLY the shield effect. Instead of mint leaves, the ball that touched the guardian tree is wrapped by an ICE-SHAPED protective shield: several pale sky-blue faceted ice plates hovering in a ring just outside the body, with small gaps between the plates, like light crystal armour that clearly floats off the body. Panel 2: the ice plates fly in from the tree side and lock into the ring. Panel 3: the ring holds steady and the ball's own colour stays fully visible inside it. Palette: pale sky blue (#7dd3fc) with white highlights. Calm and soft, lower intensity than attack warnings. Flat matte colour areas, top-left light, same rendering style as the reference.",
+      "avoid": [
+        "leaves or petals",
+        "green or mint glow (reads as healing)",
+        "water ripples",
+        "an ice crust covering the ball surface (that is the frozen status)",
+        "a solid opaque dome that hides the ball",
+        "text, labels, UI, HUD, numbers, arrows",
+        "glossy 3D or heavy gradients",
+        "checkerboard background"
+      ],
+      "accept": [
+        "얼음 모양 보호막이 공을 감싸는 것이 한눈에 보임",
+        "빙결(공 표면을 덮는 얼음 껍질)과 헷갈리지 않음: 몸 바깥에 떠 있는 조각 고리",
+        "회복(초록·잎·물결)으로 읽히지 않음",
+        "바탕 장면(숲, 수호 고목, 공 배치, 세 칸)은 참조와 같음",
+        "공격 예고보다 부드러운 세기"
+      ],
+      "planning": [
+        "00_기준/master/이펙트.md FX-BUF-01",
+        "03_아트/34_리소스_요청_스택.md RR-001"
+      ],
+      "status": "requested",
+      "results": [],
+      "feedback": []
+    },
+    {
+      "id": "fx-sta-sheet",
+      "kind": "concept",
+      "title": "상태 이펙트 8종 원화 시트 (FX-STA-01~08)",
+      "use": "코드로만 그리던 상태 표시 8종의 원화. 승인 뒤 상태별 정확 크롭 → 투명 리소스 (RR-002)",
+      "region": "grassland",
+      "size": {
+        "px": [
+          1536,
+          1024
+        ]
+      },
+      "alpha": false,
+      "variants": 1,
+      "refs": [
+        {
+          "file": "assets/art-desk/fx-concepts-1/fx-sta-sheet/ref-1.png",
+          "role": "sheet format, flat-vector ground and lighting; a calm comparison sheet of equal panels",
+          "source": "planning/art-concepts/ally-buffs-001.png",
+          "sourceSha256": "48b9f123812b9cd33a220731fb423b8317d0299e4e5c137f728f61891d599cb0",
+          "crop": null,
+          "sha256": "9497427cd64e1e7822bc01110d03d3663cd83245b3749bd905beb512e231dd35",
+          "size": [
+            1536,
+            1024
+          ]
+        },
+        {
+          "file": "assets/art-desk/fx-concepts-1/fx-sta-sheet/ref-2.png",
+          "role": "matte body rendering of the five species balls; use the plain middle row as the body look",
+          "source": "planning/art-concepts/ball-002-refined.png",
+          "sourceSha256": "c868e93ff69be23ed43030412cae5b65e81d6f334c5876b6af058d67e7db755a",
+          "crop": null,
+          "sha256": "11b4fbb9d5f30ba793ccfbfa3de2c1fd746337a6824cf0e8226aa4e86948b9dc",
+          "size": [
+            1942,
+            809
+          ]
+        }
+      ],
+      "prompt": "Create a STATUS EFFECT art-direction sheet for a top-down 2D circle ecosystem survival game. Four columns by two rows of equal panels separated by thin gutters. Every panel shows the same calm grassland ground from reference image 1 and one matte ball (body rendering from reference image 2) of the same size in the centre, with one status effect drawn only on or just around the body. The ball's species colour must stay visible under every effect. Panels in reading order: 1 FROZEN: a thin translucent ice shell coating the surface of a red ball. 2 INVULNERABLE after dust veil: a brief swirling sand-gold film around a blue ball. 3 OBSIDIAN GUARD: an arc of black volcanic glass shards around a green ball. 4 ADORNED: a yellow ball wearing a few tiny flowers and one small pearl shell at its rim. 5 SUMMONED (cannot be absorbed): a green ball with a thin rim of small leaves marking it as summoned. 6 FROST MARK: a red ball with a few small frost crystals at the edge of its body. 7 FROSTBITE (blizzard): a blue ball with scattered white frost speckles on its surface. 8 three small balls side by side: MORALE a mint arc above a sky-blue ball, COMMAND a red ring under a red ball, WET a few water droplets on a yellow ball. Flat matte colour areas, top-left light, soft and calm, lower intensity than attack warnings, each effect distinct in shape and colour.",
+      "avoid": [
+        "text, labels, numbers, UI chips, HUD",
+        "dotted rings like debug circles",
+        "effects far from the body or filling the panel",
+        "glossy 3D or heavy gradients",
+        "checkerboard background",
+        "different ball sizes between panels"
+      ],
+      "accept": [
+        "칸마다 상태 하나씩, 정해진 순서(1 빙결 · 2 무적 · 3 흑요석 막 · 4 치장 · 5 흡수 불가 · 6 서리 표식 · 7 동상 · 8 사기·지휘·젖음)",
+        "공의 종족색이 효과 아래로 보임",
+        "효과는 몸 표면이나 몸 바로 둘레에만 있음",
+        "빙결(껍질) · 서리 표식(가장자리 결정) · 동상(흰 반점)이 서로 구분됨",
+        "글자·UI 없음, 위협 예고보다 부드러움"
+      ],
+      "planning": [
+        "00_기준/master/이펙트.md §6",
+        "03_아트/34_리소스_요청_스택.md RR-002"
+      ],
+      "status": "requested",
+      "results": [],
+      "feedback": []
+    }
+  ],
+  "updated": "2026-10-08T17:35:03+00:00"
+}

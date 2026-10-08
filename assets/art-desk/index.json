@@ -1,0 +1,16 @@
+{
+  "batches": [
+    {
+      "batch": "fx-concepts-1",
+      "title": "이펙트 원화 1차: 얼음 보호막 · 상태 8종",
+      "updated": "2026-10-08T17:35:03+00:00",
+      "counts": {
+        "requested": 2,
+        "generated": 0,
+        "redo": 0,
+        "approved": 0,
+        "dropped": 0
+      }
+    }
+  ]
+}
