@@ -168,8 +168,9 @@ import {growthFromSize} from '../js/entity.js';
 
 const SC = '../assets/art-batches/scene-coherent-v1/', FR = '../assets/art-packs/forest-raster-v1/';
 // What the game actually draws when it differs from the scene-coherent batch asset (see js/landmarkArt.js).
-const ADOPTED = {'forest-berry-grove': FR + 'berry-002.png', 'forest-tree': FR + 'guardian-002-extracted.png', 'snow-flowers': SC + 'snow-flowers/overhead-states-002.png'};
+const ADOPTED = {'forest-tree': FR + 'guardian-002-extracted.png', 'snow-flowers': SC + 'snow-flowers/overhead-states-002.png'};
 const EXTRA = {
+  'forest-berry-grove': [['berry-002 (2026-10-08까지 게임 사용)', FR + 'berry-002.png']],
   'forest-tree': [['guardian-001', FR + 'guardian-001.png'], ['고목 원본 크롭', FR + 'guardian-original-crop.png']],
   'snow-flowers': [['준비 상태 시도 002', SC + 'snow-flowers/overhead-ready-attempt-002.png']],
   'volcano-vent-cycle': [['쉼 상태 002', SC + 'volcano-vent-cycle/rest-002.png']],

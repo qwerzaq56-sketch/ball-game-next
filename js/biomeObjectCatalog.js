@@ -16,7 +16,7 @@ export const ARCHIVED_BIOME_OBJECTS={
 export const BIOME_OBJECTS={
  ...ARCHIVED_BIOME_OBJECTS,
  'grass-garland':{region:'grassland',name:'꽃무리 · 꽃 치장',effect:'charm',radius:65,cooldown:12,duration:30,power:.15},
- 'grass-wind-stack':{region:'grassland',name:'바람돌 · 3스택',effect:'wind-stack',radius:65,cooldown:8,stacksRequired:3,duration:15,power:.35,placed:3},
+ 'grass-wind-stack':{region:'grassland',name:'바람돌 · 이속 버프',effect:'wind-stack',radius:65,cooldown:8,stacksRequired:1,duration:15,power:.35,placed:3},
  'forest-berry-grove':{region:'forest',name:'열매 덤불 · 먹이/회복',effect:'berry-spawner',radius:70,cooldown:14,count:4,growth:50,healFraction:.08,visualScale:.74},
  'lake-garland':{region:'lake',name:'진주 조개밭 · 조개 치장',effect:'charm',radius:68,cooldown:16,duration:30,power:.2},
  'volcano-obsidian-stack':{region:'volcano',name:'흑요석 광맥 · 보호막',effect:'obsidian',radius:80,cooldown:12,stacksRequired:3,duration:20,power:.08,shieldFraction:.12},

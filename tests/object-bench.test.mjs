@@ -25,10 +25,13 @@ test('object bench has the object crop, batch asset and gameplay region crop for
 
 test('object bench "game resource" matches what landmarkArt actually draws', () => {
   const art = readFileSync(new URL('../js/landmarkArt.js', import.meta.url), 'utf8');
-  for (const file of ['berry-002.png', 'guardian-002-extracted.png', 'overhead-states-002.png']) {
+  for (const file of ['guardian-002-extracted.png', 'overhead-states-002.png']) {
     assert.ok(art.includes(file), `landmarkArt draws ${file}`);
     assert.ok(page.includes(file), `bench shows ${file} as the game resource`);
   }
+  // 2026-10-08 object review: the berry grove draws its batch generation; berry-002 stays on the bench only for comparison.
+  assert.ok(!art.includes('berry-002.png'), 'landmarkArt no longer draws berry-002');
+  assert.ok(!/ADOPTED = \{[^}]*forest-berry-grove/.test(page), 'bench shows the batch asset as the berry game resource');
 });
 
 // Stage 2: the bench writes preset v3 overrides — body scale and placed count per object.

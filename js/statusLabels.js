@@ -69,7 +69,8 @@ export function objectEffectText(c, e) {
     case 'speed': return `${c.name} · 이동 +${pct(c.power)} · ${c.duration}초${c.hpCost ? ` · 체력 -${pct(c.hpCost)}` : ''}`;
     case 'charm': return `${c.name} · 동행 수락 +${pct(c.power)} · ${c.duration}초`;
     case 'frost': return `${c.name} · 동상 저항 · ${c.duration}초`;
-    case 'wind-stack': return e.windStoneStacks ? `바람 ${e.windStoneStacks}/${c.stacksRequired} · 다 모으면 이동 +${pct(c.power)}` : `바람 완성 · 이동 +${pct(c.power)} · ${c.duration}초`;
+    // One touch is enough since the 2026-10-08 object review (stacksRequired 1); a preset can still ask for more.
+    case 'wind-stack': return e.windStoneStacks ? `바람 ${e.windStoneStacks}/${c.stacksRequired} · 다 모으면 이동 +${pct(c.power)}` : `바람${c.stacksRequired > 1 ? ' 완성' : ''} · 이동 +${pct(c.power)} · ${c.duration}초`;
     case 'obsidian': return e.obsidianStacks ? `흑요석 ${e.obsidianStacks}/${c.stacksRequired} · 다 모으면 보호막` : `흑요석 완성 · 보호막 최대HP ${pct(c.shieldFraction)} · ${c.duration}초`;
     default: return c.name;
   }

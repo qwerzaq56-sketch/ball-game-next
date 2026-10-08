@@ -57,8 +57,11 @@ test('object popups say what changed and for how long', () => {
   assert.equal(objectEffectText(c['grass-windstone'], {}), '바람돌 · 이동 +25% · 4초');
   assert.equal(objectEffectText(c['volcano-vent'], {}), '열기 분출구 · 이동 +35% · 4초 · 체력 -1%');
   assert.equal(objectEffectText(c['forest-tree'], {}), '수호 고목 · 보호막 최대HP 8% · 6초');
-  assert.equal(objectEffectText(c['grass-wind-stack'], {windStoneStacks: 2}), '바람 2/3 · 다 모으면 이동 +35%');
-  assert.equal(objectEffectText(c['grass-wind-stack'], {windStoneStacks: 0}), '바람 완성 · 이동 +35% · 15초');
+  // Default wind stone buffs on one touch (2026-10-08); a preset with more stacks still counts them.
+  assert.equal(objectEffectText(c['grass-wind-stack'], {windStoneStacks: 0}), '바람 · 이동 +35% · 15초');
+  const stacked = {...c['grass-wind-stack'], stacksRequired: 3};
+  assert.equal(objectEffectText(stacked, {windStoneStacks: 2}), '바람 2/3 · 다 모으면 이동 +35%');
+  assert.equal(objectEffectText(stacked, {windStoneStacks: 0}), '바람 완성 · 이동 +35% · 15초');
   assert.equal(objectEffectText(c['volcano-obsidian-stack'], {obsidianStacks: 0}), '흑요석 완성 · 보호막 최대HP 12% · 20초');
   for (const cfg of Object.values(c)) assert.equal(typeof objectEffectText(cfg, {}), 'string');
 });

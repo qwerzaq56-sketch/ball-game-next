@@ -104,7 +104,7 @@ export function objectCardLine(c) {
     case 'speed': return `닿으면 이동 +${pct(c.power)}, ${num(c.duration)}초.${c.hpCost ? ` 체력 -${pct(c.hpCost)}.` : ''}`;
     case 'charm': return `닿으면 치장을 하고 ${num(c.duration)}초 동안 동행 수락 +${pct(c.power)}.`;
     case 'frost': return c.continuous ? `안에 있는 동안 동상이 풀리고 동상 저항 +${pct(c.power)}.` : `닿은 뒤 ${num(c.duration)}초 동안 동상 저항 +${pct(c.power)}.`;
-    case 'wind-stack': return `${c.stacksRequired}번 모으면 이동 +${pct(c.power)}, ${num(c.duration)}초.`;
+    case 'wind-stack': return `${c.stacksRequired>1?`${c.stacksRequired}번 모으면`:'닿으면'} 이동 +${pct(c.power)}, ${num(c.duration)}초.`;
     case 'obsidian': return `${c.stacksRequired}번 모으면 최대 체력 ${pct(c.shieldFraction)} 보호막과 공격·방어 +${pct(c.power)}, ${num(c.duration)}초.`;
     case 'berry-spawner': return `열매 ${c.count}개가 주기적으로 열립니다. 일부는 체력 +${pct(c.healFraction)} 회복 열매.`;
     case 'vent': return `${num(c.cycleDuration)}초마다 ${num(c.activeDuration)}초 분출합니다. 분출 중 닿으면 계속 피해. 쉬는 동안은 안전.`;
