@@ -30,6 +30,10 @@ h2 code{font-size:12.5px;color:var(--muted);font-weight:400}
 .tabs button[aria-selected=true]{background:var(--accent);color:var(--deep);border-color:var(--accent)}
 .tabs button[aria-selected=true] .dots i{border-color:var(--deep)}
 .refgrp{display:grid;gap:4px}
+.reqbox{display:grid;gap:6px;border:1px solid var(--accent);border-radius:8px;padding:8px 10px}
+.reqbox .reqthumb{width:160px;height:120px;background:var(--deep);border-radius:6px;flex:0 0 auto}
+.reqbox .reqside{display:grid;gap:6px;flex:1 1 240px;min-width:0}
+.reqbox textarea{width:100%;box-sizing:border-box}
 .refgrp>b{font-size:12px;color:var(--muted);font-weight:500}
 .refs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
 .refs figure{margin:0;flex:0 0 148px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px;cursor:zoom-in;position:relative}
@@ -108,6 +112,7 @@ a.btnlink{color:var(--accent);font-size:13px}
     <!-- ① image -->
     <section class="ctl" id="paneImage" aria-label="이미지 비교">
       <div class="row"><b>비교</b><span class="note" id="conceptName"></span></div>
+      <div id="reqBox" class="reqbox" hidden></div>
       <div class="row" id="ovRow"><span class="lab">겹쳐 보기</span><span id="ovName" class="note"></span>
         <span class="lab" style="min-width:0">투명도</span><input type="range" id="alpha" min="0" max="1" step=".05" aria-label="겹쳐 보기 투명도">
         <span class="lab" style="min-width:0">크기</span><input type="range" id="oscale" min=".1" max="4" step=".01" aria-label="겹쳐 보기 크기"><span id="oscaleNum" class="note"></span>
@@ -209,7 +214,10 @@ try {
   if (!drafts) { drafts = {}; for (const [id, d] of Object.entries(JSON.parse(store.get('object-bench-v1') || '{}') || {})) drafts[id] = {image: {verdict: d.verdict || null, memo: d.memo || '', pick: d.pick || null}, playerSize: d.size}; }
 } catch { drafts = {}; }
 const saveDrafts = () => store.set(DRAFT_KEY, JSON.stringify(drafts));
-const emptySec = (x) => !x || (!x.verdict && !(x.memo || '').trim() && !x.pick && !x.concept);
+const emptySec = (x) => !x || (!x.verdict && !(x.memo || '').trim() && !x.pick && !x.concept && !x.request);
+// Work requests on the chosen reference crop (image tab). Claude cuts the crop out and works from it (planning 03_아트/32 §4, §11).
+const REQ_KINDS = [['resource', '리소스 새로 만들기'], ['match', '구현을 원화에 맞추기'], ['states', '사용 전·후 상태 리소스'], ['effect', '이펙트 만들기']];
+const reqText = (r) => r ? [r.kinds.map(k => REQ_KINDS.find(([x]) => x === k)?.[1] ?? k).join(', '), (r.text || '').trim()].filter(Boolean).join(' — ') : '';
 function setDraft(sec, patch) {
   const id = S.id, d = {...(drafts[id] || {})}, s = {...(d[sec] || {}), ...patch};
   if (emptySec(s)) delete d[sec]; else d[sec] = s;
@@ -402,6 +410,7 @@ function renderPanel() {
   // image pane
   const concept = draftOf(id, 'image').concept;
   $('#conceptName').textContent = concept ? `기준 원화: ${fileOf(concept.src)}${cropLabel(concept.crop)}` : '기준 원화를 아직 고르지 않았습니다. 위 원화를 눌러 크게 본 뒤 "기준 원화로"를 누르세요.';
+  renderRequest(id);
   $('#ovRow').hidden = !S.ov; $('#ovName').textContent = S.ov ? fileOf(S.ov.src) + cropLabel(S.ov.crop) : '';
   $('#alpha').value = S.alpha; $('#oscale').value = S.oscale; $('#oscaleNum').textContent = '×' + S.oscale.toFixed(2);
   const gens = genRefs(id), landmark = !!LANDMARK_PRESENTATION[id];
@@ -411,6 +420,28 @@ function renderPanel() {
   renderReview();
   if (tab === 'effect') { $('#simTBtns').replaceChildren(...[10, 30, 60, 120].map(t => h('button', {type: 'button', 'aria-pressed': S.simT === t ? 'true' : 'false', onclick: () => { S.simT = t; renderPanel(); runSim(); }}, t + '초'))); $('#simHp').value = S.simHp; $('#simHpNum').textContent = S.simHp + '%'; }
   updateCopyAll();
+}
+// The chosen crop, what to do with it, and a short note. Stored as image.request {kinds, text} next to image.concept.
+function renderRequest(id) {
+  const box = $('#reqBox'), d = draftOf(id, 'image'), c = d.concept;
+  box.hidden = !c; if (!c) { box.replaceChildren(); return; }
+  const r = d.request || {kinds: [], text: ''};
+  // Read the stored request at each change: typing does not re-render, so `r` can be stale.
+  const set = (patch) => { const cur = draftOf(id, 'image').request || {kinds: [], text: ''}, next = {kinds: cur.kinds, text: cur.text || '', ...patch}; setDraft('image', {request: next.kinds.length || next.text.trim() ? next : null}); };
+  const thumb = h('canvas', {width: 320, height: 240, class: 'reqthumb', 'aria-label': '기준 원화 잘라 낸 영역'});
+  img(c.src, (im) => { const [x, y, w, hh] = c.crop || [0, 0, im.naturalWidth, im.naturalHeight], k = Math.min(320 / w, 240 / hh), ctx = thumb.getContext('2d');
+    ctx.clearRect(0, 0, 320, 240); ctx.drawImage(im, x, y, w, hh, (320 - w * k) / 2, (240 - hh * k) / 2, w * k, hh * k); });
+  const text = h('textarea', {rows: 2, placeholder: '이 원화에서 무엇을 따를지 (예: 잎 색과 열매 배치를 이 원화처럼, 사용 후엔 열매만 빠지게)', 'aria-label': '작업 요청 내용', oninput: (e) => set({text: e.target.value})});
+  text.value = r.text || '';
+  box.replaceChildren(
+    h('div', {class: 'row'}, h('b', {}, '이 기준 원화로 작업 요청'), h('span', {class: 'note'}, '종류를 하나 이상 고르거나 내용을 적으면 결과 복사에 잘라 낸 영역과 함께 들어갑니다. 클로드가 영역을 잘라 기획 문서에 붙이고 그것을 기준으로 작업합니다.')),
+    h('div', {class: 'row', style: 'align-items:flex-start'}, thumb,
+      h('div', {class: 'reqside'},
+        h('div', {class: 'row'}, REQ_KINDS.map(([k, l]) => h('button', {type: 'button', 'aria-pressed': r.kinds.includes(k) ? 'true' : 'false',
+          onclick: () => { const ks = draftOf(id, 'image').request?.kinds || []; set({kinds: ks.includes(k) ? ks.filter(x => x !== k) : [...ks, k]}); renderRequest(id); }}, l))),
+        text,
+        h('div', {class: 'row'}, h('span', {class: 'note'}, `${fileOf(c.src)}${cropLabel(c.crop)}`),
+          h('button', {type: 'button', onclick: () => { setDraft('image', {concept: null, request: null}); renderPanel(); draw(); }}, '기준 원화 지우기')))));
 }
 function renderReview() {
   const id = S.id, sec = S.tab, cfg = SECTIONS[sec], d = draftOf(id, sec);
@@ -770,6 +801,7 @@ function lines(id) {
   const c = BIOME_OBJECTS[id], d = drafts[id] || {}, out = [`- ${id} ${c.name.split(' · ')[0]}`];
   const im = d.image || {}, sz = d.size || {}, fx = d.effect || {}, szc = changeText(id, isSizeKey), fxc = changeText(id, isFxKey), memo = (m) => (m || '').trim() ? ' — ' + m.trim() : '';
   if (!emptySec(im)) out.push(`  · 이미지: ${VNAME('image', im.verdict) || '메모'}${im.concept ? ` · 기준 원화 ${fileOf(im.concept.src)}${cropLabel(im.concept.crop)}` : ''}${im.pick ? ' · 쓰고 싶은 생성본 ' + im.pick : ''}${memo(im.memo)}`);
+  if (im.concept && im.request) out.push(`  · 작업 요청(기준 원화 기준): ${reqText(im.request)}`);
   if (!emptySec(sz) || szc) out.push(`  · 크기·배치: ${VNAME('size', sz.verdict) || (szc ? '조정' : '메모')} · 공 지름 ${d.playerSize ?? S.size} 기준${szc ? ' · ' + szc : ''}${memo(sz.memo)}`);
   if (!emptySec(fx) || fxc) out.push(`  · 효과: ${VNAME('effect', fx.verdict) || (fxc ? '조정' : '메모')}${fxc ? ' · ' + fxc : ''}${memo(fx.memo)}`);
   return out.join('\n');
@@ -777,7 +809,7 @@ function lines(id) {
 function reviewJson(id) {
   const d = drafts[id] || {}, ch = (keys) => Object.fromEntries(changesOf(id, keys).map(([k, a, b]) => [k, [a, b]])), sec = (x, extra) => ({verdict: x?.verdict || null, memo: (x?.memo || '').trim() || null, ...extra});
   return JSON.stringify({format: 'object-review-v2', id, playerSize: d.playerSize ?? S.size,
-    image: sec(d.image, {concept: d.image?.concept || null, resource: d.image?.pick || null}), size: sec(d.size, {changes: ch(isSizeKey)}), effect: sec(d.effect, {changes: ch(isFxKey)})});
+    image: sec(d.image, {concept: d.image?.concept || null, resource: d.image?.pick || null, request: (d.image?.concept && d.image?.request) || null}), size: sec(d.size, {changes: ch(isSizeKey)}), effect: sec(d.effect, {changes: ch(isFxKey)})});
 }
 const head = () => `[오브젝트 검수] ${new Date().toISOString().slice(0, 10)} · 검수대(이미지 / 크기·배치 / 효과)`;
 const report = (ids) => `${head()}\n${ids.map(lines).join('\n')}\n\n\`\`\`json\n${ids.map(reviewJson).join('\n')}\n\`\`\``;

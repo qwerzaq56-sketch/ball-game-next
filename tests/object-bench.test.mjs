@@ -34,6 +34,14 @@ test('object bench "game resource" matches what landmarkArt actually draws', () 
   assert.ok(!/ADOPTED = \{[^}]*forest-berry-grove/.test(page), 'bench shows the batch asset as the berry game resource');
 });
 
+test('work requests travel with the chosen reference crop and object-request.py reads the same kinds', () => {
+  for (const k of ["['resource', '리소스 새로 만들기']", "['match', '구현을 원화에 맞추기']", "['states', '사용 전·후 상태 리소스']", "['effect', '이펙트 만들기']"]) assert.ok(page.includes(k), k);
+  assert.ok(page.includes('request: (d.image?.concept && d.image?.request) || null'), 'the copied JSON carries image.request only with a concept');
+  assert.ok(page.includes("setDraft('image', {concept: null, request: null})"), 'clearing the reference drops its request');
+  const py = readFileSync(new URL('../tools/object-request.py', import.meta.url), 'utf8');
+  for (const k of ["'resource': '리소스 새로 만들기'", "'match': '구현을 원화에 맞추기'", "'states': '사용 전·후 상태 리소스'", "'effect': '이펙트 만들기'"]) assert.ok(py.includes(k), `object-request.py ${k}`);
+});
+
 // Stage 2: the bench writes preset v3 overrides — body scale and placed count per object.
 const placedGame = (overrides) => { const g = createGame(7); g.biomes.enabled = true; const p = defaultObjectPreset(); p.overrides = overrides; applyObjectPreset(g.balance, p); g.biomeObjects.sync(); return g; };
 
