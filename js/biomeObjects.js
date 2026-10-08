@@ -23,28 +23,39 @@ export function placementTiles(game,cfg){
  const fit=edge>0?offLava.filter(inside):offLava;
  return {region,offLava,fit,tiles:fit.length?fit:offLava.length?offLava:region};
 }
-// spacing: walk on from the hashed tile to the first one at least that far from every object placed so far.
-function spacedTile(tiles,start,placed,spacing,w){
+// The placement collider of an object: the current's half width, otherwise the larger of effect radius and drawn body.
+export function colliderRadius(o){return o.candidate==='lake-current'?(o.width??0)/2:Math.max(o.config?.radius??0,o.bodyRadius??0);}
+// spacing: walk on from the hashed tile to the first one far enough from every object placed so far.
+// me = {id, r, spacing, sameKindSpacing}; colliders measures the gap between collider edges (r + r') instead of centres.
+function spacedTile(tiles,start,placed,me,w,colliders){
  // Spacing is mutual: the larger of this object's and the already placed object's setting applies.
- if(!spacing&&!placed.some(p=>p.config.spacing))return tiles[start];
- const far=(t)=>placed.every(p=>{const need=Math.max(spacing??0,p.config.spacing??0);if(!need)return true;const dx=Math.abs(p.x-t.x-100),dy=Math.abs(p.y-t.y-100);return Math.hypot(Math.min(dx,w.worldWidth-dx),Math.min(dy,w.worldHeight-dy))>=need;});
- for(let k=0;k<tiles.length;k++){const t=tiles[(start+k)%tiles.length];if(far(t))return t;}
- return tiles[start];
+ const needOf=(p)=>{const same=p.candidate===me.id;const gap=Math.max(me.spacing??0,p.config.spacing??0,same?Math.max(me.sameKindSpacing??0,p.config.sameKindSpacing??0):0);return colliders?me.r+colliderRadius(p)+gap:gap;};
+ const needs=placed.map(needOf);if(!needs.some(n=>n>0))return tiles[start];
+ // slack < 0: the tile breaks the closest rule by that much. Without a clean tile the least-overlapping one is used.
+ const slack=(t)=>{let s=Infinity;placed.forEach((p,k)=>{if(!needs[k])return;const dx=Math.abs(p.x-t.x-100),dy=Math.abs(p.y-t.y-100);s=Math.min(s,Math.hypot(Math.min(dx,w.worldWidth-dx),Math.min(dy,w.worldHeight-dy))-needs[k]);});return s;};
+ let best=tiles[start],bestSlack=-Infinity;
+ for(let k=0;k<tiles.length;k++){const t=tiles[(start+k)%tiles.length],s=slack(t);if(s>=0)return t;if(s>bestSlack){best=t;bestSlack=s;}}
+ return best;
 }
 export class BiomeObjects{
  constructor(game){this.game=game;this.objects=[];this.cooldowns=new Map();this.signature='';this.events=[];}
  sync(){const preset=objectPreset(this.game.balance),signature=JSON.stringify(preset);if(signature===this.signature)return;this.signature=signature;this.objects=[];
   for(const id of preset.enabled){const cfg={...BIOME_OBJECTS[id],...preset.overrides[id]},regionTiles=this.game.biomes.tiles.filter(t=>t.region.id===cfg.region);if(!regionTiles.length)continue;
    const {tiles}=placementTiles(this.game,cfg);let hash=(this.game.seed>>>0);for(const char of id)hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;
-   for(let i=0;i<(cfg.placed??defaultPlacedCount(id,preset.countPerType));i++){const t=spacedTile(tiles,(hash+i*137)%tiles.length,this.objects,cfg.spacing,this.game.balance.world),o={id:`${id}:${i}`,candidate:id,config:cfg,x:t.x+100,y:t.y+100,_world:this.game.balance.world,phase:i*2};
+   for(let i=0;i<(cfg.placed??defaultPlacedCount(id,preset.countPerType));i++){
+    // User approved: oasis body and actual effect radius grow together; deterministic variation is unchanged.
+    // Sizes come before the tile so the collider rule knows this instance's own radius.
+    const scale=(.8+((hash+i*73)%401)/1000)*(id==='desert-oasis'?1.4:1),visualScale=scale*(cfg.visualScale??1);
+    const radius=cfg.radius*scale*(id==='lake-vortex'?1.4:1),width=cfg.effect==='current'?Math.min(cfg.widthMax,Math.max(cfg.widthMin,cfg.widthMin+(hash+i*37)%(Math.max(1,cfg.widthMax-cfg.widthMin+1))))*(id==='lake-current'?1.4:1):0;
+    // Bench (planning 32): environmental bodies scale on their own, never with an overridden effect radius.
+    const bodyRadius=cfg.effect==='vent'?70*visualScale:id==='lake-vortex'?VORTEX_BODY_RADIUS*scale*1.4*(cfg.visualScale??1):undefined;
+    const r=colliderRadius({candidate:id,width,bodyRadius,config:{radius}});
+    const t=spacedTile(tiles,(hash+i*137)%tiles.length,this.objects,{id,r,spacing:cfg.spacing,sameKindSpacing:cfg.sameKindSpacing},this.game.balance.world,!!preset.colliders),o={id:`${id}:${i}`,candidate:id,config:cfg,x:t.x+100,y:t.y+100,_world:this.game.balance.world,phase:i*2};
     if(cfg.effect==='current'){const w=this.game.balance.world;let a=0;o.points=[];
      // The path stops where the lake ends. Try both axes from the seeded one and keep the longest (bench feedback: currents cut short at the shore).
      for(let turn=0;turn<2&&o.points.length<cfg.pathSteps*2+1;turn++){const dir=((hash+i+turn)%4)*Math.PI/2;let pts=[{x:o.x,y:o.y}];for(const sign of [-1,1]){const side=[];for(let k=1;k<=cfg.pathSteps;k++){const p={x:wrap(o.x+Math.cos(dir)*k*200*sign,w.worldWidth),y:wrap(o.y+Math.sin(dir)*k*200*sign,w.worldHeight)};if(this.game.biomes.regionAt(p)?.id!=='lake')break;side.push(p);}pts=sign<0?[...side.reverse(),...pts]:[...pts,...side];}if(pts.length>o.points.length){o.points=pts;a=dir;}}
-     if(o.points.length<2)o.points=[{x:o.x,y:o.y},{x:o.x+Math.cos(a)*60,y:o.y+Math.sin(a)*60}];o.width=Math.min(cfg.widthMax,Math.max(cfg.widthMin,cfg.widthMin+(hash+i*37)%(Math.max(1,cfg.widthMax-cfg.widthMin+1))));o.reach=cfg.pathSteps*200+o.width;}
-    // User approved: oasis body and actual effect radius grow together; deterministic variation is unchanged.
-    const scale=(.8+((hash+i*73)%401)/1000)*(id==='desert-oasis'?1.4:1);o.visualScale=scale*(cfg.visualScale??1);o.aspect=cfg.aspect??1;
-    // Bench (planning 32): environmental bodies scale on their own, never with an overridden effect radius.
-    if(cfg.effect==='vent')o.bodyRadius=70*o.visualScale;if(id==='lake-vortex')o.bodyRadius=VORTEX_BODY_RADIUS*scale*1.4*(cfg.visualScale??1);o.config={...placedObjectConfig(id,cfg),radius:cfg.radius*scale*(id==='lake-vortex'?1.4:1)};if(id==='lake-current'){o.width*=1.4;o.reach=cfg.pathSteps*200+o.width;}this.objects.push(o);
+     if(o.points.length<2)o.points=[{x:o.x,y:o.y},{x:o.x+Math.cos(a)*60,y:o.y+Math.sin(a)*60}];o.width=width;o.reach=cfg.pathSteps*200+o.width;}
+    o.visualScale=visualScale;o.aspect=cfg.aspect??1;if(bodyRadius!==undefined)o.bodyRadius=bodyRadius;o.config={...placedObjectConfig(id,cfg),radius};this.objects.push(o);
    }
   }
  }

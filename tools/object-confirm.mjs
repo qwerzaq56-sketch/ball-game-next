@@ -11,7 +11,7 @@ import {BIOME_OBJECTS, PLACEMENT_BOUNDS, defaultObjectPreset, normalizeObjectPre
 
 export const CATALOG_PATH = fileURLToPath(new URL('../js/biomeObjectCatalog.js', import.meta.url));
 // Values an object has when neither the catalog nor an override sets them (same rules as BiomeObjects.sync).
-export const currentDefault = (id, key) => BIOME_OBJECTS[id][key] ?? ({visualScale: 1, aspect: 1, edgeMargin: 0, spacing: 0}[key]
+export const currentDefault = (id, key) => BIOME_OBJECTS[id][key] ?? ({visualScale: 1, aspect: 1, edgeMargin: 0, spacing: 0, sameKindSpacing: 0}[key]
   ?? (key === 'placed' ? defaultPlacedCount(id, defaultObjectPreset().countPerType) : key === 'lavaMargin' ? (BIOME_OBJECTS[id].radius ?? 0) * 1.2 : undefined));
 
 // Every {"format":"object-adjust-v1"|"object-review-v2", …} line → [{id, key, from, to}].

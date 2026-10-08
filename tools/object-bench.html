@@ -68,6 +68,7 @@ select,textarea{font:inherit;color:var(--ink);background:var(--deep);border:1px 
 textarea{width:100%;resize:vertical;min-height:52px}
 .note{color:var(--muted);font-size:12.5px;margin:0}
 .grp{font-size:12px;color:var(--accent);font-weight:600;margin-top:4px}
+.adj-toggle{display:block;font-size:13px;margin:2px 0 4px}.adj-toggle.changed{color:var(--accent)}
 .adj{display:grid;grid-template-columns:120px minmax(120px,240px) 84px minmax(0,1fr);gap:8px;align-items:center}
 .adj .note{font-variant-numeric:tabular-nums}
 .adj.changed .lab{color:var(--accent)}
@@ -168,7 +169,7 @@ a.btnlink{color:var(--accent);font-size:13px}
 <script type="module">
 import {BIOME_OBJECTS,DEFAULT_OBJECT_IDS,OBJECT_REGIONS,OBJECT_PRESET_KEY,PLACEMENT_BOUNDS,OVERRIDE_BOUNDS,INTEGER_KEYS,defaultObjectPreset,normalizeObjectPreset,applyObjectPreset,defaultPlacedCount} from '../js/biomeObjectCatalog.js';
 import {LANDMARK_PRESENTATION,cacheLandmarkImage} from '../js/landmarkArt.js';
-import {placementTiles} from '../js/biomeObjects.js';
+import {placementTiles, colliderRadius} from '../js/biomeObjects.js';
 import {growthFromSize} from '../js/entity.js';
 
 const SC = '../assets/art-batches/scene-coherent-v1/', FR = '../assets/art-packs/forest-raster-v1/';
@@ -248,7 +249,8 @@ const SIZE_ADJ = [
   {k: 'pathSteps', label: '한쪽 길이(칸)', group: '효과 영역', step: 1, when: isCurrent},
   {k: 'placed', label: '배치 개수', group: '배치', step: 1},
   {k: 'edgeMargin', label: '지역 경계 여백', group: '배치', step: 10, hint: '중심에서 다른 지역까지'},
-  {k: 'spacing', label: '다른 오브젝트와 간격', group: '배치', step: 10, hint: '중심 사이 거리'},
+  {k: 'spacing', label: '다른 오브젝트와 간격', group: '배치', step: 10, hint: () => work.colliders ? '반경 가장자리 사이 거리' : '중심 사이 거리'},
+  {k: 'sameKindSpacing', label: '같은 종류끼리 간격', group: '배치', step: 10, hint: () => (work.colliders ? '반경 가장자리 사이' : '중심 사이') + ' · 같은 오브젝트끼리만'},
   {k: 'lavaMargin', label: '용암 여백', group: '배치', step: 5, when: (id) => BIOME_OBJECTS[id].region === 'volcano', hint: '용암 강 열기 범위 바깥으로'},
 ];
 const SIZE_KEYS = new Set(SIZE_ADJ.map(a => a.k));
@@ -264,7 +266,7 @@ const stepOf = (k) => SIZE_ADJ.find(a => a.k === k)?.step ?? (INTEGER_KEYS.inclu
 const labelOf = (id, k) => SIZE_ADJ.find(a => a.k === k)?.label ?? fxLabel(id, k)[0];
 const fmtVal = (k, v) => { if (v == null) return '-'; if (k === 'visualScale' || k === 'aspect') return '×' + (+v).toFixed(2); const max = boundsOf(k)?.[1]; return max <= 1 && !INTEGER_KEYS.includes(k) ? `${+(+v).toFixed(3)} (${+(v * 100).toFixed(1)}%)` : String(+(+v).toFixed(2)); };
 // The catalog value comes first: bench-confirmed defaults (tools/object-confirm.mjs) live in BIOME_OBJECTS.
-const defaultOf = (id, k) => BIOME_OBJECTS[id][k] ?? ({visualScale: 1, aspect: 1, edgeMargin: 0, spacing: 0})[k] ?? (k === 'placed' ? defaultPlacedCount(id, work.countPerType) : k === 'lavaMargin' ? Math.round(eff(id, 'radius') * 1.2) : undefined);
+const defaultOf = (id, k) => BIOME_OBJECTS[id][k] ?? ({visualScale: 1, aspect: 1, edgeMargin: 0, spacing: 0, sameKindSpacing: 0})[k] ?? (k === 'placed' ? defaultPlacedCount(id, work.countPerType) : k === 'lavaMargin' ? Math.round(eff(id, 'radius') * 1.2) : undefined);
 // Overrides that now equal the default (e.g. values confirmed into the catalog) are dropped, so they stop counting as changes.
 const prune = (p) => { if (!p) return p; for (const [id, o] of Object.entries(p.overrides)) { for (const k of Object.keys(o)) if (o[k] === defaultOf(id, k)) delete o[k]; if (!Object.keys(o).length) delete p.overrides[id]; } return p; };
 const valIn = (p, id, k) => p.overrides[id]?.[k] ?? defaultOf(id, k);
@@ -293,11 +295,17 @@ function adjRow(id, k, label, hint) {
   const num = h('input', {type: 'number', min: lo, max: hi, step, 'aria-label': label + ' 직접 입력'});
   range.addEventListener('input', () => { setVals(S.id, {[k]: range.value}); draw(); });
   num.addEventListener('change', () => { setVals(S.id, {[k]: num.value}); syncAdj(); draw(); });
-  return h('div', {class: 'adj', 'data-k': k, 'data-hint': hint || ''}, h('span', {class: 'lab'}, label), range, num, h('span', {class: 'note'}));
+  return h('div', {class: 'adj', 'data-k': k, 'data-hint': typeof hint === 'function' ? '' : hint || ''}, h('span', {class: 'lab'}, label), range, num, h('span', {class: 'note'}));
+}
+// R-WORLD-018: one switch for every object. On: spacing counts from the effect-radius edge, so radii never overlap.
+function colliderRow() {
+  const box = h('input', {type: 'checkbox', id: 'colliders'});
+  box.addEventListener('change', () => { const next = clone(work); if (box.checked) next.colliders = true; else delete next.colliders; setWork(next); draw(); });
+  return h('label', {class: 'adj-toggle'}, box, ' 반경 겹침 금지(콜라이더) — 모든 오브젝트 공통', h('span', {class: 'note'}, ' 켜면 간격을 중심이 아니라 효과 반경 가장자리부터 잽니다'));
 }
 function buildAdj() {
   const id = S.id, rows = []; let group = null;
-  for (const a of SIZE_ADJ.filter(a => !a.when || a.when(id))) { if (a.group !== group) { group = a.group; rows.push(h('div', {class: 'grp'}, group)); } rows.push(adjRow(id, a.k, a.label, a.hint)); }
+  for (const a of SIZE_ADJ.filter(a => !a.when || a.when(id))) { if (a.group !== group) { group = a.group; rows.push(h('div', {class: 'grp'}, group)); if (group === '배치') rows.push(colliderRow()); } rows.push(adjRow(id, a.k, a.label, a.hint)); }
   $('#sizeRows').replaceChildren(...rows);
   const fx = fxKeys(id);
   $('#fxRows').replaceChildren(...fx.map(k => { const [label, unit] = fxLabel(id, k); return adjRow(id, k, label, unit); }));
@@ -310,9 +318,11 @@ function syncAdj() {
     const k = row.dataset.k, v = eff(S.id, k), d = defaultOf(S.id, k), ap = valIn(applied, S.id, k), [range, num] = row.querySelectorAll('input');
     range.value = v; if (num !== document.activeElement) num.value = v;
     row.classList.toggle('changed', v !== d);
-    row.lastChild.textContent = [row.dataset.hint, `기본 ${fmtVal(k, d)}`, `이 기기 ${fmtVal(k, ap)}`, ['radius', 'visualScale'].includes(k) ? '배치마다 ×0.8~1.2' : ''].filter(Boolean).join(' · ');
+    const dyn = SIZE_ADJ.find(a => a.k === k)?.hint;
+    row.lastChild.textContent = [typeof dyn === 'function' ? dyn() : row.dataset.hint, `기본 ${fmtVal(k, d)}`, `이 기기 ${fmtVal(k, ap)}`, ['radius', 'visualScale'].includes(k) ? '배치마다 ×0.8~1.2' : ''].filter(Boolean).join(' · ');
   }
-  const dirty = JSON.stringify(work) !== JSON.stringify(applied), changed = Object.keys(work.overrides).length;
+  if ($('#colliders')) { $('#colliders').checked = !!work.colliders; $('#colliders').parentElement.classList.toggle('changed', !!work.colliders !== !!applied.colliders); }
+  const dirty = JSON.stringify(work) !== JSON.stringify(applied), changed = Object.keys(work.overrides).length + (work.colliders ? 1 : 0);
   $('#adjState').textContent = (dirty ? '적용 안 된 변경 있음' : '이 기기 게임과 같음') + ` · 기본값과 다른 오브젝트 ${changed}개` + (work.overrides[S.id] ? ` · 이 오브젝트: ${changeText(S.id)}` : '');
   $('#apply').disabled = !dirty;
   $('#adjReset').disabled = !work.overrides[S.id];
@@ -511,7 +521,9 @@ function draw() {
     sx.save(); sx.globalAlpha = S.alpha; sx.drawImage(im, cx0, cy0, cw, ch, cx - bw / 2, cy - bh / 2, bw, bh); sx.restore(); } }
   const sizeTab = S.tab === 'size', cfg = {...BIOME_OBJECTS[S.id], ...work.overrides[S.id]};
   if (sizeTab && S.margins) {
-    if (cfg.spacing) ring(cfg.spacing * zoom, '#e8edf2', [2, 5], `다른 오브젝트와 간격 ${cfg.spacing}`);
+    const r0 = work.colliders ? o.config.radius : 0;
+    if (cfg.spacing || work.colliders) ring((r0 + (cfg.spacing ?? 0)) * zoom, '#e8edf2', [2, 5], work.colliders ? `반경 + 간격 ${cfg.spacing ?? 0}` : `다른 오브젝트와 간격 ${cfg.spacing}`);
+    if (cfg.sameKindSpacing) ring((r0 + cfg.sameKindSpacing) * zoom, '#c4b5fd', [1, 4], `같은 종류 간격 ${cfg.sameKindSpacing}`, H / 2 + (r0 + cfg.sameKindSpacing) * zoom + 44);
     if (cfg.edgeMargin) ring(cfg.edgeMargin * zoom, '#60a5fa', [10, 4, 2, 4], `지역 경계 여백 ${cfg.edgeMargin}`, H / 2 - cfg.edgeMargin * zoom - 12);
     if (cfg.region === 'volcano') { const lm = eff(S.id, 'lavaMargin'); ring(lm * zoom, '#f87171', [6, 6], `용암 여백 ${lm}`, H / 2 + lm * zoom + 28); }
   }
@@ -609,13 +621,14 @@ function drawMap(o, zoom) {
   const perScreen = tiles ? list.length * sw * sh / (tiles * 40000) : 0;
   let overlap = 0, same = 0, nearest = Infinity;
   for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) { const d = wdist(list[i], list[j]); if (d < 1) same++; else if (d < reachOf(list[i]) + reachOf(list[j])) overlap++; }
-  for (const q of list) for (const other of G.biomeObjects.objects) if (other !== q) nearest = Math.min(nearest, wdist(q, other));
+  let cross = 0;
+  for (const q of list) for (const other of G.biomeObjects.objects) if (other !== q) { nearest = Math.min(nearest, wdist(q, other)); if (other.candidate !== S.id && wdist(q, other) < colliderRadius(q) + colliderRadius(other)) cross++; }
   $('#mapInfo').textContent = `${OBJECT_REGIONS[c.region]} 지역 · 시드 ${G.seed} · 점선 사각형 = 무대 범위 · 흰 점 = 다른 오브젝트${c.region === 'volcano' ? ' · 주황 = 용암 강' : ''}`;
   $('#mapFacts').replaceChildren(
     h('div', {}, '배치 ', h('b', {}, list.length), `개 (기본 ${defaultOf(S.id, 'placed')} · 이 기기 ${valIn(applied, S.id, 'placed')})`),
     h('div', {}, `${OBJECT_REGIONS[c.region]} 지역 `, h('b', {}, tiles), '칸 중 여백 조건에 맞는 칸 ', h('b', {}, pt.fit.length), '칸', pt.fit.length ? '' : ' — 맞는 칸이 없어 여백을 무시하고 놓았습니다'),
     h('div', {}, `공 지름 ${Math.round(G.player.size)}일 때 게임 한 화면(${Math.round(sw)}×${Math.round(sh)})에 평균 `, h('b', {}, perScreen.toFixed(2)), '개'),
-    h('div', {}, c.effect === 'current' ? '물길 폭 겹침 ' : '효과 범위 겹침 ', h('b', {}, overlap), '쌍', same ? ` · 같은 칸에 겹쳐 놓임 ${same}쌍` : ''),
+    h('div', {}, c.effect === 'current' ? '물길 폭 겹침 ' : '효과 범위 겹침 ', h('b', {}, overlap), '쌍', same ? ` · 같은 칸에 겹쳐 놓임 ${same}쌍` : '', ' · 다른 종류와 반경 겹침 ', h('b', {}, cross), '쌍', work.colliders ? ' (반경 겹침 금지 켬)' : ''),
     h('div', {}, '가장 가까운 다른 오브젝트까지 ', h('b', {}, Number.isFinite(nearest) ? Math.round(nearest) : '-'), cfg.spacing ? ` (간격 설정 ${cfg.spacing})` : ''),
   );
 }
@@ -817,7 +830,7 @@ function reviewJson(id) {
   return JSON.stringify({format: 'object-review-v2', id, playerSize: d.playerSize ?? S.size,
     image: sec(d.image, {concept: d.image?.concept || null, resource: d.image?.pick || null, request: (d.image?.concept && d.image?.request) || null}), size: sec(d.size, {changes: ch(isSizeKey)}), effect: sec(d.effect, {changes: ch(isFxKey)})});
 }
-const head = () => `[오브젝트 검수] ${new Date().toISOString().slice(0, 10)} · 검수대(이미지 / 크기·배치 / 효과)`;
+const head = () => `[오브젝트 검수] ${new Date().toISOString().slice(0, 10)} · 검수대(이미지 / 크기·배치 / 효과)${work.colliders ? ' · 반경 겹침 금지 켬' : ''}`;
 const report = (ids) => `${head()}\n${ids.map(lines).join('\n')}\n\n\`\`\`json\n${ids.map(reviewJson).join('\n')}\n\`\`\``;
 $('#copyOne').onclick = () => { reportIds().includes(S.id) ? copy(report([S.id])) : toast('판정·메모·조정 중 하나를 먼저 남겨 주세요'); };
 $('#copyAll').onclick = () => { const ids = reportIds(); if (ids.length) copy(report(ids)); };

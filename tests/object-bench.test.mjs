@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync, readFileSync} from 'node:fs';
 import {BIOME_OBJECTS, DEFAULT_OBJECT_IDS, PLACEMENT_BOUNDS, OVERRIDE_BOUNDS, defaultObjectPreset, applyObjectPreset, normalizeObjectPreset, defaultPlacedCount} from '../js/biomeObjectCatalog.js';
-import {placementTiles} from '../js/biomeObjects.js';
+import {placementTiles, colliderRadius} from '../js/biomeObjects.js';
 import {createGame} from '../tools/headless.mjs';
 
 // Object review bench (planning 03_아트/32): every reference it shows must exist, for every default object.
@@ -70,7 +70,7 @@ test('placed sets the instance count; without it the catalog or shared count rul
 test('every bench size row writes a key the preset accepts at both ends of its slider', () => {
   // Sliders take their ends from PLACEMENT_BOUNDS / OVERRIDE_BOUNDS, so both ends must normalize.
   const rows = [...page.matchAll(/\{k: '(\w+)', label: '[^']+', group: /g)].map((m) => m[1]);
-  assert.deepEqual(rows, ['visualScale', 'aspect', 'radius', 'widthMin', 'widthMax', 'pathSteps', 'placed', 'edgeMargin', 'spacing', 'lavaMargin']);
+  assert.deepEqual(rows, ['visualScale', 'aspect', 'radius', 'widthMin', 'widthMax', 'pathSteps', 'placed', 'edgeMargin', 'spacing', 'sameKindSpacing', 'lavaMargin']);
   for (const k of rows) {
     const id = ['widthMin', 'widthMax', 'pathSteps'].includes(k) ? 'lake-current' : 'forest-tree', [lo, hi] = Object.hasOwn(PLACEMENT_BOUNDS, k) ? PLACEMENT_BOUNDS[k] : OVERRIDE_BOUNDS[k];
     // widthMin must stay below widthMax (the bench toasts that), so each end is checked with the other at its far end.
@@ -124,4 +124,25 @@ test('visualScale grows the body only; the effect radius stays', () => {
   const first = (g) => g.biomeObjects.objects.find((o) => o.candidate === 'forest-tree');
   assert.ok(Math.abs(first(big).visualScale - first(base).visualScale * 1.5 / (BIOME_OBJECTS['forest-tree'].visualScale ?? 1)) < 1e-9);
   assert.equal(first(big).config.radius, first(base).config.radius);
+});
+
+test('R-WORLD-018: the collider switch keeps effect radii apart and sameKindSpacing spaces one kind only', () => {
+  const w = createGame(7).balance.world, d = (a, b) => { const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y); return Math.hypot(Math.min(dx, w.worldWidth - dx), Math.min(dy, w.worldHeight - dy)); };
+  const game = (overrides, colliders) => { const g = createGame(7); g.biomes.enabled = true; const p = {...defaultObjectPreset(), overrides, ...(colliders ? {colliders: true} : {})}; applyObjectPreset(g.balance, p); g.biomeObjects.sync(); return g; };
+  const overlaps = (g) => { const os = g.biomeObjects.objects; let n = 0; for (let i = 0; i < os.length; i++) for (let j = i + 1; j < os.length; j++) if (d(os[i], os[j]) < colliderRadius(os[i]) + colliderRadius(os[j])) n++; return n; };
+  assert.ok(overlaps(game({})) > 0, 'centre spacing alone lets radii overlap');
+  const on = game({}, true);
+  assert.equal(overlaps(on), 0, 'colliders: no two effect radii overlap');
+  assert.equal(on.biomeObjects.objects.length, game({}).biomeObjects.objects.length, 'no object is dropped');
+  // Off by default: the preset keeps its old shape and layouts do not move.
+  assert.equal('colliders' in normalizeObjectPreset(defaultObjectPreset()), false);
+  assert.throws(() => normalizeObjectPreset({...defaultObjectPreset(), colliders: 'yes'}));
+  // sameKindSpacing: groves 900 apart from each other, trees still free to sit nearer.
+  const g = game({'forest-berry-grove': {sameKindSpacing: 900}}), groves = g.biomeObjects.objects.filter((o) => o.candidate === 'forest-berry-grove');
+  for (let i = 0; i < groves.length; i++) for (let j = i + 1; j < groves.length; j++) assert.ok(d(groves[i], groves[j]) >= 900, 'groves keep 900 between themselves');
+  const nearestTree = Math.min(...groves.flatMap((b) => g.biomeObjects.objects.filter((o) => o.candidate === 'forest-tree').map((t) => d(b, t))));
+  assert.ok(nearestTree < 900, 'other kinds are not pushed away by sameKindSpacing');
+  // With colliders the same-kind gap is counted from the radius edges.
+  const ge = game({'forest-berry-grove': {sameKindSpacing: 300}}, true), ge2 = ge.biomeObjects.objects.filter((o) => o.candidate === 'forest-berry-grove');
+  for (let i = 0; i < ge2.length; i++) for (let j = i + 1; j < ge2.length; j++) assert.ok(d(ge2[i], ge2[j]) >= colliderRadius(ge2[i]) + colliderRadius(ge2[j]) + 300 - 1e-9);
 });
