@@ -33,13 +33,14 @@ export const OBJECT_PRESET_KEY='ball-next-biome-objects-v1';
 // visualScale/aspect: drawn body only (aspect stretches width); placed: instances in the region;
 // edgeMargin/spacing/lavaMargin: placement clearance from the region border, from earlier-placed objects and from lava;
 // sameKindSpacing: extra clearance only from objects of the same kind (planning inbox 4i2yy26i, 2026-10-09).
-// Preset colliders:true (R-WORLD-018) measures spacing between effect-radius edges instead of centres, so radii never overlap.
+// Preset colliders (R-WORLD-018) measures spacing between effect-radius edges instead of centres, so radii never overlap.
+// On by default since 2026-10-09 (user); a preset without the key (older saves) is on too, only colliders:false turns it off.
 export const PLACEMENT_BOUNDS=Object.freeze({visualScale:[.3,4],aspect:[.5,2],placed:[1,20],edgeMargin:[0,400],spacing:[0,800],sameKindSpacing:[0,1600],lavaMargin:[0,400]});
 // Catalog keys an override may change (only when the object has that key).
 export const OVERRIDE_BOUNDS=Object.freeze({radius:[20,250],cooldown:[2,120],count:[1,8],growth:[1,500],duration:[1,30],power:[.01,.5],hpCost:[0,.1],blizzardMultiplier:[1,3],stacksRequired:[1,10],healFraction:[.01,.3],shieldFraction:[.01,.5],activeDuration:[1,20],cycleDuration:[2,60],tickInterval:[.1,2],hpFraction:[.001,.1],speed:[20,300],widthMin:[40,220],widthMax:[40,250],pathSteps:[1,6]});
 export const INTEGER_KEYS=Object.freeze(['count','stacksRequired','pathSteps','placed']);
 export function defaultPlacedCount(id,countPerType){return ['lake-current','lake-vortex'].includes(id)?Math.max(1,Math.ceil(countPerType/6)):id==='desert-oasis'?Math.max(1,Math.ceil(countPerType/3)):countPerType;}
-export function defaultObjectPreset(){return {format:'ball-next-objects-v3',countPerType:6,enabled:[...DEFAULT_OBJECT_IDS],overrides:{}};}
+export function defaultObjectPreset(){return {format:'ball-next-objects-v3',countPerType:6,enabled:[...DEFAULT_OBJECT_IDS],overrides:{},colliders:true};}
 export function normalizeObjectPreset(raw){
  if(raw&&raw.colliders!==undefined&&typeof raw.colliders!=='boolean')throw Error('겹침 판정 설정이 잘못되었습니다.');
  if(!raw||!['ball-next-objects-v1','ball-next-objects-v2','ball-next-objects-v3'].includes(raw.format)||!Array.isArray(raw.enabled)||!Number.isInteger(raw.countPerType)||raw.countPerType<1||raw.countPerType>20)throw Error('올바른 오브젝트 프리셋이 필요합니다.');
@@ -47,7 +48,7 @@ export function normalizeObjectPreset(raw){
  const enabled=[...new Set(raw.format==='ball-next-objects-v1'?raw.enabled.flatMap(id=>Object.hasOwn(replacements,id)?replacements[id]:[id]):raw.enabled)];if(enabled.some(id=>!Object.hasOwn(BIOME_OBJECTS,id)))throw Error('알 수 없는 오브젝트 후보입니다.');
  const overrides={};for(const [id,values]of Object.entries(raw.overrides??{})){const base=BIOME_OBJECTS[id];if(!Object.hasOwn(BIOME_OBJECTS,id)||!base||!values||typeof values!=='object'||Array.isArray(values))throw Error('잘못된 후보 수치입니다.');overrides[id]={};for(const [key,value]of Object.entries(values)){const placement=Object.hasOwn(PLACEMENT_BOUNDS,key)?PLACEMENT_BOUNDS[key]:null,bounds=placement??(Object.hasOwn(OVERRIDE_BOUNDS,key)?OVERRIDE_BOUNDS[key]:null);if(!bounds||!placement&&!Object.hasOwn(base,key)||!Number.isFinite(value)||value<bounds[0]||value>bounds[1]||INTEGER_KEYS.includes(key)&&!Number.isInteger(value))throw Error(`잘못된 수치: ${id}.${key}`);overrides[id][key]=value;}}
  for(const [id,c]of Object.entries(BIOME_OBJECTS)){const v={...c,...overrides[id]};if(v.effect==='vent'&&v.activeDuration>=v.cycleDuration)throw Error('분출 시간은 전체 주기보다 짧아야 합니다.');if(v.effect==='current'&&v.widthMin>v.widthMax)throw Error('최소 폭은 최대 폭보다 작아야 합니다.');}
- return {format:'ball-next-objects-v3',countPerType:raw.countPerType,enabled,overrides,...(raw.colliders?{colliders:true}:{})};
+ return {format:'ball-next-objects-v3',countPerType:raw.countPerType,enabled,overrides,colliders:raw.colliders??true};
 }
 export function objectPreset(balance){return normalizeObjectPreset(balance.biomeObjects??defaultObjectPreset());}
 export function applyObjectPreset(balance,raw){const next=normalizeObjectPreset(raw);balance.biomeObjects=next;return next;}

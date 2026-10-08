@@ -300,8 +300,8 @@ function adjRow(id, k, label, hint) {
 // R-WORLD-018: one switch for every object. On: spacing counts from the effect-radius edge, so radii never overlap.
 function colliderRow() {
   const box = h('input', {type: 'checkbox', id: 'colliders'});
-  box.addEventListener('change', () => { const next = clone(work); if (box.checked) next.colliders = true; else delete next.colliders; setWork(next); draw(); });
-  return h('label', {class: 'adj-toggle'}, box, ' 반경 겹침 금지(콜라이더) — 모든 오브젝트 공통', h('span', {class: 'note'}, ' 켜면 간격을 중심이 아니라 효과 반경 가장자리부터 잽니다'));
+  box.addEventListener('change', () => { const next = clone(work); next.colliders = box.checked; setWork(next); draw(); });
+  return h('label', {class: 'adj-toggle'}, box, ' 반경 겹침 금지(콜라이더) — 모든 오브젝트 공통', h('span', {class: 'note'}, ' 기본 켬 · 켜면 간격을 중심이 아니라 효과 반경 가장자리부터 잽니다'));
 }
 function buildAdj() {
   const id = S.id, rows = []; let group = null;
@@ -322,7 +322,7 @@ function syncAdj() {
     row.lastChild.textContent = [typeof dyn === 'function' ? dyn() : row.dataset.hint, `기본 ${fmtVal(k, d)}`, `이 기기 ${fmtVal(k, ap)}`, ['radius', 'visualScale'].includes(k) ? '배치마다 ×0.8~1.2' : ''].filter(Boolean).join(' · ');
   }
   if ($('#colliders')) { $('#colliders').checked = !!work.colliders; $('#colliders').parentElement.classList.toggle('changed', !!work.colliders !== !!applied.colliders); }
-  const dirty = JSON.stringify(work) !== JSON.stringify(applied), changed = Object.keys(work.overrides).length + (work.colliders ? 1 : 0);
+  const dirty = JSON.stringify(work) !== JSON.stringify(applied), changed = Object.keys(work.overrides).length + (work.colliders ? 0 : 1);
   $('#adjState').textContent = (dirty ? '적용 안 된 변경 있음' : '이 기기 게임과 같음') + ` · 기본값과 다른 오브젝트 ${changed}개` + (work.overrides[S.id] ? ` · 이 오브젝트: ${changeText(S.id)}` : '');
   $('#apply').disabled = !dirty;
   $('#adjReset').disabled = !work.overrides[S.id];
@@ -830,7 +830,7 @@ function reviewJson(id) {
   return JSON.stringify({format: 'object-review-v2', id, playerSize: d.playerSize ?? S.size,
     image: sec(d.image, {concept: d.image?.concept || null, resource: d.image?.pick || null, request: (d.image?.concept && d.image?.request) || null}), size: sec(d.size, {changes: ch(isSizeKey)}), effect: sec(d.effect, {changes: ch(isFxKey)})});
 }
-const head = () => `[오브젝트 검수] ${new Date().toISOString().slice(0, 10)} · 검수대(이미지 / 크기·배치 / 효과)${work.colliders ? ' · 반경 겹침 금지 켬' : ''}`;
+const head = () => `[오브젝트 검수] ${new Date().toISOString().slice(0, 10)} · 검수대(이미지 / 크기·배치 / 효과)${work.colliders ? '' : ' · 반경 겹침 금지 끔(기본은 켬)'}`;
 const report = (ids) => `${head()}\n${ids.map(lines).join('\n')}\n\n\`\`\`json\n${ids.map(reviewJson).join('\n')}\n\`\`\``;
 $('#copyOne').onclick = () => { reportIds().includes(S.id) ? copy(report([S.id])) : toast('판정·메모·조정 중 하나를 먼저 남겨 주세요'); };
 $('#copyAll').onclick = () => { const ids = reportIds(); if (ids.length) copy(report(ids)); };

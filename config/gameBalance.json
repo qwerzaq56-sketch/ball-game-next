@@ -176,9 +176,9 @@
     "attackTimingBeyondScale": 0.25
   },
   "healthRegen": {
-    "delay": 5.0,
-    "baseRate": 6.0,
-    "regenPerSize": 0.15
+    "delay": 8.0,
+    "baseRate": 4.0,
+    "regenPerSize": 0.10
   },
   "ai": {
     "hpPerSize": 10,

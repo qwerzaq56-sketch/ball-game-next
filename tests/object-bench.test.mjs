@@ -128,14 +128,18 @@ test('visualScale grows the body only; the effect radius stays', () => {
 
 test('R-WORLD-018: the collider switch keeps effect radii apart and sameKindSpacing spaces one kind only', () => {
   const w = createGame(7).balance.world, d = (a, b) => { const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y); return Math.hypot(Math.min(dx, w.worldWidth - dx), Math.min(dy, w.worldHeight - dy)); };
-  const game = (overrides, colliders) => { const g = createGame(7); g.biomes.enabled = true; const p = {...defaultObjectPreset(), overrides, ...(colliders ? {colliders: true} : {})}; applyObjectPreset(g.balance, p); g.biomeObjects.sync(); return g; };
+  const game = (overrides, colliders) => { const g = createGame(7); g.biomes.enabled = true; const p = {...defaultObjectPreset(), overrides, colliders: !!colliders}; applyObjectPreset(g.balance, p); g.biomeObjects.sync(); return g; };
   const overlaps = (g) => { const os = g.biomeObjects.objects; let n = 0; for (let i = 0; i < os.length; i++) for (let j = i + 1; j < os.length; j++) if (d(os[i], os[j]) < colliderRadius(os[i]) + colliderRadius(os[j])) n++; return n; };
   assert.ok(overlaps(game({})) > 0, 'centre spacing alone lets radii overlap');
   const on = game({}, true);
   assert.equal(overlaps(on), 0, 'colliders: no two effect radii overlap');
   assert.equal(on.biomeObjects.objects.length, game({}).biomeObjects.objects.length, 'no object is dropped');
-  // Off by default: the preset keeps its old shape and layouts do not move.
-  assert.equal('colliders' in normalizeObjectPreset(defaultObjectPreset()), false);
+  // On by default (user, 2026-10-09): older saves without the key are on too; only colliders:false turns it off.
+  assert.equal(normalizeObjectPreset(defaultObjectPreset()).colliders, true);
+  const {colliders: _, ...old} = defaultObjectPreset();
+  assert.equal(normalizeObjectPreset(old).colliders, true);
+  assert.equal(normalizeObjectPreset({...defaultObjectPreset(), colliders: false}).colliders, false);
+  assert.equal(overlaps(game({}, true)), overlaps((() => { const g = createGame(7); g.biomes.enabled = true; applyObjectPreset(g.balance, defaultObjectPreset()); g.biomeObjects.sync(); return g; })()), 'the shipped default is the collider layout');
   assert.throws(() => normalizeObjectPreset({...defaultObjectPreset(), colliders: 'yes'}));
   // sameKindSpacing: groves 900 apart from each other, trees still free to sit nearer.
   const g = game({'forest-berry-grove': {sameKindSpacing: 900}}), groves = g.biomeObjects.objects.filter((o) => o.candidate === 'forest-berry-grove');
