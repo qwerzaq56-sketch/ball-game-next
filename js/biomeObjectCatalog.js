@@ -6,9 +6,9 @@ export const ARCHIVED_BIOME_OBJECTS={
  'forest-tree':{region:'forest',name:'수호 고목',effect:'shield',radius:125,cooldown:12,duration:6,power:.08,visualScale:1.6,placed:5},
  'lake-pearls':{region:'lake',name:'진주 조개밭',effect:'food',radius:55,cooldown:16,count:3,growth:80},
  'lake-spring':{region:'lake',name:'맑은 샘',effect:'heal',radius:75,cooldown:8,power:.06},
- 'snow-flowers':{region:'snow',name:'얼음꽃 군락',effect:'food',radius:76,cooldown:16,count:3,growth:65,blizzardMultiplier:2},
- 'snow-shelter':{region:'snow',name:'서리 피난석',effect:'frost',radius:182,cooldown:10,duration:8,power:.15,visualScale:2},
- 'desert-oasis':{region:'desert',name:'작은 오아시스',effect:'heal',radius:160,cooldown:10,power:.05,visualScale:1.89},
+ 'snow-flowers':{region:'snow',name:'얼음꽃 군락',effect:'food',radius:76,cooldown:16,count:3,growth:65,blizzardMultiplier:2,edgeMargin:100,spacing:50},
+ 'snow-shelter':{region:'snow',name:'서리 피난석',effect:'frost',radius:182,cooldown:10,duration:8,power:.15,visualScale:2,edgeMargin:200,aspect:1.2},
+ 'desert-oasis':{region:'desert',name:'작은 오아시스',effect:'heal',radius:160,cooldown:2,power:.02,visualScale:1.89,edgeMargin:160,spacing:350},
  'desert-obelisk':{region:'desert',name:'모래 비석',effect:'shield',radius:82,cooldown:14,duration:6,power:.1,visualScale:1.29},
  'volcano-obsidian':{region:'volcano',name:'흑요석 광맥',effect:'food',radius:55,cooldown:18,count:4,growth:85},
  'volcano-vent':{region:'volcano',name:'열기 분출구',effect:'speed',radius:65,cooldown:10,duration:4,power:.35,hpCost:.01},
@@ -16,17 +16,18 @@ export const ARCHIVED_BIOME_OBJECTS={
 export const BIOME_OBJECTS={
  ...ARCHIVED_BIOME_OBJECTS,
  'grass-garland':{region:'grassland',name:'꽃무리 · 꽃 치장',effect:'charm',radius:65,cooldown:12,duration:30,power:.15},
- 'grass-wind-stack':{region:'grassland',name:'바람돌 · 이속 버프',effect:'wind-stack',radius:65,cooldown:8,stacksRequired:1,duration:15,power:.35,placed:3},
+ 'grass-wind-stack':{region:'grassland',name:'바람돌 · 이속 버프',effect:'wind-stack',radius:83,cooldown:8,stacksRequired:1,duration:15,power:.35,placed:3,visualScale:1.02,aspect:1.73,spacing:100,edgeMargin:100},
  'forest-berry-grove':{region:'forest',name:'열매 덤불 · 먹이/회복',effect:'berry-spawner',radius:70,cooldown:14,count:4,growth:50,healFraction:.08,visualScale:.74},
  'lake-garland':{region:'lake',name:'진주 조개밭 · 조개 치장',effect:'charm',radius:68,cooldown:16,duration:30,power:.2},
- 'volcano-obsidian-stack':{region:'volcano',name:'흑요석 광맥 · 보호막',effect:'obsidian',radius:80,cooldown:12,stacksRequired:3,duration:20,power:.08,shieldFraction:.12},
- 'volcano-vent-cycle':{region:'volcano',name:'열기 분출구 · 주기 분출',effect:'vent',radius:149,cooldown:2,activeDuration:4,cycleDuration:12,tickInterval:.5,hpFraction:.025,visualScale:2},
+ 'volcano-obsidian-stack':{region:'volcano',name:'흑요석 광맥 · 보호막',effect:'obsidian',radius:97,cooldown:12,stacksRequired:3,duration:20,power:.08,shieldFraction:.12,visualScale:1.33},
+ 'volcano-vent-cycle':{region:'volcano',name:'열기 분출구 · 주기 분출',effect:'vent',radius:150,cooldown:2,activeDuration:4,cycleDuration:12,tickInterval:.5,hpFraction:.025,visualScale:3.43,edgeMargin:150},
  'lake-current':{region:'lake',name:'해류',effect:'current',radius:100,cooldown:2,speed:100,widthMin:80,widthMax:160,pathSteps:3,placed:3,edgeMargin:400},
  'lake-vortex':{region:'lake',name:'소용돌이',effect:'vortex',radius:224,cooldown:2,speed:95,placed:2,visualScale:1.24},
 };
 export const DEFAULT_OBJECT_IDS=['grass-garland','grass-wind-stack','forest-berry-grove','forest-tree','lake-garland','lake-current','lake-vortex','snow-flowers','snow-shelter','desert-oasis','desert-obelisk','volcano-obsidian-stack','volcano-vent-cycle'];
 // R-WORLD-015: the oasis heals twice its catalog power once placed (fewer, larger oases).
-export function placedObjectConfig(id,cfg){return id==='desert-oasis'?{...cfg,power:cfg.power*2}:cfg;}
+// Placed objects use the catalog values as-is (2026-10-08: the oasis' hidden ×2 heal was dropped so the bench shows the in-game numbers).
+export function placedObjectConfig(id,cfg){return cfg;}
 export const OBJECT_PRESET_KEY='ball-next-biome-objects-v1';
 // v3 (object bench, planning 03_아트/32): per-object body and placement keys that BIOME_OBJECTS does not carry.
 // visualScale/aspect: drawn body only (aspect stretches width); placed: instances in the region;

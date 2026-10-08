@@ -4,7 +4,8 @@ const definitions={
  charge:{pack:'combat-raster-v2',file:'charge-001.png',pivot:[.5,.4985],crop:[318,294,660,660],rotate:false},
  impact:{pack:'combat-raster-v2',file:'impact-001.png',pivot:[696/1254,614/1254],crop:[516,434,360,360],rotate:false},
  dodge:{pack:'combat-raster-v2',file:'dodge-002.png',pivot:[.75,.5],crop:[500,385,750,255],rotate:true},
- shield:{pack:'benefits-raster-v2',file:'leaf-shield-002.png',pivot:[.4,.65],crop:[250,210,840,620],footprintScale:.8,rotate:false},
+ // Interim sky-blue tint (2026-10-08 user: shields read as healing in green) until the sky-blue shield art replaces leaf-shield-002.
+ shield:{pack:'benefits-raster-v2',file:'leaf-shield-002.png',pivot:[.4,.65],crop:[250,210,840,620],footprintScale:.8,rotate:false,tint:'#7dd3fc',tintAlpha:.7},
  strength:{pack:'benefits-raster-v2',file:'empowerment-002.png',pivot:[.495,.53],crop:[550,350,300,420],footprintScale:1,rotate:false},
  'frost-clear':{pack:'benefits-raster-v2',file:'frost-clear-001.png',pivot:[.5,.7],crop:[380,250,540,650],footprintScale:1.1,rotate:false},
  heal:{pack:'benefits-raster-v2',file:'heal-001.png',pivot:[.49,.62],crop:[170,710,930,400],footprintScale:1.25,rotate:false},
@@ -32,6 +33,7 @@ export function loadEffectRaster(ids=Object.keys(definitions)){
    const box=spec.crop??[0,0,nw,nh],scale=CACHE_SIZE/Math.max(box[2],box[3]),c=document.createElement('canvas');c.width=Math.max(1,Math.round(box[2]*scale));c.height=Math.max(1,Math.round(box[3]*scale));
    const pivot=[(nw*spec.pivot[0]-box[0])/box[2],(nh*spec.pivot[1]-box[1])/box[3]];
    const ctx=c.getContext('2d');ctx.drawImage(image,...box,0,0,c.width,c.height);
+   if(spec.tint&&typeof ctx.fillRect==='function'){ctx.globalCompositeOperation='source-atop';ctx.globalAlpha=spec.tintAlpha??.6;ctx.fillStyle=spec.tint;ctx.fillRect(0,0,c.width,c.height);ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';}
    if(definitions[id].restrainBloom&&ctx.getImageData&&ctx.putImageData){const pixels=ctx.getImageData(0,0,c.width,c.height);pixels.data.set(restrainEffectAlpha(pixels.data));ctx.putImageData(pixels,0,0);}
    images.set(id,{canvas:c,pivot});failed.delete(id);return true;
   }catch{failed.add(id);return false;}})();pending.set(id,promise);return promise;

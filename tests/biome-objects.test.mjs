@@ -46,7 +46,7 @@ test('approved larger oasis preserves variation, count and healing power while s
   // Body and range share the variation; the bench-confirmed body scale (catalog visualScale) applies to the body only.
   assert.equal(o.visualScale,oldVariation*1.4*(BIOME_OBJECTS['desert-oasis'].visualScale??1));
   assert.equal(o.config.radius,BIOME_OBJECTS['desert-oasis'].radius*(oldVariation*1.4));
-  assert.equal(o.config.power,BIOME_OBJECTS['desert-oasis'].power*2);
+  assert.equal(o.config.power,BIOME_OBJECTS['desert-oasis'].power);
  }
  assert.deepEqual(objects,b.biomeObjects.objects.filter(o=>o.candidate==='desert-oasis'));
 });
