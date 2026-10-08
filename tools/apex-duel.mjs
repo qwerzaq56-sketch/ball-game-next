@@ -1,5 +1,5 @@
 // apex-duel: player vs apex AI duel with the real game code (planning 00_기준/master/밸런싱.md B-FIGHT-01, inbox g6lbahey 2026-10-08).
-// Usage: node tools/apex-duel.mjs [playerSize=500] [aiSize=470] [seconds=60] [--ai-hp=<per size>] [--player-hp=<per size>]
+// Usage: node tools/apex-duel.mjs [playerSize=500] [aiSize=470] [seconds=60] [--ai-hp=<per size>] [--player-hp=<per size>] [--gap=115]
 //   --ai-hp / --player-hp override balance ai.hpPerSize / player.hpPerSize for this run (player 0 = growth rule).
 // Prints max HP of both, one full-charge hit each way (as % of the target's max HP), then two runs:
 //   idle  — the player stands still: how often and how hard the AI attacks;
@@ -12,7 +12,7 @@ import {attackDamageForEntity, applyDefense, startAttack, canStartAttack} from '
 
 const args = process.argv.slice(2), flag = (name) => { const a = args.find((s) => s.startsWith(`--${name}=`)); return a ? Number(a.split('=')[1]) : null; };
 const [playerSize = 500, aiSize = 470, seconds = 60] = args.filter((s) => !s.startsWith('--')).map(Number);
-const aiHpPerSize = flag('ai-hp'), playerHpPerSize = flag('player-hp');
+const aiHpPerSize = flag('ai-hp'), playerHpPerSize = flag('player-hp'), gap = flag('gap') ?? 115;
 const grow = (e, size, b) => { while (e.size < size) e.addGrowth(Math.max(1, size - e.size), b); };
 function game() {
   const g = createGame(11);
@@ -23,14 +23,18 @@ function game() {
 function setup() {
   const g = game(), b = g.balance, p = g.player;
   grow(p, playerSize, b); p.color = 'green'; p.hp = p.maxHp; g.biomes.enabled = false;
-  const ai = new AIEntity({balance: b, x: p.x + 600, y: p.y, startSize: 20, color: 'red', colorHex: '#f00'});
-  grow(ai, aiSize, b); ai.apex = true; ai.hp = ai.maxHp; g.entities = [p, ai];
+  // Start with a body gap of `gap` (default 115, the 500 vs 470 gap of the first runs). AI sensing is
+  // detectionRange 320 between centres below size 300, so a fixed 600 centre distance left smaller pairs unaware.
+  const ai = new AIEntity({balance: b, x: p.x, y: p.y, startSize: 20, color: 'red', colorHex: '#f00'});
+  grow(ai, aiSize, b); ai.x = p.x + (p.size + ai.size) / 2 + gap; ai.apex = true; ai.hp = ai.maxHp; g.entities = [p, ai];
   return {g, b, p, ai};
 }
 function run(mode) {
-  const {g, b, p, ai} = setup(), attacks = [];
+  const {g, b, p, ai} = setup(), attacks = [], lives = g.lives;
   let playerAttacks = 0, wasAttacking = false, hold = 0, aiHits = 0;
-  for (let i = 0; i < seconds * 60 && p.alive && ai.alive; i++) {
+  // A player death spends a Life and respawns at full HP far away (R-ECO-010), so p.alive stays true:
+  // stop at the first lost Life, or the run reads as "the AI stopped attacking, player at 100%".
+  for (let i = 0; i < seconds * 60 && p.alive && ai.alive && g.lives === lives; i++) {
     // The player holds the attack for manualChargeSeconds (a full charge) before releasing, like a real player.
     if (mode === 'fight' && canStartAttack(p) && Math.hypot(ai.x - p.x, ai.y - p.y) < 700) hold += 1 / 60; else hold = 0;
     if (hold >= (b.attack.manualChargeSeconds ?? .9)) { startAttack(p, Math.atan2(ai.y - p.y, ai.x - p.x), b, 1); playerAttacks++; hold = 0; }
@@ -41,7 +45,7 @@ function run(mode) {
     if (attacking && !wasAttacking) attacks.push(ai.currentAttackCharge);
     wasAttacking = attacking;
   }
-  return {mode, seconds: +g.gameTime.toFixed(1), winner: !ai.alive ? 'player' : !p.alive ? 'ai' : 'none', playerHp: +(p.hp / p.maxHp).toFixed(2), aiHp: +(ai.hp / ai.maxHp).toFixed(2),
+  return {mode, seconds: +g.gameTime.toFixed(1), winner: !ai.alive ? 'player' : !p.alive || g.lives < lives ? 'ai' : 'none', playerHp: g.lives < lives ? 0 : +(p.hp / p.maxHp).toFixed(2), aiHp: +(ai.hp / ai.maxHp).toFixed(2),
     playerAttacks, aiAttacks: attacks.length, aiFullCharge: attacks.filter((c) => c === 1).length, aiHits};
 }
 const {b, p, ai} = setup(), full = 1 + (b.attack.maxChargeDamageBonus ?? 1);
