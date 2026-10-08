@@ -190,7 +190,7 @@ export class TerrainArt {
  drawObjectGround(ctx,o){
   const footprint={'forest-berry-grove':[176,136],'forest-tree':[230,194]}[o.candidate];
   if(!this.enabled||this.objectGroundEnabled===false||!this.forestFloor||!footprint||typeof document==='undefined')return false;
-  const scale=o.visualScale??1,w=Math.ceil(footprint[0]*scale),h=Math.ceil(footprint[1]*scale);
+  const scale=o.visualScale??1,w=Math.ceil(footprint[0]*scale*(o.aspect??1)),h=Math.ceil(footprint[1]*scale);
   const floor=this.forestFloor,sx=modulo(o.x-w/2,floor.width),sy=modulo(o.y-h/2,floor.height),key=`${o.candidate}:${w}:${h}:${sx}:${sy}`;
   let patch=this.objectGrounds.get(key);
   if(!patch){

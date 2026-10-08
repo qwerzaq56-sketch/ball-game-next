@@ -40,10 +40,11 @@ export function drawEnvironmentalArt(ctx,o,{a,b,active=true}={}){
   ctx.beginPath();ctx.rect(-length/2,-o.width/2,length,o.width);ctx.clip();
   ctx.globalAlpha*=.62;ctx.drawImage(image,-length/2-8,-o.width/2,length+16,o.width);
  }else if(o.candidate==='lake-vortex'){
-  const r=o.config.radius;ctx.globalAlpha*=.72;ctx.drawImage(image,o.x-r,o.y-r,r*2,r*2);
+  // The swirl body scales on its own (bench visualScale/aspect); the pull radius is drawn separately.
+  const r=o.bodyRadius??o.config.radius,rx=r*(o.aspect??1);ctx.globalAlpha*=.72;ctx.drawImage(image,o.x-rx,o.y-r,rx*2,r*2);
  }else if(o.candidate==='volcano-vent-cycle'){
   // The quiet state has no flame silhouette. Both states keep fixed lighting.
-  const r=Math.min(o.config.radius,70*(o.visualScale??1)),aspect=image.height/image.width;ctx.drawImage(image,o.x-r,o.y-r*aspect,r*2,r*2*aspect);
+  const r=o.bodyRadius??Math.min(o.config.radius,70*(o.visualScale??1)),rx=r*(o.aspect??1),aspect=image.height/image.width;ctx.drawImage(image,o.x-rx,o.y-r*aspect,rx*2,r*2*aspect);
  }else{ctx.restore();return false;}
  ctx.restore();return true;
 }

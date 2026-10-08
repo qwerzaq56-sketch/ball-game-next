@@ -20,7 +20,8 @@ export function alphaContentBounds(data,width,height,threshold=12){
  for(let y=0;y<height;y++)for(let x=0;x<width;x++)if(data[(y*width+x)*4+3]>=threshold){left=Math.min(left,x);top=Math.min(top,y);right=Math.max(right,x);bottom=Math.max(bottom,y);}
  return right<left?{x:0,y:0,width,height}:{x:left,y:top,width:right-left+1,height:bottom-top+1};
 }
-function cacheLandmarkImage(image,id,source){
+// Exported for the object bench (planning 03_아트/32), which prepares other generations the same way to preview them.
+export function cacheLandmarkImage(image,id,source){
  const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d');
  if(source)ctx.drawImage(image,...source,0,0,256,256);else ctx.drawImage(image,0,0,256,256);
  const profile=LANDMARK_PRESENTATION[id];
@@ -69,7 +70,8 @@ export function drawRevisedLandmark(ctx,o,ready=true){
  const id=o.candidate;
  if(![...batchIds,'forest-tree','snow-flowers','snow-shelter','desert-oasis'].includes(id))return false;
  loadLandmarkImages();
- const image=landmarkImages.get(id==='snow-flowers'?id+':'+(ready?'ready':'post'):id);
+ // o.previewImage: set only by the object bench on its own paused copy of the game (a canvas, or {ready,post} for sheets).
+ const preview=o.previewImage,image=(preview&&(preview.ready?preview[ready?'ready':'post']:preview))??landmarkImages.get(id==='snow-flowers'?id+':'+(ready?'ready':'post'):id);
  // Continuous shelters keep the same healthy body; benefit effects are drawn separately.
  if(image&&id!=='forest-tree'){
   drawLandmarkBody(ctx,image,id);return true;

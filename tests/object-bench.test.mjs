@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync, readFileSync} from 'node:fs';
-import {BIOME_OBJECTS, DEFAULT_OBJECT_IDS, defaultObjectPreset, applyObjectPreset, normalizeObjectPreset, defaultPlacedCount} from '../js/biomeObjectCatalog.js';
+import {BIOME_OBJECTS, DEFAULT_OBJECT_IDS, PLACEMENT_BOUNDS, OVERRIDE_BOUNDS, defaultObjectPreset, applyObjectPreset, normalizeObjectPreset, defaultPlacedCount} from '../js/biomeObjectCatalog.js';
+import {placementTiles} from '../js/biomeObjects.js';
 import {createGame} from '../tools/headless.mjs';
 
 // Object review bench (planning 03_아트/32): every reference it shows must exist, for every default object.
@@ -38,7 +39,8 @@ test('preset v3 accepts visualScale and placed, rejects out-of-range values, and
   assert.equal(v3.format, 'ball-next-objects-v3');
   assert.deepEqual(v3.overrides['forest-tree'], {visualScale: 1.3, placed: 3, radius: 120});
   assert.equal(normalizeObjectPreset({format: 'ball-next-objects-v2', countPerType: 6, enabled: ['forest-tree'], overrides: {}}).format, 'ball-next-objects-v3');
-  for (const bad of [{visualScale: .4}, {visualScale: 2.1}, {placed: 0}, {placed: 21}, {placed: 2.5}])
+  assert.doesNotThrow(() => normalizeObjectPreset({...defaultObjectPreset(), overrides: {'forest-tree': {visualScale: 3.5, aspect: 1.6, edgeMargin: 200, spacing: 500}, 'volcano-vent-cycle': {lavaMargin: 150}}}));
+  for (const bad of [{visualScale: .2}, {visualScale: 4.1}, {aspect: .4}, {aspect: 2.5}, {placed: 0}, {placed: 21}, {placed: 2.5}, {edgeMargin: -1}, {spacing: 801}, {lavaMargin: 401}])
     assert.throws(() => normalizeObjectPreset({...defaultObjectPreset(), overrides: {'forest-tree': bad}}), /잘못된 수치/);
 });
 
@@ -54,15 +56,54 @@ test('placed sets the instance count; without it the shared count rule applies',
   assert.deepEqual(at(set), at(base));
 });
 
-test('every bench adjustment row writes a key the preset accepts at both ends of its slider', () => {
-  const rows = [...page.matchAll(/\{k: '(\w+)', label: '[^']+', min: ([^,]+), max: ([^,]+),/g)].map((m) => m[1]);
-  assert.deepEqual(rows, ['radius', 'visualScale', 'placed', 'widthMin', 'widthMax', 'pathSteps']);
-  const ends = {radius: [20, 250], visualScale: [.5, 2], placed: [1, 20], widthMin: [40, 160], widthMax: [80, 250], pathSteps: [1, 6]};
+test('every bench size row writes a key the preset accepts at both ends of its slider', () => {
+  // Sliders take their ends from PLACEMENT_BOUNDS / OVERRIDE_BOUNDS, so both ends must normalize.
+  const rows = [...page.matchAll(/\{k: '(\w+)', label: '[^']+', group: /g)].map((m) => m[1]);
+  assert.deepEqual(rows, ['visualScale', 'aspect', 'radius', 'widthMin', 'widthMax', 'pathSteps', 'placed', 'edgeMargin', 'spacing', 'lavaMargin']);
   for (const k of rows) {
-    const id = ['widthMin', 'widthMax', 'pathSteps'].includes(k) ? 'lake-current' : 'forest-tree';
-    for (const v of ends[k]) assert.doesNotThrow(() => normalizeObjectPreset({...defaultObjectPreset(), overrides: {[id]: {[k]: v}}}), `${id}.${k}=${v}`);
+    const id = ['widthMin', 'widthMax', 'pathSteps'].includes(k) ? 'lake-current' : 'forest-tree', [lo, hi] = Object.hasOwn(PLACEMENT_BOUNDS, k) ? PLACEMENT_BOUNDS[k] : OVERRIDE_BOUNDS[k];
+    // widthMin must stay below widthMax (the bench toasts that), so each end is checked with the other at its far end.
+    const pair = {widthMin: {widthMax: 250}, widthMax: {widthMin: 40}}[k] || {};
+    for (const v of [lo, hi]) assert.doesNotThrow(() => normalizeObjectPreset({...defaultObjectPreset(), overrides: {[id]: {...pair, [k]: v}}}), `${id}.${k}=${v}`);
   }
-  assert.ok(page.includes('OBJECT_PRESET_KEY') && page.includes("format: 'object-adjust-v1'"), 'bench saves the game preset and copies object-adjust-v1');
+  // Effect rows: each object's own catalog keys, so both slider ends must normalize for that object.
+  for (const id of DEFAULT_OBJECT_IDS) for (const k of Object.keys(BIOME_OBJECTS[id]).filter((k) => Object.hasOwn(OVERRIDE_BOUNDS, k) && !rows.includes(k)))
+    for (const v of OVERRIDE_BOUNDS[k]) { const pair = {activeDuration: {cycleDuration: 60}, cycleDuration: {activeDuration: 1}}[k] || {};
+      assert.doesNotThrow(() => normalizeObjectPreset({...defaultObjectPreset(), overrides: {[id]: {...pair, [k]: v}}}), `${id}.${k}=${v}`); }
+  assert.ok(page.includes('OBJECT_PRESET_KEY') && page.includes("format: 'object-review-v2'"), 'bench saves the game preset and copies object-review-v2');
+});
+
+test('bench has three evaluations and opens references in a zoomable lightbox', () => {
+  for (const k of ["image: {tab: '① 이미지 평가'", "size: {tab: '② 크기·배치 평가'", "effect: {tab: '③ 효과 평가'"]) assert.ok(page.includes(k), k);
+  assert.ok(page.includes('id="lb"') && page.includes("addEventListener('wheel'"), 'lightbox with wheel zoom');
+  // Gameplay triptychs open cropped to the object's region panel.
+  for (const v of ['002', '003']) for (const s of ['a', 'b']) assert.ok(existsSync(fromTools(`../assets/art-batches/scene-coherent-v1/gameplay-${s}-${v}.png`)), `gameplay-${s}-${v}.png`);
+});
+
+test('placement margins keep objects off region borders, lava and each other', () => {
+  const g = placedGame({'forest-tree': {edgeMargin: 250}, 'volcano-vent-cycle': {lavaMargin: 220}, 'forest-berry-grove': {spacing: 450}});
+  const of = (id) => g.biomeObjects.objects.filter((o) => o.candidate === id), w = g.balance.world;
+  const d = (a, b) => { const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y); return Math.hypot(Math.min(dx, w.worldWidth - dx), Math.min(dy, w.worldHeight - dy)); };
+  const trees = placementTiles(g, {...BIOME_OBJECTS['forest-tree'], edgeMargin: 250});
+  assert.ok(trees.fit.length > 0 && trees.fit.length < trees.region.length, 'edge margin rules out some forest tiles but not all');
+  for (const o of of('forest-tree')) for (let k = 0; k < 16; k++) { const a = k * Math.PI / 8; assert.equal(g.biomes.regionAt({x: o.x + Math.cos(a) * 250, y: o.y + Math.sin(a) * 250})?.id, 'forest', `${o.id} keeps 250 from the forest border`); }
+  if (placementTiles(g, {...BIOME_OBJECTS['volcano-vent-cycle'], lavaMargin: 220}).fit.length) for (const o of of('volcano-vent-cycle')) assert.ok(!g.biomes.lavaAt(o, 220), `${o.id} keeps 220 from lava`);
+  // Spacing is mutual: trees are placed after the berry groves and still keep the groves' 450.
+  const berries = of('forest-berry-grove');
+  for (let i = 0; i < berries.length; i++) for (let j = i + 1; j < berries.length; j++) assert.ok(d(berries[i], berries[j]) >= 450, 'groves keep their spacing');
+  for (const t of of('forest-tree')) for (const b of berries) assert.ok(d(t, b) >= 450, `${t.id} keeps the groves' spacing`);
+  // Without margins nothing moves.
+  assert.deepEqual(placedGame({}).biomeObjects.objects.map((o) => [o.x, o.y]), placedGame({'grass-garland': {spacing: 0, edgeMargin: 0}}).biomeObjects.objects.map((o) => [o.x, o.y]));
+});
+
+test('vent and vortex bodies scale with visualScale and aspect, never with the effect radius', () => {
+  const base = placedGame({}), wide = placedGame({'volcano-vent-cycle': {radius: 240, visualScale: 2, aspect: 1.5}, 'lake-vortex': {radius: 40, visualScale: 3}});
+  const first = (g, id) => g.biomeObjects.objects.find((o) => o.candidate === id);
+  assert.ok(Math.abs(first(wide, 'volcano-vent-cycle').bodyRadius - first(base, 'volcano-vent-cycle').bodyRadius * 2) < 1e-9);
+  assert.ok(Math.abs(first(wide, 'lake-vortex').bodyRadius - first(base, 'lake-vortex').bodyRadius * 3) < 1e-9);
+  assert.equal(first(wide, 'volcano-vent-cycle').aspect, 1.5);
+  assert.equal(first(base, 'forest-tree').aspect, 1);
+  assert.ok(first(wide, 'lake-vortex').config.radius < first(base, 'lake-vortex').config.radius, 'radius still shrinks the effect');
 });
 
 test('visualScale grows the body only; the effect radius stays', () => {

@@ -11,16 +11,35 @@ function drawVentWarning(ctx,o,zoom,now,active){const c=o.config,full=Math.PI*2;
  else{const left=ventEruptsIn(o,now);if(left<=VENT_WARNING_SECONDS){const p=1-left/VENT_WARNING_SECONDS;ctx.fillStyle=`rgba(250,204,21,${.06+.1*p})`;ctx.beginPath();ctx.arc(o.x,o.y,c.radius*p,0,full);ctx.fill();ctx.setLineDash([8/zoom,6/zoom]);ctx.strokeStyle=`rgba(250,204,21,${.55+.4*Math.abs(Math.sin(now*8))})`;ctx.lineWidth=2.5/zoom;ctx.beginPath();ctx.arc(o.x,o.y,c.radius,0,full);ctx.stroke();}}
  ctx.restore();}
 export function objectRole(c){return ['vent','vortex'].includes(c.effect)?'danger':c.effect==='current'?'movement':'benefit';}
+// Placement candidates for one object config: region tiles clear of lava (default reach = radius x 1.2, the 2026-10-08
+// rule that keeps obsidian off the river) and, with edgeMargin, at least that far from any other region. Falls back
+// to lava-only, then to the whole region, so an object never disappears.
+export function placementTiles(game,cfg){
+ const b=game.biomes,region=b.tiles.filter(t=>t.region.id===cfg.region),lava=cfg.lavaMargin??(cfg.radius??0)*1.2,edge=cfg.edgeMargin??0;
+ const offLava=region.filter(t=>!b.lavaAt?.({x:t.x+100,y:t.y+100},lava));
+ const inside=(t)=>{for(let k=0;k<16;k++){const a=k*Math.PI/8;for(const r of [edge/2,edge])if(b.regionAt({x:t.x+100+Math.cos(a)*r,y:t.y+100+Math.sin(a)*r})?.id!==cfg.region)return false;}return true;};
+ const fit=edge>0?offLava.filter(inside):offLava;
+ return {region,offLava,fit,tiles:fit.length?fit:offLava.length?offLava:region};
+}
+// spacing: walk on from the hashed tile to the first one at least that far from every object placed so far.
+function spacedTile(tiles,start,placed,spacing,w){
+ // Spacing is mutual: the larger of this object's and the already placed object's setting applies.
+ if(!spacing&&!placed.some(p=>p.config.spacing))return tiles[start];
+ const far=(t)=>placed.every(p=>{const need=Math.max(spacing??0,p.config.spacing??0);if(!need)return true;const dx=Math.abs(p.x-t.x-100),dy=Math.abs(p.y-t.y-100);return Math.hypot(Math.min(dx,w.worldWidth-dx),Math.min(dy,w.worldHeight-dy))>=need;});
+ for(let k=0;k<tiles.length;k++){const t=tiles[(start+k)%tiles.length];if(far(t))return t;}
+ return tiles[start];
+}
 export class BiomeObjects{
  constructor(game){this.game=game;this.objects=[];this.cooldowns=new Map();this.signature='';this.events=[];}
  sync(){const preset=objectPreset(this.game.balance),signature=JSON.stringify(preset);if(signature===this.signature)return;this.signature=signature;this.objects=[];
   for(const id of preset.enabled){const cfg={...BIOME_OBJECTS[id],...preset.overrides[id]},regionTiles=this.game.biomes.tiles.filter(t=>t.region.id===cfg.region);if(!regionTiles.length)continue;
-   // 2026-10-08 user: nothing is placed on the lava river (obsidian sat on it). Body reach = radius x max visual scale 1.2.
-   const offLava=regionTiles.filter(t=>!this.game.biomes.lavaAt?.({x:t.x+100,y:t.y+100},(cfg.radius??0)*1.2)),tiles=offLava.length?offLava:regionTiles;let hash=(this.game.seed>>>0);for(const char of id)hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;
-   for(let i=0;i<(cfg.placed??defaultPlacedCount(id,preset.countPerType));i++){const t=tiles[(hash+i*137)%tiles.length],o={id:`${id}:${i}`,candidate:id,config:cfg,x:t.x+100,y:t.y+100,_world:this.game.balance.world,phase:i*2};
+   const {tiles}=placementTiles(this.game,cfg);let hash=(this.game.seed>>>0);for(const char of id)hash=Math.imul(hash^char.charCodeAt(0),16777619)>>>0;
+   for(let i=0;i<(cfg.placed??defaultPlacedCount(id,preset.countPerType));i++){const t=spacedTile(tiles,(hash+i*137)%tiles.length,this.objects,cfg.spacing,this.game.balance.world),o={id:`${id}:${i}`,candidate:id,config:cfg,x:t.x+100,y:t.y+100,_world:this.game.balance.world,phase:i*2};
     if(cfg.effect==='current'){const a=((hash+i)%4)*Math.PI/2,w=this.game.balance.world;o.points=[{x:o.x,y:o.y}];for(const sign of [-1,1]){const side=[];for(let k=1;k<=cfg.pathSteps;k++){const p={x:wrap(o.x+Math.cos(a)*k*200*sign,w.worldWidth),y:wrap(o.y+Math.sin(a)*k*200*sign,w.worldHeight)};if(this.game.biomes.regionAt(p)?.id!=='lake')break;side.push(p);}o.points=sign<0?[...side.reverse(),...o.points]:[...o.points,...side];}if(o.points.length<2)o.points=[{x:o.x,y:o.y},{x:o.x+Math.cos(a)*60,y:o.y+Math.sin(a)*60}];o.width=Math.min(cfg.widthMax,Math.max(cfg.widthMin,cfg.widthMin+(hash+i*37)%(Math.max(1,cfg.widthMax-cfg.widthMin+1))));o.reach=cfg.pathSteps*200+o.width;}
     // User approved: oasis body and actual effect radius grow together; deterministic variation is unchanged.
-    const scale=(.8+((hash+i*73)%401)/1000)*(id==='desert-oasis'?1.4:1);o.visualScale=scale*(cfg.visualScale??1);o.config={...placedObjectConfig(id,cfg),radius:cfg.radius*scale*(id==='lake-vortex'?1.4:1)};if(id==='lake-current'){o.width*=1.4;o.reach=cfg.pathSteps*200+o.width;}this.objects.push(o);
+    const scale=(.8+((hash+i*73)%401)/1000)*(id==='desert-oasis'?1.4:1);o.visualScale=scale*(cfg.visualScale??1);o.aspect=cfg.aspect??1;
+    // Bench (planning 32): environmental bodies scale on their own, never with an overridden effect radius.
+    if(cfg.effect==='vent')o.bodyRadius=70*o.visualScale;if(id==='lake-vortex')o.bodyRadius=BIOME_OBJECTS[id].radius*scale*1.4*(cfg.visualScale??1);o.config={...placedObjectConfig(id,cfg),radius:cfg.radius*scale*(id==='lake-vortex'?1.4:1)};if(id==='lake-current'){o.width*=1.4;o.reach=cfg.pathSteps*200+o.width;}this.objects.push(o);
    }
   }
  }
