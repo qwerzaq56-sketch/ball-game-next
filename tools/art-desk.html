@@ -1,0 +1,187 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>아트 요청 데스크</title>
+<!-- Art desk review page (manual tools/ART_DESK.md, planning 03_아트/33_아트_요청_데스크.md; user request 2026-10-08
+     "실시간 상호작용을 목표로 코덱스/챗 모두 호환 가능한 툴 및 문서").
+     Live with `python tools/art_desk.py serve` (uploads, verdicts, inbox focus, 1.5 s refresh); read-only anywhere else.
+     Per item: references with their roles (copy an image straight into ChatGPT), the ChatGPT message, drop/paste results,
+     automatic file checks, an in-game size preview next to balls, and the user's verdict (승인 / 다시 / 버림). -->
+<style>
+:root{--bg:#141c26;--panel:#1c2733;--line:#33414f;--ink:#e8edf2;--muted:#9aa8b6;--accent:#7dd3c0;--good:#4ade80;--warn:#fbbf24;--info:#60a5fa;--bad:#f87171;--deep:#0d131a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,'Malgun Gothic',sans-serif}
+header{position:sticky;top:0;z-index:2;background:var(--bg);padding:10px 16px;border-bottom:1px solid var(--line);display:flex;gap:6px 14px;align-items:center;flex-wrap:wrap}
+header h1{font-size:18px;margin:0}
+select,button,textarea{font:inherit;color:var(--ink)}
+select{background:var(--deep);border:1px solid var(--line);border-radius:6px;padding:4px 8px;max-width:100%}
+button{background:#243241;border:1px solid var(--line);border-radius:6px;padding:4px 10px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);color:var(--deep);border-color:var(--accent);font-weight:600}
+button.bad{border-color:#7f3434}
+button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+button:disabled{opacity:.45;cursor:default}
+textarea{background:var(--deep);border:1px solid var(--line);border-radius:6px;padding:5px 8px;width:100%;resize:vertical;min-height:44px}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:0 8px;font-size:12px;color:var(--muted);white-space:nowrap}
+.pill.live{border-color:var(--good);color:var(--good)}
+.pill.requested{color:var(--info);border-color:var(--info)}.pill.generated{color:var(--warn);border-color:var(--warn)}
+.pill.redo{color:var(--bad);border-color:var(--bad)}.pill.approved{color:var(--good);border-color:var(--good)}.pill.dropped{color:var(--muted)}
+.pill.pass{color:var(--good);border-color:var(--good)}.pill.warn{color:var(--warn);border-color:var(--warn)}.pill.fail{color:var(--bad);border-color:var(--bad)}
+#note{color:var(--muted);font-size:13px}
+main{display:grid;gap:14px;padding:16px;max-width:1180px;margin:0 auto}
+.intro{color:var(--muted);font-size:13px;margin:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:10px;min-width:0}
+.card.focus{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.card.drag{border-style:dashed;border-color:var(--accent)}
+.head{display:flex;gap:6px 10px;align-items:center;flex-wrap:wrap}
+.head h2{font-size:16px;margin:0}
+.head code{color:var(--muted);font-size:12.5px}
+.head .sp{flex:1}
+.meta{color:var(--muted);font-size:12.5px;margin:0}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:12px}
+@media(max-width:820px){.cols{grid-template-columns:minmax(0,1fr)}}
+.box{background:var(--deep);border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:8px;min-width:0;align-content:start}
+.box h3{font-size:13px;margin:0;color:var(--muted);font-weight:600}
+.refs{display:flex;gap:8px;flex-wrap:wrap}
+.ref{display:grid;gap:3px;width:150px;max-width:100%}
+.ref img{width:100%;height:110px;object-fit:contain;border-radius:6px;cursor:zoom-in}
+.ref small{color:var(--muted);font-size:11.5px;line-height:1.35}
+.checker{background-color:#cfd6dc;background-image:linear-gradient(45deg,#aab4bd 25%,transparent 25%),linear-gradient(-45deg,#aab4bd 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#aab4bd 75%),linear-gradient(-45deg,transparent 75%,#aab4bd 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;font:12px/1.45 ui-monospace,Consolas,monospace;color:#c9d3dc;max-height:180px;overflow:auto}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.drop{border:1px dashed var(--line);border-radius:8px;padding:10px;text-align:center;color:var(--muted);font-size:12.5px;cursor:pointer}
+.drop:focus{outline:2px solid var(--accent);outline-offset:1px}
+.result{display:grid;grid-template-columns:200px minmax(0,1fr);gap:10px;border-top:1px solid var(--line);padding-top:8px}
+@media(max-width:560px){.result{grid-template-columns:minmax(0,1fr)}}
+.result .shot{display:grid;gap:4px}
+.result img{width:100%;height:170px;object-fit:contain;border-radius:6px;cursor:zoom-in}
+.result canvas{width:100%;height:auto;border-radius:6px;background:#2a3a2a}
+.checks{margin:0;padding-left:16px;font-size:12.5px}
+.checks li.fail{color:var(--bad)}.checks li.warn{color:var(--warn)}.checks li.pass{color:var(--muted)}
+.fb{font-size:12.5px;color:var(--muted);margin:0;padding-left:16px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--accent);color:var(--deep);padding:6px 14px;border-radius:999px;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.empty{color:var(--muted);text-align:center;padding:40px 0}
+</style>
+<header>
+ <h1>아트 요청 데스크</h1>
+ <select id="batch" aria-label="배치"></select>
+ <span id="mode" class="pill">연결 확인 중</span>
+ <span id="note"></span>
+</header>
+<main id="main"><p class="empty">불러오는 중…</p></main>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BASE='../assets/art-desk/';
+const S={live:false,batch:null,desk:null,stamp:null,drafts:{},hover:null,bg:{}};
+const STATUS={requested:'요청됨',generated:'검수 대기',redo:'다시 요청',approved:'승인',dropped:'버림'};
+const GROUND={forest:'#3f5a3a',grassland:'#6f8a4a',lake:'#3d6a80',snow:'#c9d6dd',desert:'#c8a86a',volcano:'#3b2a2a',dark:'#151b22'};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1600);}
+async function getJSON(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(r.status);return r.json();}
+async function post(path,body,type='application/json'){const r=await fetch(path,{method:'POST',headers:{'Content-Type':type},body:type==='application/json'?JSON.stringify(body):body});const j=await r.json();if(!r.ok)throw new Error(j.error||r.status);return j;}
+async function copyText(t,label){try{await navigator.clipboard.writeText(t);toast(label+' 복사됨');}catch{prompt('복사하세요',t);}}
+async function copyImage(src){try{const blob=await (await fetch(src)).blob();const png=blob.type==='image/png'?blob:await toPng(blob);await navigator.clipboard.write([new ClipboardItem({'image/png':png})]);toast('이미지 복사됨 — ChatGPT에 붙여 넣기');}catch(e){window.open(src,'_blank');toast('복사 불가 — 새 탭에서 저장하세요');}}
+function toPng(blob){return new Promise(res=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas');c.width=i.width;c.height=i.height;c.getContext('2d').drawImage(i,0,0);c.toBlob(res,'image/png');};i.src=URL.createObjectURL(blob);});}
+function sizeLine(s={}){const p=[];if(s.px)p.push(`캔버스 ${s.px[0]}×${s.px[1]}px`);if(s.world)p.push(`게임 안 약 ${s.world[0]}×${s.world[1]}`);if(s.pivot)p.push(`피벗 ${s.pivot}`);if(s.aspect)p.push(`가로/세로 ${s.aspect}`);if(s.compare)p.push(`비교 공 지름 ${s.compare.join('·')}`);return p.join(' · ');}
+const url=f=>'../'+f;
+
+async function init(){
+ try{await getJSON('/__desk/ping');S.live=true;}catch{S.live=false;}
+ $('#mode').textContent=S.live?'실시간 연결':'읽기 전용';$('#mode').classList.toggle('live',S.live);
+ $('#note').textContent=S.live?'결과 이미지를 카드에 끌어다 놓거나, 카드 위에서 Ctrl+V':'python tools/art_desk.py serve 로 열면 업로드·판정이 됩니다';
+ let index={batches:[]};try{index=await getJSON(BASE+'index.json');}catch{}
+ const sel=$('#batch');sel.innerHTML=index.batches.map(b=>`<option value="${esc(b.batch)}">${esc(b.batch)} · ${esc(b.title)}</option>`).join('')||'<option value="">배치 없음</option>';
+ const want=decodeURIComponent(location.hash.slice(1));if(index.batches.some(b=>b.batch===want))sel.value=want;
+ sel.onchange=()=>{location.hash=sel.value;S.stamp=null;load();};
+ await load();setInterval(load,1500);
+}
+async function load(){
+ const b=$('#batch').value;if(!b){$('#main').innerHTML='<p class="empty">배치가 없습니다. <code>python tools/art_desk.py new &lt;배치&gt;</code></p>';return;}
+ let desk;try{desk=await getJSON(BASE+encodeURIComponent(b)+'/desk.json');}catch{return;}
+ if(desk.updated===S.stamp&&S.batch===b)return;
+ if(document.activeElement?.tagName==='TEXTAREA'&&S.batch===b){S.pending=true;return;}  // don't disturb typing
+ S.batch=b;S.desk=desk;S.stamp=desk.updated;S.pending=false;render();
+}
+function render(){
+ const d=S.desk,m=$('#main');
+ const counts=Object.keys(STATUS).map(k=>[k,d.items.filter(i=>i.status===k).length]).filter(([,n])=>n).map(([k,n])=>`${STATUS[k]} ${n}`).join(' · ');
+ m.innerHTML=`<p class="intro"><b>${esc(d.title)}</b> · ${counts||'항목 없음'} · 받을 항목: <b>${esc(d.focus||'없음')}</b> · 지시서 <a href="${BASE}${esc(d.batch)}/REQUEST.md" target="_blank" style="color:var(--accent)">REQUEST.md</a></p>`+d.items.map(card).join('');
+ for(const i of d.items)wire(i);
+}
+function card(i){
+ const last=i.results.at(-1),focus=S.desk.focus===i.id;
+ return `<section class="card${focus?' focus':''}" data-id="${esc(i.id)}" tabindex="-1">
+  <div class="head"><h2>${esc(i.title)}</h2><code>${esc(i.id)} · ${esc(i.kind)}</code><span class="pill ${i.status}">${STATUS[i.status]||i.status}</span><span class="sp"></span>
+   ${S.live?`<button data-act="focus" aria-pressed="${focus}" title="새로 받는 이름 없는 이미지(받은 파일 폴더·_inbox)를 이 항목으로">${focus?'받는 중':'이 항목으로 받기'}</button>`:''}</div>
+  <p class="meta">${esc(i.use)}${i.use?' · ':''}${esc(sizeLine(i.size))}${i.planning?.length?' · 근거 '+i.planning.map(esc).join(', '):''}</p>
+  <div class="cols">
+   <div class="box"><h3>참조 (순서대로 첨부)</h3><div class="refs">${i.refs.map((r,n)=>`<div class="ref"><img class="checker" src="${esc(url(r.file))}" data-zoom alt=""><small><b>${n+1}.</b> ${esc(r.role)}</small><button data-copyimg="${esc(url(r.file))}">이미지 복사</button></div>`).join('')||'<small class="meta">참조 없음</small>'}</div>
+    <h3>요청</h3><pre>${esc(i.prompt)}</pre>
+    <div class="row"><button class="primary" data-act="chat">ChatGPT 메시지 복사</button><button data-act="prompt">프롬프트만 복사</button><button data-act="codex">Codex 명령 복사</button></div>
+    ${i.accept?.length?`<h3>합격 기준</h3><ul class="checks">${i.accept.map(a=>`<li class="pass">${esc(a)}</li>`).join('')}</ul>`:''}
+   </div>
+   <div class="box"><h3>결과 ${i.results.length}개</h3>
+    ${S.live?`<div class="drop" tabindex="0" data-drop>결과 이미지를 여기로 끌어다 놓기 · 눌러서 파일 선택 · 카드 위에서 Ctrl+V<input type="file" accept="image/*" hidden></div>`:''}
+    ${i.results.slice().reverse().map(r=>result(i,r)).join('')||'<p class="meta">아직 결과가 없습니다.</p>'}
+    ${last&&S.live&&i.status!=='dropped'?verdict(i,last):''}
+    ${i.feedback?.length?`<h3>판정 기록</h3><ul class="fb">${i.feedback.slice().reverse().map(f=>`<li>${esc(f.at.slice(5,16).replace('T',' '))} · ${esc({ok:'승인',redo:'다시',drop:'버림',note:'메모'}[f.verdict]||f.verdict)} · ${esc((f.result||'').split('/').pop())}${f.note?' — '+esc(f.note):''}</li>`).join('')}</ul>`:''}
+   </div>
+  </div></section>`;
+}
+function result(i,r){
+ const c=r.checks||{verdict:'warn',items:[]},approved=i.approved?.result===r.file;
+ return `<div class="result"><div class="shot"><img class="checker" src="${esc(url(r.file))}?${esc(r.sha256.slice(0,8))}" data-zoom alt="">
+  ${i.size?.world?`<canvas width="400" height="220" data-scale="${esc(r.file)}"></canvas><div class="row">${Object.keys(GROUND).map(g=>`<button data-bg="${g}" style="padding:0 6px;font-size:11px">${g}</button>`).join('')}</div>`:''}</div>
+  <div><div class="row"><b>${esc(r.file.split('/').pop())}</b><span class="pill ${c.verdict}">자동 검사 ${({pass:'통과',warn:'확인 필요',fail:'불합격'})[c.verdict]}</span>${approved?'<span class="pill approved">승인됨</span>':''}</div>
+  <p class="meta">${esc(r.by)} · ${esc(r.at.slice(5,16).replace('T',' '))} · ${r.size?.join('×')} · 원래 이름 ${esc(r.originalName||'')}</p>
+  <ul class="checks">${c.items.map(x=>`<li class="${x.level}">${esc(x.msg)}</li>`).join('')}</ul>
+  ${r.promptUsed?`<details><summary class="meta">실제 사용 프롬프트</summary><pre>${esc(r.promptUsed)}</pre></details>`:''}</div></div>`;
+}
+function verdict(i,last){
+ return `<div class="box" style="background:transparent"><h3>판정 — ${esc(last.file.split('/').pop())}</h3>
+  <textarea data-memo placeholder="다시 요청할 때 고칠 점 (그대로 생성 담당에게 전달됩니다)">${esc(S.drafts[i.id]||'')}</textarea>
+  <div class="row"><button class="primary" data-verdict="ok">승인</button><button data-verdict="redo">다시 요청</button><button data-verdict="note">메모만 남기기</button><button class="bad" data-verdict="drop">버림</button></div></div>`;
+}
+function wire(i){
+ const el=document.querySelector(`.card[data-id="${CSS.escape(i.id)}"]`);if(!el)return;
+ el.onmouseenter=()=>S.hover=i.id;
+ el.querySelectorAll('[data-zoom]').forEach(img=>img.onclick=()=>window.open(img.src,'_blank'));
+ el.querySelectorAll('[data-copyimg]').forEach(b=>b.onclick=()=>copyImage(b.dataset.copyimg));
+ const q=a=>el.querySelector(`[data-act="${a}"]`);
+ q('chat').onclick=async()=>{const t=await (await fetch(`${BASE}${encodeURIComponent(S.batch)}/${encodeURIComponent(i.id)}/CHAT.txt`,{cache:'no-store'})).text();copyText(t,'ChatGPT 메시지');};
+ q('prompt').onclick=()=>copyText(i.prompt,'프롬프트');
+ q('codex').onclick=()=>copyText(`python tools/art_desk.py next ${S.batch}`,'Codex 명령');
+ if(q('focus'))q('focus').onclick=async()=>{await post(`/__desk/${encodeURIComponent(S.batch)}/${encodeURIComponent(i.id)}/focus`,{clear:S.desk.focus===i.id});S.stamp=null;load();};
+ const memo=el.querySelector('[data-memo]');if(memo)memo.oninput=()=>S.drafts[i.id]=memo.value;
+ if(memo)memo.onblur=()=>{if(S.pending){S.stamp=null;setTimeout(load,50);}};
+ el.querySelectorAll('[data-verdict]').forEach(b=>b.onclick=async()=>{
+  const v=b.dataset.verdict,note=memo?.value.trim()||'';
+  if(v==='redo'&&!note){toast('다시 요청은 고칠 점을 적어 주세요');memo?.focus();return;}
+  try{await post(`/__desk/${encodeURIComponent(S.batch)}/${encodeURIComponent(i.id)}/feedback`,{verdict:v,note,result:i.results.at(-1)?.file});S.drafts[i.id]='';toast({ok:'승인',redo:'다시 요청',drop:'버림',note:'메모'}[v]+' 기록됨');S.stamp=null;load();}catch(e){toast('실패: '+e.message);}
+ });
+ const drop=el.querySelector('[data-drop]');
+ if(drop){const input=drop.querySelector('input');drop.onclick=()=>input.click();drop.onkeydown=e=>{if(e.key==='Enter')input.click();};input.onchange=()=>[...input.files].forEach(f=>upload(i.id,f));
+  el.ondragover=e=>{e.preventDefault();el.classList.add('drag');};el.ondragleave=()=>el.classList.remove('drag');
+  el.ondrop=e=>{e.preventDefault();el.classList.remove('drag');[...e.dataTransfer.files].filter(f=>f.type.startsWith('image/')).forEach(f=>upload(i.id,f));};}
+ el.querySelectorAll('canvas[data-scale]').forEach(cv=>drawScale(cv,i,cv.dataset.scale));
+ el.querySelectorAll('[data-bg]').forEach(b=>b.onclick=()=>{S.bg[i.id]=b.dataset.bg;el.querySelectorAll('canvas[data-scale]').forEach(cv=>drawScale(cv,i,cv.dataset.scale));});
+}
+async function upload(id,file){
+ try{const r=await post(`/__desk/${encodeURIComponent(S.batch)}/${encodeURIComponent(id)}/upload?by=chat&name=${encodeURIComponent(file.name||'paste.png')}`,file,file.type||'image/png');toast(`${r.file.split('/').pop()} 받음 · 자동 검사 ${r.checks.verdict}`);S.stamp=null;load();}catch(e){toast('업로드 실패: '+e.message);}
+}
+// In-game size: the result drawn at its world size next to balls of the compare diameters, on a region ground colour.
+function drawScale(cv,item,file){
+ const ctx=cv.getContext('2d'),W=cv.width,H=cv.height,s=item.size,balls=s.compare||[60],ww=s.world[0],wh=s.world[1];
+ const span=ww+balls.reduce((a,b)=>a+b+24,0)+40,k=Math.min((W-20)/span,(H-30)/Math.max(wh,...balls));
+ ctx.fillStyle=GROUND[S.bg[item.id]||item.region||'forest']||GROUND.forest;ctx.fillRect(0,0,W,H);
+ const img=new Image();img.onload=()=>{
+  let x=20;const base=H-18;
+  ctx.drawImage(img,x,base-wh*k,ww*k,wh*k);x+=ww*k+24*k+10;
+  for(const d of balls){const r=d*k/2;ctx.fillStyle='#e05d5d';ctx.strokeStyle='#2a0f0f';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x+r,base-r,r,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#e8edf2';ctx.font='11px system-ui';ctx.fillText('공 '+d,x,H-4);x+=d*k+24*k;}
+  ctx.fillStyle='#e8edf2';ctx.font='11px system-ui';ctx.fillText(`${ww}×${wh}`,20,H-4);
+ };img.src=url(file);
+}
+document.addEventListener('paste',e=>{
+ if(!S.live||!S.hover||document.activeElement?.tagName==='TEXTAREA')return;
+ const f=[...e.clipboardData.files].find(f=>f.type.startsWith('image/'));if(f){e.preventDefault();upload(S.hover,f);}
+});
+init();
+</script>
