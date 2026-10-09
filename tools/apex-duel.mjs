@@ -1,21 +1,25 @@
 // apex-duel: player vs apex AI duel with the real game code (planning 00_기준/master/밸런싱.md B-FIGHT-01, inbox g6lbahey 2026-10-08).
-// Usage: node tools/apex-duel.mjs [playerSize=500] [aiSize=470] [seconds=60] [--ai-hp=<per size>] [--player-hp=<per size>] [--gap=115]
+// Usage: node tools/apex-duel.mjs [playerSize=500] [aiSize=470] [seconds=60] [--ai-hp=<per size>] [--player-hp=<per size>] [--gap=115] [--chase] [--seed=11]
 //   --ai-hp / --player-hp override balance ai.hpPerSize / player.hpPerSize for this run (player 0 = growth rule).
 // Prints max HP of both, one full-charge hit each way (as % of the target's max HP), then two runs:
 //   idle  — the player stands still: how often and how hard the AI attacks;
 //   fight — the player full-charges at the AI whenever it can: who wins and how fast.
+//   --chase: in fight the player also walks after the AI (shortest way round the wrapped world) when the body gap is over 30.
+//     Without it the player never moves, so a low-HP AI that wanders off to eat regenerates and the run reads as a draw
+//     (2026-10-09 small-duel check: 25 chase runs at sizes 40-200 had no draw, at the original and the 2x regen alike).
 // Also prints the player/AI max HP at common sizes, because the two use different HP rules (R-GROWTH-002 vs size × 5).
 import {createGame} from './headless.mjs';
 import {AIEntity} from '../js/ai.js';
 import {aiMaxHp} from '../js/entity.js';
 import {attackDamageForEntity, applyDefense, startAttack, canStartAttack} from '../js/combat.js';
+import {delta} from '../js/topology.js';
 
 const args = process.argv.slice(2), flag = (name) => { const a = args.find((s) => s.startsWith(`--${name}=`)); return a ? Number(a.split('=')[1]) : null; };
 const [playerSize = 500, aiSize = 470, seconds = 60] = args.filter((s) => !s.startsWith('--')).map(Number);
-const aiHpPerSize = flag('ai-hp'), playerHpPerSize = flag('player-hp'), gap = flag('gap') ?? 115;
+const aiHpPerSize = flag('ai-hp'), playerHpPerSize = flag('player-hp'), gap = flag('gap') ?? 115, seed = flag('seed') ?? 11, chase = args.includes('--chase');
 const grow = (e, size, b) => { while (e.size < size) e.addGrowth(Math.max(1, size - e.size), b); };
 function game() {
-  const g = createGame(11);
+  const g = createGame(seed);
   if (aiHpPerSize != null) g.balance.ai.hpPerSize = aiHpPerSize;
   if (playerHpPerSize != null) g.balance.player.hpPerSize = playerHpPerSize;
   return g;
@@ -36,8 +40,14 @@ function run(mode) {
   // stop at the first lost Life, or the run reads as "the AI stopped attacking, player at 100%".
   for (let i = 0; i < seconds * 60 && p.alive && ai.alive && g.lives === lives; i++) {
     // The player holds the attack for manualChargeSeconds (a full charge) before releasing, like a real player.
-    if (mode === 'fight' && canStartAttack(p) && Math.hypot(ai.x - p.x, ai.y - p.y) < 700) hold += 1 / 60; else hold = 0;
-    if (hold >= (b.attack.manualChargeSeconds ?? .9)) { startAttack(p, Math.atan2(ai.y - p.y, ai.x - p.x), b, 1); playerAttacks++; hold = 0; }
+    const dv = delta(p, ai, g.world), d = Math.hypot(dv.x, dv.y);
+    if (mode === 'fight' && canStartAttack(p) && d < 700) hold += 1 / 60; else hold = 0;
+    if (hold >= (b.attack.manualChargeSeconds ?? .9)) { startAttack(p, Math.atan2(dv.y, dv.x), b, 1); playerAttacks++; hold = 0; }
+    g.input.keys.clear();
+    if (chase && mode === 'fight' && d - (p.size + ai.size) / 2 > 30) {
+      const cx = dv.x / d, cy = dv.y / d;
+      if (cx > .38) g.input.keys.add('d'); if (cx < -.38) g.input.keys.add('a'); if (cy > .38) g.input.keys.add('s'); if (cy < -.38) g.input.keys.add('w');
+    }
     const before = p.hp;
     g.update(1 / 60);
     if (p.hp < before - 1) aiHits++;
@@ -50,7 +60,7 @@ function run(mode) {
 }
 const {b, p, ai} = setup(), full = 1 + (b.attack.maxChargeDamageBonus ?? 1);
 const hit = (a, t) => applyDefense(attackDamageForEntity(a, b) * (b.attack.baseDamageMultiplier ?? 1) * full, t.size, b);
-console.log(JSON.stringify({playerSize, aiSize, aiHpPerSize: b.ai.hpPerSize ?? 5, playerHpPerSize: b.player.hpPerSize ?? 0, playerMaxHp: Math.round(p.maxHp), aiMaxHp: Math.round(ai.maxHp),
+console.log(JSON.stringify({playerSize, aiSize, seed, chase, aiHpPerSize: b.ai.hpPerSize ?? 5, playerHpPerSize: b.player.hpPerSize ?? 0, playerMaxHp: Math.round(p.maxHp), aiMaxHp: Math.round(ai.maxHp),
   aiFullHitOnPlayerPct: +(100 * hit(ai, p) / p.maxHp).toFixed(1), playerFullHitOnAiPct: +(100 * hit(p, ai) / ai.maxHp).toFixed(1)}));
 const curve = [50, 100, 200, 300, 400, 500].map((size) => { const g = game(), q = g.player; grow(q, size, g.balance); return {size, playerMaxHp: Math.round(q.maxHp), aiMaxHp: Math.round(aiMaxHp(q.size, g.balance))}; });
 console.log(JSON.stringify({maxHpBySize: curve}));
