@@ -94,8 +94,41 @@
         "00_기준/master/룩뎁.md L-GROUND-05",
         "03_아트/34_리소스_요청_스택.md RR-011"
       ],
-      "status": "requested",
-      "results": [],
+      "status": "generated",
+      "results": [
+        {
+          "file": "assets/art-desk/lava-river-1/lava-strip-a/out-v1.png",
+          "sha256": "ab7ac1f07210af5cf396eecd1960aea2d77384efcdab909b56ac7dfda110c0a6",
+          "at": "2026-10-11T20:36:33+00:00",
+          "by": "codex",
+          "originalName": "lava-strip-a.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "checks": {
+            "verdict": "warn",
+            "items": [
+              {
+                "name": "alpha",
+                "level": "pass",
+                "msg": "투명 영역 65%"
+              },
+              {
+                "name": "margin",
+                "level": "warn",
+                "msg": "그림이 캔버스 가장자리에 닿음 — 잘렸는지 확인"
+              },
+              {
+                "name": "size",
+                "level": "pass",
+                "msg": "1536x1024"
+              }
+            ]
+          },
+          "promptUsed": "[Ball Game art request · lava-river-1 / lava-strip-a]\n용암 강 띠 A (RR-011 방식 A) — 화산 용암 강을 경로를 따라 휘어 붙이는 띠 그림. 강 폭 124 = 띠의 둑 바깥 끝 폭. 코드가 강 방향으로 천천히 밀어 흐름을 보임. drawLavaSurface 교체용\n\nAttached references:\n- Image 1: EXACT LOOK of the lava river in the approved gameplay concept: bright yellow-orange molten core with long flame streaks running along the river, red-orange edges, small dark crust islands, glowing cracks and dark basalt boulders on the banks\n- Image 2: the same river lower in the concept: how the molten core, crust and basalt bank meet\n- Image 3: whole volcano panel: palette, outline weight, flat painterly colour planes, scale of the river next to the balls\n\nPaint one straight horizontal section of the volcano lava river from the approved gameplay concept (reference 1 is the target look), seen from the same elevated top-down view, as a seamlessly tileable strip. The river runs left to right across the full canvas width; its left and right edges must tile seamlessly with each other. The band is horizontal and centred vertically and takes about the middle 45% of the canvas height. From the centre outward: a bright yellow-orange molten core with long flame streaks flowing along the river direction (left to right), red-orange molten edges with a few small dark cooled-crust islands, then a narrow dark basalt bank with low dark rocks and thin glowing cracks along both sides. Outside the banks fade quickly to full transparency; the top and bottom of the canvas are fully transparent. Flat painterly colour planes and dark subtle outlines like reference 3. The flame streaks must clearly run along the river so that slowly scrolling the strip reads as flowing lava.\n\nOutput: PNG with true transparent background, canvas 1536x1024 px. 1 image.\nAvoid: red dashed warning line, warning signs or any UI; balls, food pellets, text, arrows, range rings; a curved or diagonal river (keep it straight and horizontal); volcano ground, large boulders or trees outside the banks; opaque background or checkerboard; glow or bloom spilling into the transparent area; road-like centre dashes or a repeating diamond pattern; photoreal lava or heavy gradients\nRules: Use the attached reference images by their stated role; the first reference is the shape/identity source, the gameplay scene is the final look. True transparency when alpha is required: never paint a checkerboard, white or coloured backdrop. One isolated subject, centred, small even margin; do not crop the subject at the canvas edge. Keep the reference proportions; do not stretch or squash. No UI, text, numbers, range rings, arrows, balls/characters, terrain or extra props unless the item asks for them. Keep the soft upper-left light of the gameplay look; do not mirror or rotate baked lighting. Muted palette, broad flat colour planes, subtle dark outlines; no glossy gradients, photoreal texture or noisy tiny detail.\nAcceptance:\n- 원화의 용암 강(참조 1·2)과 같은 불꽃 줄기·주황 가장자리·검은 둑으로 보임\n- 가로로 곧고, 왼쪽 끝과 오른쪽 끝이 이어 붙음\n- 띠 위아래 바깥은 투명\n- 불꽃 줄기가 강 방향(가로)으로 흘러 밀면 흐름으로 보임\n- UI·경고 표시 없음\n"
+        }
+      ],
       "feedback": []
     },
     {
@@ -187,8 +220,41 @@
         "00_기준/master/룩뎁.md L-GROUND-05",
         "03_아트/34_리소스_요청_스택.md RR-011"
       ],
-      "status": "requested",
-      "results": [],
+      "status": "generated",
+      "results": [
+        {
+          "file": "assets/art-desk/lava-river-1/lava-strip-b/out-v1.png",
+          "sha256": "4299edecc1c4148599ad051692ae4e6751fd40e5045c8f951d6d33e927e170da",
+          "at": "2026-10-11T20:37:36+00:00",
+          "by": "codex",
+          "originalName": "lava-strip-b.png",
+          "size": [
+            1536,
+            1024
+          ],
+          "checks": {
+            "verdict": "warn",
+            "items": [
+              {
+                "name": "alpha",
+                "level": "pass",
+                "msg": "투명 영역 64%"
+              },
+              {
+                "name": "margin",
+                "level": "warn",
+                "msg": "그림이 캔버스 가장자리에 닿음 — 잘렸는지 확인"
+              },
+              {
+                "name": "size",
+                "level": "pass",
+                "msg": "1536x1024"
+              }
+            ]
+          },
+          "promptUsed": "[Ball Game art request · lava-river-1 / lava-strip-b]\n용암 강 띠 B (RR-011 방식 A) — 띠 A와 번갈아 붙여 반복이 덜 보이게 하는 두 번째 띠. 폭·색·둑은 띠 A와 같고 딱지 섬·불꽃 줄기 배치만 다름\n\nAttached references:\n- Image 1: EXACT LOOK of the lava river in the approved gameplay concept (lower stretch): molten core, crust islands, basalt bank\n- Image 2: the same river higher up in the concept: flame streaks and glowing cracks\n- Image 3: whole volcano panel: palette, outline weight, flat painterly colour planes\n\nPaint a second straight horizontal section of the same volcano lava river from the approved gameplay concept, as a seamlessly tileable strip, so it can alternate with another strip of the same river. Same layout as the first strip: the river runs left to right across the full canvas width with seamlessly tiling left and right edges; the band is horizontal, centred vertically and takes about the middle 45% of the canvas height. From the centre outward: bright yellow-orange molten core with long flame streaks flowing left to right, red-orange molten edges, then a narrow dark basalt bank with low dark rocks and thin glowing cracks on both sides; outside the banks fade quickly to full transparency, top and bottom of the canvas fully transparent. Vary only the details: place the dark cooled-crust islands, the flame streaks and the bank rocks differently, for example one slightly larger crust island and a wider bright streak. Flat painterly colour planes and dark subtle outlines like the references.\n\nOutput: PNG with true transparent background, canvas 1536x1024 px. 1 image.\nAvoid: red dashed warning line, warning signs or any UI; balls, food pellets, text, arrows, range rings; a curved or diagonal river; a different band width, height or colour from a matching straight strip; opaque background or checkerboard; glow or bloom spilling into the transparent area; road-like centre dashes or a repeating diamond pattern; photoreal lava or heavy gradients\nRules: Use the attached reference images by their stated role; the first reference is the shape/identity source, the gameplay scene is the final look. True transparency when alpha is required: never paint a checkerboard, white or coloured backdrop. One isolated subject, centred, small even margin; do not crop the subject at the canvas edge. Keep the reference proportions; do not stretch or squash. No UI, text, numbers, range rings, arrows, balls/characters, terrain or extra props unless the item asks for them. Keep the soft upper-left light of the gameplay look; do not mirror or rotate baked lighting. Muted palette, broad flat colour planes, subtle dark outlines; no glossy gradients, photoreal texture or noisy tiny detail.\nAcceptance:\n- 띠 A와 같은 폭·높이·색으로 번갈아 붙일 수 있음\n- 왼쪽 끝과 오른쪽 끝이 이어 붙음\n- 딱지 섬·불꽃 줄기 배치가 띠 A와 다름\n- 띠 바깥은 투명\n- UI·경고 표시 없음\n"
+        }
+      ],
       "feedback": []
     },
     {
@@ -278,10 +344,43 @@
         "00_기준/master/룩뎁.md L-GROUND-05",
         "03_아트/34_리소스_요청_스택.md RR-011"
       ],
-      "status": "requested",
-      "results": [],
+      "status": "generated",
+      "results": [
+        {
+          "file": "assets/art-desk/lava-river-1/lava-end-cap/out-v1.png",
+          "sha256": "ebac8a630640142b2fcff4362a0f9a65e9653343ad345f576d6973f95c075b04",
+          "at": "2026-10-11T20:38:46+00:00",
+          "by": "codex",
+          "originalName": "lava-end-cap.png",
+          "size": [
+            1254,
+            1254
+          ],
+          "checks": {
+            "verdict": "pass",
+            "items": [
+              {
+                "name": "alpha",
+                "level": "pass",
+                "msg": "투명 영역 63%"
+              },
+              {
+                "name": "margin",
+                "level": "pass",
+                "msg": "여백 좌4% 상22% 우4% 하21%"
+              },
+              {
+                "name": "size",
+                "level": "pass",
+                "msg": "1254x1254"
+              }
+            ]
+          },
+          "promptUsed": "[Ball Game art request · lava-river-1 / lava-end-cap]\n용암 강 끝 마개 (RR-011 방식 A) — 용암 강 줄이 끊기는 곳(강 시작·끝, 화산 경계)에 붙이는 둥근 끝. 띠와 같은 폭으로 왼쪽에서 들어와 둥글게 끝남\n\nAttached references:\n- Image 1: EXACT LOOK of the lava river in the approved gameplay concept: molten core, red-orange edges, crust, basalt bank and glowing cracks\n- Image 2: the cracked lava vent in the concept: how molten lava glows between dark basalt rocks and fades into thin cracks (use for the rounded basalt rim, not as the shape)\n- Image 3: whole volcano panel: palette and painterly style\n\nPaint the rounded end of the volcano lava river from the approved gameplay concept, seen from the same elevated top-down view. The river enters straight from the left edge of the canvas, horizontal and vertically centred, with its band taking about the middle 45% of the canvas height (same width as a straight river strip), and it ends near the centre-right in a rounded pool-like end. Same layers as the river: bright yellow-orange molten core with flame streaks, red-orange molten edges with small dark crust, and a narrow dark basalt bank with low dark rocks and thin glowing cracks that wraps around the rounded end. At the left edge the band must be cut straight so it joins a straight strip seamlessly. Everything outside the bank fades quickly to full transparency. Flat painterly colour planes and dark subtle outlines like the references.\n\nOutput: PNG with true transparent background, canvas 1024x1024 px. 1 image.\nAvoid: red dashed warning line, warning signs or any UI; balls, food pellets, text, arrows, range rings; an eruption, smoke column or volcano cone; opaque background or checkerboard; glow or bloom spilling into the transparent area; photoreal lava or heavy gradients\nRules: Use the attached reference images by their stated role; the first reference is the shape/identity source, the gameplay scene is the final look. True transparency when alpha is required: never paint a checkerboard, white or coloured backdrop. One isolated subject, centred, small even margin; do not crop the subject at the canvas edge. Keep the reference proportions; do not stretch or squash. No UI, text, numbers, range rings, arrows, balls/characters, terrain or extra props unless the item asks for them. Keep the soft upper-left light of the gameplay look; do not mirror or rotate baked lighting. Muted palette, broad flat colour planes, subtle dark outlines; no glossy gradients, photoreal texture or noisy tiny detail.\nAcceptance:\n- 왼쪽에서 띠와 같은 폭으로 들어와 둥글게 끝남\n- 왼쪽 끝이 곧게 잘려 띠와 이어 붙음\n- 둑이 둥근 끝을 감쌈\n- 바깥은 투명\n- UI·경고 표시 없음\n"
+        }
+      ],
       "feedback": []
     }
   ],
-  "updated": "2026-10-11T20:33:59+00:00"
+  "updated": "2026-10-11T20:38:46+00:00"
 }

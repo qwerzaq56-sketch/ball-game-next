@@ -25,7 +25,7 @@
 | ID | 종류 | 상태 | 제목 | 용도 | 크기 |
 |---|---|---|---|---|---|
 | lake-garland-v2 | object | generated | 진주 조개 다듬기 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스를 게임플레이 원화 크롭에 가깝게 다시 그림. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05) | canvas 1536x1024 px |
-| lake-garland-v3 | object | requested | 진주 조개 — 게임플레이 원화 크롭으로 다시 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스. 게임플레이 원화 gameplay-a-002 호수 칸의 조개를 그대로 옮김. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05). 게임은 투명 아닌 부분만 잘라 112×76으로 그림 | canvas 1536x1024 px |
+| lake-garland-v3 | object | generated | 진주 조개 — 게임플레이 원화 크롭으로 다시 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스. 게임플레이 원화 gameplay-a-002 호수 칸의 조개를 그대로 옮김. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05). 게임은 투명 아닌 부분만 잘라 112×76으로 그림 | canvas 1536x1024 px |
 
 ### lake-garland-v2 · 진주 조개 다듬기 (RR-010)
 
@@ -59,7 +59,7 @@ Acceptance:
 
 ### lake-garland-v3 · 진주 조개 — 게임플레이 원화 크롭으로 다시 (RR-010)
 
-상태: **requested** · 결과 0개
+상태: **generated** · 결과 1개
 
 - 참조 1 (EXACT TARGET: the pearl shells as drawn in the approved gameplay concept. Copy these shells: upright scalloped back valve fanning behind, pale grey-lavender shell with soft violet-grey shading, dark slate outline, sandy beige inner lip, one white-blue pearl with a small calm highlight, sitting in the water with a thin ripple ring and a soft dark underwater shadow): `assets/art-desk/obj-redo-1/lake-garland-v3/ref-1.png` ← `assets/art-batches/scene-coherent-v1/gameplay-a-002.png` · 크롭 [1370, 530, 150, 110]
 - 참조 2 (the same shells elsewhere in the concept: confirms the shape, the pair arrangement (one larger shell behind, one smaller shell in front and to the side) and the water contact): `assets/art-desk/obj-redo-1/lake-garland-v3/ref-2.png` ← `assets/art-batches/scene-coherent-v1/gameplay-a-002.png` · 크롭 [1720, 130, 110, 90]

@@ -24,13 +24,13 @@
 
 | ID | 종류 | 상태 | 제목 | 용도 | 크기 |
 |---|---|---|---|---|---|
-| lava-strip-a | terrain | requested | 용암 강 띠 A (RR-011 방식 A) | 화산 용암 강을 경로를 따라 휘어 붙이는 띠 그림. 강 폭 124 = 띠의 둑 바깥 끝 폭. 코드가 강 방향으로 천천히 밀어 흐름을 보임. drawLavaSurface 교체용 | canvas 1536x1024 px |
-| lava-strip-b | terrain | requested | 용암 강 띠 B (RR-011 방식 A) | 띠 A와 번갈아 붙여 반복이 덜 보이게 하는 두 번째 띠. 폭·색·둑은 띠 A와 같고 딱지 섬·불꽃 줄기 배치만 다름 | canvas 1536x1024 px |
-| lava-end-cap | terrain | requested | 용암 강 끝 마개 (RR-011 방식 A) | 용암 강 줄이 끊기는 곳(강 시작·끝, 화산 경계)에 붙이는 둥근 끝. 띠와 같은 폭으로 왼쪽에서 들어와 둥글게 끝남 | canvas 1024x1024 px |
+| lava-strip-a | terrain | generated | 용암 강 띠 A (RR-011 방식 A) | 화산 용암 강을 경로를 따라 휘어 붙이는 띠 그림. 강 폭 124 = 띠의 둑 바깥 끝 폭. 코드가 강 방향으로 천천히 밀어 흐름을 보임. drawLavaSurface 교체용 | canvas 1536x1024 px |
+| lava-strip-b | terrain | generated | 용암 강 띠 B (RR-011 방식 A) | 띠 A와 번갈아 붙여 반복이 덜 보이게 하는 두 번째 띠. 폭·색·둑은 띠 A와 같고 딱지 섬·불꽃 줄기 배치만 다름 | canvas 1536x1024 px |
+| lava-end-cap | terrain | generated | 용암 강 끝 마개 (RR-011 방식 A) | 용암 강 줄이 끊기는 곳(강 시작·끝, 화산 경계)에 붙이는 둥근 끝. 띠와 같은 폭으로 왼쪽에서 들어와 둥글게 끝남 | canvas 1024x1024 px |
 
 ### lava-strip-a · 용암 강 띠 A (RR-011 방식 A)
 
-상태: **requested** · 결과 0개
+상태: **generated** · 결과 1개
 
 - 참조 1 (EXACT LOOK of the lava river in the approved gameplay concept: bright yellow-orange molten core with long flame streaks running along the river, red-orange edges, small dark crust islands, glowing cracks and dark basalt boulders on the banks): `assets/art-desk/lava-river-1/lava-strip-a/ref-1.png` ← `assets/art-batches/scene-coherent-v1/gameplay-b-002.png` · 크롭 [1010, 0, 280, 430]
 - 참조 2 (the same river lower in the concept: how the molten core, crust and basalt bank meet): `assets/art-desk/lava-river-1/lava-strip-a/ref-2.png` ← `assets/art-batches/scene-coherent-v1/gameplay-b-002.png` · 크롭 [940, 530, 350, 279]
@@ -60,7 +60,7 @@ Acceptance:
 
 ### lava-strip-b · 용암 강 띠 B (RR-011 방식 A)
 
-상태: **requested** · 결과 0개
+상태: **generated** · 결과 1개
 
 - 참조 1 (EXACT LOOK of the lava river in the approved gameplay concept (lower stretch): molten core, crust islands, basalt bank): `assets/art-desk/lava-river-1/lava-strip-b/ref-1.png` ← `assets/art-batches/scene-coherent-v1/gameplay-b-002.png` · 크롭 [940, 530, 350, 279]
 - 참조 2 (the same river higher up in the concept: flame streaks and glowing cracks): `assets/art-desk/lava-river-1/lava-strip-b/ref-2.png` ← `assets/art-batches/scene-coherent-v1/gameplay-b-002.png` · 크롭 [1010, 0, 280, 430]
@@ -90,7 +90,7 @@ Acceptance:
 
 ### lava-end-cap · 용암 강 끝 마개 (RR-011 방식 A)
 
-상태: **requested** · 결과 0개
+상태: **generated** · 결과 1개
 
 - 참조 1 (EXACT LOOK of the lava river in the approved gameplay concept: molten core, red-orange edges, crust, basalt bank and glowing cracks): `assets/art-desk/lava-river-1/lava-end-cap/ref-1.png` ← `assets/art-batches/scene-coherent-v1/gameplay-b-002.png` · 크롭 [1010, 0, 280, 430]
 - 참조 2 (the cracked lava vent in the concept: how molten lava glows between dark basalt rocks and fades into thin cracks (use for the rounded basalt rim, not as the shape)): `assets/art-desk/lava-river-1/lava-end-cap/ref-2.png` ← `assets/art-batches/scene-coherent-v1/gameplay-b-002.png` · 크롭 [660, 420, 200, 200]
