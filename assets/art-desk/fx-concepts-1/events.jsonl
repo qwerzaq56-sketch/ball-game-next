@@ -5,3 +5,5 @@
 {"at": "2026-10-08T17:34:46+00:00", "event": "add", "id": "fx-sta-sheet", "refs": ["assets/art-desk/fx-concepts-1/fx-sta-sheet/ref-1.png", "assets/art-desk/fx-concepts-1/fx-sta-sheet/ref-2.png"]}
 {"at": "2026-10-08T17:35:02+00:00", "event": "add", "id": "fx-buf-01-ice", "refs": ["assets/art-desk/fx-concepts-1/fx-buf-01-ice/ref-1.png"]}
 {"at": "2026-10-08T17:35:03+00:00", "event": "add", "id": "fx-sta-sheet", "refs": ["assets/art-desk/fx-concepts-1/fx-sta-sheet/ref-1.png", "assets/art-desk/fx-concepts-1/fx-sta-sheet/ref-2.png"]}
+{"at": "2026-10-11T12:44:18+00:00", "event": "ingest", "id": "fx-buf-01-ice", "file": "assets/art-desk/fx-concepts-1/fx-buf-01-ice/out-v1.png", "by": "codex", "verdict": "pass"}
+{"at": "2026-10-11T12:45:26+00:00", "event": "ingest", "id": "fx-sta-sheet", "file": "assets/art-desk/fx-concepts-1/fx-sta-sheet/out-v1.png", "by": "codex", "verdict": "pass"}

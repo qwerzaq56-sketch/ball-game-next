@@ -24,12 +24,12 @@
 
 | ID | 종류 | 상태 | 제목 | 용도 | 크기 |
 |---|---|---|---|---|---|
-| fx-buf-01-ice | concept | requested | 얼음 보호막 원화 (FX-BUF-01) | 보호막 버프(수호 고목·모래 비석·흑요석) 원화 다시 그리기. 승인 뒤 정확 크롭 → 투명 리소스로 leaf-shield-002 교체 (RR-001) | canvas 1536x1024 px |
-| fx-sta-sheet | concept | requested | 상태 이펙트 8종 원화 시트 (FX-STA-01~08) | 코드로만 그리던 상태 표시 8종의 원화. 승인 뒤 상태별 정확 크롭 → 투명 리소스 (RR-002) | canvas 1536x1024 px |
+| fx-buf-01-ice | concept | generated | 얼음 보호막 원화 (FX-BUF-01) | 보호막 버프(수호 고목·모래 비석·흑요석) 원화 다시 그리기. 승인 뒤 정확 크롭 → 투명 리소스로 leaf-shield-002 교체 (RR-001) | canvas 1536x1024 px |
+| fx-sta-sheet | concept | generated | 상태 이펙트 8종 원화 시트 (FX-STA-01~08) | 코드로만 그리던 상태 표시 8종의 원화. 승인 뒤 상태별 정확 크롭 → 투명 리소스 (RR-002) | canvas 1536x1024 px |
 
 ### fx-buf-01-ice · 얼음 보호막 원화 (FX-BUF-01)
 
-상태: **requested** · 결과 0개
+상태: **generated** · 결과 1개
 
 - 참조 1 (scene base: keep this forest clearing, the guardian tree, the ball characters, their positions and the three panels (before / shield forming / shield held); replace ONLY the leaf shield effect): `assets/art-desk/fx-concepts-1/fx-buf-01-ice/ref-1.png` ← `planning/art-concepts/ally-buffs-001.png` · 크롭 [0, 0, 1536, 253]
 
@@ -55,7 +55,7 @@ Acceptance:
 
 ### fx-sta-sheet · 상태 이펙트 8종 원화 시트 (FX-STA-01~08)
 
-상태: **requested** · 결과 0개
+상태: **generated** · 결과 1개
 
 - 참조 1 (sheet format, flat-vector ground and lighting; a calm comparison sheet of equal panels): `assets/art-desk/fx-concepts-1/fx-sta-sheet/ref-1.png` ← `planning/art-concepts/ally-buffs-001.png`
 - 참조 2 (matte body rendering of the five species balls; use the plain middle row as the body look): `assets/art-desk/fx-concepts-1/fx-sta-sheet/ref-2.png` ← `planning/art-concepts/ball-002-refined.png`
