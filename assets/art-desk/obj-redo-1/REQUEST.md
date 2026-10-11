@@ -26,6 +26,7 @@
 |---|---|---|---|---|---|
 | lake-garland-v2 | object | generated | 진주 조개 다듬기 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스를 게임플레이 원화 크롭에 가깝게 다시 그림. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05) | canvas 1536x1024 px |
 | lake-garland-v3 | object | generated | 진주 조개 — 게임플레이 원화 크롭으로 다시 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스. 게임플레이 원화 gameplay-a-002 호수 칸의 조개를 그대로 옮김. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05). 게임은 투명 아닌 부분만 잘라 112×76으로 그림 | canvas 1536x1024 px |
+| lake-garland-v4 | object | requested | 진주 조개 — 돌·연잎과 어우러진 물가 장면 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스. 조개만이 아니라 게임플레이 원화처럼 이끼 돌·연잎·수초·갈대가 함께 있는 작은 물가 장면으로 그려 호수 바닥과 어우러지게 함(사용자 10-12). 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체, 게임 안 그리기 크기(지금 112×76)는 장면에 맞춰 키움. 상호작용 반경 68은 그대로 | canvas 1536x1024 px |
 
 ### lake-garland-v2 · 진주 조개 다듬기 (RR-010)
 
@@ -83,6 +84,38 @@ Acceptance:
 - 게임플레이 원화 크롭(참조 1·2)의 조개와 같은 형태·색·윤곽으로 보임
 - 큰 조개 뒤·작은 조개 앞의 두 개 배치
 - 물에 닿는 잔물결과 물속 그림자가 투명하게 사라짐
+- 빛 번짐 없음
+- 투명 배경, 잘림 없음
+```
+
+### lake-garland-v4 · 진주 조개 — 돌·연잎과 어우러진 물가 장면 (RR-010)
+
+상태: **requested** · 결과 0개
+
+- 참조 1 (EXACT TARGET SCENE from the approved gameplay concept: the two pearl shells in the water with a mossy grey rock beside them, floating four-leaf water plants, a lily pad, a loose pearl and ripples. Copy this composition and how the pieces overlap): `assets/art-desk/obj-redo-1/lake-garland-v4/ref-1.png` ← `assets/art-batches/scene-coherent-v1/gameplay-a-002.png` · 크롭 [1310, 500, 260, 200]
+- 참조 2 (the same shells at another spot in the concept: shells against large grey bank rocks, reeds and lily pads; shows how rocks and plants frame the shells): `assets/art-desk/obj-redo-1/lake-garland-v4/ref-2.png` ← `assets/art-batches/scene-coherent-v1/gameplay-a-002.png` · 크롭 [1690, 90, 250, 170]
+- 참조 3 (the shell design to keep for the two shells (shape, colour, outline, pearls); only the shells, not its empty surroundings): `assets/art-desk/obj-redo-1/lake-garland-v4/ref-3.png` ← `assets/art-desk/obj-redo-1/lake-garland-v3/out-v1.png`
+- 참조 4 (the whole lake panel: palette, outline weight, flat painterly colour planes, soft upper-left light, how the props sit on the deep blue water): `assets/art-desk/obj-redo-1/lake-garland-v4/ref-4.png` ← `assets/art-batches/scene-coherent-v1/gameplay-a-002.png` · 크롭 [1300, 0, 644, 809]
+
+```text
+[Ball Game art request · obj-redo-1 / lake-garland-v4]
+진주 조개 — 돌·연잎과 어우러진 물가 장면 (RR-010) — 호수 치장 오브젝트 lake-garland 리소스. 조개만이 아니라 게임플레이 원화처럼 이끼 돌·연잎·수초·갈대가 함께 있는 작은 물가 장면으로 그려 호수 바닥과 어우러지게 함(사용자 10-12). 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체, 게임 안 그리기 크기(지금 112×76)는 장면에 맞춰 키움. 상호작용 반경 68은 그대로
+
+Attached references:
+- Image 1: EXACT TARGET SCENE from the approved gameplay concept: the two pearl shells in the water with a mossy grey rock beside them, floating four-leaf water plants, a lily pad, a loose pearl and ripples. Copy this composition and how the pieces overlap
+- Image 2: the same shells at another spot in the concept: shells against large grey bank rocks, reeds and lily pads; shows how rocks and plants frame the shells
+- Image 3: the shell design to keep for the two shells (shape, colour, outline, pearls); only the shells, not its empty surroundings
+- Image 4: the whole lake panel: palette, outline weight, flat painterly colour planes, soft upper-left light, how the props sit on the deep blue water
+
+Paint a small lakeside vignette from the approved gameplay concept (reference 1 is the target scene, reference 2 shows the same idea elsewhere) as one reusable decoration. In the middle, the two open pearl shells as a pair, one larger behind and one smaller in front, using the shell design of reference 3. Around them, exactly in the concept's style: one or two mossy grey rocks partly in the water beside the shells, two or three round lily pads, a few small floating four-leaf water plants, a short clump of reeds at one side and one small loose pearl, with thin pale ripple rings and soft dark underwater shadows where things meet the water. The shells stay the clear focal point; the rocks and plants frame them and must not cover them. Do not paint the open lake water itself: the water colour between the props is left transparent, and every outer edge (ripples, shadows, plant tips) fades softly to transparency so the vignette blends into the game's lake floor. Same elevated top-down view, soft upper-left light, flat painterly colour planes and outline weight as reference 4. Isolated on true transparency, centred, filling about three quarters of the canvas width with an even margin.
+
+Output: PNG with true transparent background, canvas 1536x1024 px. 1 image.
+Avoid: an opaque square or circular patch of water behind the vignette; hard cut-out edges around the group; shells hidden behind rocks or leaves; three shells or a triangle layout; outer glow, bloom or halo; glossy 3D, photoreal textures or heavy gradients; bright neon pearls; trees, land ground, sand beach; text, UI, range rings, arrows, balls; checkerboard or coloured backdrop
+Rules: Use the attached reference images by their stated role; the first reference is the shape/identity source, the gameplay scene is the final look. True transparency when alpha is required: never paint a checkerboard, white or coloured backdrop. One isolated subject, centred, small even margin; do not crop the subject at the canvas edge. Keep the reference proportions; do not stretch or squash. No UI, text, numbers, range rings, arrows, balls/characters, terrain or extra props unless the item asks for them. Keep the soft upper-left light of the gameplay look; do not mirror or rotate baked lighting. Muted palette, broad flat colour planes, subtle dark outlines; no glossy gradients, photoreal texture or noisy tiny detail.
+Acceptance:
+- 게임플레이 원화 크롭(참조 1·2)처럼 조개·이끼 돌·연잎·수초·갈대가 한 장면으로 보임
+- 조개 두 개가 가운데 눈에 띄고 돌·잎에 가려지지 않음
+- 물 색은 칠하지 않고 바깥 가장자리가 투명하게 흐려져 호수 바닥과 어우러짐
 - 빛 번짐 없음
 - 투명 배경, 잘림 없음
 ```
