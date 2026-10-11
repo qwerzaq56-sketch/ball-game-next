@@ -24,11 +24,11 @@
 
 | ID | 종류 | 상태 | 제목 | 용도 | 크기 |
 |---|---|---|---|---|---|
-| lake-garland-v2 | object | requested | 진주 조개 다듬기 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스를 게임플레이 원화 크롭에 가깝게 다시 그림. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05) | canvas 1536x1024 px |
+| lake-garland-v2 | object | generated | 진주 조개 다듬기 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스를 게임플레이 원화 크롭에 가깝게 다시 그림. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05) | canvas 1536x1024 px |
 
 ### lake-garland-v2 · 진주 조개 다듬기 (RR-010)
 
-상태: **requested** · 결과 0개
+상태: **generated** · 결과 1개
 
 - 참조 1 (exact crop of the approved gameplay concept: the shape, colours, outline weight and arrangement to match (three open shells with pearls, triangle layout)): `assets/art-desk/obj-redo-1/lake-garland-v2/ref-1.png` ← `assets/art-batches/scene-coherent-v1/lake-garland/reference.png` · 크롭 [0, 0, 330, 98]
 - 참조 2 (current game resource: keep its canvas framing and the size of the shell group on the canvas so the in-game scale stays the same; do NOT copy its strong blue glow halo or its brighter, puffier rendering): `assets/art-desk/obj-redo-1/lake-garland-v2/ref-2.png` ← `assets/art-batches/scene-coherent-v1/lake-garland/asset.png`

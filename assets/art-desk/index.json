@@ -15,10 +15,10 @@
     {
       "batch": "obj-redo-1",
       "title": "오브젝트 다듬기 1차: 진주 조개",
-      "updated": "2026-10-11T13:04:45+00:00",
+      "updated": "2026-10-11T13:06:25+00:00",
       "counts": {
-        "requested": 1,
-        "generated": 0,
+        "requested": 0,
+        "generated": 1,
         "redo": 0,
         "approved": 0,
         "dropped": 0
