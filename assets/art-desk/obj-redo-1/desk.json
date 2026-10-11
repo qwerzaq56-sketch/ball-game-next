@@ -1,0 +1,92 @@
+{
+  "format": "art-desk-v1",
+  "batch": "obj-redo-1",
+  "title": "오브젝트 다듬기 1차: 진주 조개",
+  "created": "2026-10-11T13:04:45+00:00",
+  "focus": null,
+  "items": [
+    {
+      "id": "lake-garland-v2",
+      "kind": "object",
+      "title": "진주 조개 다듬기 (RR-010)",
+      "use": "호수 치장 오브젝트 lake-garland 리소스를 게임플레이 원화 크롭에 가깝게 다시 그림. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05)",
+      "region": "lake",
+      "size": {
+        "px": [
+          1536,
+          1024
+        ]
+      },
+      "alpha": true,
+      "variants": 1,
+      "refs": [
+        {
+          "file": "assets/art-desk/obj-redo-1/lake-garland-v2/ref-1.png",
+          "role": "exact crop of the approved gameplay concept: the shape, colours, outline weight and arrangement to match (three open shells with pearls, triangle layout)",
+          "source": "assets/art-batches/scene-coherent-v1/lake-garland/reference.png",
+          "sourceSha256": "ea3f7969795bf93c480a7e6d2b71c248c22cee170ecf2584c7342ff4297176f0",
+          "crop": [
+            0,
+            0,
+            330,
+            98
+          ],
+          "sha256": "8e679f9ffbf66f37d7fe8a1dbfc1b586c18d21b03bf057773d60953305c9d9c9",
+          "size": [
+            330,
+            98
+          ]
+        },
+        {
+          "file": "assets/art-desk/obj-redo-1/lake-garland-v2/ref-2.png",
+          "role": "current game resource: keep its canvas framing and the size of the shell group on the canvas so the in-game scale stays the same; do NOT copy its strong blue glow halo or its brighter, puffier rendering",
+          "source": "assets/art-batches/scene-coherent-v1/lake-garland/asset.png",
+          "sourceSha256": "6e4633c83b9a4c8d37f2066a9c794eb72fb3bade581d2fa4d402212849afebdc",
+          "crop": null,
+          "sha256": "95a7793821678d714c7a61acc4159c7bab4365081948119279cfbf8f518bb8e8",
+          "size": [
+            1536,
+            1024
+          ]
+        },
+        {
+          "file": "assets/art-desk/obj-redo-1/lake-garland-v2/ref-3.png",
+          "role": "final gameplay look of the lake region: muted palette, flat matte colour planes, soft upper-left light",
+          "source": "planning/art-concepts/gameplay-regions-a-001.png",
+          "sourceSha256": "14e72f571c49500d455eb0039ad9cd2433b35f8e7eefb709873658dfd03ebfc0",
+          "crop": null,
+          "sha256": "d5dee37fd56331b3156627a6639afe20f747747c80b1fb6762042d08ba20ce7e",
+          "size": [
+            1944,
+            809
+          ]
+        }
+      ],
+      "prompt": "Redraw the pearl-shell lake decoration so it matches reference image 1 (the approved gameplay concept crop) much more closely. Three open scalloped shells, each holding one pearl on a sandy beige inner lip, arranged in a triangle (one top, two below) exactly as in reference 1. Use the muted dusty blue-violet shell colour, darker blue-grey outlines, flat matte colour planes and the small calm pearl highlights of reference 1. Keep the canvas framing and the overall size of the shell group from reference 2 so the in-game scale does not change, but remove its glowing halo: no outer glow, no bloom, no light rays. The shells sit flat as seen from the elevated top-down gameplay camera, with a soft upper-left light and only a faint contact shadow. Isolated object on true transparency, centred with an even margin.",
+      "avoid": [
+        "outer glow, bloom or halo around the shells",
+        "water, waves, ground or rocks around the object",
+        "glossy 3D, heavy gradients or photoreal shell texture",
+        "bright neon pearls",
+        "extra shells, starfish or other new ornaments",
+        "text, UI, range rings, arrows, balls",
+        "checkerboard or coloured backdrop"
+      ],
+      "accept": [
+        "원화 크롭(참조 1)과 형태·색·윤곽이 같은 계열로 보임",
+        "빛 번짐(halo)이 없음",
+        "세 개의 조개·진주 삼각 배치 유지",
+        "지금 리소스와 같은 화면 크기(조개 무리 크기)",
+        "투명 배경, 잘림 없음"
+      ],
+      "planning": [
+        "00_기준/master/룩뎁.md L-OBJ-05",
+        "03_아트/34_리소스_요청_스택.md RR-010"
+      ],
+      "status": "requested",
+      "results": [],
+      "feedback": []
+    }
+  ],
+  "updated": "2026-10-11T13:04:45+00:00"
+}
