@@ -1,0 +1,19 @@
+[Ball Game art request · lava-river-1 / lava-strip-b]
+용암 강 띠 B (RR-011 방식 A) — 띠 A와 번갈아 붙여 반복이 덜 보이게 하는 두 번째 띠. 폭·색·둑은 띠 A와 같고 딱지 섬·불꽃 줄기 배치만 다름
+
+Attached references:
+- Image 1: EXACT LOOK of the lava river in the approved gameplay concept (lower stretch): molten core, crust islands, basalt bank
+- Image 2: the same river higher up in the concept: flame streaks and glowing cracks
+- Image 3: whole volcano panel: palette, outline weight, flat painterly colour planes
+
+Paint a second straight horizontal section of the same volcano lava river from the approved gameplay concept, as a seamlessly tileable strip, so it can alternate with another strip of the same river. Same layout as the first strip: the river runs left to right across the full canvas width with seamlessly tiling left and right edges; the band is horizontal, centred vertically and takes about the middle 45% of the canvas height. From the centre outward: bright yellow-orange molten core with long flame streaks flowing left to right, red-orange molten edges, then a narrow dark basalt bank with low dark rocks and thin glowing cracks on both sides; outside the banks fade quickly to full transparency, top and bottom of the canvas fully transparent. Vary only the details: place the dark cooled-crust islands, the flame streaks and the bank rocks differently, for example one slightly larger crust island and a wider bright streak. Flat painterly colour planes and dark subtle outlines like the references.
+
+Output: PNG with true transparent background, canvas 1536x1024 px. 1 image.
+Avoid: red dashed warning line, warning signs or any UI; balls, food pellets, text, arrows, range rings; a curved or diagonal river; a different band width, height or colour from a matching straight strip; opaque background or checkerboard; glow or bloom spilling into the transparent area; road-like centre dashes or a repeating diamond pattern; photoreal lava or heavy gradients
+Rules: Use the attached reference images by their stated role; the first reference is the shape/identity source, the gameplay scene is the final look. True transparency when alpha is required: never paint a checkerboard, white or coloured backdrop. One isolated subject, centred, small even margin; do not crop the subject at the canvas edge. Keep the reference proportions; do not stretch or squash. No UI, text, numbers, range rings, arrows, balls/characters, terrain or extra props unless the item asks for them. Keep the soft upper-left light of the gameplay look; do not mirror or rotate baked lighting. Muted palette, broad flat colour planes, subtle dark outlines; no glossy gradients, photoreal texture or noisy tiny detail.
+Acceptance:
+- 띠 A와 같은 폭·높이·색으로 번갈아 붙일 수 있음
+- 왼쪽 끝과 오른쪽 끝이 이어 붙음
+- 딱지 섬·불꽃 줄기 배치가 띠 A와 다름
+- 띠 바깥은 투명
+- UI·경고 표시 없음

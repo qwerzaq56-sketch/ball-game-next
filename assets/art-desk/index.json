@@ -13,11 +13,23 @@
       }
     },
     {
+      "batch": "lava-river-1",
+      "title": "용암 강 띠 리소스 (RR-011 방식 A)",
+      "updated": "2026-10-11T20:33:59+00:00",
+      "counts": {
+        "requested": 3,
+        "generated": 0,
+        "redo": 0,
+        "approved": 0,
+        "dropped": 0
+      }
+    },
+    {
       "batch": "obj-redo-1",
       "title": "오브젝트 다듬기 1차: 진주 조개",
-      "updated": "2026-10-11T13:06:25+00:00",
+      "updated": "2026-10-11T20:33:57+00:00",
       "counts": {
-        "requested": 0,
+        "requested": 1,
         "generated": 1,
         "redo": 0,
         "approved": 0,

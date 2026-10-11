@@ -1,0 +1,4 @@
+{"at": "2026-10-11T20:33:58+00:00", "event": "new", "title": "용암 강 띠 리소스 (RR-011 방식 A)"}
+{"at": "2026-10-11T20:33:58+00:00", "event": "add", "id": "lava-strip-a", "refs": ["assets/art-desk/lava-river-1/lava-strip-a/ref-1.png", "assets/art-desk/lava-river-1/lava-strip-a/ref-2.png", "assets/art-desk/lava-river-1/lava-strip-a/ref-3.png"]}
+{"at": "2026-10-11T20:33:59+00:00", "event": "add", "id": "lava-strip-b", "refs": ["assets/art-desk/lava-river-1/lava-strip-b/ref-1.png", "assets/art-desk/lava-river-1/lava-strip-b/ref-2.png", "assets/art-desk/lava-river-1/lava-strip-b/ref-3.png"]}
+{"at": "2026-10-11T20:33:59+00:00", "event": "add", "id": "lava-end-cap", "refs": ["assets/art-desk/lava-river-1/lava-end-cap/ref-1.png", "assets/art-desk/lava-river-1/lava-end-cap/ref-2.png", "assets/art-desk/lava-river-1/lava-end-cap/ref-3.png"]}

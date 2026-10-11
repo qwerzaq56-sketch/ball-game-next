@@ -1,0 +1,19 @@
+[Ball Game art request · lava-river-1 / lava-end-cap]
+용암 강 끝 마개 (RR-011 방식 A) — 용암 강 줄이 끊기는 곳(강 시작·끝, 화산 경계)에 붙이는 둥근 끝. 띠와 같은 폭으로 왼쪽에서 들어와 둥글게 끝남
+
+Attached references:
+- Image 1: EXACT LOOK of the lava river in the approved gameplay concept: molten core, red-orange edges, crust, basalt bank and glowing cracks
+- Image 2: the cracked lava vent in the concept: how molten lava glows between dark basalt rocks and fades into thin cracks (use for the rounded basalt rim, not as the shape)
+- Image 3: whole volcano panel: palette and painterly style
+
+Paint the rounded end of the volcano lava river from the approved gameplay concept, seen from the same elevated top-down view. The river enters straight from the left edge of the canvas, horizontal and vertically centred, with its band taking about the middle 45% of the canvas height (same width as a straight river strip), and it ends near the centre-right in a rounded pool-like end. Same layers as the river: bright yellow-orange molten core with flame streaks, red-orange molten edges with small dark crust, and a narrow dark basalt bank with low dark rocks and thin glowing cracks that wraps around the rounded end. At the left edge the band must be cut straight so it joins a straight strip seamlessly. Everything outside the bank fades quickly to full transparency. Flat painterly colour planes and dark subtle outlines like the references.
+
+Output: PNG with true transparent background, canvas 1024x1024 px. 1 image.
+Avoid: red dashed warning line, warning signs or any UI; balls, food pellets, text, arrows, range rings; an eruption, smoke column or volcano cone; opaque background or checkerboard; glow or bloom spilling into the transparent area; photoreal lava or heavy gradients
+Rules: Use the attached reference images by their stated role; the first reference is the shape/identity source, the gameplay scene is the final look. True transparency when alpha is required: never paint a checkerboard, white or coloured backdrop. One isolated subject, centred, small even margin; do not crop the subject at the canvas edge. Keep the reference proportions; do not stretch or squash. No UI, text, numbers, range rings, arrows, balls/characters, terrain or extra props unless the item asks for them. Keep the soft upper-left light of the gameplay look; do not mirror or rotate baked lighting. Muted palette, broad flat colour planes, subtle dark outlines; no glossy gradients, photoreal texture or noisy tiny detail.
+Acceptance:
+- 왼쪽에서 띠와 같은 폭으로 들어와 둥글게 끝남
+- 왼쪽 끝이 곧게 잘려 띠와 이어 붙음
+- 둑이 둥근 끝을 감쌈
+- 바깥은 투명
+- UI·경고 표시 없음

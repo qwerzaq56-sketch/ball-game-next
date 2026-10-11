@@ -119,7 +119,100 @@
         }
       ],
       "feedback": []
+    },
+    {
+      "id": "lake-garland-v3",
+      "kind": "object",
+      "title": "진주 조개 — 게임플레이 원화 크롭으로 다시 (RR-010)",
+      "use": "호수 치장 오브젝트 lake-garland 리소스. 게임플레이 원화 gameplay-a-002 호수 칸의 조개를 그대로 옮김. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05). 게임은 투명 아닌 부분만 잘라 112×76으로 그림",
+      "region": "lake",
+      "size": {
+        "px": [
+          1536,
+          1024
+        ]
+      },
+      "alpha": true,
+      "variants": 1,
+      "refs": [
+        {
+          "file": "assets/art-desk/obj-redo-1/lake-garland-v3/ref-1.png",
+          "role": "EXACT TARGET: the pearl shells as drawn in the approved gameplay concept. Copy these shells: upright scalloped back valve fanning behind, pale grey-lavender shell with soft violet-grey shading, dark slate outline, sandy beige inner lip, one white-blue pearl with a small calm highlight, sitting in the water with a thin ripple ring and a soft dark underwater shadow",
+          "source": "assets/art-batches/scene-coherent-v1/gameplay-a-002.png",
+          "sourceSha256": "4aeea7321b2ccc4a2ef22f70ff331025642bef6c344aa6768eeeccfef8ec7ebb",
+          "crop": [
+            1370,
+            530,
+            150,
+            110
+          ],
+          "sha256": "77a6120b74eb9f8b4f74d8d7d1bba84ad94acf499c8e46a365e612a329040d72",
+          "size": [
+            150,
+            110
+          ]
+        },
+        {
+          "file": "assets/art-desk/obj-redo-1/lake-garland-v3/ref-2.png",
+          "role": "the same shells elsewhere in the concept: confirms the shape, the pair arrangement (one larger shell behind, one smaller shell in front and to the side) and the water contact",
+          "source": "assets/art-batches/scene-coherent-v1/gameplay-a-002.png",
+          "sourceSha256": "4aeea7321b2ccc4a2ef22f70ff331025642bef6c344aa6768eeeccfef8ec7ebb",
+          "crop": [
+            1720,
+            130,
+            110,
+            90
+          ],
+          "sha256": "3847978e69f7c0275bdbcc4a783a640777737f567fecc5d7b0089c7268f058f0",
+          "size": [
+            110,
+            90
+          ]
+        },
+        {
+          "file": "assets/art-desk/obj-redo-1/lake-garland-v3/ref-3.png",
+          "role": "the whole lake panel of the gameplay concept: palette, outline weight, flat painterly colour planes, soft upper-left light, detail density next to the balls",
+          "source": "assets/art-batches/scene-coherent-v1/gameplay-a-002.png",
+          "sourceSha256": "4aeea7321b2ccc4a2ef22f70ff331025642bef6c344aa6768eeeccfef8ec7ebb",
+          "crop": [
+            1300,
+            0,
+            644,
+            809
+          ],
+          "sha256": "e66a4470e48d33c633cb6bd34f38a2465c5be3cf3da9e0f3a7dae616cf5457e7",
+          "size": [
+            644,
+            809
+          ]
+        }
+      ],
+      "prompt": "Redraw the lake pearl-shell decoration exactly as it appears in the approved gameplay concept (reference 1 is the target, reference 2 shows the same shells again). Two open scallop shells as a pair: one larger shell behind and one smaller shell in front and slightly to the side, overlapping a little, exactly like reference 1. Each shell has an upright fan-shaped back valve with broad flat ridges, pale grey-lavender colour with soft violet-grey shading, a dark slate outline, a sandy beige inner lip and one round white-blue pearl with a small calm highlight. Keep the concept's slightly elevated top-down view and soft upper-left light. Include only what belongs to the object in the water: a thin pale ripple ring where each shell meets the water and a soft dark shadow under the shells, both fading out to transparency. No surrounding water colour, rocks, lily pads or ground. Match the flat painterly colour planes and outline weight of reference 3 so it sits naturally next to the balls. Isolated object on true transparency, centred with an even margin, filling about two thirds of the canvas width.",
+      "avoid": [
+        "three shells or a triangle layout (that was the old object sheet design)",
+        "outer glow, bloom or halo",
+        "opaque water patch, rocks, lily pads or ground behind the shells",
+        "glossy 3D, photoreal shell texture or heavy gradients",
+        "bright neon pearls",
+        "starfish, coral or other new ornaments",
+        "text, UI, range rings, arrows, balls",
+        "checkerboard or coloured backdrop"
+      ],
+      "accept": [
+        "게임플레이 원화 크롭(참조 1·2)의 조개와 같은 형태·색·윤곽으로 보임",
+        "큰 조개 뒤·작은 조개 앞의 두 개 배치",
+        "물에 닿는 잔물결과 물속 그림자가 투명하게 사라짐",
+        "빛 번짐 없음",
+        "투명 배경, 잘림 없음"
+      ],
+      "planning": [
+        "00_기준/master/룩뎁.md L-OBJ-05",
+        "03_아트/34_리소스_요청_스택.md RR-010"
+      ],
+      "status": "requested",
+      "results": [],
+      "feedback": []
     }
   ],
-  "updated": "2026-10-11T13:06:25+00:00"
+  "updated": "2026-10-11T20:33:57+00:00"
 }
