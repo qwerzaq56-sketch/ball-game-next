@@ -4,3 +4,4 @@
 {"at": "2026-10-11T20:33:57+00:00", "event": "add", "id": "lake-garland-v3", "refs": ["assets/art-desk/obj-redo-1/lake-garland-v3/ref-1.png", "assets/art-desk/obj-redo-1/lake-garland-v3/ref-2.png", "assets/art-desk/obj-redo-1/lake-garland-v3/ref-3.png"]}
 {"at": "2026-10-11T20:35:27+00:00", "event": "ingest", "id": "lake-garland-v3", "file": "assets/art-desk/obj-redo-1/lake-garland-v3/out-v1.png", "by": "codex", "verdict": "pass"}
 {"at": "2026-10-11T20:40:13+00:00", "event": "add", "id": "lake-garland-v4", "refs": ["assets/art-desk/obj-redo-1/lake-garland-v4/ref-1.png", "assets/art-desk/obj-redo-1/lake-garland-v4/ref-2.png", "assets/art-desk/obj-redo-1/lake-garland-v4/ref-3.png", "assets/art-desk/obj-redo-1/lake-garland-v4/ref-4.png"]}
+{"at": "2026-10-11T20:41:45+00:00", "event": "ingest", "id": "lake-garland-v4", "file": "assets/art-desk/obj-redo-1/lake-garland-v4/out-v1.png", "by": "codex", "verdict": "pass"}

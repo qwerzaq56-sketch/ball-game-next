@@ -26,7 +26,7 @@
 |---|---|---|---|---|---|
 | lake-garland-v2 | object | generated | 진주 조개 다듬기 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스를 게임플레이 원화 크롭에 가깝게 다시 그림. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05) | canvas 1536x1024 px |
 | lake-garland-v3 | object | generated | 진주 조개 — 게임플레이 원화 크롭으로 다시 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스. 게임플레이 원화 gameplay-a-002 호수 칸의 조개를 그대로 옮김. 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체 (룩뎁 L-OBJ-05). 게임은 투명 아닌 부분만 잘라 112×76으로 그림 | canvas 1536x1024 px |
-| lake-garland-v4 | object | requested | 진주 조개 — 돌·연잎과 어우러진 물가 장면 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스. 조개만이 아니라 게임플레이 원화처럼 이끼 돌·연잎·수초·갈대가 함께 있는 작은 물가 장면으로 그려 호수 바닥과 어우러지게 함(사용자 10-12). 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체, 게임 안 그리기 크기(지금 112×76)는 장면에 맞춰 키움. 상호작용 반경 68은 그대로 | canvas 1536x1024 px |
+| lake-garland-v4 | object | generated | 진주 조개 — 돌·연잎과 어우러진 물가 장면 (RR-010) | 호수 치장 오브젝트 lake-garland 리소스. 조개만이 아니라 게임플레이 원화처럼 이끼 돌·연잎·수초·갈대가 함께 있는 작은 물가 장면으로 그려 호수 바닥과 어우러지게 함(사용자 10-12). 승인 뒤 scene-coherent-v1/lake-garland/asset.png 교체, 게임 안 그리기 크기(지금 112×76)는 장면에 맞춰 키움. 상호작용 반경 68은 그대로 | canvas 1536x1024 px |
 
 ### lake-garland-v2 · 진주 조개 다듬기 (RR-010)
 
@@ -90,7 +90,7 @@ Acceptance:
 
 ### lake-garland-v4 · 진주 조개 — 돌·연잎과 어우러진 물가 장면 (RR-010)
 
-상태: **requested** · 결과 0개
+상태: **generated** · 결과 1개
 
 - 참조 1 (EXACT TARGET SCENE from the approved gameplay concept: the two pearl shells in the water with a mossy grey rock beside them, floating four-leaf water plants, a lily pad, a loose pearl and ripples. Copy this composition and how the pieces overlap): `assets/art-desk/obj-redo-1/lake-garland-v4/ref-1.png` ← `assets/art-batches/scene-coherent-v1/gameplay-a-002.png` · 크롭 [1310, 500, 260, 200]
 - 참조 2 (the same shells at another spot in the concept: shells against large grey bank rocks, reeds and lily pads; shows how rocks and plants frame the shells): `assets/art-desk/obj-redo-1/lake-garland-v4/ref-2.png` ← `assets/art-batches/scene-coherent-v1/gameplay-a-002.png` · 크롭 [1690, 90, 250, 170]
